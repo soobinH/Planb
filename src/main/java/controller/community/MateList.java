@@ -38,7 +38,7 @@ public class MateList extends HttpServlet {
 		if (!country.trim().isEmpty()) countryKeywords = Arrays.asList(country);
 
 		int page = 1;
-		int pageSize = 6;
+		int pageSize = 12;
 
 		try {
 			String pageParam = request.getParameter("page");

@@ -436,7 +436,9 @@ request.setAttribute("activePage", "mate");
 						</a>
 					</div>
 				</div>
-				<div class="mate-card-grid grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+				<div
+					class="mate-card-grid grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4"
+					data-card-grid>
 					<jsp:include page="/view/mates/mateCardFragment.jsp" />
 				</div>
 				<!-- 무한 스크롤 로딩 영역 -->
