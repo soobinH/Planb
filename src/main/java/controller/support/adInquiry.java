@@ -44,12 +44,22 @@ public class adInquiry extends HttpServlet {
 		super();
 	}
 
+	/*
+	 * ========================================================= 광고 문의 페이지
+	 * =========================================================
+	 */
+
 	@Override
 	protected void doGet(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
 
 		request.getRequestDispatcher("/view/support/adInquiry.jsp").forward(request, response);
 	}
+
+	/*
+	 * ========================================================= 광고 문의 등록
+	 * =========================================================
+	 */
 
 	@Override
 	protected void doPost(HttpServletRequest request, HttpServletResponse response)
@@ -60,7 +70,7 @@ public class adInquiry extends HttpServlet {
 		Path savedImagePath = null;
 
 		/*
-		 * 오류가 났을 때 기존 입력값을 다시 JSP에 보여주기 위해 밖에서 선언
+		 * 오류 발생 시 사용자가 입력한 값을 다시 JSP에 표시하기 위해 바깥에서 선언
 		 */
 
 		String businessName = null;
@@ -85,7 +95,8 @@ public class adInquiry extends HttpServlet {
 
 			/*
 			 * ================================================= 로그인 사용자
-			 * =================================================
+			 *
+			 * 광고 문의는 비회원도 가능 =================================================
 			 */
 
 			HttpSession session = request.getSession(false);
@@ -96,28 +107,53 @@ public class adInquiry extends HttpServlet {
 
 			/*
 			 * ================================================= 입력값
-			 * 
-			 * @MultipartConfig가 있어야 multipart/form-data에서도 getParameter가 정상 동작함
 			 * =================================================
 			 */
 
-			businessName = request.getParameter("businessName");
+			businessName = normalize(request.getParameter("businessName"));
 
-			managerName = request.getParameter("managerName");
+			managerName = normalize(request.getParameter("managerName"));
 
-			phone = request.getParameter("phone");
+			phone = normalize(request.getParameter("phone"));
 
-			email = request.getParameter("email");
+			email = normalize(request.getParameter("email"));
 
-			content = request.getParameter("content");
+			content = normalize(request.getParameter("content"));
 
-			linkUrl = request.getParameter("linkUrl");
+			linkUrl = normalizeNullable(request.getParameter("linkUrl"));
 
-			adPosition = request.getParameter("adPosition");
+			adPosition = normalize(request.getParameter("adPosition"));
 
-			startDateValue = request.getParameter("startDate");
+			startDateValue = normalize(request.getParameter("startDate"));
 
-			endDateValue = request.getParameter("endDate");
+			endDateValue = normalize(request.getParameter("endDate"));
+
+			/*
+			 * ================================================= 기본 입력값 검사
+			 * =================================================
+			 */
+
+			validateRequired(businessName, "회사/브랜드명을 입력해주세요.");
+
+			validateRequired(managerName, "담당자명을 입력해주세요.");
+
+			validateRequired(phone, "전화번호를 입력해주세요.");
+
+			validateRequired(email, "이메일을 입력해주세요.");
+
+			validateRequired(content, "광고 및 문의 내용을 입력해주세요.");
+
+			/*
+			 * ================================================= 광고 위치 검사
+			 *
+			 * 현재 실제 사용하는 광고 상품은
+			 *
+			 * TRIP_CARD TIP_SIDE MATE_SIDE
+			 *
+			 * 3종 =================================================
+			 */
+
+			validateAdPosition(adPosition);
 
 			/*
 			 * ================================================= 날짜
@@ -127,6 +163,15 @@ public class adInquiry extends HttpServlet {
 			Date startDate = parseDate(startDateValue, "광고 시작일");
 
 			Date endDate = parseDate(endDateValue, "광고 종료일");
+
+			/*
+			 * 종료일이 시작일보다 이전이면 안 됨
+			 */
+
+			if (endDate.before(startDate)) {
+
+				throw new IllegalArgumentException("광고 종료일은 시작일 이후로 선택해주세요.");
+			}
 
 			/*
 			 * ================================================= 이미지
@@ -140,10 +185,18 @@ public class adInquiry extends HttpServlet {
 				throw new IllegalArgumentException("광고 이미지를 등록해주세요.");
 			}
 
+			/*
+			 * 최대 5MB
+			 */
+
 			if (imagePart.getSize() > 5L * 1024L * 1024L) {
 
 				throw new IllegalArgumentException("광고 이미지는 최대 5MB까지 등록할 수 있습니다.");
 			}
+
+			/*
+			 * 이미지 형식
+			 */
 
 			String contentType = imagePart.getContentType();
 
@@ -167,14 +220,14 @@ public class adInquiry extends HttpServlet {
 			}
 
 			/*
-			 * ================================================= 파일명
+			 * ================================================= 저장 파일명
 			 * =================================================
 			 */
 
 			String storedFileName = UUID.randomUUID().toString().replace("-", "") + extension;
 
 			/*
-			 * ================================================= 저장 폴더
+			 * ================================================= 저장 경로
 			 * =================================================
 			 */
 
@@ -191,10 +244,18 @@ public class adInquiry extends HttpServlet {
 
 			savedImagePath = uploadDirectory.resolve(storedFileName);
 
+			/*
+			 * 실제 파일 저장
+			 */
+
 			try (InputStream inputStream = imagePart.getInputStream()) {
 
 				Files.copy(inputStream, savedImagePath, StandardCopyOption.REPLACE_EXISTING);
 			}
+
+			/*
+			 * DB에는 실제 서버 경로가 아니라 웹 접근 URL 저장
+			 */
 
 			String imageUrl = "/uploads/ads/" + storedFileName;
 
@@ -228,28 +289,35 @@ public class adInquiry extends HttpServlet {
 			advertisement.setEndDate(endDate);
 
 			/*
-			 * ================================================= DB
+			 * ================================================= DB 등록
 			 * =================================================
 			 */
 
 			long adId = service.submitAdvertisement(advertisement);
 
-			System.out.println("광고 문의 접수 완료 adId = " + adId);
+			System.out.println("광고 문의 접수 완료" + " / adId = " + adId + " / position = " + adPosition);
 
 			/*
 			 * ================================================= 성공
+			 *
+			 * JSP 직접 이동이 아니라 Servlet으로 다시 이동
 			 * =================================================
 			 */
 
-			response.sendRedirect(request.getContextPath() + "/view/support/adInquiry.jsp" + "?success=1");
+			response.sendRedirect(request.getContextPath() + "/support/adInquiry" + "?success=1");
 
 		} catch (IllegalArgumentException e) {
+
+			/*
+			 * DB 등록 전에 이미지를 저장했다면 실패 시 삭제
+			 */
 
 			deleteSavedFile(savedImagePath);
 
 			/*
 			 * 입력값 유지
 			 */
+
 			preserveFormValues(request, businessName, managerName, phone, email, content, linkUrl, adPosition,
 					startDateValue, endDateValue);
 
@@ -286,6 +354,65 @@ public class adInquiry extends HttpServlet {
 	}
 
 	/*
+	 * ========================================================= 광고 위치 검사
+	 * =========================================================
+	 */
+
+	private void validateAdPosition(String adPosition) {
+
+		if (adPosition == null || (!"TRIP_CARD".equals(adPosition) && !"TIP_SIDE".equals(adPosition)
+				&& !"MATE_SIDE".equals(adPosition))) {
+
+			throw new IllegalArgumentException("올바른 광고 영역을 선택해주세요.");
+		}
+	}
+
+	/*
+	 * ========================================================= 필수 입력값 검사
+	 * =========================================================
+	 */
+
+	private void validateRequired(String value, String message) {
+
+		if (value == null || value.trim().isEmpty()) {
+
+			throw new IllegalArgumentException(message);
+		}
+	}
+
+	/*
+	 * ========================================================= 일반 문자열 정리
+	 * =========================================================
+	 */
+
+	private String normalize(String value) {
+
+		if (value == null) {
+			return null;
+		}
+
+		return value.trim();
+	}
+
+	/*
+	 * ========================================================= 빈 문자열은 NULL 처리
+	 *
+	 * linkUrl처럼 선택 입력값에 사용
+	 * =========================================================
+	 */
+
+	private String normalizeNullable(String value) {
+
+		if (value == null) {
+			return null;
+		}
+
+		String normalized = value.trim();
+
+		return normalized.isEmpty() ? null : normalized;
+	}
+
+	/*
 	 * ========================================================= 오류 발생 시 입력값 유지
 	 * =========================================================
 	 */
@@ -313,7 +440,7 @@ public class adInquiry extends HttpServlet {
 	}
 
 	/*
-	 * ========================================================= 날짜
+	 * ========================================================= 날짜 변환
 	 * =========================================================
 	 */
 
@@ -335,7 +462,7 @@ public class adInquiry extends HttpServlet {
 	}
 
 	/*
-	 * ========================================================= 실패 시 이미지 삭제
+	 * ========================================================= 실패 시 저장한 이미지 삭제
 	 * =========================================================
 	 */
 

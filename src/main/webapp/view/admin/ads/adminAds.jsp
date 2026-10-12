@@ -332,6 +332,20 @@ String normalizedSearch =
 
 
 /* =========================================================
+   처리 결과 메시지
+========================================================= */
+
+String actionResult =
+        request.getParameter("result");
+
+String actionName =
+        request.getParameter("action");
+
+String actionErrorMessage =
+        request.getParameter("message");
+
+
+/* =========================================================
    화면에 출력할 목록
 ========================================================= */
 
@@ -432,6 +446,39 @@ for (Map<String, Object> ad : allAds) {
 <main class="admin-ads-page">
 
 
+    <%
+    if ("success".equals(actionResult)) {
+    %>
+
+    <div class="admin-ads-result success">
+
+        <strong>광고 처리가 완료되었습니다.</strong>
+
+        <span>
+            <%=actionName == null ? "" : h(actionName)%>
+        </span>
+
+    </div>
+
+    <%
+    } else if ("error".equals(actionResult)) {
+    %>
+
+    <div class="admin-ads-result error">
+
+        <strong>광고 처리에 실패했습니다.</strong>
+
+        <span>
+            <%=actionErrorMessage == null ? "다시 시도해주세요." : h(actionErrorMessage)%>
+        </span>
+
+    </div>
+
+    <%
+    }
+    %>
+
+
     <!-- =====================================================
          상단
     ====================================================== -->
@@ -484,7 +531,7 @@ for (Map<String, Object> ad : allAds) {
 
 
         <a
-            href="<%=ctx%>/view/admin/ads/adminAds.jsp?tab=PENDING_APPROVAL"
+            href="<%=ctx%>/admin/ads?tab=PENDING_APPROVAL"
             class="admin-ads-summary-card <%="PENDING_APPROVAL".equals(currentTab) ? "selected" : ""%>">
 
             <span class="admin-ads-summary-icon purple">
@@ -518,7 +565,7 @@ for (Map<String, Object> ad : allAds) {
 
 
         <a
-            href="<%=ctx%>/view/admin/ads/adminAds.jsp?tab=PENDING_PUBLICATION"
+            href="<%=ctx%>/admin/ads?tab=PENDING_PUBLICATION"
             class="admin-ads-summary-card <%="PENDING_PUBLICATION".equals(currentTab) ? "selected" : ""%>">
 
             <span class="admin-ads-summary-icon amber">
@@ -557,7 +604,7 @@ for (Map<String, Object> ad : allAds) {
 
 
         <a
-            href="<%=ctx%>/view/admin/ads/adminAds.jsp?tab=ACTIVE"
+            href="<%=ctx%>/admin/ads?tab=ACTIVE"
             class="admin-ads-summary-card <%="ACTIVE".equals(currentTab) ? "selected" : ""%>">
 
             <span class="admin-ads-summary-icon green">
@@ -591,7 +638,7 @@ for (Map<String, Object> ad : allAds) {
 
 
         <a
-            href="<%=ctx%>/view/admin/ads/adminAds.jsp?tab=CLOSED"
+            href="<%=ctx%>/admin/ads?tab=CLOSED"
             class="admin-ads-summary-card <%="CLOSED".equals(currentTab) ? "selected" : ""%>">
 
             <span class="admin-ads-summary-icon gray">
@@ -641,7 +688,7 @@ for (Map<String, Object> ad : allAds) {
 
             <a
                 class="<%="PENDING_APPROVAL".equals(currentTab) ? "active" : ""%>"
-                href="<%=ctx%>/view/admin/ads/adminAds.jsp?tab=PENDING_APPROVAL">
+                href="<%=ctx%>/admin/ads?tab=PENDING_APPROVAL">
 
                 승인 대기
                 <span><%=approvalCount%></span>
@@ -651,7 +698,7 @@ for (Map<String, Object> ad : allAds) {
 
             <a
                 class="<%="PENDING_PUBLICATION".equals(currentTab) ? "active" : ""%>"
-                href="<%=ctx%>/view/admin/ads/adminAds.jsp?tab=PENDING_PUBLICATION">
+                href="<%=ctx%>/admin/ads?tab=PENDING_PUBLICATION">
 
                 게시 대기
                 <span><%=publicationCount%></span>
@@ -661,7 +708,7 @@ for (Map<String, Object> ad : allAds) {
 
             <a
                 class="<%="ACTIVE".equals(currentTab) ? "active" : ""%>"
-                href="<%=ctx%>/view/admin/ads/adminAds.jsp?tab=ACTIVE">
+                href="<%=ctx%>/admin/ads?tab=ACTIVE">
 
                 게시 중
                 <span><%=activeCount%></span>
@@ -671,7 +718,7 @@ for (Map<String, Object> ad : allAds) {
 
             <a
                 class="<%="CLOSED".equals(currentTab) ? "active" : ""%>"
-                href="<%=ctx%>/view/admin/ads/adminAds.jsp?tab=CLOSED">
+                href="<%=ctx%>/admin/ads?tab=CLOSED">
 
                 종료 · 삭제
                 <span><%=closedCount%></span>
@@ -681,7 +728,7 @@ for (Map<String, Object> ad : allAds) {
 
             <a
                 class="<%="ALL".equals(currentTab) ? "active" : ""%>"
-                href="<%=ctx%>/view/admin/ads/adminAds.jsp?tab=ALL">
+                href="<%=ctx%>/admin/ads?tab=ALL">
 
                 전체
                 <span><%=allAds.size()%></span>
@@ -696,7 +743,7 @@ for (Map<String, Object> ad : allAds) {
         <form
             class="admin-ads-search"
             method="get"
-            action="<%=ctx%>/view/admin/ads/adminAds.jsp">
+            action="<%=ctx%>/admin/ads">
 
 
             <input
@@ -1762,11 +1809,6 @@ document.addEventListener(
 
                 if (actionButton) {
 
-                    /*
-                     * UI는 완성.
-                     * 실제 상태 변경은 광고 관리 Servlet을
-                     * 연결할 때 이 부분을 POST 요청으로 교체.
-                     */
                     const action =
                         actionButton.getAttribute(
                             "data-ad-action"
@@ -1779,13 +1821,199 @@ document.addEventListener(
                         );
 
 
-                    alert(
-                        "광고 #"
-                        + adId
-                        + " · "
-                        + action
-                        + " 처리 기능은 관리자 광고 처리 Servlet 연결 단계에서 활성화합니다."
+                    let reason =
+                        "";
+
+
+                    let newEndDate =
+                        "";
+
+
+                    if (action === "REJECT") {
+
+                        reason =
+                            window.prompt(
+                                "거절 사유를 입력해주세요."
+                            );
+
+
+                        if (reason === null) {
+                            return;
+                        }
+
+
+                        reason =
+                            reason.trim();
+
+
+                        if (!reason) {
+
+                            alert(
+                                "거절 사유를 입력해주세요."
+                            );
+
+                            return;
+                        }
+
+
+                    } else if (
+                        action === "EXTEND"
+                    ) {
+
+                        newEndDate =
+                            window.prompt(
+                                "새 종료일을 입력해주세요.\\n예: 2026-12-31"
+                            );
+
+
+                        if (newEndDate === null) {
+                            return;
+                        }
+
+
+                        newEndDate =
+                            newEndDate.trim();
+
+
+                        if (
+                            !/^\\d{4}-\\d{2}-\\d{2}$/
+                                .test(
+                                    newEndDate
+                                )
+                        ) {
+
+                            alert(
+                                "날짜를 YYYY-MM-DD 형식으로 입력해주세요."
+                            );
+
+                            return;
+                        }
+
+
+                    } else if (
+                        action === "WITHDRAW"
+                    ) {
+
+                        if (
+                            !window.confirm(
+                                "이 광고의 게시를 철회하시겠습니까?"
+                            )
+                        ) {
+
+                            return;
+                        }
+
+
+                        const inputReason =
+                            window.prompt(
+                                "철회 사유가 있으면 입력해주세요.\\n없으면 비워두고 확인을 누르세요.",
+                                ""
+                            );
+
+
+                        if (inputReason === null) {
+                            return;
+                        }
+
+
+                        reason =
+                            inputReason.trim();
+
+
+                    } else {
+
+                        const messageMap = {
+
+                            APPROVE:
+                                "이 광고를 승인하시겠습니까?",
+
+                            ACTIVATE:
+                                "이 광고의 게시를 시작하시겠습니까?",
+
+                            DELETE:
+                                "이 광고를 삭제 처리하시겠습니까?"
+                        };
+
+
+                        if (
+                            !window.confirm(
+                                messageMap[action]
+                                || "처리하시겠습니까?"
+                            )
+                        ) {
+
+                            return;
+                        }
+                    }
+
+
+                    const form =
+                        document.createElement(
+                            "form"
+                        );
+
+
+                    form.method =
+                        "post";
+
+
+                    form.action =
+                        "<%=ctx%>/admin/ads/action";
+
+
+                    const params = {
+
+                        adId:
+                            adId,
+
+                        action:
+                            action,
+
+                        tab:
+                            "<%=h(currentTab)%>",
+
+                        reason:
+                            reason,
+
+                        newEndDate:
+                            newEndDate
+                    };
+
+
+                    Object.keys(
+                        params
+                    ).forEach(
+                        function (key) {
+
+                            const input =
+                                document.createElement(
+                                    "input"
+                                );
+
+
+                            input.type =
+                                "hidden";
+
+                            input.name =
+                                key;
+
+                            input.value =
+                                params[key] || "";
+
+
+                            form.appendChild(
+                                input
+                            );
+                        }
                     );
+
+
+                    document.body.appendChild(
+                        form
+                    );
+
+
+                    form.submit();
                 }
             }
         );

@@ -24,3 +24,83 @@
     white-space: nowrap;
     pointer-events: none;
 }
+
+/* ============================================================
+   관리자 신고 / 광고 아이콘
+============================================================ */
+
+
+/*
+ * 기본 상태
+ * 빨간색 X
+ */
+.site-actions .site-admin-direct-btn {
+    color: #6f7480;
+
+    background: transparent;
+
+    border-color: transparent;
+}
+
+
+/*
+ * hover
+ */
+.site-actions .site-admin-direct-btn:hover {
+    color: #6369D1;
+
+    background: #f5f5ff;
+
+    border-color: rgba(99, 105, 209, .12);
+}
+
+
+/*
+ * 현재 관리 페이지
+ */
+.site-actions .site-admin-direct-btn.active {
+    color: #6369D1;
+
+    background: #efefff;
+
+    border-color: rgba(99, 105, 209, .18);
+}
+
+
+/* ============================================================
+   관리자 신규 항목 빨간 점
+============================================================ */
+
+.site-badge-wrap {
+    position: relative;
+}
+
+
+.site-admin-alert-dot {
+    position: absolute;
+
+    top: 1px;
+    right: 1px;
+
+    z-index: 5;
+
+    width: 9px;
+    height: 9px;
+
+    box-sizing: border-box;
+
+    border: 1.5px solid #ffffff;
+    border-radius: 50%;
+
+    background: #ef4444;
+
+    pointer-events: none;
+}
+
+
+/*
+ * hidden 속성이 있을 때는 반드시 숨김
+ */
+.site-admin-alert-dot[hidden] {
+    display: none !important;
+}

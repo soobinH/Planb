@@ -92,6 +92,7 @@
 	    <!-- 광고 -->
 	    <mapper resource="mapper/advertisement/advertisement.xml"/>
 	    <mapper resource="mapper/advertisement/advertisementHistory.xml"/>
+	    <mapper resource="mapper/advertisement/adminAdvertisement.xml"/>
 	
 	    <!-- 커뮤니티 - 꿀팁 -->
 		<mapper resource="mapper/community/tip.xml"/>

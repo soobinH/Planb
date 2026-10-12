@@ -6,12 +6,14 @@ request.setAttribute("activePage", "home");
 <!DOCTYPE html>
 <html lang="ko">
 <head>
-	<meta charset="UTF-8">
-	<meta name="viewport" content="width=device-width, initial-scale=1">
-	<title>Planb</title>
-	<jsp:include page="/common/headStyles.jsp" />
-	<link rel="stylesheet" href="${pageContext.request.contextPath}/view/assets/css/auth/home.css">
-	<script defer src="${pageContext.request.contextPath}/view/assets/js/auth/home.js"></script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Planb</title>
+<jsp:include page="/common/headStyles.jsp" />
+<link rel="stylesheet"
+	href="${pageContext.request.contextPath}/view/assets/css/auth/home.css">
+<script defer
+	src="${pageContext.request.contextPath}/view/assets/js/auth/home.js"></script>
 </head>
 <!-- ========================================
      HOME - 커스텀 스크롤바
@@ -20,49 +22,56 @@ request.setAttribute("activePage", "home");
      HOME - 섹션 네비게이션
 ========================================= -->
 <div class="home-scroll-indicator">
-    <button type="button" id="homeScrollDot1" class="home-scroll-dot active" aria-label="첫 번째 구역으로 이동"></button>
+	<button type="button" id="homeScrollDot1"
+		class="home-scroll-dot active" aria-label="첫 번째 구역으로 이동"></button>
 
-    <button type="button" id="homeScrollDot2" class="home-scroll-dot" aria-label="두 번째 구역으로 이동"></button>
+	<button type="button" id="homeScrollDot2" class="home-scroll-dot"
+		aria-label="두 번째 구역으로 이동"></button>
 
-    <button type="button" id="homeScrollDot3" class="home-scroll-dot" aria-label="세 번째 구역으로 이동"></button>
+	<button type="button" id="homeScrollDot3" class="home-scroll-dot"
+		aria-label="세 번째 구역으로 이동"></button>
 
-    <button type="button" id="homeScrollDot4" class="home-scroll-dot" aria-label="네 번째 구역으로 이동"></button>
+	<button type="button" id="homeScrollDot4" class="home-scroll-dot"
+		aria-label="네 번째 구역으로 이동"></button>
 </div>
 <body class="site-shell">
 	<jsp:include page="/common/header.jsp" />
 	<main class="home-main">
-		<section id="homeArea1" class="home-hero relative flex flex-col items-center justify-center">
+		<section id="homeArea1"
+			class="home-hero relative flex flex-col items-center justify-center">
 			<div class="home-hero-bg absolute inset-0 bg-cover bg-center"></div>
 			<div class="home-hero-overlay absolute inset-0"></div>
-			<div class="home-hero-content relative z-10 flex flex-col items-center text-center px-4 w-full">
+			<div
+				class="home-hero-content relative z-10 flex flex-col items-center text-center px-4 w-full">
 				<div
-				    class="home-hero-badge inline-flex items-center gap-2 px-3 py-1 rounded-full mb-5 text-xs font-bold tracking-widest uppercase">
-				    ✈ Travel Plan Share
-				</div>
+					class="home-hero-badge inline-flex items-center gap-2 px-3 py-1 rounded-full mb-5 text-xs font-bold tracking-widest uppercase">
+					✈ Travel Plan Share</div>
 				<h1 class="home-hero-title text-white leading-tight mb-3">
-				    Plan less.&nbsp;
-				    <span class="home-hero-title-highlight">Wander</span>
-				    more.
+					Plan less.&nbsp; <span class="home-hero-title-highlight">Wander</span>
+					more.
 				</h1>
-				<p class="home-hero-description text-white/80 text-sm md:text-base mb-8 font-medium">
-				    계획보다 중요한 건,
-				    <span class="text-white font-semibold">일단 떠나는 것</span>
-				    &nbsp;·&nbsp;실제로 다녀온 사람들의 진짜 이야기
+				<p
+					class="home-hero-description text-white/80 text-sm md:text-base mb-8 font-medium">
+					계획보다 중요한 건, <span class="text-white font-semibold">일단 떠나는 것</span>
+					&nbsp;·&nbsp;실제로 다녀온 사람들의 진짜 이야기
 				</p>
-				<form
-				    action="${pageContext.request.contextPath}/search"
-				    method="get"
-				    class="home-hero-search w-full max-w-2xl rounded-full flex items-center px-5 py-3.5 gap-3 border border-white/30">
-					<svg class="shrink-0 text-white/70" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+				<form action="${pageContext.request.contextPath}/search"
+					method="get"
+					class="home-hero-search w-full max-w-2xl rounded-full flex items-center px-5 py-3.5 gap-3 border border-white/30">
+					<svg class="shrink-0 text-white/70" width="18" height="18"
+						viewBox="0 0 24 24" fill="none" stroke="currentColor"
+						stroke-width="2.2">
 						<circle cx="11" cy="11" r="8" />
 						<path d="m21 21-4.35-4.35" />
 					</svg>
-					<input type="text" name="q" placeholder="여행지, 일정, 꿀팁 등 무엇이든 검색해보세요" aria-label="전체 검색"
+					<input type="text" name="q" placeholder="여행지, 일정, 꿀팁 등 무엇이든 검색해보세요"
+						aria-label="전체 검색"
 						class="flex-1 text-sm text-white placeholder-white/60 outline-none bg-transparent">
 					<button type="submit"
-					    class="home-hero-search-btn shrink-0 w-9 h-9 rounded-full flex items-center justify-center text-white transition-all jsp-brand-hover"
-					    aria-label="검색">
-						<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5">
+						class="home-hero-search-btn shrink-0 w-9 h-9 rounded-full flex items-center justify-center text-white transition-all jsp-brand-hover"
+						aria-label="검색">
+						<svg width="15" height="15" viewBox="0 0 24 24" fill="none"
+							stroke="white" stroke-width="2.5">
 							<circle cx="11" cy="11" r="8" />
 							<path d="m21 21-4.35-4.35" />
 						</svg>
@@ -72,7 +81,8 @@ request.setAttribute("activePage", "home");
 			<button type="button"
 				class="jsp-home-scroll absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-1 text-white/50 z-10 hover:text-white/80 transition-colors cursor-pointer bg-transparent border-none p-2"
 				data-scroll-popular aria-label="아래로 스크롤">
-				<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+				<svg width="20" height="20" viewBox="0 0 24 24" fill="none"
+					stroke="currentColor" stroke-width="2">
 					<path d="M12 5v14M5 12l7 7 7-7" />
 				</svg>
 			</button>
@@ -80,17 +90,25 @@ request.setAttribute("activePage", "home");
 
 		<section id="popularPlans" class="mt-16">
 			<div class="text-center mb-8 px-4">
-				<p class="home-popular-eyebrow text-xs font-bold tracking-widest uppercase mb-2">Popular Travel Plans</p>
-				<h2 class="text-2xl md:text-3xl font-extrabold text-gray-900 mb-2 home-popular-heading">지금 가장 인기 있는 여행일정</h2>
-				<p class="home-popular-description text-sm text-gray-400">전 세계 여행자들이 사랑하는 특별한 일정을 만나보세요.</p>
+				<p
+					class="home-popular-eyebrow text-xs font-bold tracking-widest uppercase mb-2">Popular
+					Travel Plans</p>
+				<h2
+					class="text-2xl md:text-3xl font-extrabold text-gray-900 mb-2 home-popular-heading">지금
+					가장 인기 있는 여행일정</h2>
+				<p class="home-popular-description text-sm text-gray-400">전 세계
+					여행자들이 사랑하는 특별한 일정을 만나보세요.</p>
 			</div>
-			<div class="home-popular-carousel flex items-stretch gap-6 px-12" data-home-carousel data-loop-width="2120">
-				<a href="${pageContext.request.contextPath}/view/travel/scheduleDetail.jsp?id=9"
-				   class="jsp-home-schedule-card home-popular-card shrink-0 bg-white rounded-2xl overflow-hidden cursor-pointer border">
-				   <div class="home-popular-card-image relative overflow-hidden">
-				    <img src="https://images.unsplash.com/photo-1502602898657-3e91760cbb34?w=600&amp;h=400&amp;fit=crop"
-						 alt="파리 5박 6일 예술 &amp; 낭만"
-						 class="w-full h-full object-cover transition-transform duration-300">
+			<div class="home-popular-carousel flex items-stretch gap-6 px-12"
+				data-home-carousel data-loop-width="2120">
+				<a
+					href="${pageContext.request.contextPath}/view/travel/scheduleDetail.jsp?id=9"
+					class="jsp-home-schedule-card home-popular-card shrink-0 bg-white rounded-2xl overflow-hidden cursor-pointer border">
+					<div class="home-popular-card-image relative overflow-hidden">
+						<img
+							src="https://images.unsplash.com/photo-1502602898657-3e91760cbb34?w=600&amp;h=400&amp;fit=crop"
+							alt="파리 5박 6일 예술 &amp; 낭만"
+							class="w-full h-full object-cover transition-transform duration-300">
 						<div
 							class="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent"></div>
 						<span
@@ -98,45 +116,48 @@ request.setAttribute("activePage", "home");
 						<button
 							class="absolute top-2 right-2 w-6 h-6 rounded-full bg-white/90 backdrop-blur-sm flex items-center justify-center shadow-sm transition-transform hover:scale-110"
 							type="button" data-bookmark aria-label="북마크">
-							<svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#9ca3af" stroke-width="2">
-								<path stroke-linecap="round" stroke-linejoin="round" d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z" />
+							<svg width="11" height="11" viewBox="0 0 24 24" fill="none"
+								stroke="#9ca3af" stroke-width="2">
+								<path stroke-linecap="round" stroke-linejoin="round"
+									d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z" />
 							</svg>
 						</button>
 						<span
-							class="absolute bottom-2 left-2 text-white text-[10px] font-bold bg-black/50 rounded-full px-2 py-0.5">5박 6일
-						</span>
+							class="absolute bottom-2 left-2 text-white text-[10px] font-bold bg-black/50 rounded-full px-2 py-0.5">5박
+							6일 </span>
 					</div>
 					<div class="p-3">
-						<h3 class="home-popular-title font-bold text-[13px] leading-snug mb-0.5 line-clamp-2 transition-colors">파리 5박 6일 예술 &amp; 낭만</h3>
+						<h3
+							class="home-popular-title font-bold text-[13px] leading-snug mb-0.5 line-clamp-2 transition-colors">파리
+							5박 6일 예술 &amp; 낭만</h3>
 						<p
 							class="text-gray-500 text-[11px] line-clamp-1 mb-2 leading-relaxed">에펠탑,
-							루브르, 몽마르트! 낭만의 도시 파리를 온전히 즐기는 일정.
-						</p>
+							루브르, 몽마르트! 낭만의 도시 파리를 온전히 즐기는 일정.</p>
 						<div
 							class="flex items-center gap-2.5 text-[10px] text-gray-400 mb-2.5">
-							<span class="flex items-center gap-0.5">
-								<svg width="10"
+							<span class="flex items-center gap-0.5"> <svg width="10"
 									height="10" viewBox="0 0 24 24" fill="none" stroke="#9ca3af"
 									stroke-width="2">
-									<path stroke-linecap="round" stroke-linejoin="round" d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z" />
-								</svg>
-								<span class="font-medium">1,234</span>
-							</span> 
-							<span class="flex items-center gap-0.5">
-								<svg width="10"
+									<path stroke-linecap="round" stroke-linejoin="round"
+										d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z" />
+								</svg> <span class="font-medium">1,234</span>
+							</span> <span class="flex items-center gap-0.5"> <svg width="10"
 									height="10" fill="none" stroke="currentColor"
 									viewBox="0 0 24 24">
-									<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-									<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+									<path stroke-linecap="round" stroke-linejoin="round"
+										stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+									<path stroke-linecap="round" stroke-linejoin="round"
+										stroke-width="2"
 										d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
 								</svg>5,670
 							</span>
 						</div>
-						<div class="home-popular-author flex items-center justify-between border-t pt-2">
+						<div
+							class="home-popular-author flex items-center justify-between border-t pt-2">
 							<div class="flex items-center gap-1.5">
 								<img src="https://i.pravatar.cc/40?img=17" alt="파리지앵"
-									class="w-4 h-4 rounded-full object-cover">
-								<span class="text-[10px] text-gray-500 font-medium">파리지앵</span>
+									class="w-4 h-4 rounded-full object-cover"> <span
+									class="text-[10px] text-gray-500 font-medium">파리지앵</span>
 							</div>
 							<span class="text-[9px] text-gray-400">2026.07.10</span>
 						</div>
@@ -149,9 +170,12 @@ request.setAttribute("activePage", "home");
 							src="https://images.unsplash.com/photo-1589452271712-64b8a66c7b71?w=600&amp;h=400&amp;fit=crop"
 							alt="오사카 2박 3일 먹방 여행"
 							class="w-full h-full object-cover transition-transform duration-300">
-						<div class="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent"></div>
-						<span class="home-popular-location absolute top-2 left-2 text-[10px] font-bold px-2 py-0.5 rounded-full text-white">오사카</span>
-						<button class="absolute top-2 right-2 w-6 h-6 rounded-full bg-white/90 backdrop-blur-sm flex items-center justify-center shadow-sm transition-transform hover:scale-110"
+						<div
+							class="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent"></div>
+						<span
+							class="home-popular-location absolute top-2 left-2 text-[10px] font-bold px-2 py-0.5 rounded-full text-white">오사카</span>
+						<button
+							class="absolute top-2 right-2 w-6 h-6 rounded-full bg-white/90 backdrop-blur-sm flex items-center justify-center shadow-sm transition-transform hover:scale-110"
 							type="button" data-bookmark aria-label="북마크">
 							<svg width="11" height="11" viewBox="0 0 24 24" fill="none"
 								stroke="#9ca3af" stroke-width="2">
@@ -159,11 +183,17 @@ request.setAttribute("activePage", "home");
 									d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z" />
 							</svg>
 						</button>
-						<span class="absolute bottom-2 left-2 text-white text-[10px] font-bold bg-black/50 rounded-full px-2 py-0.5">2박 3일</span>
+						<span
+							class="absolute bottom-2 left-2 text-white text-[10px] font-bold bg-black/50 rounded-full px-2 py-0.5">2박
+							3일</span>
 					</div>
 					<div class="p-3">
-						<h3 class="home-popular-title font-bold text-[13px] leading-snug mb-0.5 line-clamp-2 transition-colors">오사카 2박 3일 먹방 여행</h3>
-						<p class="text-gray-500 text-[11px] line-clamp-1 mb-2 leading-relaxed">도톤보리, 구로몬시장, 오사카 성! 먹고 먹고 또 먹는 오사카.</p>
+						<h3
+							class="home-popular-title font-bold text-[13px] leading-snug mb-0.5 line-clamp-2 transition-colors">오사카
+							2박 3일 먹방 여행</h3>
+						<p
+							class="text-gray-500 text-[11px] line-clamp-1 mb-2 leading-relaxed">도톤보리,
+							구로몬시장, 오사카 성! 먹고 먹고 또 먹는 오사카.</p>
 						<div
 							class="flex items-center gap-2.5 text-[10px] text-gray-400 mb-2.5">
 							<span class="flex items-center gap-0.5"><svg width="10"
@@ -181,7 +211,8 @@ request.setAttribute("activePage", "home");
 										stroke-width="2"
 										d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" /></svg>5,100</span>
 						</div>
-						<div class="home-popular-author flex items-center justify-between border-t pt-2">
+						<div
+							class="home-popular-author flex items-center justify-between border-t pt-2">
 							<div class="flex items-center gap-1.5">
 								<img src="https://i.pravatar.cc/40?img=31" alt="오사카마니아"
 									class="w-4 h-4 rounded-full object-cover"><span
@@ -216,7 +247,8 @@ request.setAttribute("activePage", "home");
 					</div>
 					<div class="p-3">
 						<h3
-							class="home-popular-title font-bold text-[13px] leading-snug mb-0.5 line-clamp-2 transition-colors">뉴욕 6박 7일 도시 탐험</h3>
+							class="home-popular-title font-bold text-[13px] leading-snug mb-0.5 line-clamp-2 transition-colors">뉴욕
+							6박 7일 도시 탐험</h3>
 						<p
 							class="text-gray-500 text-[11px] line-clamp-1 mb-2 leading-relaxed">타임스퀘어,
 							센트럴파크, 브루클린 브리지! 잠들지 않는 도시 뉴욕.</p>
@@ -237,7 +269,8 @@ request.setAttribute("activePage", "home");
 										stroke-width="2"
 										d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" /></svg>4,520</span>
 						</div>
-						<div class="home-popular-author flex items-center justify-between border-t pt-2">
+						<div
+							class="home-popular-author flex items-center justify-between border-t pt-2">
 							<div class="flex items-center gap-1.5">
 								<img src="https://i.pravatar.cc/40?img=21" alt="NYC러버"
 									class="w-4 h-4 rounded-full object-cover"><span
@@ -272,7 +305,8 @@ request.setAttribute("activePage", "home");
 					</div>
 					<div class="p-3">
 						<h3
-							class="home-popular-title font-bold text-[13px] leading-snug mb-0.5 line-clamp-2 transition-colors">도쿄 3박 4일 완전 정복</h3>
+							class="home-popular-title font-bold text-[13px] leading-snug mb-0.5 line-clamp-2 transition-colors">도쿄
+							3박 4일 완전 정복</h3>
 						<p
 							class="text-gray-500 text-[11px] line-clamp-1 mb-2 leading-relaxed">시부야,
 							아키하바라, 아사쿠사! 도쿄의 모든 것을 담은 알찬 일정.</p>
@@ -293,7 +327,8 @@ request.setAttribute("activePage", "home");
 										stroke-width="2"
 										d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" /></svg>4,210</span>
 						</div>
-						<div class="home-popular-author flex items-center justify-between border-t pt-2">
+						<div
+							class="home-popular-author flex items-center justify-between border-t pt-2">
 							<div class="flex items-center gap-1.5">
 								<img src="https://i.pravatar.cc/40?img=13" alt="재팬러버"
 									class="w-4 h-4 rounded-full object-cover"><span
@@ -348,7 +383,8 @@ request.setAttribute("activePage", "home");
 					</div>
 					<div class="p-3">
 						<h3
-							class="home-popular-title font-bold text-[13px] leading-snug mb-0.5 line-clamp-2 transition-colors">발리 5박 6일 힐링 휴양</h3>
+							class="home-popular-title font-bold text-[13px] leading-snug mb-0.5 line-clamp-2 transition-colors">발리
+							5박 6일 힐링 휴양</h3>
 						<p
 							class="text-gray-500 text-[11px] line-clamp-1 mb-2 leading-relaxed">우붓
 							라이스테라스, 울루와뚜 사원, 짱구 카페까지 발리 완전정복.</p>
@@ -369,7 +405,8 @@ request.setAttribute("activePage", "home");
 										stroke-width="2"
 										d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" /></svg>3,890</span>
 						</div>
-						<div class="home-popular-author flex items-center justify-between border-t pt-2">
+						<div
+							class="home-popular-author flex items-center justify-between border-t pt-2">
 							<div class="flex items-center gap-1.5">
 								<img src="https://i.pravatar.cc/40?img=19" alt="발리덕후"
 									class="w-4 h-4 rounded-full object-cover"><span
@@ -404,7 +441,8 @@ request.setAttribute("activePage", "home");
 					</div>
 					<div class="p-3">
 						<h3
-							class="home-popular-title font-bold text-[13px] leading-snug mb-0.5 line-clamp-2 transition-colors">다낭 3박 4일 바다 &amp; 리조트</h3>
+							class="home-popular-title font-bold text-[13px] leading-snug mb-0.5 line-clamp-2 transition-colors">다낭
+							3박 4일 바다 &amp; 리조트</h3>
 						<p
 							class="text-gray-500 text-[11px] line-clamp-1 mb-2 leading-relaxed">미케
 							비치, 바나힐, 호이안 올드타운까지! 베트남 중부의 진주.</p>
@@ -425,7 +463,8 @@ request.setAttribute("activePage", "home");
 										stroke-width="2"
 										d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" /></svg>3,200</span>
 						</div>
-						<div class="home-popular-author flex items-center justify-between border-t pt-2">
+						<div
+							class="home-popular-author flex items-center justify-between border-t pt-2">
 							<div class="flex items-center gap-1.5">
 								<img src="https://i.pravatar.cc/40?img=27" alt="다낭러버"
 									class="w-4 h-4 rounded-full object-cover"><span
@@ -460,7 +499,8 @@ request.setAttribute("activePage", "home");
 					</div>
 					<div class="p-3">
 						<h3
-							class="home-popular-title font-bold text-[13px] leading-snug mb-0.5 line-clamp-2 transition-colors">방콕 4박 5일 사원 &amp; 야시장</h3>
+							class="home-popular-title font-bold text-[13px] leading-snug mb-0.5 line-clamp-2 transition-colors">방콕
+							4박 5일 사원 &amp; 야시장</h3>
 						<p
 							class="text-gray-500 text-[11px] line-clamp-1 mb-2 leading-relaxed">왕궁,
 							왓포, 차오프라야강과 야시장까지! 방콕의 매력에 빠져봐요.</p>
@@ -481,7 +521,8 @@ request.setAttribute("activePage", "home");
 										stroke-width="2"
 										d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" /></svg>3,100</span>
 						</div>
-						<div class="home-popular-author flex items-center justify-between border-t pt-2">
+						<div
+							class="home-popular-author flex items-center justify-between border-t pt-2">
 							<div class="flex items-center gap-1.5">
 								<img src="https://i.pravatar.cc/40?img=15" alt="태국덕후"
 									class="w-4 h-4 rounded-full object-cover"><span
@@ -516,7 +557,8 @@ request.setAttribute("activePage", "home");
 					</div>
 					<div class="p-3">
 						<h3
-							class="home-popular-title font-bold text-[13px] leading-snug mb-0.5 line-clamp-2 transition-colors">바르셀로나 4박 5일 가우디 투어</h3>
+							class="home-popular-title font-bold text-[13px] leading-snug mb-0.5 line-clamp-2 transition-colors">바르셀로나
+							4박 5일 가우디 투어</h3>
 						<p
 							class="text-gray-500 text-[11px] line-clamp-1 mb-2 leading-relaxed">사그라다
 							파밀리아, 구엘공원, 바르셀로나 해변까지 가우디의 도시.</p>
@@ -537,7 +579,8 @@ request.setAttribute("activePage", "home");
 										stroke-width="2"
 										d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" /></svg>2,890</span>
 						</div>
-						<div class="home-popular-author flex items-center justify-between border-t pt-2">
+						<div
+							class="home-popular-author flex items-center justify-between border-t pt-2">
 							<div class="flex items-center gap-1.5">
 								<img src="https://i.pravatar.cc/40?img=23" alt="스페인러버"
 									class="w-4 h-4 rounded-full object-cover"><span
@@ -572,7 +615,8 @@ request.setAttribute("activePage", "home");
 					</div>
 					<div class="p-3">
 						<h3
-							class="home-popular-title font-bold text-[13px] leading-snug mb-0.5 line-clamp-2 transition-colors">부산 1박 2일 바다 여행</h3>
+							class="home-popular-title font-bold text-[13px] leading-snug mb-0.5 line-clamp-2 transition-colors">부산
+							1박 2일 바다 여행</h3>
 						<p
 							class="text-gray-500 text-[11px] line-clamp-1 mb-2 leading-relaxed">해운대와
 							광안리, 자갈치시장까지! 부산 핵심 코스.</p>
@@ -593,7 +637,8 @@ request.setAttribute("activePage", "home");
 										stroke-width="2"
 										d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" /></svg>2,341</span>
 						</div>
-						<div class="home-popular-author flex items-center justify-between border-t pt-2">
+						<div
+							class="home-popular-author flex items-center justify-between border-t pt-2">
 							<div class="flex items-center gap-1.5">
 								<img src="https://i.pravatar.cc/40?img=5" alt="바다러버"
 									class="w-4 h-4 rounded-full object-cover"><span
@@ -628,7 +673,8 @@ request.setAttribute("activePage", "home");
 					</div>
 					<div class="p-3">
 						<h3
-							class="home-popular-title font-bold text-[13px] leading-snug mb-0.5 line-clamp-2 transition-colors">파리 5박 6일 예술 &amp; 낭만</h3>
+							class="home-popular-title font-bold text-[13px] leading-snug mb-0.5 line-clamp-2 transition-colors">파리
+							5박 6일 예술 &amp; 낭만</h3>
 						<p
 							class="text-gray-500 text-[11px] line-clamp-1 mb-2 leading-relaxed">에펠탑,
 							루브르, 몽마르트! 낭만의 도시 파리를 온전히 즐기는 일정.</p>
@@ -649,7 +695,8 @@ request.setAttribute("activePage", "home");
 										stroke-width="2"
 										d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" /></svg>5,670</span>
 						</div>
-						<div class="home-popular-author flex items-center justify-between border-t pt-2">
+						<div
+							class="home-popular-author flex items-center justify-between border-t pt-2">
 							<div class="flex items-center gap-1.5">
 								<img src="https://i.pravatar.cc/40?img=17" alt="파리지앵"
 									class="w-4 h-4 rounded-full object-cover"><span
@@ -684,7 +731,8 @@ request.setAttribute("activePage", "home");
 					</div>
 					<div class="p-3">
 						<h3
-							class="home-popular-title font-bold text-[13px] leading-snug mb-0.5 line-clamp-2 transition-colors">오사카 2박 3일 먹방 여행</h3>
+							class="home-popular-title font-bold text-[13px] leading-snug mb-0.5 line-clamp-2 transition-colors">오사카
+							2박 3일 먹방 여행</h3>
 						<p
 							class="text-gray-500 text-[11px] line-clamp-1 mb-2 leading-relaxed">도톤보리,
 							구로몬시장, 오사카 성! 먹고 먹고 또 먹는 오사카.</p>
@@ -705,7 +753,8 @@ request.setAttribute("activePage", "home");
 										stroke-width="2"
 										d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" /></svg>5,100</span>
 						</div>
-						<div class="home-popular-author flex items-center justify-between border-t pt-2">
+						<div
+							class="home-popular-author flex items-center justify-between border-t pt-2">
 							<div class="flex items-center gap-1.5">
 								<img src="https://i.pravatar.cc/40?img=31" alt="오사카마니아"
 									class="w-4 h-4 rounded-full object-cover"><span
@@ -740,7 +789,8 @@ request.setAttribute("activePage", "home");
 					</div>
 					<div class="p-3">
 						<h3
-							class="home-popular-title font-bold text-[13px] leading-snug mb-0.5 line-clamp-2 transition-colors">뉴욕 6박 7일 도시 탐험</h3>
+							class="home-popular-title font-bold text-[13px] leading-snug mb-0.5 line-clamp-2 transition-colors">뉴욕
+							6박 7일 도시 탐험</h3>
 						<p
 							class="text-gray-500 text-[11px] line-clamp-1 mb-2 leading-relaxed">타임스퀘어,
 							센트럴파크, 브루클린 브리지! 잠들지 않는 도시 뉴욕.</p>
@@ -761,7 +811,8 @@ request.setAttribute("activePage", "home");
 										stroke-width="2"
 										d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" /></svg>4,520</span>
 						</div>
-						<div class="home-popular-author flex items-center justify-between border-t pt-2">
+						<div
+							class="home-popular-author flex items-center justify-between border-t pt-2">
 							<div class="flex items-center gap-1.5">
 								<img src="https://i.pravatar.cc/40?img=21" alt="NYC러버"
 									class="w-4 h-4 rounded-full object-cover"><span
@@ -796,7 +847,8 @@ request.setAttribute("activePage", "home");
 					</div>
 					<div class="p-3">
 						<h3
-							class="home-popular-title font-bold text-[13px] leading-snug mb-0.5 line-clamp-2 transition-colors">도쿄 3박 4일 완전 정복</h3>
+							class="home-popular-title font-bold text-[13px] leading-snug mb-0.5 line-clamp-2 transition-colors">도쿄
+							3박 4일 완전 정복</h3>
 						<p
 							class="text-gray-500 text-[11px] line-clamp-1 mb-2 leading-relaxed">시부야,
 							아키하바라, 아사쿠사! 도쿄의 모든 것을 담은 알찬 일정.</p>
@@ -817,7 +869,8 @@ request.setAttribute("activePage", "home");
 										stroke-width="2"
 										d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" /></svg>4,210</span>
 						</div>
-						<div class="home-popular-author flex items-center justify-between border-t pt-2">
+						<div
+							class="home-popular-author flex items-center justify-between border-t pt-2">
 							<div class="flex items-center gap-1.5">
 								<img src="https://i.pravatar.cc/40?img=13" alt="재팬러버"
 									class="w-4 h-4 rounded-full object-cover"><span
@@ -872,7 +925,8 @@ request.setAttribute("activePage", "home");
 					</div>
 					<div class="p-3">
 						<h3
-							class="home-popular-title font-bold text-[13px] leading-snug mb-0.5 line-clamp-2 transition-colors">발리 5박 6일 힐링 휴양</h3>
+							class="home-popular-title font-bold text-[13px] leading-snug mb-0.5 line-clamp-2 transition-colors">발리
+							5박 6일 힐링 휴양</h3>
 						<p
 							class="text-gray-500 text-[11px] line-clamp-1 mb-2 leading-relaxed">우붓
 							라이스테라스, 울루와뚜 사원, 짱구 카페까지 발리 완전정복.</p>
@@ -893,7 +947,8 @@ request.setAttribute("activePage", "home");
 										stroke-width="2"
 										d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" /></svg>3,890</span>
 						</div>
-						<div class="home-popular-author flex items-center justify-between border-t pt-2">
+						<div
+							class="home-popular-author flex items-center justify-between border-t pt-2">
 							<div class="flex items-center gap-1.5">
 								<img src="https://i.pravatar.cc/40?img=19" alt="발리덕후"
 									class="w-4 h-4 rounded-full object-cover"><span
@@ -928,7 +983,8 @@ request.setAttribute("activePage", "home");
 					</div>
 					<div class="p-3">
 						<h3
-							class="home-popular-title font-bold text-[13px] leading-snug mb-0.5 line-clamp-2 transition-colors">다낭 3박 4일 바다 &amp; 리조트</h3>
+							class="home-popular-title font-bold text-[13px] leading-snug mb-0.5 line-clamp-2 transition-colors">다낭
+							3박 4일 바다 &amp; 리조트</h3>
 						<p
 							class="text-gray-500 text-[11px] line-clamp-1 mb-2 leading-relaxed">미케
 							비치, 바나힐, 호이안 올드타운까지! 베트남 중부의 진주.</p>
@@ -949,7 +1005,8 @@ request.setAttribute("activePage", "home");
 										stroke-width="2"
 										d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" /></svg>3,200</span>
 						</div>
-						<div class="home-popular-author flex items-center justify-between border-t pt-2">
+						<div
+							class="home-popular-author flex items-center justify-between border-t pt-2">
 							<div class="flex items-center gap-1.5">
 								<img src="https://i.pravatar.cc/40?img=27" alt="다낭러버"
 									class="w-4 h-4 rounded-full object-cover"><span
@@ -984,7 +1041,8 @@ request.setAttribute("activePage", "home");
 					</div>
 					<div class="p-3">
 						<h3
-							class="home-popular-title font-bold text-[13px] leading-snug mb-0.5 line-clamp-2 transition-colors">방콕 4박 5일 사원 &amp; 야시장</h3>
+							class="home-popular-title font-bold text-[13px] leading-snug mb-0.5 line-clamp-2 transition-colors">방콕
+							4박 5일 사원 &amp; 야시장</h3>
 						<p
 							class="text-gray-500 text-[11px] line-clamp-1 mb-2 leading-relaxed">왕궁,
 							왓포, 차오프라야강과 야시장까지! 방콕의 매력에 빠져봐요.</p>
@@ -1005,7 +1063,8 @@ request.setAttribute("activePage", "home");
 										stroke-width="2"
 										d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" /></svg>3,100</span>
 						</div>
-						<div class="home-popular-author flex items-center justify-between border-t pt-2">
+						<div
+							class="home-popular-author flex items-center justify-between border-t pt-2">
 							<div class="flex items-center gap-1.5">
 								<img src="https://i.pravatar.cc/40?img=15" alt="태국덕후"
 									class="w-4 h-4 rounded-full object-cover"><span
@@ -1040,7 +1099,8 @@ request.setAttribute("activePage", "home");
 					</div>
 					<div class="p-3">
 						<h3
-							class="home-popular-title font-bold text-[13px] leading-snug mb-0.5 line-clamp-2 transition-colors">바르셀로나 4박 5일 가우디 투어</h3>
+							class="home-popular-title font-bold text-[13px] leading-snug mb-0.5 line-clamp-2 transition-colors">바르셀로나
+							4박 5일 가우디 투어</h3>
 						<p
 							class="text-gray-500 text-[11px] line-clamp-1 mb-2 leading-relaxed">사그라다
 							파밀리아, 구엘공원, 바르셀로나 해변까지 가우디의 도시.</p>
@@ -1061,7 +1121,8 @@ request.setAttribute("activePage", "home");
 										stroke-width="2"
 										d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" /></svg>2,890</span>
 						</div>
-						<div class="home-popular-author flex items-center justify-between border-t pt-2">
+						<div
+							class="home-popular-author flex items-center justify-between border-t pt-2">
 							<div class="flex items-center gap-1.5">
 								<img src="https://i.pravatar.cc/40?img=23" alt="스페인러버"
 									class="w-4 h-4 rounded-full object-cover"><span
@@ -1096,7 +1157,8 @@ request.setAttribute("activePage", "home");
 					</div>
 					<div class="p-3">
 						<h3
-							class="home-popular-title font-bold text-[13px] leading-snug mb-0.5 line-clamp-2 transition-colors">부산 1박 2일 바다 여행</h3>
+							class="home-popular-title font-bold text-[13px] leading-snug mb-0.5 line-clamp-2 transition-colors">부산
+							1박 2일 바다 여행</h3>
 						<p
 							class="text-gray-500 text-[11px] line-clamp-1 mb-2 leading-relaxed">해운대와
 							광안리, 자갈치시장까지! 부산 핵심 코스.</p>
@@ -1117,7 +1179,8 @@ request.setAttribute("activePage", "home");
 										stroke-width="2"
 										d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" /></svg>2,341</span>
 						</div>
-						<div class="home-popular-author flex items-center justify-between border-t pt-2">
+						<div
+							class="home-popular-author flex items-center justify-between border-t pt-2">
 							<div class="flex items-center gap-1.5">
 								<img src="https://i.pravatar.cc/40?img=5" alt="바다러버"
 									class="w-4 h-4 rounded-full object-cover"><span
@@ -1129,67 +1192,62 @@ request.setAttribute("activePage", "home");
 				</a>
 			</div>
 		</section>
-		
+
 		<!-- ========================================
 		     HOME - 3번 구역
 		     여행일정 만들기 CTA
 		======================================== -->
 		<section id="homeArea3" class="home-create-plan">
-		
-		    <div class="home-create-plan-content">
-		    
-			    <div class="home-create-plan-route" aria-hidden="true">
-				    <span class="home-create-plan-route-point"></span>
-				    <span class="home-create-plan-route-line"></span>
-				    <span class="home-create-plan-route-plane">✈</span>
-				    <span class="home-create-plan-route-line"></span>
-				    <span class="home-create-plan-route-point"></span>
+
+			<div class="home-create-plan-content">
+
+				<div class="home-create-plan-route" aria-hidden="true">
+					<span class="home-create-plan-route-point"></span> <span
+						class="home-create-plan-route-line"></span> <span
+						class="home-create-plan-route-plane">✈</span> <span
+						class="home-create-plan-route-line"></span> <span
+						class="home-create-plan-route-point"></span>
 				</div>
-		
-		        <!-- 상단 영문 문구 -->
-		        <span class="home-create-plan-eyebrow">
-		            CREATE YOUR JOURNEY
-		        </span>
-		
-		        <!-- 메인 문구 -->
-		        <h2 class="home-create-plan-title">
-		            마음에 드는 여행을 발견하셨나요?
-		            <br>
-		            이제 나만의 여행을 만들어보세요.
-		        </h2>
-		
-		        <!-- 설명 문구 -->
-		        <p class="home-create-plan-description">
-		            가고 싶은 장소와 일정을 자유롭게 담아
-		            <br>
-		            나만의 특별한 여행 계획을 완성해보세요.
-		        </p>
-		
-		        <!-- 일정 만들기 버튼 -->
-		        <a href="${pageContext.request.contextPath}/view/itinerary/planner.jsp"
-		           class="home-create-plan-button">
-		            일정 만들기
-		            <span aria-hidden="true">→</span>
-		        </a>
-		
-		    </div>
-		
+
+				<!-- 상단 영문 문구 -->
+				<span class="home-create-plan-eyebrow"> CREATE YOUR JOURNEY </span>
+
+				<!-- 메인 문구 -->
+				<h2 class="home-create-plan-title">
+					마음에 드는 여행을 발견하셨나요? <br> 이제 나만의 여행을 만들어보세요.
+				</h2>
+
+				<!-- 설명 문구 -->
+				<p class="home-create-plan-description">
+					가고 싶은 장소와 일정을 자유롭게 담아 <br> 나만의 특별한 여행 계획을 완성해보세요.
+				</p>
+
+				<!-- 일정 만들기 버튼 -->
+				<a
+					href="${pageContext.request.contextPath}/view/itinerary/planner.jsp"
+					class="home-create-plan-button"> 일정 만들기 <span
+					aria-hidden="true">→</span>
+				</a>
+
+			</div>
+
 		</section>
 
-		<section id="homeArea4" >
+		<section id="homeArea4">
 			<div class="home-area4-content px-4 md:px-8 max-w-6xl mx-auto">
 				<div class="grid grid-cols-1 md:grid-cols-2 gap-10">
 					<div>
 						<div class="flex items-end justify-between mb-6">
 							<div>
 								<p class="text-xs font-bold tracking-widest uppercase mb-1"
-									style="color: var(--brand)">Travel Tips</p>
+									style="color: var(- -brand)">Travel Tips</p>
 								<h2 class="text-xl font-extrabold text-gray-900">여행꿀팁</h2>
 								<p class="text-xs text-gray-400 mt-0.5">여행 고수들의 노하우</p>
 							</div>
-							<a href="${pageContext.request.contextPath}/view/tips/tipList.jsp"
+							<a
+								href="${pageContext.request.contextPath}/view/tips/tipList.jsp"
 								class="jsp-more-button flex items-center gap-2 px-5 py-2.5 rounded-xl border-2 text-sm font-bold transition-all"
-								style="border-color: var(--brand); color: var(--brand)">더보기<svg
+								style="border-color: var(- -brand); color: var(- -brand)">더보기<svg
 									width="14" height="14" viewBox="0 0 24 24" fill="none"
 									stroke="currentColor" stroke-width="2.5">
 									<path d="M5 12h14M12 5l7 7-7 7" /></svg></a>
@@ -1274,7 +1332,8 @@ request.setAttribute("activePage", "home");
 								</a>
 							</div>
 							<!-- 2번째 묶음 -->
-						    <div class="flex flex-col gap-3 home-rotate-page" style="display: none;">
+							<div class="flex flex-col gap-3 home-rotate-page"
+								style="display: none;">
 								<a
 									href="${pageContext.request.contextPath}/view/tips/tipDetail.jsp?id=3"
 									class="jsp-preview-card preview-item-enter flex gap-4 p-4 bg-white rounded-2xl border border-gray-100 shadow-sm text-left w-full group transition-all"
@@ -1351,9 +1410,10 @@ request.setAttribute("activePage", "home");
 										</div>
 									</div>
 								</a>
-						    </div>
-						    <!-- 3번째 묶음 -->
-						    <div class="flex flex-col gap-3 home-rotate-page" style="display: none;">
+							</div>
+							<!-- 3번째 묶음 -->
+							<div class="flex flex-col gap-3 home-rotate-page"
+								style="display: none;">
 								<a
 									href="${pageContext.request.contextPath}/view/tips/tipDetail.jsp?id=3"
 									class="jsp-preview-card preview-item-enter flex gap-4 p-4 bg-white rounded-2xl border border-gray-100 shadow-sm text-left w-full group transition-all"
@@ -1430,9 +1490,10 @@ request.setAttribute("activePage", "home");
 										</div>
 									</div>
 								</a>
-						    </div>
+							</div>
 						</div>
-						<div class="home-progress flex items-center justify-center gap-2 mt-5">
+						<div
+							class="home-progress flex items-center justify-center gap-2 mt-5">
 							<button type="button"
 								class="home-progress-bar jsp-progress-active relative overflow-hidden rounded-full"
 								style="width: 44px; height: 9px; background-color: #e5e7eb">
@@ -1451,14 +1512,14 @@ request.setAttribute("activePage", "home");
 						<div class="flex items-end justify-between mb-6">
 							<div>
 								<p class="text-xs font-bold tracking-widest uppercase mb-1"
-									style="color: var(--brand)">Travel Mate</p>
+									style="color: var(- -brand)">Travel Mate</p>
 								<h2 class="text-xl font-extrabold text-gray-900">여행 메이트</h2>
 								<p class="text-xs text-gray-400 mt-0.5">함께 여행할 동반자</p>
 							</div>
 							<a
 								href="${pageContext.request.contextPath}/view/mate/mateList.jsp"
 								class="jsp-more-button flex items-center gap-2 px-5 py-2.5 rounded-xl border-2 text-sm font-bold transition-all"
-								style="border-color: var(--brand); color: var(--brand)">더보기<svg
+								style="border-color: var(- -brand); color: var(- -brand)">더보기<svg
 									width="14" height="14" viewBox="0 0 24 24" fill="none"
 									stroke="currentColor" stroke-width="2.5">
 									<path d="M5 12h14M12 5l7 7-7 7" /></svg></a>
@@ -1471,7 +1532,7 @@ request.setAttribute("activePage", "home");
 									style="height: 96px">
 									<div
 										class="shrink-0 rounded-xl flex flex-col items-center justify-center gap-1 font-bold"
-										style="width: 68px; height: 64px; background-color: var(--brand-soft); color: var(--brand)">
+										style="width: 68px; height: 64px; background-color: var(- -brand-soft); color: var(- -brand)">
 										<svg width="18" height="18" viewBox="0 0 24 24" fill="none"
 											stroke="currentColor" stroke-width="2">
 											<path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" />
@@ -1482,9 +1543,9 @@ request.setAttribute("activePage", "home");
 									<div class="flex-1 min-w-0 flex flex-col justify-center">
 										<div class="flex items-center gap-1.5 mb-0.5">
 											<span class="text-[11px] font-semibold"
-												style="color: var(--brand)">이탈리아 · 로마</span><span
+												style="color: var(- -brand)">이탈리아 · 로마</span><span
 												class="text-[10px] font-bold px-1.5 py-0.5 rounded-full"
-												style="background-color: var(--brand-light); color: var(--brand)">2명
+												style="background-color: var(- -brand-light); color: var(- -brand)">2명
 												모집</span>
 										</div>
 										<h3
@@ -1494,7 +1555,8 @@ request.setAttribute("activePage", "home");
 											<div
 												class="w-4 h-4 rounded-full flex items-center justify-center text-white text-[8px] font-bold"
 												style="background-color: #EC4899">서</div>
-											<span class="text-[10px] text-gray-400">서연 · 2026.09.09</span>
+											<span class="text-[10px] text-gray-400">서연 ·
+												2026.09.09</span>
 										</div>
 									</div>
 								</a><a
@@ -1503,7 +1565,7 @@ request.setAttribute("activePage", "home");
 									style="height: 96px">
 									<div
 										class="shrink-0 rounded-xl flex flex-col items-center justify-center gap-1 font-bold"
-										style="width: 68px; height: 64px; background-color: var(--brand-soft); color: var(--brand)">
+										style="width: 68px; height: 64px; background-color: var(- -brand-soft); color: var(- -brand)">
 										<svg width="18" height="18" viewBox="0 0 24 24" fill="none"
 											stroke="currentColor" stroke-width="2">
 											<path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" />
@@ -1514,9 +1576,9 @@ request.setAttribute("activePage", "home");
 									<div class="flex-1 min-w-0 flex flex-col justify-center">
 										<div class="flex items-center gap-1.5 mb-0.5">
 											<span class="text-[11px] font-semibold"
-												style="color: var(--brand)">영국 · 런던</span><span
+												style="color: var(- -brand)">영국 · 런던</span><span
 												class="text-[10px] font-bold px-1.5 py-0.5 rounded-full"
-												style="background-color: var(--brand-light); color: var(--brand)">3명
+												style="background-color: var(- -brand-light); color: var(- -brand)">3명
 												모집</span>
 										</div>
 										<h3
@@ -1526,7 +1588,8 @@ request.setAttribute("activePage", "home");
 											<div
 												class="w-4 h-4 rounded-full flex items-center justify-center text-white text-[8px] font-bold"
 												style="background-color: #10B981">도</div>
-											<span class="text-[10px] text-gray-400">도현 · 2026.09.08</span>
+											<span class="text-[10px] text-gray-400">도현 ·
+												2026.09.08</span>
 										</div>
 									</div>
 								</a><a
@@ -1535,7 +1598,7 @@ request.setAttribute("activePage", "home");
 									style="height: 96px">
 									<div
 										class="shrink-0 rounded-xl flex flex-col items-center justify-center gap-1 font-bold"
-										style="width: 68px; height: 64px; background-color: var(--brand-soft); color: var(--brand)">
+										style="width: 68px; height: 64px; background-color: var(- -brand-soft); color: var(- -brand)">
 										<svg width="18" height="18" viewBox="0 0 24 24" fill="none"
 											stroke="currentColor" stroke-width="2">
 											<path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" />
@@ -1546,9 +1609,9 @@ request.setAttribute("activePage", "home");
 									<div class="flex-1 min-w-0 flex flex-col justify-center">
 										<div class="flex items-center gap-1.5 mb-0.5">
 											<span class="text-[11px] font-semibold"
-												style="color: var(--brand)">일본 · 도쿄</span><span
+												style="color: var(- -brand)">일본 · 도쿄</span><span
 												class="text-[10px] font-bold px-1.5 py-0.5 rounded-full"
-												style="background-color: var(--brand-light); color: var(--brand)">1명
+												style="background-color: var(- -brand-light); color: var(- -brand)">1명
 												모집</span>
 										</div>
 										<h3
@@ -1558,19 +1621,21 @@ request.setAttribute("activePage", "home");
 											<div
 												class="w-4 h-4 rounded-full flex items-center justify-center text-white text-[8px] font-bold"
 												style="background-color: #8B5CF6">지</div>
-											<span class="text-[10px] text-gray-400">지민 · 2026.09.10</span>
+											<span class="text-[10px] text-gray-400">지민 ·
+												2026.09.10</span>
 										</div>
 									</div>
 								</a>
 							</div>
-							<div class="flex flex-col gap-3 home-rotate-page" style="display: none;">
-							    <a
+							<div class="flex flex-col gap-3 home-rotate-page"
+								style="display: none;">
+								<a
 									href="${pageContext.request.contextPath}/view/mate/mateDetail.jsp?id=4"
 									class="jsp-preview-card preview-item-enter flex gap-4 p-4 bg-white rounded-2xl border border-gray-100 shadow-sm text-left w-full group transition-all"
 									style="height: 96px">
 									<div
 										class="shrink-0 rounded-xl flex flex-col items-center justify-center gap-1 font-bold"
-										style="width: 68px; height: 64px; background-color: var(--brand-soft); color: var(--brand)">
+										style="width: 68px; height: 64px; background-color: var(- -brand-soft); color: var(- -brand)">
 										<svg width="18" height="18" viewBox="0 0 24 24" fill="none"
 											stroke="currentColor" stroke-width="2">
 											<path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" />
@@ -1581,9 +1646,9 @@ request.setAttribute("activePage", "home");
 									<div class="flex-1 min-w-0 flex flex-col justify-center">
 										<div class="flex items-center gap-1.5 mb-0.5">
 											<span class="text-[11px] font-semibold"
-												style="color: var(--brand)">이탈리아 · 로마</span><span
+												style="color: var(- -brand)">이탈리아 · 로마</span><span
 												class="text-[10px] font-bold px-1.5 py-0.5 rounded-full"
-												style="background-color: var(--brand-light); color: var(--brand)">2명
+												style="background-color: var(- -brand-light); color: var(- -brand)">2명
 												모집</span>
 										</div>
 										<h3
@@ -1593,7 +1658,8 @@ request.setAttribute("activePage", "home");
 											<div
 												class="w-4 h-4 rounded-full flex items-center justify-center text-white text-[8px] font-bold"
 												style="background-color: #EC4899">서</div>
-											<span class="text-[10px] text-gray-400">서연 · 2026.09.09</span>
+											<span class="text-[10px] text-gray-400">서연 ·
+												2026.09.09</span>
 										</div>
 									</div>
 								</a><a
@@ -1602,7 +1668,7 @@ request.setAttribute("activePage", "home");
 									style="height: 96px">
 									<div
 										class="shrink-0 rounded-xl flex flex-col items-center justify-center gap-1 font-bold"
-										style="width: 68px; height: 64px; background-color: var(--brand-soft); color: var(--brand)">
+										style="width: 68px; height: 64px; background-color: var(- -brand-soft); color: var(- -brand)">
 										<svg width="18" height="18" viewBox="0 0 24 24" fill="none"
 											stroke="currentColor" stroke-width="2">
 											<path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" />
@@ -1613,9 +1679,9 @@ request.setAttribute("activePage", "home");
 									<div class="flex-1 min-w-0 flex flex-col justify-center">
 										<div class="flex items-center gap-1.5 mb-0.5">
 											<span class="text-[11px] font-semibold"
-												style="color: var(--brand)">영국 · 런던</span><span
+												style="color: var(- -brand)">영국 · 런던</span><span
 												class="text-[10px] font-bold px-1.5 py-0.5 rounded-full"
-												style="background-color: var(--brand-light); color: var(--brand)">3명
+												style="background-color: var(- -brand-light); color: var(- -brand)">3명
 												모집</span>
 										</div>
 										<h3
@@ -1625,7 +1691,8 @@ request.setAttribute("activePage", "home");
 											<div
 												class="w-4 h-4 rounded-full flex items-center justify-center text-white text-[8px] font-bold"
 												style="background-color: #10B981">도</div>
-											<span class="text-[10px] text-gray-400">도현 · 2026.09.08</span>
+											<span class="text-[10px] text-gray-400">도현 ·
+												2026.09.08</span>
 										</div>
 									</div>
 								</a><a
@@ -1634,7 +1701,7 @@ request.setAttribute("activePage", "home");
 									style="height: 96px">
 									<div
 										class="shrink-0 rounded-xl flex flex-col items-center justify-center gap-1 font-bold"
-										style="width: 68px; height: 64px; background-color: var(--brand-soft); color: var(--brand)">
+										style="width: 68px; height: 64px; background-color: var(- -brand-soft); color: var(- -brand)">
 										<svg width="18" height="18" viewBox="0 0 24 24" fill="none"
 											stroke="currentColor" stroke-width="2">
 											<path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" />
@@ -1645,9 +1712,9 @@ request.setAttribute("activePage", "home");
 									<div class="flex-1 min-w-0 flex flex-col justify-center">
 										<div class="flex items-center gap-1.5 mb-0.5">
 											<span class="text-[11px] font-semibold"
-												style="color: var(--brand)">일본 · 도쿄</span><span
+												style="color: var(- -brand)">일본 · 도쿄</span><span
 												class="text-[10px] font-bold px-1.5 py-0.5 rounded-full"
-												style="background-color: var(--brand-light); color: var(--brand)">1명
+												style="background-color: var(- -brand-light); color: var(- -brand)">1명
 												모집</span>
 										</div>
 										<h3
@@ -1657,19 +1724,21 @@ request.setAttribute("activePage", "home");
 											<div
 												class="w-4 h-4 rounded-full flex items-center justify-center text-white text-[8px] font-bold"
 												style="background-color: #8B5CF6">지</div>
-											<span class="text-[10px] text-gray-400">지민 · 2026.09.10</span>
+											<span class="text-[10px] text-gray-400">지민 ·
+												2026.09.10</span>
 										</div>
 									</div>
 								</a>
 							</div>
-							<div class="flex flex-col gap-3 home-rotate-page" style="display: none;">
-							    <a
+							<div class="flex flex-col gap-3 home-rotate-page"
+								style="display: none;">
+								<a
 									href="${pageContext.request.contextPath}/view/mate/mateDetail.jsp?id=4"
 									class="jsp-preview-card preview-item-enter flex gap-4 p-4 bg-white rounded-2xl border border-gray-100 shadow-sm text-left w-full group transition-all"
 									style="height: 96px">
 									<div
 										class="shrink-0 rounded-xl flex flex-col items-center justify-center gap-1 font-bold"
-										style="width: 68px; height: 64px; background-color: var(--brand-soft); color: var(--brand)">
+										style="width: 68px; height: 64px; background-color: var(- -brand-soft); color: var(- -brand)">
 										<svg width="18" height="18" viewBox="0 0 24 24" fill="none"
 											stroke="currentColor" stroke-width="2">
 											<path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" />
@@ -1680,9 +1749,9 @@ request.setAttribute("activePage", "home");
 									<div class="flex-1 min-w-0 flex flex-col justify-center">
 										<div class="flex items-center gap-1.5 mb-0.5">
 											<span class="text-[11px] font-semibold"
-												style="color: var(--brand)">이탈리아 · 로마</span><span
+												style="color: var(- -brand)">이탈리아 · 로마</span><span
 												class="text-[10px] font-bold px-1.5 py-0.5 rounded-full"
-												style="background-color: var(--brand-light); color: var(--brand)">2명
+												style="background-color: var(- -brand-light); color: var(- -brand)">2명
 												모집</span>
 										</div>
 										<h3
@@ -1692,7 +1761,8 @@ request.setAttribute("activePage", "home");
 											<div
 												class="w-4 h-4 rounded-full flex items-center justify-center text-white text-[8px] font-bold"
 												style="background-color: #EC4899">서</div>
-											<span class="text-[10px] text-gray-400">서연 · 2026.09.09</span>
+											<span class="text-[10px] text-gray-400">서연 ·
+												2026.09.09</span>
 										</div>
 									</div>
 								</a><a
@@ -1701,7 +1771,7 @@ request.setAttribute("activePage", "home");
 									style="height: 96px">
 									<div
 										class="shrink-0 rounded-xl flex flex-col items-center justify-center gap-1 font-bold"
-										style="width: 68px; height: 64px; background-color: var(--brand-soft); color: var(--brand)">
+										style="width: 68px; height: 64px; background-color: var(- -brand-soft); color: var(- -brand)">
 										<svg width="18" height="18" viewBox="0 0 24 24" fill="none"
 											stroke="currentColor" stroke-width="2">
 											<path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" />
@@ -1712,9 +1782,9 @@ request.setAttribute("activePage", "home");
 									<div class="flex-1 min-w-0 flex flex-col justify-center">
 										<div class="flex items-center gap-1.5 mb-0.5">
 											<span class="text-[11px] font-semibold"
-												style="color: var(--brand)">영국 · 런던</span><span
+												style="color: var(- -brand)">영국 · 런던</span><span
 												class="text-[10px] font-bold px-1.5 py-0.5 rounded-full"
-												style="background-color: var(--brand-light); color: var(--brand)">3명
+												style="background-color: var(- -brand-light); color: var(- -brand)">3명
 												모집</span>
 										</div>
 										<h3
@@ -1724,7 +1794,8 @@ request.setAttribute("activePage", "home");
 											<div
 												class="w-4 h-4 rounded-full flex items-center justify-center text-white text-[8px] font-bold"
 												style="background-color: #10B981">도</div>
-											<span class="text-[10px] text-gray-400">도현 · 2026.09.08</span>
+											<span class="text-[10px] text-gray-400">도현 ·
+												2026.09.08</span>
 										</div>
 									</div>
 								</a><a
@@ -1733,7 +1804,7 @@ request.setAttribute("activePage", "home");
 									style="height: 96px">
 									<div
 										class="shrink-0 rounded-xl flex flex-col items-center justify-center gap-1 font-bold"
-										style="width: 68px; height: 64px; background-color: var(--brand-soft); color: var(--brand)">
+										style="width: 68px; height: 64px; background-color: var(- -brand-soft); color: var(- -brand)">
 										<svg width="18" height="18" viewBox="0 0 24 24" fill="none"
 											stroke="currentColor" stroke-width="2">
 											<path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" />
@@ -1744,9 +1815,9 @@ request.setAttribute("activePage", "home");
 									<div class="flex-1 min-w-0 flex flex-col justify-center">
 										<div class="flex items-center gap-1.5 mb-0.5">
 											<span class="text-[11px] font-semibold"
-												style="color: var(--brand)">일본 · 도쿄</span><span
+												style="color: var(- -brand)">일본 · 도쿄</span><span
 												class="text-[10px] font-bold px-1.5 py-0.5 rounded-full"
-												style="background-color: var(--brand-light); color: var(--brand)">1명
+												style="background-color: var(- -brand-light); color: var(- -brand)">1명
 												모집</span>
 										</div>
 										<h3
@@ -1756,13 +1827,15 @@ request.setAttribute("activePage", "home");
 											<div
 												class="w-4 h-4 rounded-full flex items-center justify-center text-white text-[8px] font-bold"
 												style="background-color: #8B5CF6">지</div>
-											<span class="text-[10px] text-gray-400">지민 · 2026.09.10</span>
+											<span class="text-[10px] text-gray-400">지민 ·
+												2026.09.10</span>
 										</div>
 									</div>
 								</a>
 							</div>
 						</div>
-						<div class="home-progress flex items-center justify-center gap-2 mt-5">
+						<div
+							class="home-progress flex items-center justify-center gap-2 mt-5">
 							<button type="button"
 								class="home-progress-bar jsp-progress-active relative overflow-hidden rounded-full"
 								style="width: 44px; height: 9px; background-color: #e5e7eb">
