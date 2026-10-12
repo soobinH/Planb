@@ -1,6 +1,10 @@
 package controller.travel;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -9,6 +13,10 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import com.google.gson.Gson;
+
+import dto.itinerary.ItineraryBlockDto;
+import dto.itinerary.ItineraryDayDto;
 import dto.itinerary.ItineraryDto;
 import dto.member.UserDto;
 import service.itinerary.ItineraryService;
@@ -71,6 +79,60 @@ public class ScheduleDetail extends HttpServlet {
 			}
 
 			request.setAttribute("itinerary", itinerary);
+
+			// 지도에 필요한 DAY와 장소 좌표만 전달
+			List<Map<String, Object>> mapDays = new ArrayList<>();
+
+			if (itinerary.getDays() != null) {
+
+				int displayDay = 0;
+
+				for (ItineraryDayDto day : itinerary.getDays()) {
+
+					displayDay++;
+
+					Map<String, Object> mapDay = new HashMap<>();
+
+					mapDay.put("dayNumber", displayDay);
+					mapDay.put("dayId", day.getDayId());
+					mapDay.put("title", day.getTitle());
+
+					List<Map<String, Object>> points = new ArrayList<>();
+
+					if (day.getBlocks() != null) {
+
+						int blockNumber = 0;
+
+						for (ItineraryBlockDto block : day.getBlocks()) {
+
+							blockNumber++;
+
+							if (block.getPlaceLat() == null || block.getPlaceLng() == null) {
+								continue;
+							}
+
+							Map<String, Object> point = new HashMap<>();
+
+							point.put("blockId", block.getBlockId());
+							point.put("sequence", blockNumber);
+							point.put("type", block.getBlockType());
+							point.put("title", block.getTitle());
+							point.put("placeName", block.getPlaceName());
+							point.put("address", block.getPlaceAddress());
+							point.put("lat", block.getPlaceLat());
+							point.put("lng", block.getPlaceLng());
+
+							points.add(point);
+						}
+					}
+
+					mapDay.put("points", points);
+
+					mapDays.add(mapDay);
+				}
+			}
+
+			request.setAttribute("detailMapJson", new Gson().toJson(mapDays));
 
 			request.setAttribute("comments", service.getItineraryComments(itineraryId, loginUserId));
 

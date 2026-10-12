@@ -13,7 +13,7 @@ request.setAttribute("activePage", "travel");
 <title><c:out value="${itinerary.title}" /> | Planb</title>
 <jsp:include page="/common/headStyles.jsp" />
 <link rel="stylesheet"
-	href="${pageContext.request.contextPath}/view/assets/css/travel/scheduleDetail.css?v=5">
+	href="${pageContext.request.contextPath}/view/assets/css/travel/scheduleDetail.css?v=6">
 </head>
 <body class="site-shell"><jsp:include page="/common/header.jsp" />
 	<main id="scheduleDetail" class="detail-layout"
@@ -507,7 +507,9 @@ request.setAttribute("activePage", "travel");
 									</div>
 
 									<p data-comment-content class="mt-1 text-[13px] text-gray-600"
-										style="white-space: pre-wrap; overflow-wrap: anywhere;"><c:out value="${comment.content}" /></p>
+										style="white-space: pre-wrap; overflow-wrap: anywhere;">
+										<c:out value="${comment.content}" />
+									</p>
 								</div>
 							</article>
 
@@ -711,7 +713,9 @@ request.setAttribute("activePage", "travel");
 											<!-- 메모: 태그 안쪽의 불필요한 공백 제거 -->
 											<c:if test="${not empty block.memo}">
 												<p class="mt-2 text-[20px] text-gray-600 leading-relaxed"
-													style="white-space: pre-wrap; overflow-wrap: anywhere;"><c:out value="${block.memo}" /></p>
+													style="white-space: pre-wrap; overflow-wrap: anywhere;">
+													<c:out value="${block.memo}" />
+												</p>
 											</c:if>
 
 											<!-- 비용: 0원도 표시 -->
@@ -794,26 +798,53 @@ request.setAttribute("activePage", "travel");
 		<section class="detail-map-panel" aria-label="여행 일정 지도">
 
 			<div class="detail-map-toolbar">
-				<span class="text-[13px] font-bold" style="color: #6369D1">
-					여행 경로 </span>
+				<span class="text-[13px] font-bold" style="color: #6369D1">여행
+					경로</span>
 
-				<button type="button"
-					class="flex items-center gap-2 rounded-xl border px-3 py-2 text-xs font-bold"
-					style="border-color: #D1D2F9; color: #6369D1">
+				<div class="detail-map-filter">
+					<button type="button" id="detailMapFilterButton"
+						aria-expanded="false" aria-controls="detailMapFilterMenu">
 
-					<span class="w-2 h-2 rounded-full" style="background: #6369D1"></span>
+						<span id="detailMapFilterDot" class="detail-map-filter-dot"></span>
 
-					전체
+						<span id="detailMapFilterLabel">전체</span>
 
-					<svg width="14" height="14" viewBox="0 0 24 24" fill="none"
-						stroke="currentColor" stroke-width="2">
+						<svg width="12" height="12" viewBox="0 0 24 24" fill="none"
+							stroke="currentColor" stroke-width="2" aria-hidden="true">
                     <path d="m6 9 6 6 6-6" />
                 </svg>
-				</button>
+					</button>
+
+					<div id="detailMapFilterMenu" class="detail-map-filter-menu" hidden>
+
+						<button type="button" data-detail-map-day="all">전체</button>
+
+						<c:forEach var="day" items="${itinerary.days}"
+							varStatus="dayStatus">
+							<button type="button" data-detail-map-day="${dayStatus.count}">
+								${dayStatus.count}일차</button>
+						</c:forEach>
+					</div>
+				</div>
 			</div>
 
-			<div id="detailGoogleMap"></div>
+			<div class="detail-map-canvas-wrap">
+				<div id="detailGoogleMap"></div>
 
+				<!-- 전체 보기의 DAY별 동선 색상 -->
+				<div id="detailMapDayLegend" class="detail-map-day-legend" hidden></div>
+
+				<div id="detailMapStatus" class="detail-map-status" role="status">
+					지도를 불러오는 중입니다.</div>
+			</div>
+
+			<div class="detail-map-type-legend">
+				<span><i style="background: #3B82F6"></i>관광</span> <span><i
+					style="background: #F97316"></i>식사</span> <span><i
+					style="background: #10B981"></i>숙소</span> <span><i
+					style="background: #3B82F6"></i>교통</span> <span><i
+					style="background: #EC4899"></i>활동</span>
+			</div>
 		</section>
 	</main>
 
@@ -912,10 +943,21 @@ request.setAttribute("activePage", "travel");
 	</div>
 
 	</dialog>
+	<!-- 별도 지도 JS에서 읽을 실제 일정 데이터 -->
+	<div id="detailMapData" hidden>
+		<c:out value="${detailMapJson}" />
+	</div>
 	<script
 		src="${pageContext.request.contextPath}/view/assets/js/auth/tripily.js"></script>
 
 	<script
 		src="${pageContext.request.contextPath}/view/assets/js/travel/scheduleDetail.js?v=13"></script>
+		
+	<script
+    	src="${pageContext.request.contextPath}/view/assets/js/travel/scheduleDetailMap.js"></script>
+
+	<script async
+	    onerror="detailMapLoadFailed()"
+	    src="https://maps.googleapis.com/maps/api/js?key=AIzaSyB7ioaQS08aAzCl7gZPk6SyE1w7EeIrYhI&language=ko&v=weekly&loading=async&callback=initScheduleDetailMap"></script>
 </body>
 </html>
