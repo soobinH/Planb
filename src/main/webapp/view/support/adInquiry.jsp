@@ -1,13 +1,7 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
-	pageEncoding="UTF-8" import="dto.member.UserDto"%>
+    pageEncoding="UTF-8" import="dto.member.UserDto"%>
 
 <%!
-/* =========================================================
-   HTML 출력용 이스케이프
-
-   오류 후 사용자가 입력한 값을 다시 value="" 등에 넣을 때
-   따옴표나 특수문자로 HTML이 깨지는 것을 방지
-========================================================= */
 private String escapeHtml(String value) {
 
     if (value == null) {
@@ -25,33 +19,21 @@ private String escapeHtml(String value) {
 
 <%
 
-request.setAttribute(
-        "activePage",
-        "profile"
-);
-
-request.setAttribute(
-        "settingsPage",
-        "support"
-);
-
+request.setAttribute("activePage", "profile");
+request.setAttribute("settingsPage", "support");
 
 String ctx =
         request.getContextPath();
 
 
-
 /* =========================================================
    로그인 회원
-
    광고 문의는 비회원도 가능
 ========================================================= */
 
 UserDto user =
         (UserDto)
-        session.getAttribute(
-                "user"
-        );
+        session.getAttribute("user");
 
 
 String defaultManagerName = "";
@@ -65,7 +47,6 @@ if (user != null) {
             ? ""
             : user.getName();
 
-
     defaultEmail =
             user.getEmail() == null
             ? ""
@@ -73,28 +54,16 @@ if (user != null) {
 }
 
 
-
 /* =========================================================
-   광고 안내 페이지에서 넘어온 광고 위치
-
-   adInquiry.jsp?adPosition=MAIN_BANNER
-   adInquiry.jsp?adPosition=TRIP_CARD
+   광고 안내에서 넘어온 위치
 ========================================================= */
 
 String selectedAdPosition =
-        request.getParameter(
-                "adPosition"
-        );
+        request.getParameter("adPosition");
 
 
-/*
- * 서버 오류 후 forward 되었을 때는
- * request attribute에 보관된 값 우선 사용
- */
 Object preservedAdPosition =
-        request.getAttribute(
-                "adPosition"
-        );
+        request.getAttribute("adPosition");
 
 
 if (preservedAdPosition != null) {
@@ -106,19 +75,19 @@ if (preservedAdPosition != null) {
 }
 
 
+/*
+ * 현재 실제 광고 상품 3종만 허용
+ */
 if (
-    !"MAIN_BANNER".equals(
-            selectedAdPosition
-    )
+    !"TRIP_CARD".equals(selectedAdPosition)
     &&
-    !"TRIP_CARD".equals(
-            selectedAdPosition
-    )
+    !"TIP_SIDE".equals(selectedAdPosition)
+    &&
+    !"MATE_SIDE".equals(selectedAdPosition)
 ) {
 
     selectedAdPosition = "";
 }
-
 
 
 /* =========================================================
@@ -127,18 +96,13 @@ if (
 
 boolean success =
         "1".equals(
-                request.getParameter(
-                        "success"
-                )
+                request.getParameter("success")
         );
 
 
 String errorMessage =
         (String)
-        request.getAttribute(
-                "errorMessage"
-        );
-
+        request.getAttribute("errorMessage");
 
 
 /* =========================================================
@@ -146,1162 +110,1008 @@ String errorMessage =
 ========================================================= */
 
 String formBusinessName =
-        request.getAttribute(
-                "businessName"
-        ) == null
+        request.getAttribute("businessName") == null
         ? ""
         : String.valueOf(
-                request.getAttribute(
-                        "businessName"
-                )
+                request.getAttribute("businessName")
         );
 
 
 String formManagerName =
-        request.getAttribute(
-                "managerName"
-        ) == null
+        request.getAttribute("managerName") == null
         ? defaultManagerName
         : String.valueOf(
-                request.getAttribute(
-                        "managerName"
-                )
+                request.getAttribute("managerName")
         );
 
 
 String formPhone =
-        request.getAttribute(
-                "phone"
-        ) == null
+        request.getAttribute("phone") == null
         ? ""
         : String.valueOf(
-                request.getAttribute(
-                        "phone"
-                )
+                request.getAttribute("phone")
         );
 
 
 String formEmail =
-        request.getAttribute(
-                "email"
-        ) == null
+        request.getAttribute("email") == null
         ? defaultEmail
         : String.valueOf(
-                request.getAttribute(
-                        "email"
-                )
+                request.getAttribute("email")
         );
 
 
 String formLinkUrl =
-        request.getAttribute(
-                "linkUrl"
-        ) == null
+        request.getAttribute("linkUrl") == null
         ? ""
         : String.valueOf(
-                request.getAttribute(
-                        "linkUrl"
-                )
+                request.getAttribute("linkUrl")
         );
 
 
 String formContent =
-        request.getAttribute(
-                "content"
-        ) == null
+        request.getAttribute("content") == null
         ? ""
         : String.valueOf(
-                request.getAttribute(
-                        "content"
-                )
+                request.getAttribute("content")
         );
 
 
 String formStartDate =
-        request.getAttribute(
-                "startDate"
-        ) == null
+        request.getAttribute("startDate") == null
         ? ""
         : String.valueOf(
-                request.getAttribute(
-                        "startDate"
-                )
+                request.getAttribute("startDate")
         );
 
 
 String formEndDate =
-        request.getAttribute(
-                "endDate"
-        ) == null
+        request.getAttribute("endDate") == null
         ? ""
         : String.valueOf(
-                request.getAttribute(
-                        "endDate"
-                )
+                request.getAttribute("endDate")
         );
 
 %>
-
 
 <!DOCTYPE html>
 
 <html lang="ko">
 
-
 <head>
 
 <meta charset="UTF-8">
 
-<meta name="viewport" content="width=device-width, initial-scale=1">
-
+<meta name="viewport"
+    content="width=device-width, initial-scale=1">
 
 <title>광고 문의하기 · Planb</title>
-
 
 <jsp:include page="/common/headStyles.jsp" />
 
 
 <link rel="stylesheet"
-	href="<%=ctx%>/view/assets/css/support/support.css">
+    href="<%=ctx%>/view/assets/css/setting/settings.css">
 
 
 <link rel="stylesheet"
-	href="<%=ctx%>/view/assets/css/setting/settings.css">
+    href="<%=ctx%>/view/assets/css/support/support.css">
 
 
-
-<style>
-
-/* =========================================================
-   광고 문의 전체
-========================================================= */
-.ad-inquiry-page {
-	width: 100%;
-}
-
-/* =========================================================
-   안내 박스
-========================================================= */
-.ad-inquiry-intro {
-	margin-bottom: 18px;
-	padding: 20px;
-	border: 1px solid #e4e5f2;
-	border-radius: 16px;
-	background: linear-gradient(135deg, #fbfbff, #f3f3ff);
-}
-
-.ad-inquiry-intro-head {
-	display: flex;
-	align-items: center;
-	justify-content: space-between;
-	gap: 15px;
-}
-
-.ad-inquiry-intro-title {
-	display: flex;
-	align-items: center;
-	gap: 8px;
-	color: #343642;
-	font-size: 15px;
-	font-weight: 800;
-}
-
-.ad-inquiry-intro-link {
-	color: #6369D1;
-	font-size: 10.5px;
-	font-weight: 700;
-	text-decoration: none;
-}
-
-.ad-inquiry-intro-link:hover {
-	text-decoration: underline;
-}
-
-.ad-inquiry-intro p {
-	margin: 8px 0 0;
-	color: #777984;
-	font-size: 11px;
-	line-height: 1.7;
-}
-
-/* =========================================================
-   성공 / 오류
-========================================================= */
-.ad-message {
-	margin-bottom: 18px;
-	padding: 14px 16px;
-	border-radius: 11px;
-	font-size: 11.5px;
-	line-height: 1.65;
-}
-
-.ad-message-success {
-	background: #f0f8f3;
-	color: #31794c;
-}
-
-.ad-message-error {
-	background: #fff2f3;
-	color: #d6404d;
-}
-
-/* =========================================================
-   폼
-========================================================= */
-.ad-form-panel {
-	overflow: visible;
-}
-
-.ad-form-section {
-	display: flex;
-	flex-direction: column;
-	gap: 22px;
-}
-
-.ad-form-field {
-	display: flex;
-	flex-direction: column;
-	gap: 8px;
-}
-
-.ad-form-label {
-	color: #454650;
-	font-size: 11.5px;
-	font-weight: 700;
-}
-
-.ad-form-label .optional {
-	margin-left: 4px;
-	color: #a1a2ab;
-	font-size: 9px;
-	font-weight: 500;
-}
-
-.ad-form-field input[type="text"], .ad-form-field input[type="email"],
-	.ad-form-field input[type="tel"], .ad-form-field input[type="url"],
-	.ad-form-field input[type="date"], .ad-form-field textarea {
-	width: 100%;
-	box-sizing: border-box;
-	border: 1px solid #dddde8;
-	border-radius: 10px;
-	background: #fff;
-	color: #35363f;
-	font-family: inherit;
-	font-size: 11.5px;
-	outline: none;
-	transition: border-color .15s ease, box-shadow .15s ease;
-}
-
-.ad-form-field input[type="text"], .ad-form-field input[type="email"],
-	.ad-form-field input[type="tel"], .ad-form-field input[type="url"],
-	.ad-form-field input[type="date"] {
-	height: 43px;
-	padding: 0 13px;
-}
-
-.ad-form-field textarea {
-	min-height: 150px;
-	padding: 13px;
-	line-height: 1.7;
-	resize: vertical;
-}
-
-.ad-form-field input:focus, .ad-form-field textarea:focus {
-	border-color: #6369D1;
-	box-shadow: 0 0 0 3px rgba(99, 105, 209, .08);
-}
-
-.ad-field-help {
-	margin: 0;
-	color: #9899a3;
-	font-size: 9.5px;
-	line-height: 1.6;
-}
-
-/* =========================================================
-   광고 위치
-========================================================= */
-.ad-position-grid {
-	display: grid;
-	grid-template-columns: repeat(2, minmax(0, 1fr));
-	gap: 11px;
-}
-
-.ad-position-card {
-	position: relative;
-	display: block;
-	padding: 16px;
-	border: 1px solid #dedfea;
-	border-radius: 13px;
-	background: #fff;
-	cursor: pointer;
-	transition: border-color .15s ease, background .15s ease, box-shadow
-		.15s ease;
-}
-
-.ad-position-card:hover {
-	border-color: #bfc1ed;
-}
-
-.ad-position-card.selected {
-	border-color: #6369D1;
-	background: #f7f7ff;
-	box-shadow: inset 0 0 0 1px #6369D1;
-}
-
-.ad-position-card input {
-	position: absolute;
-	opacity: 0;
-	pointer-events: none;
-}
-
-.ad-position-card-title {
-	display: block;
-	color: #353640;
-	font-size: 12px;
-	font-weight: 800;
-}
-
-.ad-position-card-desc {
-	display: block;
-	margin-top: 5px;
-	color: #8b8c96;
-	font-size: 9.5px;
-	line-height: 1.55;
-}
-
-.ad-position-code {
-	display: inline-flex;
-	margin-top: 10px;
-	padding: 4px 7px;
-	border-radius: 6px;
-	background: #eeeeff;
-	color: #6369D1;
-	font-size: 8px;
-	font-weight: 800;
-}
-
-/* =========================================================
-   날짜
-========================================================= */
-.ad-date-grid {
-	display: grid;
-	grid-template-columns: repeat(2, minmax(0, 1fr));
-	gap: 10px;
-}
-
-.ad-date-item {
-	display: flex;
-	flex-direction: column;
-	gap: 6px;
-}
-
-.ad-date-item small {
-	color: #8b8c96;
-	font-size: 9px;
-}
-
-/* =========================================================
-   예상 가격
-========================================================= */
-.ad-price-box {
-	margin-top: 4px;
-	padding: 15px 16px;
-	border: 1px solid #e5e5ef;
-	border-radius: 12px;
-	background: #fafaff;
-}
-
-.ad-price-row {
-	display: flex;
-	align-items: center;
-	justify-content: space-between;
-	gap: 20px;
-	padding: 5px 0;
-	color: #80818b;
-	font-size: 10.5px;
-}
-
-.ad-price-row strong {
-	color: #44454f;
-}
-
-.ad-price-total {
-	margin-top: 7px;
-	padding-top: 12px;
-	border-top: 1px solid #e3e3ed;
-}
-
-.ad-price-total strong {
-	color: #6369D1;
-	font-size: 14px;
-}
-
-/* =========================================================
-   이미지
-========================================================= */
-.ad-image-area {
-	display: grid;
-	grid-template-columns: 170px minmax(0, 1fr);
-	gap: 16px;
-	align-items: center;
-}
-
-.ad-image-preview {
-	width: 100%;
-	height: 105px;
-	display: flex;
-	align-items: center;
-	justify-content: center;
-	overflow: hidden;
-	box-sizing: border-box;
-	border: 1px dashed #cfd0de;
-	border-radius: 11px;
-	background: #fafafd;
-	color: #aaaab3;
-	font-size: 9.5px;
-}
-
-.ad-image-preview img {
-	width: 100%;
-	height: 100%;
-	object-fit: cover;
-}
-
-.ad-image-input-wrap
-input[type="file"] {
-	width: 100%;
-	box-sizing: border-box;
-	padding: 9px;
-	border: 1px solid #dedee8;
-	border-radius: 9px;
-	background: #fff;
-	font-size: 10px;
-}
-
-/* =========================================================
-   제출 버튼
-========================================================= */
-.ad-submit-area {
-	width: 100%;
-	display: flex;
-	align-items: center;
-	justify-content: flex-end;
-	gap: 10px;
-	margin-top: 20px;
-	padding: 20px 0 10px;
-}
-
-.ad-cancel-button, .ad-submit-button {
-	min-width: 125px;
-	height: 44px;
-	display: inline-flex;
-	align-items: center;
-	justify-content: center;
-	box-sizing: border-box;
-	border-radius: 10px;
-	font-family: inherit;
-	font-size: 11.5px;
-	font-weight: 750;
-	text-decoration: none;
-	cursor: pointer;
-}
-
-.ad-cancel-button {
-	border: 1px solid #dedfe8;
-	background: #fff;
-	color: #666873;
-}
-
-.ad-cancel-button:hover {
-	background: #f8f8fb;
-}
-
-.ad-submit-button {
-	border: 1px solid #6369D1;
-	background: #6369D1;
-	color: #fff;
-	box-shadow: 0 7px 18px rgba(99, 105, 209, .19);
-}
-
-.ad-submit-button:hover {
-	background: #555bc4;
-	transform: translateY(-1px);
-}
-
-.ad-submit-button:disabled {
-	opacity: .55;
-	cursor: wait;
-}
-
-/* =========================================================
-   모바일
-========================================================= */
-@media ( max-width : 680px ) {
-	.ad-position-grid, .ad-date-grid {
-		grid-template-columns: 1fr;
-	}
-	.ad-image-area {
-		grid-template-columns: 1fr;
-	}
-	.ad-image-preview {
-		max-width: 240px;
-	}
-	.ad-submit-area {
-		flex-direction: column-reverse;
-	}
-	.ad-cancel-button, .ad-submit-button {
-		width: 100%;
-	}
-}
-</style>
-
+<!-- 반드시 support.css보다 뒤에 -->
+<link rel="stylesheet"
+    href="<%=ctx%>/view/assets/css/support/adInquiry.css">
 
 </head>
 
 
-
 <body class="site-shell">
 
-
-	<jsp:include page="/common/header.jsp" />
-
+<jsp:include page="/common/header.jsp" />
 
 
-	<div class="settings-page">
+<div class="settings-page">
+
+    <div class="settings-shell">
+
+        <jsp:include page="/common/settingsSidebar.jsp" />
 
 
-		<div class="settings-shell">
+        <main class="settings-main">
+
+            <div class="settings-content ad-inquiry-compact">
 
 
-			<jsp:include page="/common/settingsSidebar.jsp" />
-
-
-
-			<main class="settings-main">
-
-
-				<div class="settings-content
-                       ad-inquiry-page">
-
-
-					<!-- =================================================
-                     TITLE
+                <!-- =================================================
+                     TOP
                 ================================================== -->
 
-					<header class="settings-title">
+                <div class="ad-inquiry-top">
+
+                    <a
+                        href="<%=ctx%>/view/support/adGuide.jsp">
+
+                        <span>←</span>
+                        광고 안내
+
+                    </a>
 
 
-						<span class="settings-eyebrow"> ADVERTISEMENT </span>
+                    <span>
+                        AD INQUIRY
+                    </span>
 
-
-						<h1>광고 문의하기</h1>
-
-
-						<p>Planb 내 광고 및 제휴 상품에 대해 문의할 수 있습니다.</p>
-
-
-					</header>
-
-
-
-					<a class="support-back" href="<%=ctx%>/view/support/adGuide.jsp">
-
-						‹ 광고 안내 </a>
+                </div>
 
 
 
-					<!-- =================================================
-                     성공 메시지
+                <header class="ad-inquiry-header">
+
+                    <h1>
+                        광고 문의하기
+                    </h1>
+
+                    <p>
+                        광고 위치와 기간, 이미지를 등록하면
+                        담당자가 내용을 검토한 뒤 안내드립니다.
+                    </p>
+
+                </header>
+
+
+
+                <!-- =================================================
+                     성공 / 오류
                 ================================================== -->
 
-					<% if (success) { %>
+                <% if (success) { %>
+
+                <div class="ad-inquiry-message success">
+
+                    <strong>
+                        광고 문의가 접수되었습니다.
+                    </strong>
+
+                    <span>
+                        담당자가 내용을 검토한 후 입력한 이메일로 안내드립니다.
+                    </span>
+
+                </div>
+
+                <% } %>
 
 
-					<div
-						class="ad-message
-                               ad-message-success">
-
-
-						광고 문의가 정상적으로 접수되었습니다. <br> 담당자가 광고 내용을 검토한 후 입력하신 이메일로
-						안내드립니다.
-
-
-					</div>
-
-
-					<% } %>
-
-
-
-					<!-- =================================================
-                     오류 메시지
-                ================================================== -->
-
-					<%
+                <%
                 if (
                     errorMessage != null
-                    && !errorMessage.trim().isEmpty()
+                    &&
+                    !errorMessage.trim().isEmpty()
                 ) {
                 %>
 
+                <div class="ad-inquiry-message error">
 
-					<div
-						class="ad-message
-                               ad-message-error">
+                    <strong>
+                        문의를 접수하지 못했습니다.
+                    </strong>
 
+                    <span>
+                        <%=escapeHtml(errorMessage)%>
+                    </span>
 
-						<%=escapeHtml(errorMessage)%>
+                    <small>
+                        광고 이미지는 보안상 다시 선택해야 합니다.
+                    </small>
 
+                </div>
 
-						<br> <small> 광고 이미지를 제외한 입력 내용은 유지됩니다. </small>
-
-
-					</div>
-
-
-					<%
+                <%
                 }
                 %>
 
 
 
-					<!-- =================================================
-                     안내
+                <!-- =================================================
+                     상품 요약
                 ================================================== -->
 
-					<section class="ad-inquiry-intro">
+                <section class="ad-inquiry-guide">
+
+                    <div class="ad-inquiry-guide-title">
+
+                        <div>
+
+                            <span>
+                                PLACEMENT GUIDE
+                            </span>
+
+                            <strong>
+                                현재 신청 가능한 광고 영역
+                            </strong>
+
+                        </div>
 
 
-						<div class="ad-inquiry-intro-head">
+                        <a
+                            href="<%=ctx%>/view/support/adGuide.jsp">
+                            자세히 보기 →
+                        </a>
+
+                    </div>
 
 
-							<div class="ad-inquiry-intro-title">
+                    <div class="ad-inquiry-guide-grid">
 
+                        <div>
+                            <span>HOME</span>
+                            <strong>슬라이딩 카드</strong>
+                            <b>600 × 400</b>
+                        </div>
 
-								<span> 📣 </span> <span> Planb 광고 문의 </span>
+                        <div>
+                            <span>TIP</span>
+                            <strong>좌·우 사이드</strong>
+                            <b>160 × 600</b>
+                        </div>
 
+                        <div>
+                            <span>MATE</span>
+                            <strong>좌·우 사이드</strong>
+                            <b>160 × 600</b>
+                        </div>
 
-							</div>
+                    </div>
 
-
-
-							<a href="<%=ctx%>/view/support/adGuide.jsp"
-								class="ad-inquiry-intro-link"> 광고 영역·가격 다시 보기 → </a>
-
-
-						</div>
-
-
-
-						<p>
-
-							여행 서비스, 숙박, 교통, 음식점 및 브랜드 제휴 광고를 문의할 수 있습니다. <br> 문의 접수 후
-							관리자가 광고 내용, 이미지 및 희망 노출 일정을 검토합니다.
-
-						</p>
-
-
-					</section>
+                </section>
 
 
 
-					<!-- =================================================
+                <!-- =================================================
                      FORM
                 ================================================== -->
 
-					<form id="adInquiryForm" action="<%=ctx%>/support/adInquiry"
-						method="post" enctype="multipart/form-data">
-
-
-						<section
-							class="settings-panel
-                               settings-form-panel
-                               ad-form-panel">
-
-
-							<div class="ad-form-section">
-
-
-
-								<!-- =====================================
-                                 회사 / 브랜드명
-                            ====================================== -->
-
-								<div class="ad-form-field">
-
-
-									<label class="ad-form-label" for="businessName">
-
-										회사/브랜드명 </label> <input type="text" id="businessName"
-										name="businessName" maxlength="100"
-										value="<%=escapeHtml(formBusinessName)%>"
-										placeholder="회사 또는 브랜드명을 입력해주세요." required>
-
-
-								</div>
-
-
-
-								<!-- =====================================
-                                 담당자
-                            ====================================== -->
-
-								<div class="ad-form-field">
-
-
-									<label class="ad-form-label" for="managerName"> 담당자명 </label> <input
-										type="text" id="managerName" name="managerName"
-										maxlength="100" value="<%=escapeHtml(formManagerName)%>"
-										placeholder="담당자 이름을 입력해주세요." required>
-
-
-								</div>
-
-
-
-								<!-- =====================================
-                                 이메일
-                            ====================================== -->
-
-								<div class="ad-form-field">
-
-
-									<label class="ad-form-label" for="email"> 연락 이메일 </label> <input
-										type="email" id="email" name="email" maxlength="150"
-										value="<%=escapeHtml(formEmail)%>"
-										placeholder="example@company.com" required>
-
-
-									<p class="ad-field-help">광고 검토 및 승인 결과를 받을 이메일입니다.</p>
-
-
-								</div>
-
-
-
-								<!-- =====================================
-                                 전화번호
-                            ====================================== -->
-
-								<div class="ad-form-field">
-
-
-									<label class="ad-form-label" for="phone"> 전화번호 </label> <input
-										type="tel" id="phone" name="phone" maxlength="13"
-										inputmode="numeric" autocomplete="tel"
-										value="<%=escapeHtml(formPhone)%>" placeholder="010-1234-5678"
-										required>
-
-
-									<p class="ad-field-help">숫자만 입력해도 하이픈이 자동으로 입력됩니다.</p>
-
-
-								</div>
-
-
-
-								<!-- =====================================
-                                 광고 위치
-                            ====================================== -->
-
-								<div class="ad-form-field">
-
-
-									<span class="ad-form-label"> 광고 희망 영역 </span>
-
-
-
-									<div class="ad-position-grid">
-
-
-										<!-- MAIN BANNER -->
-
-										<label class="ad-position-card"> <input type="radio"
-											name="adPosition" value="MAIN_BANNER"
-											<%=
-                                                "MAIN_BANNER"
-                                                .equals(
-                                                    selectedAdPosition
-                                                )
-                                                ? "checked"
-                                                : ""
-                                            %>
-											required> <span class="ad-position-card-title">
-
-												메인 배너 </span> <span class="ad-position-card-desc"> 홈 화면 상단에
-												노출되는 대표 배너형 광고입니다. </span> <span class="ad-position-code">
-
-												MAIN_BANNER </span>
-
-
-										</label>
-
-
-
-										<!-- TRIP CARD -->
-
-										<label class="ad-position-card"> <input type="radio"
-											name="adPosition" value="TRIP_CARD"
-											<%=
-                                                "TRIP_CARD"
-                                                .equals(
-                                                    selectedAdPosition
-                                                )
-                                                ? "checked"
-                                                : ""
-                                            %>
-											required> <span class="ad-position-card-title">
-
-												여행 카드 광고 </span> <span class="ad-position-card-desc"> 여행 일정
-												목록 사이에 노출되는 카드형 광고입니다. </span> <span class="ad-position-code">
-
-												TRIP_CARD </span>
-
-
-										</label>
-
-
-									</div>
-
-
-								</div>
-
-
-
-								<!-- =====================================
-                                 광고 희망 기간
-                            ====================================== -->
-
-								<div class="ad-form-field">
-
-
-									<span class="ad-form-label"> 광고 희망 기간 </span>
-
-
-
-									<div class="ad-date-grid">
-
-
-										<div class="ad-date-item">
-
-
-											<small> 시작일 </small> <input type="date" id="adStartDate"
-												name="startDate" value="<%=escapeHtml(formStartDate)%>"
-												required>
-
-
-										</div>
-
-
-
-										<div class="ad-date-item">
-
-
-											<small> 종료일 </small> <input type="date" id="adEndDate"
-												name="endDate" value="<%=escapeHtml(formEndDate)%>" required>
-
-
-										</div>
-
-
-									</div>
-
-
-
-									<!-- 예상 가격 -->
-
-									<div class="ad-price-box">
-
-
-										<div class="ad-price-row">
-
-
-											<span> 선택 광고 </span> <strong id="pricePosition"> - </strong>
-
-
-										</div>
-
-
-
-										<div class="ad-price-row">
-
-
-											<span> 광고 기간 </span> <strong id="priceDuration"> - </strong>
-
-
-										</div>
-
-
-
-										<div
-											class="ad-price-row
-                                               ad-price-total">
-
-
-											<span> 예상 광고비 </span> <strong id="priceTotal"> 광고
-												위치와 기간을 선택해주세요. </strong>
-
-
-										</div>
-
-
-									</div>
-
-
-
-									<p class="ad-field-help">표시 금액은 예상 금액이며 최종 비용은 관리자 검토 후
-										확정됩니다.</p>
-
-
-								</div>
-
-
-
-								<!-- =====================================
-                                 광고 연결 URL
-                            ====================================== -->
-
-								<div class="ad-form-field">
-
-
-									<label class="ad-form-label" for="linkUrl"> 광고 연결 URL <span
-										class="optional"> 선택 </span>
-
-									</label> <input type="url" id="linkUrl" name="linkUrl" maxlength="500"
-										value="<%=escapeHtml(formLinkUrl)%>"
-										placeholder="https://example.com">
-
-
-									<p class="ad-field-help">사용자가 광고를 클릭했을 때 이동할 웹사이트 주소입니다.</p>
-
-
-								</div>
-
-
-
-								<!-- =====================================
-                                 이미지
-                            ====================================== -->
-
-								<div class="ad-form-field">
-
-
-									<span class="ad-form-label"> 광고 이미지 </span>
-
-
-
-									<div class="ad-image-area">
-
-
-										<div class="ad-image-preview" id="adImagePreview">이미지
-											미리보기</div>
-
-
-
-										<div class="ad-image-input-wrap">
-
-
-											<input type="file" id="adImage" name="image"
-												accept="image/jpeg,image/png,image/webp" required>
-
-
-											<p class="ad-field-help">JPG, PNG, WEBP / 최대 5MB</p>
-
-
-											<%
-                                        if (
-                                            errorMessage != null
-                                        ) {
-                                        %>
-
-											<p class="ad-field-help"
-												style="color: #d6404d; margin-top: 5px;">오류 후에는 보안상 광고
-												이미지를 다시 선택해야 합니다.</p>
-
-											<%
-                                        }
-                                        %>
-
-
-										</div>
-
-
-									</div>
-
-
-								</div>
-
-
-
-								<!-- =====================================
-                                 문의 내용
-                            ====================================== -->
-
-								<div class="ad-form-field">
-
-
-									<label class="ad-form-label" for="content"> 광고 및 문의 내용
-
-									</label>
-
-
-									<textarea id="content" name="content" maxlength="3000" rows="7"
-										placeholder="광고하려는 상품 또는 서비스와 요청사항을 작성해주세요." required><%=escapeHtml(formContent)%></textarea>
-
-
-									<p class="ad-field-help">광고 목적, 상품 설명, 희망 노출 방식 등 필요한 내용을
-										작성해주세요.</p>
-
-
-								</div>
-
-
-							</div>
-
-
-						</section>
-
-
-
-						<!-- =================================================
-                         제출 버튼
+                <form
+                    id="adInquiryForm"
+                    action="<%=ctx%>/support/adInquiry"
+                    method="post"
+                    enctype="multipart/form-data">
+
+
+                    <!-- =================================================
+                         01 업체 정보
                     ================================================== -->
 
-						<div class="ad-submit-area">
+                    <section class="ad-inquiry-panel">
+
+                        <div class="ad-inquiry-panel-head">
+
+                            <span>01</span>
+
+                            <div>
+
+                                <h2>
+                                    업체 및 담당자 정보
+                                </h2>
+
+                                <p>
+                                    문의 답변을 받을 기본 정보를 입력해주세요.
+                                </p>
+
+                            </div>
+
+                        </div>
 
 
-							<a class="ad-cancel-button"
-								href="<%=ctx%>/view/support/adGuide.jsp"> 취소 </a>
+                        <div class="ad-inquiry-form-grid two">
+
+
+                            <div class="ad-inquiry-field">
+
+                                <label for="businessName">
+                                    회사/브랜드명
+                                </label>
+
+                                <input
+                                    type="text"
+                                    id="businessName"
+                                    name="businessName"
+                                    maxlength="100"
+                                    value="<%=escapeHtml(formBusinessName)%>"
+                                    placeholder="회사 또는 브랜드명"
+                                    required>
+
+                            </div>
+
+
+                            <div class="ad-inquiry-field">
+
+                                <label for="managerName">
+                                    담당자명
+                                </label>
+
+                                <input
+                                    type="text"
+                                    id="managerName"
+                                    name="managerName"
+                                    maxlength="100"
+                                    value="<%=escapeHtml(formManagerName)%>"
+                                    placeholder="담당자 이름"
+                                    required>
+
+                            </div>
+
+
+                            <div class="ad-inquiry-field">
+
+                                <label for="email">
+                                    연락 이메일
+                                </label>
+
+                                <input
+                                    type="email"
+                                    id="email"
+                                    name="email"
+                                    maxlength="150"
+                                    value="<%=escapeHtml(formEmail)%>"
+                                    placeholder="example@company.com"
+                                    required>
+
+                                <small>
+                                    광고 검토 및 승인 결과를 받을 이메일입니다.
+                                </small>
+
+                            </div>
+
+
+                            <div class="ad-inquiry-field">
+
+                                <label for="phone">
+                                    전화번호
+                                </label>
+
+                                <input
+                                    type="tel"
+                                    id="phone"
+                                    name="phone"
+                                    maxlength="13"
+                                    inputmode="numeric"
+                                    autocomplete="tel"
+                                    value="<%=escapeHtml(formPhone)%>"
+                                    placeholder="010-1234-5678"
+                                    required>
+
+                                <small>
+                                    숫자만 입력해도 하이픈이 자동 입력됩니다.
+                                </small>
+
+                            </div>
+
+                        </div>
+
+                    </section>
 
 
 
-							<button type="submit" id="adSubmitButton"
-								class="ad-submit-button">광고 문의 접수</button>
+                    <!-- =================================================
+                         02 광고 위치
+                    ================================================== -->
+
+                    <section class="ad-inquiry-panel">
+
+                        <div class="ad-inquiry-panel-head">
+
+                            <span>02</span>
+
+                            <div>
+
+                                <h2>
+                                    광고 위치 선택
+                                </h2>
+
+                                <p>
+                                    광고를 노출할 페이지 영역을 선택해주세요.
+                                </p>
+
+                            </div>
+
+                        </div>
 
 
-						</div>
+                        <div class="ad-inquiry-position-grid">
 
 
-					</form>
+                            <!-- HOME -->
+
+                            <label class="ad-inquiry-position-card">
+
+                                <input
+                                    type="radio"
+                                    name="adPosition"
+                                    value="TRIP_CARD"
+                                    <%=
+                                        "TRIP_CARD".equals(
+                                                selectedAdPosition
+                                        )
+                                        ? "checked"
+                                        : ""
+                                    %>
+                                    required>
 
 
-				</div>
+                                <span class="ad-inquiry-position-top">
+
+                                    <b>HOME</b>
+                                    <em>TRIP_CARD</em>
+
+                                </span>
 
 
-			</main>
+                                <strong>
+                                    홈 슬라이딩 카드
+                                </strong>
 
 
-		</div>
+                                <small>
+                                    인기 여행일정 카드 사이에 노출
+                                </small>
 
 
-	</div>
+                                <span class="ad-inquiry-position-size">
+                                    600 × 400 px
+                                </span>
+
+                            </label>
 
 
 
-	<jsp:include page="/common/footer.jsp" />
+                            <!-- TIP -->
+
+                            <label class="ad-inquiry-position-card">
+
+                                <input
+                                    type="radio"
+                                    name="adPosition"
+                                    value="TIP_SIDE"
+                                    <%=
+                                        "TIP_SIDE".equals(
+                                                selectedAdPosition
+                                        )
+                                        ? "checked"
+                                        : ""
+                                    %>
+                                    required>
+
+
+                                <span class="ad-inquiry-position-top">
+
+                                    <b>TRAVEL TIP</b>
+                                    <em>TIP_SIDE</em>
+
+                                </span>
+
+
+                                <strong>
+                                    여행 꿀팁 사이드
+                                </strong>
+
+
+                                <small>
+                                    상세 페이지 좌·우에 노출
+                                </small>
+
+
+                                <span class="ad-inquiry-position-size">
+                                    160 × 600 px
+                                </span>
+
+                            </label>
 
 
 
-	<script>
+                            <!-- MATE -->
+
+                            <label class="ad-inquiry-position-card">
+
+                                <input
+                                    type="radio"
+                                    name="adPosition"
+                                    value="MATE_SIDE"
+                                    <%=
+                                        "MATE_SIDE".equals(
+                                                selectedAdPosition
+                                        )
+                                        ? "checked"
+                                        : ""
+                                    %>
+                                    required>
+
+
+                                <span class="ad-inquiry-position-top">
+
+                                    <b>TRAVEL MATE</b>
+                                    <em>MATE_SIDE</em>
+
+                                </span>
+
+
+                                <strong>
+                                    여행 메이트 사이드
+                                </strong>
+
+
+                                <small>
+                                    상세 페이지 좌·우에 노출
+                                </small>
+
+
+                                <span class="ad-inquiry-position-size">
+                                    160 × 600 px
+                                </span>
+
+                            </label>
+
+                        </div>
+
+                    </section>
+
+
+
+                    <!-- =================================================
+                         03 일정 / 예상 비용
+                    ================================================== -->
+
+                    <section class="ad-inquiry-panel">
+
+                        <div class="ad-inquiry-panel-head">
+
+                            <span>03</span>
+
+                            <div>
+
+                                <h2>
+                                    희망 노출 일정
+                                </h2>
+
+                                <p>
+                                    광고를 노출하고 싶은 기간을 선택해주세요.
+                                </p>
+
+                            </div>
+
+                        </div>
+
+
+                        <div class="ad-inquiry-date-grid">
+
+                            <div class="ad-inquiry-field">
+
+                                <label for="adStartDate">
+                                    시작일
+                                </label>
+
+                                <input
+                                    type="date"
+                                    id="adStartDate"
+                                    name="startDate"
+                                    value="<%=escapeHtml(formStartDate)%>"
+                                    required>
+
+                            </div>
+
+
+                            <div class="ad-inquiry-field">
+
+                                <label for="adEndDate">
+                                    종료일
+                                </label>
+
+                                <input
+                                    type="date"
+                                    id="adEndDate"
+                                    name="endDate"
+                                    value="<%=escapeHtml(formEndDate)%>"
+                                    required>
+
+                            </div>
+
+                        </div>
+
+
+                        <div class="ad-inquiry-price">
+
+                            <div>
+
+                                <span>
+                                    선택 광고
+                                </span>
+
+                                <strong id="pricePosition">
+                                    -
+                                </strong>
+
+                            </div>
+
+
+                            <div>
+
+                                <span>
+                                    광고 기간
+                                </span>
+
+                                <strong id="priceDuration">
+                                    -
+                                </strong>
+
+                            </div>
+
+
+                            <div class="total">
+
+                                <span>
+                                    예상 광고비
+                                </span>
+
+                                <strong id="priceTotal">
+                                    광고 위치와 기간을 선택해주세요.
+                                </strong>
+
+                            </div>
+
+                        </div>
+
+
+                        <p class="ad-inquiry-help">
+                            홈 카드 광고는 7일·14일·30일 기준 요금이 표시되며,
+                            사이드 광고는 관리자 검토 후 비용을 안내합니다.
+                        </p>
+
+                    </section>
+
+
+
+                    <!-- =================================================
+                         04 광고 소재
+                    ================================================== -->
+
+                    <section class="ad-inquiry-panel">
+
+                        <div class="ad-inquiry-panel-head">
+
+                            <span>04</span>
+
+                            <div>
+
+                                <h2>
+                                    광고 소재
+                                </h2>
+
+                                <p>
+                                    광고 이미지와 클릭 시 이동할 주소를 등록해주세요.
+                                </p>
+
+                            </div>
+
+                        </div>
+
+
+                        <div class="ad-inquiry-field">
+
+                            <label for="linkUrl">
+
+                                광고 연결 URL
+
+                                <span>
+                                    선택
+                                </span>
+
+                            </label>
+
+                            <input
+                                type="url"
+                                id="linkUrl"
+                                name="linkUrl"
+                                maxlength="500"
+                                value="<%=escapeHtml(formLinkUrl)%>"
+                                placeholder="https://example.com">
+
+                            <small>
+                                사용자가 광고를 클릭했을 때 이동할 웹사이트 주소입니다.
+                            </small>
+
+                        </div>
+
+
+
+                        <div class="ad-inquiry-image-box">
+
+                            <div>
+
+                                <div
+                                    class="ad-inquiry-image-preview"
+                                    id="adImagePreview">
+
+                                    <span>
+                                        IMAGE
+                                    </span>
+
+                                </div>
+
+                            </div>
+
+
+                            <div class="ad-inquiry-image-info">
+
+                                <div class="ad-inquiry-image-guide">
+
+                                    <span>
+                                        권장 이미지
+                                    </span>
+
+                                    <strong id="imageGuideSize">
+                                        광고 위치를 먼저 선택해주세요.
+                                    </strong>
+
+                                    <small id="imageGuideText">
+                                        선택한 광고 영역에 맞는 이미지 규격을 안내합니다.
+                                    </small>
+
+                                </div>
+
+
+                                <input
+                                    type="file"
+                                    id="adImage"
+                                    name="image"
+                                    accept="image/jpeg,image/png,image/webp"
+                                    required>
+
+
+                                <p>
+                                    JPG, PNG, WEBP / 최대 5MB
+                                </p>
+
+
+                                <%
+                                if (errorMessage != null) {
+                                %>
+
+                                <p class="error">
+                                    오류 후에는 광고 이미지를 다시 선택해야 합니다.
+                                </p>
+
+                                <%
+                                }
+                                %>
+
+                            </div>
+
+                        </div>
+
+                    </section>
+
+
+
+                    <!-- =================================================
+                         05 문의 내용
+                    ================================================== -->
+
+                    <section class="ad-inquiry-panel">
+
+                        <div class="ad-inquiry-panel-head">
+
+                            <span>05</span>
+
+                            <div>
+
+                                <h2>
+                                    광고 및 문의 내용
+                                </h2>
+
+                                <p>
+                                    광고하려는 상품 또는 서비스와 요청사항을 작성해주세요.
+                                </p>
+
+                            </div>
+
+                        </div>
+
+
+                        <div class="ad-inquiry-field">
+
+                            <label for="content">
+                                문의 내용
+                            </label>
+
+                            <textarea
+                                id="content"
+                                name="content"
+                                maxlength="3000"
+                                rows="7"
+                                placeholder="광고 목적, 상품 또는 서비스 설명, 요청사항 등을 작성해주세요."
+                                required><%=escapeHtml(formContent)%></textarea>
+
+                            <small>
+                                광고 목적과 필요한 요청사항을 구체적으로 작성하면
+                                검토가 더 빠르게 진행됩니다.
+                            </small>
+
+                        </div>
+
+                    </section>
+
+
+
+                    <!-- =================================================
+                         ACTION
+                    ================================================== -->
+
+                    <div class="ad-inquiry-actions">
+
+                        <a
+                            href="<%=ctx%>/view/support/adGuide.jsp"
+                            class="ad-inquiry-cancel">
+
+                            취소
+
+                        </a>
+
+
+                        <button
+                            type="submit"
+                            id="adSubmitButton"
+                            class="ad-inquiry-submit">
+
+                            광고 문의 접수
+
+                        </button>
+
+                    </div>
+
+                </form>
+
+
+            </div>
+
+        </main>
+
+    </div>
+
+</div>
+
+
+<jsp:include page="/common/footer.jsp" />
+
+
+
+<script>
 
 document.addEventListener(
     "DOMContentLoaded",
     function () {
-
-
-        /* =====================================================
-           ELEMENT
-        ====================================================== */
 
         const form =
             document.getElementById(
                 "adInquiryForm"
             );
 
-
         const submitButton =
             document.getElementById(
                 "adSubmitButton"
             );
-
 
         const phoneInput =
             document.getElementById(
                 "phone"
             );
 
-
         const startDate =
             document.getElementById(
                 "adStartDate"
             );
-
 
         const endDate =
             document.getElementById(
                 "adEndDate"
             );
 
-
         const imageInput =
             document.getElementById(
                 "adImage"
             );
-
 
         const imagePreview =
             document.getElementById(
                 "adImagePreview"
             );
 
-
         const positionInputs =
             document.querySelectorAll(
                 'input[name="adPosition"]'
             );
 
-
         const positionCards =
             document.querySelectorAll(
-                ".ad-position-card"
+                ".ad-inquiry-position-card"
             );
-
 
         const pricePosition =
             document.getElementById(
                 "pricePosition"
             );
 
-
         const priceDuration =
             document.getElementById(
                 "priceDuration"
             );
-
 
         const priceTotal =
             document.getElementById(
                 "priceTotal"
             );
 
+        const imageGuideSize =
+            document.getElementById(
+                "imageGuideSize"
+            );
+
+        const imageGuideText =
+            document.getElementById(
+                "imageGuideText"
+            );
 
 
         /* =====================================================
-           전화번호 자동 하이픈
+           광고 상품 정보
         ====================================================== */
 
-        function formatPhoneNumber(
-            value
-        ) {
+        const POSITION_INFO = {
 
+            TRIP_CARD: {
+                name: "홈 슬라이딩 카드",
+                size: "600 × 400 px",
+                imageText: "3:2 비율의 가로형 이미지를 권장합니다.",
+                previewType: "card"
+            },
+
+            TIP_SIDE: {
+                name: "여행 꿀팁 사이드",
+                size: "160 × 600 px",
+                imageText: "여행 꿀팁 상세 좌·우에 들어가는 세로형 이미지입니다.",
+                previewType: "side"
+            },
+
+            MATE_SIDE: {
+                name: "여행 메이트 사이드",
+                size: "160 × 600 px",
+                imageText: "여행 메이트 상세 좌·우에 들어가는 세로형 이미지입니다.",
+                previewType: "side"
+            }
+
+        };
+
+
+        const PRICE_TABLE = {
+
+            TRIP_CARD: {
+                7: 30000,
+                14: 50000,
+                30: 90000
+            }
+
+        };
+
+
+        /* =====================================================
+           전화번호
+        ====================================================== */
+
+        function formatPhoneNumber(value) {
 
             let number =
                 value.replace(
                     /[^0-9]/g,
                     ""
                 );
-
 
             number =
                 number.substring(
@@ -1310,27 +1120,15 @@ document.addEventListener(
                 );
 
 
-            /*
-             * 서울 02
-             */
             if (
-                number.startsWith(
-                    "02"
-                )
+                number.startsWith("02")
             ) {
 
-
-                if (
-                    number.length <= 2
-                ) {
-
+                if (number.length <= 2) {
                     return number;
                 }
 
-
-                if (
-                    number.length <= 5
-                ) {
+                if (number.length <= 5) {
 
                     return number.replace(
                         /(\d{2})(\d+)/,
@@ -1338,10 +1136,7 @@ document.addEventListener(
                     );
                 }
 
-
-                if (
-                    number.length <= 9
-                ) {
+                if (number.length <= 9) {
 
                     return number.replace(
                         /(\d{2})(\d{3})(\d+)/,
@@ -1349,30 +1144,18 @@ document.addEventListener(
                     );
                 }
 
-
                 return number.replace(
                     /(\d{2})(\d{4})(\d{4})/,
                     "$1-$2-$3"
                 );
-
             }
 
 
-
-            /*
-             * 010, 051, 053 등
-             */
-            if (
-                number.length <= 3
-            ) {
-
+            if (number.length <= 3) {
                 return number;
             }
 
-
-            if (
-                number.length <= 7
-            ) {
+            if (number.length <= 7) {
 
                 return number.replace(
                     /(\d{3})(\d+)/,
@@ -1380,14 +1163,7 @@ document.addEventListener(
                 );
             }
 
-
-            /*
-             * 10자리
-             * 053-123-4567
-             */
-            if (
-                number.length <= 10
-            ) {
+            if (number.length <= 10) {
 
                 return number.replace(
                     /(\d{3})(\d{3})(\d{4})/,
@@ -1395,43 +1171,29 @@ document.addEventListener(
                 );
             }
 
-
-            /*
-             * 11자리
-             * 010-1234-5678
-             */
             return number.replace(
                 /(\d{3})(\d{4})(\d{4})/,
                 "$1-$2-$3"
             );
-
         }
-
 
 
         phoneInput.addEventListener(
             "input",
             function () {
 
-
                 this.value =
                     formatPhoneNumber(
                         this.value
                     );
-
             }
         );
 
 
-        /*
-         * 오류 후 되돌아온 번호도
-         * 다시 형식 적용
-         */
         phoneInput.value =
             formatPhoneNumber(
                 phoneInput.value
             );
-
 
 
         /* =====================================================
@@ -1441,10 +1203,8 @@ document.addEventListener(
         const today =
             new Date();
 
-
         const yyyy =
             today.getFullYear();
-
 
         const mm =
             String(
@@ -1454,7 +1214,6 @@ document.addEventListener(
                 "0"
             );
 
-
         const dd =
             String(
                 today.getDate()
@@ -1462,7 +1221,6 @@ document.addEventListener(
                 2,
                 "0"
             );
-
 
         const todayValue =
             yyyy
@@ -1476,13 +1234,7 @@ document.addEventListener(
             todayValue;
 
 
-        /*
-         * 시작일이 이미 있는 경우에는
-         * 그 날짜를 종료일 최소값으로 사용
-         */
-        if (
-            startDate.value
-        ) {
+        if (startDate.value) {
 
             endDate.min =
                 startDate.value;
@@ -1494,85 +1246,93 @@ document.addEventListener(
         }
 
 
-
         /* =====================================================
-           광고 위치 선택 표시
+           위치
         ====================================================== */
 
-        function updatePositionCards() {
-
-
-            positionCards.forEach(
-                function (card) {
-
-
-                    const radio =
-                        card.querySelector(
-                            'input[type="radio"]'
-                        );
-
-
-                    if (
-                        radio
-                        && radio.checked
-                    ) {
-
-                        card.classList.add(
-                            "selected"
-                        );
-
-
-                    } else {
-
-                        card.classList.remove(
-                            "selected"
-                        );
-
-                    }
-
-                }
-            );
-
-        }
-
-
-
         function getSelectedPosition() {
-
 
             const selected =
                 document.querySelector(
                     'input[name="adPosition"]:checked'
                 );
 
-
             return selected
                 ? selected.value
                 : null;
-
         }
 
+
+        function updatePositionUI() {
+
+            const position =
+                getSelectedPosition();
+
+
+            positionCards.forEach(
+                function (card) {
+
+                    const radio =
+                        card.querySelector(
+                            'input[type="radio"]'
+                        );
+
+                    card.classList.toggle(
+                        "selected",
+                        !!radio && radio.checked
+                    );
+                }
+            );
+
+
+            if (
+                position
+                &&
+                POSITION_INFO[position]
+            ) {
+
+                const info =
+                    POSITION_INFO[position];
+
+                imageGuideSize.textContent =
+                    info.size;
+
+                imageGuideText.textContent =
+                    info.imageText;
+
+                imagePreview.classList.toggle(
+                    "side",
+                    info.previewType === "side"
+                );
+
+            } else {
+
+                imageGuideSize.textContent =
+                    "광고 위치를 먼저 선택해주세요.";
+
+                imageGuideText.textContent =
+                    "선택한 광고 영역에 맞는 이미지 규격을 안내합니다.";
+
+                imagePreview.classList.remove(
+                    "side"
+                );
+            }
+        }
 
 
         positionInputs.forEach(
             function (input) {
 
-
                 input.addEventListener(
                     "change",
                     function () {
 
-
-                        updatePositionCards();
-
+                        updatePositionUI();
                         updatePrice();
-
                     }
                 );
-
             }
         );
-
 
 
         /* =====================================================
@@ -1583,14 +1343,10 @@ document.addEventListener(
             "change",
             function () {
 
-
-                if (
-                    startDate.value
-                ) {
+                if (startDate.value) {
 
                     endDate.min =
                         startDate.value;
-
                 }
 
 
@@ -1604,12 +1360,10 @@ document.addEventListener(
 
                     endDate.value =
                         "";
-
                 }
 
 
                 updatePrice();
-
             }
         );
 
@@ -1620,51 +1374,7 @@ document.addEventListener(
         );
 
 
-
-        /* =====================================================
-           가격
-        ====================================================== */
-
-        const PRICE_TABLE = {
-
-            MAIN_BANNER: {
-
-                7: 50000,
-
-                14: 90000,
-
-                30: 160000
-
-            },
-
-
-            TRIP_CARD: {
-
-                7: 30000,
-
-                14: 50000,
-
-                30: 90000
-
-            }
-
-        };
-
-
-        const POSITION_NAMES = {
-
-            MAIN_BANNER:
-                "메인 배너",
-
-            TRIP_CARD:
-                "여행 카드 광고"
-
-        };
-
-
-
         function calculateDays() {
-
 
             if (
                 !startDate.value
@@ -1682,7 +1392,6 @@ document.addEventListener(
                     + "T00:00:00"
                 );
 
-
             const end =
                 new Date(
                     endDate.value
@@ -1690,10 +1399,7 @@ document.addEventListener(
                 );
 
 
-            if (
-                end < start
-            ) {
-
+            if (end < start) {
                 return -1;
             }
 
@@ -1707,40 +1413,35 @@ document.addEventListener(
             return Math.floor(
                 diff / 86400000
             ) + 1;
-
         }
 
 
+        /* =====================================================
+           가격
+        ====================================================== */
 
         function updatePrice() {
 
-
             const position =
                 getSelectedPosition();
-
 
             const days =
                 calculateDays();
 
 
-
             pricePosition.textContent =
                 position
-                ? POSITION_NAMES[position]
+                && POSITION_INFO[position]
+                ? POSITION_INFO[position].name
                 : "-";
 
 
-
-            if (
-                days === null
-            ) {
+            if (days === null) {
 
                 priceDuration.textContent =
                     "-";
 
-            } else if (
-                days <= 0
-            ) {
+            } else if (days <= 0) {
 
                 priceDuration.textContent =
                     "날짜를 확인해주세요.";
@@ -1750,30 +1451,47 @@ document.addEventListener(
                 priceDuration.textContent =
                     days.toLocaleString()
                     + "일";
-
             }
 
 
-
-            if (
-                !position
-                ||
-                days === null
-            ) {
+            if (!position) {
 
                 priceTotal.textContent =
-                    "광고 위치와 기간을 선택해주세요.";
+                    "광고 위치를 선택해주세요.";
 
                 return;
             }
 
 
-            if (
-                days <= 0
-            ) {
+            if (days === null) {
+
+                priceTotal.textContent =
+                    "광고 기간을 선택해주세요.";
+
+                return;
+            }
+
+
+            if (days <= 0) {
 
                 priceTotal.textContent =
                     "종료일을 확인해주세요.";
+
+                return;
+            }
+
+
+            /*
+             * TIP/MATE 사이드는 별도 견적
+             */
+            if (
+                position === "TIP_SIDE"
+                ||
+                position === "MATE_SIDE"
+            ) {
+
+                priceTotal.textContent =
+                    "관리자 검토 후 별도 안내";
 
                 return;
             }
@@ -1785,9 +1503,7 @@ document.addEventListener(
                 PRICE_TABLE[position][days];
 
 
-            if (
-                price
-            ) {
+            if (price) {
 
                 priceTotal.textContent =
                     price.toLocaleString()
@@ -1797,36 +1513,29 @@ document.addEventListener(
 
                 priceTotal.textContent =
                     "기간별 별도 안내";
-
             }
-
         }
 
 
-
         /* =====================================================
-           이미지 미리보기
+           이미지
         ====================================================== */
 
         imageInput.addEventListener(
             "change",
             function () {
 
-
                 const file =
                     imageInput.files[0];
 
 
-                if (
-                    !file
-                ) {
+                if (!file) {
 
                     imagePreview.innerHTML =
-                        "이미지 미리보기";
+                        "<span>IMAGE</span>";
 
                     return;
                 }
-
 
 
                 if (
@@ -1839,28 +1548,20 @@ document.addEventListener(
                         "광고 이미지는 최대 5MB까지 등록할 수 있습니다."
                     );
 
-
                     imageInput.value =
                         "";
 
-
                     imagePreview.innerHTML =
-                        "이미지 미리보기";
-
+                        "<span>IMAGE</span>";
 
                     return;
                 }
 
 
-
                 const allowedTypes = [
-
                     "image/jpeg",
-
                     "image/png",
-
                     "image/webp"
-
                 ];
 
 
@@ -1874,18 +1575,14 @@ document.addEventListener(
                         "JPG, PNG, WEBP 이미지만 등록할 수 있습니다."
                     );
 
-
                     imageInput.value =
                         "";
 
-
                     imagePreview.innerHTML =
-                        "이미지 미리보기";
-
+                        "<span>IMAGE</span>";
 
                     return;
                 }
-
 
 
                 const reader =
@@ -1895,39 +1592,31 @@ document.addEventListener(
                 reader.onload =
                     function (event) {
 
-
                         const image =
                             document.createElement(
                                 "img"
                             );
 
-
                         image.src =
                             event.target.result;
-
 
                         image.alt =
                             "광고 이미지 미리보기";
 
-
                         imagePreview.innerHTML =
                             "";
-
 
                         imagePreview.appendChild(
                             image
                         );
-
                     };
 
 
                 reader.readAsDataURL(
                     file
                 );
-
             }
         );
-
 
 
         /* =====================================================
@@ -1938,66 +1627,48 @@ document.addEventListener(
             "submit",
             function (event) {
 
-
                 const selectedPosition =
                     getSelectedPosition();
 
 
-                if (
-                    !selectedPosition
-                ) {
+                if (!selectedPosition) {
 
                     event.preventDefault();
-
 
                     alert(
                         "광고 희망 영역을 선택해주세요."
                     );
 
-
                     return;
                 }
 
 
-
-                if (
-                    !startDate.value
-                ) {
+                if (!startDate.value) {
 
                     event.preventDefault();
-
 
                     alert(
                         "광고 시작일을 선택해주세요."
                     );
 
-
                     startDate.focus();
-
 
                     return;
                 }
 
 
-
-                if (
-                    !endDate.value
-                ) {
+                if (!endDate.value) {
 
                     event.preventDefault();
-
 
                     alert(
                         "광고 종료일을 선택해주세요."
                     );
 
-
                     endDate.focus();
-
 
                     return;
                 }
-
 
 
                 if (
@@ -2008,18 +1679,14 @@ document.addEventListener(
 
                     event.preventDefault();
 
-
                     alert(
                         "광고 종료일은 시작일 이후로 선택해주세요."
                     );
 
-
                     endDate.focus();
-
 
                     return;
                 }
-
 
 
                 if (
@@ -2030,39 +1697,28 @@ document.addEventListener(
 
                     event.preventDefault();
 
-
                     alert(
                         "광고 이미지를 등록해주세요."
                     );
-
 
                     return;
                 }
 
 
-
-                /*
-                 * 정상 제출이 시작됐을 때만
-                 * 중복 클릭 방지
-                 */
                 submitButton.disabled =
                     true;
 
-
                 submitButton.textContent =
                     "접수 중...";
-
             }
         );
 
 
-
         /* =====================================================
-           처음 화면 표시
+           초기 표시
         ====================================================== */
 
-        updatePositionCards();
-
+        updatePositionUI();
         updatePrice();
 
     }
@@ -2072,5 +1728,4 @@ document.addEventListener(
 
 
 </body>
-
 </html>

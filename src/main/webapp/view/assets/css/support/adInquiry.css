@@ -1,0 +1,883 @@
+/* ============================================================
+   광고 문의
+   - 기본 settings-content 720px 사용
+   - 광고 안내 페이지와 같은 밀도와 크기
+============================================================ */
+
+.ad-inquiry-compact {
+    width: 100%;
+    min-width: 0;
+    color: #22252e;
+    word-break: keep-all;
+}
+
+
+/* top */
+
+.ad-inquiry-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    margin-bottom: 22px;
+}
+
+.ad-inquiry-top > a {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    color: #7c808b;
+    font-size: 12px;
+    font-weight: 700;
+    text-decoration: none;
+    white-space: nowrap;
+}
+
+.ad-inquiry-top > a:hover {
+    color: #6369D1;
+}
+
+.ad-inquiry-top > span {
+    padding: 5px 8px;
+    border: 1px solid #e4e5ec;
+    border-radius: 999px;
+    color: #9699a2;
+    font-size: 8px;
+    font-weight: 900;
+    letter-spacing: .11em;
+}
+
+
+/* header */
+
+.ad-inquiry-header {
+    margin-bottom: 23px;
+}
+
+.ad-inquiry-header h1 {
+    margin: 0;
+    color: #171a22;
+    font-size: 29px;
+    line-height: 1.2;
+    font-weight: 900;
+    letter-spacing: -.04em;
+}
+
+.ad-inquiry-header p {
+    margin: 8px 0 0;
+    color: #7c808b;
+    font-size: 13px;
+    line-height: 1.65;
+}
+
+
+/* message */
+
+.ad-inquiry-message {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    margin-bottom: 13px;
+    padding: 12px 14px;
+    border-radius: 11px;
+}
+
+.ad-inquiry-message strong {
+    font-size: 11px;
+    font-weight: 900;
+}
+
+.ad-inquiry-message span,
+.ad-inquiry-message small {
+    font-size: 9.5px;
+    line-height: 1.5;
+}
+
+.ad-inquiry-message.success {
+    border: 1px solid #dcefe3;
+    background: #f4fbf6;
+    color: #39734d;
+}
+
+.ad-inquiry-message.error {
+    border: 1px solid #f4dadd;
+    background: #fff6f7;
+    color: #c8424d;
+}
+
+
+/* guide */
+
+.ad-inquiry-guide {
+    margin-bottom: 13px;
+    padding: 16px;
+    border: 1px solid #e4e5ed;
+    border-radius: 14px;
+    background: #fafafd;
+}
+
+.ad-inquiry-guide-title {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 14px;
+}
+
+.ad-inquiry-guide-title > div > span {
+    display: block;
+    color: #6369D1;
+    font-size: 7px;
+    font-weight: 900;
+    letter-spacing: .1em;
+}
+
+.ad-inquiry-guide-title strong {
+    display: block;
+    margin-top: 2px;
+    color: #3d414c;
+    font-size: 11px;
+    font-weight: 900;
+}
+
+.ad-inquiry-guide-title > a {
+    color: #6369D1;
+    font-size: 9px;
+    font-weight: 850;
+    text-decoration: none;
+    white-space: nowrap;
+}
+
+.ad-inquiry-guide-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    overflow: hidden;
+    margin-top: 11px;
+    border: 1px solid #e7e8ee;
+    border-radius: 10px;
+    background: #fff;
+}
+
+.ad-inquiry-guide-grid > div {
+    padding: 10px 11px;
+}
+
+.ad-inquiry-guide-grid > div + div {
+    border-left: 1px solid #e9eaf0;
+}
+
+.ad-inquiry-guide-grid span,
+.ad-inquiry-guide-grid strong,
+.ad-inquiry-guide-grid b {
+    display: block;
+    white-space: nowrap;
+}
+
+.ad-inquiry-guide-grid span {
+    color: #a0a4ad;
+    font-size: 6.5px;
+    font-weight: 900;
+}
+
+.ad-inquiry-guide-grid strong {
+    margin-top: 2px;
+    color: #50545f;
+    font-size: 9px;
+    font-weight: 850;
+}
+
+.ad-inquiry-guide-grid b {
+    margin-top: 4px;
+    color: #6369D1;
+    font-size: 10px;
+    font-weight: 900;
+}
+
+
+/* panel */
+
+.ad-inquiry-panel {
+    margin-top: 12px;
+    padding: 20px;
+    border: 1px solid #e4e5ec;
+    border-radius: 15px;
+    background: #fff;
+}
+
+.ad-inquiry-panel-head {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 18px;
+}
+
+.ad-inquiry-panel-head > span {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 29px;
+    height: 29px;
+    flex: 0 0 29px;
+    border-radius: 8px;
+    background: #efefff;
+    color: #6369D1;
+    font-size: 8px;
+    font-weight: 900;
+}
+
+.ad-inquiry-panel-head h2 {
+    margin: 0;
+    color: #30343e;
+    font-size: 14px;
+    font-weight: 900;
+}
+
+.ad-inquiry-panel-head p {
+    margin: 2px 0 0;
+    color: #9599a3;
+    font-size: 9px;
+}
+
+
+/* form */
+
+.ad-inquiry-form-grid {
+    display: grid;
+    gap: 15px;
+}
+
+.ad-inquiry-form-grid.two {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.ad-inquiry-field {
+    display: flex;
+    min-width: 0;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.ad-inquiry-field label {
+    color: #4a4e58;
+    font-size: 10px;
+    font-weight: 800;
+}
+
+.ad-inquiry-field label > span {
+    margin-left: 3px;
+    color: #a5a8b1;
+    font-size: 8px;
+    font-weight: 600;
+}
+
+.ad-inquiry-field input[type="text"],
+.ad-inquiry-field input[type="email"],
+.ad-inquiry-field input[type="tel"],
+.ad-inquiry-field input[type="url"],
+.ad-inquiry-field input[type="date"],
+.ad-inquiry-field textarea {
+    width: 100%;
+    box-sizing: border-box;
+    border: 1px solid #dfe0e8;
+    border-radius: 9px;
+    background: #fff;
+    color: #353943;
+    font-family: inherit;
+    font-size: 11px;
+    outline: none;
+    transition:
+        border-color .15s ease,
+        box-shadow .15s ease;
+}
+
+.ad-inquiry-field input[type="text"],
+.ad-inquiry-field input[type="email"],
+.ad-inquiry-field input[type="tel"],
+.ad-inquiry-field input[type="url"],
+.ad-inquiry-field input[type="date"] {
+    height: 40px;
+    padding: 0 11px;
+}
+
+.ad-inquiry-field textarea {
+    min-height: 130px;
+    padding: 11px;
+    line-height: 1.65;
+    resize: vertical;
+}
+
+.ad-inquiry-field input:focus,
+.ad-inquiry-field textarea:focus {
+    border-color: #6369D1;
+    box-shadow: 0 0 0 3px rgba(99,105,209,.07);
+}
+
+.ad-inquiry-field small,
+.ad-inquiry-help {
+    color: #999da7;
+    font-size: 8.5px;
+    line-height: 1.5;
+}
+
+
+/* positions */
+
+.ad-inquiry-position-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 7px;
+}
+
+.ad-inquiry-position-card {
+    position: relative;
+    display: flex;
+    min-width: 0;
+    min-height: 132px;
+    flex-direction: column;
+    padding: 13px;
+    border: 1px solid #e0e1e8;
+    border-radius: 11px;
+    background: #fff;
+    cursor: pointer;
+    transition:
+        border-color .15s ease,
+        background .15s ease,
+        box-shadow .15s ease;
+}
+
+.ad-inquiry-position-card:hover {
+    border-color: #c9cbee;
+}
+
+.ad-inquiry-position-card.selected {
+    border-color: #6369D1;
+    background: #f8f8ff;
+    box-shadow: inset 0 0 0 1px #6369D1;
+}
+
+.ad-inquiry-position-card input {
+    position: absolute;
+    opacity: 0;
+    pointer-events: none;
+}
+
+.ad-inquiry-position-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 5px;
+}
+
+.ad-inquiry-position-top b {
+    color: #6369D1;
+    font-size: 7px;
+    font-weight: 900;
+    white-space: nowrap;
+}
+
+.ad-inquiry-position-top em {
+    padding: 3px 5px;
+    border-radius: 999px;
+    background: #f1f2f6;
+    color: #9397a1;
+    font-size: 5.5px;
+    font-style: normal;
+    font-weight: 900;
+    white-space: nowrap;
+}
+
+.ad-inquiry-position-card > strong {
+    margin-top: 14px;
+    color: #3f434d;
+    font-size: 10px;
+    font-weight: 900;
+}
+
+.ad-inquiry-position-card > small {
+    margin-top: 3px;
+    color: #9296a0;
+    font-size: 8px;
+    line-height: 1.45;
+}
+
+.ad-inquiry-position-size {
+    display: inline-flex;
+    align-self: flex-start;
+    margin-top: auto;
+    padding-top: 10px;
+    color: #6369D1;
+    font-size: 9px;
+    font-weight: 900;
+    white-space: nowrap;
+}
+
+
+/* date */
+
+.ad-inquiry-date-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 10px;
+}
+
+
+/* price */
+
+.ad-inquiry-price {
+    margin-top: 13px;
+    overflow: hidden;
+    border: 1px solid #e7e8ef;
+    border-radius: 11px;
+    background: #fafafd;
+}
+
+.ad-inquiry-price > div {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 15px;
+    min-height: 38px;
+    padding: 0 13px;
+    border-top: 1px solid #e9eaf0;
+}
+
+.ad-inquiry-price > div:first-child {
+    border-top: 0;
+}
+
+.ad-inquiry-price span {
+    color: #8b8f99;
+    font-size: 9px;
+}
+
+.ad-inquiry-price strong {
+    color: #555965;
+    font-size: 9.5px;
+    font-weight: 900;
+    text-align: right;
+}
+
+.ad-inquiry-price .total {
+    background: #f6f6ff;
+}
+
+.ad-inquiry-price .total strong {
+    color: #6369D1;
+    font-size: 11px;
+}
+
+.ad-inquiry-help {
+    margin: 8px 1px 0;
+}
+
+
+/* image */
+
+.ad-inquiry-image-box {
+    display: grid;
+    grid-template-columns: 150px minmax(0, 1fr);
+    gap: 16px;
+    align-items: center;
+    margin-top: 18px;
+}
+
+.ad-inquiry-image-box > div:first-child {
+    display: flex;
+    justify-content: center;
+}
+
+.ad-inquiry-image-preview {
+    display: flex;
+    width: 150px;
+    height: 100px;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    border: 1px dashed #cfd1dc;
+    border-radius: 10px;
+    background: #fafafd;
+    color: #a3a6af;
+    transition:
+        width .2s ease,
+        height .2s ease;
+}
+
+.ad-inquiry-image-preview.side {
+    width: 70px;
+    height: 170px;
+}
+
+.ad-inquiry-image-preview > span {
+    font-size: 8px;
+    font-weight: 900;
+    letter-spacing: .1em;
+}
+
+.ad-inquiry-image-preview img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.ad-inquiry-image-info {
+    min-width: 0;
+}
+
+.ad-inquiry-image-guide {
+    margin-bottom: 10px;
+    padding: 10px 11px;
+    border-radius: 9px;
+    background: #f7f7ff;
+}
+
+.ad-inquiry-image-guide span,
+.ad-inquiry-image-guide strong,
+.ad-inquiry-image-guide small {
+    display: block;
+}
+
+.ad-inquiry-image-guide span {
+    color: #9a9eaa;
+    font-size: 7px;
+    font-weight: 800;
+}
+
+.ad-inquiry-image-guide strong {
+    margin-top: 2px;
+    color: #6369D1;
+    font-size: 11px;
+    font-weight: 900;
+}
+
+.ad-inquiry-image-guide small {
+    margin-top: 2px;
+    color: #858995;
+    font-size: 8px;
+    line-height: 1.45;
+}
+
+.ad-inquiry-image-info input[type="file"] {
+    width: 100%;
+    box-sizing: border-box;
+    padding: 7px;
+    border: 1px solid #dedfe7;
+    border-radius: 8px;
+    background: #fff;
+    color: #666a75;
+    font-size: 8.5px;
+}
+
+.ad-inquiry-image-info > p {
+    margin: 5px 0 0;
+    color: #999da7;
+    font-size: 8px;
+}
+
+.ad-inquiry-image-info > p.error {
+    color: #d6404d;
+}
+
+
+/* action */
+
+.ad-inquiry-actions {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 8px;
+    padding: 18px 0 8px;
+}
+
+.ad-inquiry-cancel,
+.ad-inquiry-submit {
+    display: inline-flex;
+    min-width: 112px;
+    height: 40px;
+    align-items: center;
+    justify-content: center;
+    box-sizing: border-box;
+    border-radius: 9px;
+    font-family: inherit;
+    font-size: 10.5px;
+    font-weight: 850;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+.ad-inquiry-cancel {
+    border: 1px solid #dedfe7;
+    background: #fff;
+    color: #666a75;
+}
+
+.ad-inquiry-submit {
+    border: 1px solid #6369D1;
+    background: #6369D1;
+    color: #fff;
+    box-shadow: 0 6px 16px rgba(99,105,209,.17);
+}
+
+.ad-inquiry-submit:hover {
+    background: #565cc5;
+}
+
+.ad-inquiry-submit:disabled {
+    opacity: .55;
+    cursor: wait;
+}
+
+
+/* responsive */
+
+@media (max-width: 680px) {
+
+    .ad-inquiry-top > span {
+        display: none;
+    }
+
+    .ad-inquiry-header h1 {
+        font-size: 26px;
+    }
+
+    .ad-inquiry-guide-grid,
+    .ad-inquiry-position-grid,
+    .ad-inquiry-form-grid.two,
+    .ad-inquiry-date-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .ad-inquiry-guide-grid > div + div {
+        border-top: 1px solid #e9eaf0;
+        border-left: 0;
+    }
+
+    .ad-inquiry-position-card {
+        min-height: 112px;
+    }
+
+    .ad-inquiry-panel {
+        padding: 17px;
+    }
+
+    .ad-inquiry-image-box {
+        grid-template-columns: 1fr;
+    }
+
+    .ad-inquiry-actions {
+        flex-direction: column-reverse;
+    }
+
+    .ad-inquiry-cancel,
+    .ad-inquiry-submit {
+        width: 100%;
+    }
+}
+
+
+/* ============================================================
+   가독성 개선
+   기존 레이아웃 크기는 유지하고 글자만 한 단계 확대
+============================================================ */
+
+.ad-inquiry-top > a {
+    font-size: 13.5px;
+}
+
+.ad-inquiry-top > span {
+    font-size: 9.5px;
+}
+
+.ad-inquiry-header h1 {
+    font-size: 31px;
+}
+
+.ad-inquiry-header p {
+    font-size: 14.5px;
+    line-height: 1.7;
+}
+
+
+/* 상태 메시지 */
+
+.ad-inquiry-message strong {
+    font-size: 13px;
+}
+
+.ad-inquiry-message span,
+.ad-inquiry-message small {
+    font-size: 11px;
+}
+
+
+/* 상단 광고 위치 안내 */
+
+.ad-inquiry-guide-title > div > span {
+    font-size: 8.5px;
+}
+
+.ad-inquiry-guide-title strong {
+    font-size: 13px;
+}
+
+.ad-inquiry-guide-title > a {
+    font-size: 10.5px;
+}
+
+.ad-inquiry-guide-grid span {
+    font-size: 8px;
+}
+
+.ad-inquiry-guide-grid strong {
+    font-size: 10.5px;
+}
+
+.ad-inquiry-guide-grid b {
+    font-size: 12px;
+}
+
+
+/* 각 단계 제목 */
+
+.ad-inquiry-panel-head > span {
+    font-size: 9.5px;
+}
+
+.ad-inquiry-panel-head h2 {
+    font-size: 16px;
+}
+
+.ad-inquiry-panel-head p {
+    font-size: 11px;
+    line-height: 1.5;
+}
+
+
+/* 입력 폼 */
+
+.ad-inquiry-field label {
+    font-size: 12px;
+}
+
+.ad-inquiry-field label > span {
+    font-size: 9.5px;
+}
+
+.ad-inquiry-field input[type="text"],
+.ad-inquiry-field input[type="email"],
+.ad-inquiry-field input[type="tel"],
+.ad-inquiry-field input[type="url"],
+.ad-inquiry-field input[type="date"],
+.ad-inquiry-field textarea {
+    font-size: 13px;
+}
+
+.ad-inquiry-field small,
+.ad-inquiry-help {
+    font-size: 10.5px;
+    line-height: 1.55;
+}
+
+
+/* 광고 위치 카드 */
+
+.ad-inquiry-position-top b {
+    font-size: 8.5px;
+}
+
+.ad-inquiry-position-top em {
+    font-size: 7px;
+}
+
+.ad-inquiry-position-card > strong {
+    font-size: 12px;
+}
+
+.ad-inquiry-position-card > small {
+    font-size: 9.5px;
+    line-height: 1.5;
+}
+
+.ad-inquiry-position-size {
+    font-size: 11px;
+}
+
+
+/* 가격 영역 */
+
+.ad-inquiry-price span {
+    font-size: 10.5px;
+}
+
+.ad-inquiry-price strong {
+    font-size: 11.5px;
+}
+
+.ad-inquiry-price .total strong {
+    font-size: 13px;
+}
+
+
+/* 이미지 업로드 */
+
+.ad-inquiry-image-preview > span {
+    font-size: 10px;
+}
+
+.ad-inquiry-image-guide span {
+    font-size: 8.5px;
+}
+
+.ad-inquiry-image-guide strong {
+    font-size: 13px;
+}
+
+.ad-inquiry-image-guide small {
+    font-size: 9.5px;
+    line-height: 1.5;
+}
+
+.ad-inquiry-image-info input[type="file"] {
+    font-size: 10.5px;
+}
+
+.ad-inquiry-image-info > p {
+    font-size: 9.5px;
+}
+
+
+/* 하단 버튼 */
+
+.ad-inquiry-cancel,
+.ad-inquiry-submit {
+    font-size: 12.5px;
+}
+
+
+/* 모바일에서도 너무 작아지지 않게 */
+
+@media (max-width: 680px) {
+
+    .ad-inquiry-header h1 {
+        font-size: 28px;
+    }
+
+    .ad-inquiry-header p {
+        font-size: 14px;
+    }
+
+    .ad-inquiry-panel-head h2 {
+        font-size: 15px;
+    }
+
+    .ad-inquiry-field label {
+        font-size: 11.5px;
+    }
+
+    .ad-inquiry-field input[type="text"],
+    .ad-inquiry-field input[type="email"],
+    .ad-inquiry-field input[type="tel"],
+    .ad-inquiry-field input[type="url"],
+    .ad-inquiry-field input[type="date"],
+    .ad-inquiry-field textarea {
+        font-size: 13px;
+    }
+}

@@ -1,911 +1,818 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
-	pageEncoding="UTF-8"%>
+    pageEncoding="UTF-8"%>
 
 <%
+request.setAttribute("activePage", "profile");
+request.setAttribute("settingsPage", "support");
 
-request.setAttribute(
-        "activePage",
-        "profile"
-);
-
-request.setAttribute(
-        "settingsPage",
-        "support"
-);
-
-String ctx =
-        request.getContextPath();
-
+String ctx = request.getContextPath();
 %>
 
-
 <!DOCTYPE html>
-
 <html lang="ko">
 
 <head>
 
 <meta charset="UTF-8">
-
 <meta name="viewport" content="width=device-width, initial-scale=1">
 
 <title>광고 안내 · Planb</title>
 
-
 <jsp:include page="/common/headStyles.jsp" />
 
+<link rel="stylesheet"
+    href="<%=ctx%>/view/assets/css/setting/settings.css">
 
 <link rel="stylesheet"
-	href="<%=ctx%>/view/assets/css/setting/settings.css">
+    href="<%=ctx%>/view/assets/css/support/support.css">
 
-
+<!-- 반드시 support.css보다 뒤에 -->
 <link rel="stylesheet"
-	href="<%=ctx%>/view/assets/css/support/support.css">
-
+    href="<%=ctx%>/view/assets/css/support/adGuide.css">
 
 </head>
 
 
 <body class="site-shell">
 
-
-	<jsp:include page="/common/header.jsp" />
-
-
-	<div class="settings-page">
+<jsp:include page="/common/header.jsp" />
 
 
-		<div class="settings-shell">
+<div class="settings-page">
+
+    <div class="settings-shell">
+
+        <jsp:include page="/common/settingsSidebar.jsp" />
 
 
-			<jsp:include page="/common/settingsSidebar.jsp" />
+        <main class="settings-main">
+
+            <div class="settings-content ad-guide-compact">
 
 
-
-			<main class="settings-main">
-
-
-				<div class="settings-content ad-guide-content">
-
-
-					<!-- =====================================================
-                     상단 제목
+                <!-- =====================================================
+                     HEADER
                 ====================================================== -->
 
-					<header class="settings-title">
+                <div class="ad-guide-top">
 
-						<span class="settings-eyebrow"> ADVERTISEMENT </span>
+                    <a class="ad-guide-back"
+                        href="<%=ctx%>/support/support">
 
+                        <span>←</span>
+                        고객지원
 
-						<h1>광고 안내</h1>
-
-
-						<p>Planb를 이용하는 여행자에게 브랜드와 서비스를 소개해보세요.</p>
-
-					</header>
+                    </a>
 
 
+                    <span class="ad-guide-badge">
+                        ADVERTISEMENT
+                    </span>
 
-					<a class="support-back" href="<%=ctx%>/support/support">
-
-						‹ 고객지원 </a>
+                </div>
 
 
+                <header class="ad-guide-header">
 
-					<!-- =====================================================
+                    <h1>광고 안내</h1>
+
+                    <p>
+                        Planb의 실제 콘텐츠 흐름에 맞춰
+                        자연스럽게 노출되는 광고 상품을 안내합니다.
+                    </p>
+
+                </header>
+
+
+
+                <!-- =====================================================
                      HERO
                 ====================================================== -->
 
-					<section class="ad-guide-hero">
+                <section class="ad-guide-intro-card">
+
+                    <span class="ad-guide-kicker">
+                        PLANB AD
+                    </span>
 
 
-						<div class="ad-guide-hero-copy">
+                    <h2>
+                        여행 콘텐츠 안에서<br>
+                        자연스럽게 브랜드를 소개하세요.
+                    </h2>
 
 
-							<span class="ad-guide-chip"> Planb Advertisement </span>
+                    <p>
+                        홈 메인 비주얼에는 광고를 넣지 않고,
+                        여행 일정 카드 사이 또는 상세 콘텐츠 양쪽의
+                        전용 광고 영역을 사용합니다.
+                    </p>
 
 
-							<h2>
+                    <div class="ad-guide-actions">
 
-								여행을 준비하는 순간에<br> <strong> 브랜드를 자연스럽게 노출하세요. </strong>
+                        <a class="ad-guide-primary"
+                            href="#adPositions">
+                            광고 위치 보기
+                        </a>
 
-							</h2>
+                        <a class="ad-guide-secondary"
+                            href="<%=ctx%>/support/adInquiry">
+                            광고 문의하기
+                        </a>
 
-
-							<p>숙박, 관광, 음식점, 여행상품 등 여행과 관련된 다양한 서비스를 Planb 사용자에게 소개할 수
-								있습니다.</p>
-
-
-
-							<div class="ad-guide-hero-actions">
-
-
-								<a href="#adPlacement" class="ad-guide-btn ad-guide-btn-primary">
-
-									광고 영역 살펴보기 </a> <a href="<%=ctx%>/support/adInquiry"
-									class="ad-guide-btn ad-guide-btn-soft"> 바로 문의하기 </a>
+                    </div>
 
 
-							</div>
+                    <div class="ad-guide-summary">
+
+                        <div>
+
+                            <span>HOME</span>
+                            <strong>슬라이딩 카드</strong>
+                            <b>600 × 400</b>
+
+                        </div>
 
 
-						</div>
+                        <div>
+
+                            <span>TRAVEL TIP</span>
+                            <strong>좌·우 사이드</strong>
+                            <b>160 × 600</b>
+
+                        </div>
 
 
+                        <div>
 
-						<!-- 우측 광고 미리보기 -->
+                            <span>TRAVEL MATE</span>
+                            <strong>좌·우 사이드</strong>
+                            <b>160 × 600</b>
 
-						<div class="ad-guide-hero-preview">
+                        </div>
 
+                    </div>
 
-							<div class="ad-browser">
-
-
-								<div class="ad-browser-top">
-
-									<span></span> <span></span> <span></span>
-
-								</div>
-
-
-								<div class="ad-browser-content">
-
-
-									<div class="ad-browser-logo">Planb</div>
-
-
-									<div class="ad-browser-banner">
-
-										<span> MAIN BANNER </span> <strong> 여기에 광고가 노출됩니다 </strong>
-
-									</div>
-
-
-									<div class="ad-browser-cards">
-
-
-										<div></div>
-
-										<div class="ad-browser-ad-card">AD</div>
-
-										<div></div>
-
-
-									</div>
-
-
-								</div>
-
-
-							</div>
-
-
-						</div>
-
-
-					</section>
+                </section>
 
 
 
-					<!-- =====================================================
-                     광고 영역
+                <div class="ad-guide-notice">
+
+                    <span>i</span>
+
+                    <p>
+                        <strong>
+                            홈 상단 메인 비주얼은 광고 영역이 아닙니다.
+                        </strong>
+                        홈 광고는 ‘지금 가장 인기 있는 여행일정’
+                        슬라이딩 카드 안에 노출됩니다.
+                    </p>
+
+                </div>
+
+
+
+                <!-- =====================================================
+                     광고 위치
                 ====================================================== -->
 
-					<section class="ad-guide-section" id="adPlacement">
+                <section class="ad-guide-section"
+                    id="adPositions">
 
+                    <div class="ad-guide-section-title">
 
-						<div class="ad-guide-section-head">
+                        <span>01</span>
 
+                        <div>
 
-							<span class="ad-guide-section-number"> 01 </span>
+                            <h2>광고 위치</h2>
 
+                            <p>
+                                실제 노출 위치와 이미지 권장 규격입니다.
+                            </p>
 
-							<div>
+                        </div>
 
-								<h2>광고 영역</h2>
+                    </div>
 
 
-								<p>광고 목적에 맞는 노출 위치를 선택하세요.</p>
 
-							</div>
+                    <!-- HOME -->
 
+                    <article class="ad-guide-card">
 
-						</div>
+                        <div class="ad-guide-card-copy">
 
+                            <div class="ad-guide-tags">
 
+                                <span class="main">
+                                    HOME
+                                </span>
 
-						<div class="ad-placement-grid">
+                                <span>
+                                    TRIP_CARD
+                                </span>
 
+                            </div>
 
-							<!-- 메인 배너 -->
 
-							<article class="ad-placement-card">
+                            <h3>
+                                홈 슬라이딩 카드 광고
+                            </h3>
 
 
-								<div class="ad-placement-preview ad-placement-preview-main">
+                            <p>
+                                인기 여행일정 카드 사이에 일반 여행 카드와
+                                같은 형태로 자연스럽게 노출됩니다.
+                            </p>
 
 
-									<div class="ad-preview-header">
+                            <div class="ad-guide-specs">
 
-										<span> Planb </span>
+                                <div>
+                                    <span>권장 이미지</span>
+                                    <strong>600 × 400 px</strong>
+                                </div>
 
+                                <div>
+                                    <span>비율</span>
+                                    <strong>3 : 2</strong>
+                                </div>
 
-										<div></div>
-										<div></div>
-										<div></div>
+                                <div>
+                                    <span>노출</span>
+                                    <strong>슬라이드</strong>
+                                </div>
 
-									</div>
+                            </div>
 
 
-									<div class="ad-main-banner">
+                            <ul>
 
-										<span class="ad-preview-label"> AD </span> <strong>
-											MAIN BANNER </strong> <small> 메인 화면 상단 </small>
+                                <li>
+                                    상단 메인 비주얼에는 광고가 들어가지 않습니다.
+                                </li>
 
+                                <li>
+                                    광고 카드에는 AD 표시가 함께 노출됩니다.
+                                </li>
 
-									</div>
+                                <li>
+                                    클릭 시 등록한 외부 URL로 이동할 수 있습니다.
+                                </li>
 
+                            </ul>
 
-									<div class="ad-preview-line"></div>
 
-									<div class="ad-preview-line short"></div>
+                            <a class="ad-guide-card-link"
+                                href="<%=ctx%>/support/adInquiry?adPosition=TRIP_CARD">
 
+                                홈 카드 광고 문의하기
+                                <span>→</span>
 
-								</div>
+                            </a>
 
+                        </div>
 
 
-								<div class="ad-placement-copy">
+                        <div class="ad-guide-preview">
 
+                            <div class="ad-preview-window">
 
-									<div class="ad-placement-title-row">
+                                <div class="ad-preview-top">
+                                    <strong>Planb</strong>
+                                    <span>HOME</span>
+                                </div>
 
-										<h3>메인 배너</h3>
 
+                                <div class="ad-preview-main">
+                                    <span>MAIN VISUAL</span>
+                                    <b>광고 없음</b>
+                                </div>
 
-										<span> MAIN_BANNER </span>
 
-									</div>
+                                <div class="ad-preview-sub">
+                                    인기 여행일정
+                                </div>
 
 
-									<p>홈 화면 상단의 넓은 영역에 노출되는 대표 광고입니다.</p>
+                                <div class="ad-preview-cards">
 
+                                    <div class="ad-preview-card">
+                                        <i></i>
+                                        <span>TRIP</span>
+                                    </div>
 
+                                    <div class="ad-preview-card ad">
+                                        <i>
+                                            <b>AD</b>
+                                        </i>
+                                        <span>SPONSORED</span>
+                                    </div>
 
-									<div class="ad-placement-tags">
+                                    <div class="ad-preview-card">
+                                        <i></i>
+                                        <span>TRIP</span>
+                                    </div>
 
-										<span> 높은 노출도 </span> <span> 브랜드 홍보 </span> <span> 프로모션
-										</span>
+                                </div>
 
-									</div>
+                            </div>
 
+                        </div>
 
-									<ul>
+                    </article>
 
-										<li>메인 화면에서 즉시 노출</li>
 
-										<li>넓은 이미지 활용 가능</li>
 
-										<li>브랜드·여행상품 홍보에 적합</li>
+                    <!-- TIP -->
 
-									</ul>
+                    <article class="ad-guide-card">
 
+                        <div class="ad-guide-card-copy">
 
-									<a class="ad-placement-select"
-										href="<%=ctx%>/support/adInquiry?adPosition=MAIN_BANNER">
+                            <div class="ad-guide-tags">
 
-										메인 배너 문의하기 → </a>
+                                <span class="main">
+                                    TRAVEL TIP
+                                </span>
 
+                                <span>
+                                    TIP_SIDE
+                                </span>
 
-								</div>
+                            </div>
 
 
-							</article>
+                            <h3>
+                                여행 꿀팁 사이드 광고
+                            </h3>
 
 
+                            <p>
+                                여행 꿀팁 상세 콘텐츠를 가운데에 두고
+                                좌측과 우측의 전용 사이드 영역에 노출됩니다.
+                            </p>
 
-							<!-- 여행 카드 광고 -->
 
-							<article class="ad-placement-card">
+                            <div class="ad-guide-specs">
 
+                                <div>
+                                    <span>이미지</span>
+                                    <strong>160 × 600 px</strong>
+                                </div>
 
-								<div class="ad-placement-preview">
+                                <div>
+                                    <span>위치</span>
+                                    <strong>좌 · 우</strong>
+                                </div>
 
+                                <div>
+                                    <span>화면</span>
+                                    <strong>PC</strong>
+                                </div>
 
-									<div class="ad-card-preview-grid">
+                            </div>
 
 
-										<div class="ad-card-preview-item">
+                            <ul>
 
-											<div></div>
+                                <li>
+                                    콘텐츠 본문과 분리된 전용 광고 영역입니다.
+                                </li>
 
-											<span> 여행 일정 </span>
+                                <li>
+                                    좌·우 각각 동일한 세로형 규격을 사용합니다.
+                                </li>
 
-										</div>
+                                <li>
+                                    모바일에서는 사이드 광고가 노출되지 않습니다.
+                                </li>
 
+                            </ul>
 
-										<div class="ad-card-preview-item active">
 
-											<div>
+                            <a class="ad-guide-card-link"
+                                href="<%=ctx%>/support/adInquiry?adPosition=TIP_SIDE">
 
-												<span> AD </span>
+                                여행 꿀팁 광고 문의하기
+                                <span>→</span>
 
-											</div>
+                            </a>
 
-											<strong> TRIP CARD </strong>
+                        </div>
 
-										</div>
 
+                        <div class="ad-guide-preview">
 
-										<div class="ad-card-preview-item">
+                            <div class="ad-preview-window">
 
-											<div></div>
+                                <div class="ad-preview-top">
+                                    <strong>Planb</strong>
+                                    <span>TRAVEL TIP</span>
+                                </div>
 
-											<span> 여행 일정 </span>
 
-										</div>
+                                <div class="ad-preview-side-layout">
 
+                                    <div class="ad-preview-side-ad">
+                                        <b>AD</b>
+                                        <span>160 × 600</span>
+                                    </div>
 
-										<div class="ad-card-preview-item">
 
-											<div></div>
+                                    <div class="ad-preview-content">
 
-											<span> 여행 일정 </span>
+                                        <div class="ad-preview-image tip"></div>
 
-										</div>
+                                        <i class="title"></i>
+                                        <i></i>
+                                        <i></i>
+                                        <i class="short"></i>
 
+                                    </div>
 
-									</div>
 
+                                    <div class="ad-preview-side-ad">
+                                        <b>AD</b>
+                                        <span>160 × 600</span>
+                                    </div>
 
-								</div>
+                                </div>
 
+                            </div>
 
+                        </div>
 
-								<div class="ad-placement-copy">
+                    </article>
 
 
-									<div class="ad-placement-title-row">
 
-										<h3>여행 카드 광고</h3>
+                    <!-- MATE -->
 
+                    <article class="ad-guide-card">
 
-										<span> TRIP_CARD </span>
+                        <div class="ad-guide-card-copy">
 
-									</div>
+                            <div class="ad-guide-tags">
 
+                                <span class="main">
+                                    TRAVEL MATE
+                                </span>
 
-									<p>여행 일정 목록 사이에 자연스럽게 노출되는 카드형 광고입니다.</p>
+                                <span>
+                                    MATE_SIDE
+                                </span>
 
+                            </div>
 
 
-									<div class="ad-placement-tags">
+                            <h3>
+                                여행 메이트 사이드 광고
+                            </h3>
 
-										<span> 자연스러운 노출 </span> <span> 여행 관심 사용자 </span> <span>
-											지역 광고 </span>
 
-									</div>
+                            <p>
+                                여행 메이트 상세 페이지에서도 게시글 본문
+                                양쪽의 전용 광고 영역에 세로형으로 노출됩니다.
+                            </p>
 
 
-									<ul>
+                            <div class="ad-guide-specs">
 
-										<li>여행 콘텐츠와 함께 노출</li>
+                                <div>
+                                    <span>이미지</span>
+                                    <strong>160 × 600 px</strong>
+                                </div>
 
-										<li>관광지·숙박·음식점에 적합</li>
+                                <div>
+                                    <span>위치</span>
+                                    <strong>좌 · 우</strong>
+                                </div>
 
-										<li>지역 기반 광고에 활용 가능</li>
+                                <div>
+                                    <span>화면</span>
+                                    <strong>PC</strong>
+                                </div>
 
-									</ul>
+                            </div>
 
 
-									<a class="ad-placement-select"
-										href="<%=ctx%>/support/adInquiry?adPosition=TRIP_CARD">
+                            <ul>
 
-										여행 카드 문의하기 → </a>
+                                <li>
+                                    모집 게시글과 겹치지 않는 사이드 영역입니다.
+                                </li>
 
+                                <li>
+                                    좌·우 각각 동일한 세로형 규격을 사용합니다.
+                                </li>
 
-								</div>
+                                <li>
+                                    모바일에서는 사이드 광고가 노출되지 않습니다.
+                                </li>
 
+                            </ul>
 
-							</article>
 
+                            <a class="ad-guide-card-link"
+                                href="<%=ctx%>/support/adInquiry?adPosition=MATE_SIDE">
 
-						</div>
+                                여행 메이트 광고 문의하기
+                                <span>→</span>
 
+                            </a>
 
-					</section>
+                        </div>
 
 
+                        <div class="ad-guide-preview">
 
-					<!-- =====================================================
+                            <div class="ad-preview-window">
+
+                                <div class="ad-preview-top">
+                                    <strong>Planb</strong>
+                                    <span>TRAVEL MATE</span>
+                                </div>
+
+
+                                <div class="ad-preview-side-layout">
+
+                                    <div class="ad-preview-side-ad">
+                                        <b>AD</b>
+                                        <span>160 × 600</span>
+                                    </div>
+
+
+                                    <div class="ad-preview-content">
+
+                                        <div class="ad-preview-image mate"></div>
+
+                                        <i class="title"></i>
+                                        <i></i>
+                                        <i></i>
+                                        <i class="short"></i>
+
+                                    </div>
+
+
+                                    <div class="ad-preview-side-ad">
+                                        <b>AD</b>
+                                        <span>160 × 600</span>
+                                    </div>
+
+                                </div>
+
+                            </div>
+
+                        </div>
+
+                    </article>
+
+                </section>
+
+
+
+                <!-- =====================================================
                      가격
                 ====================================================== -->
 
-					<section class="ad-guide-section">
+                <section class="ad-guide-section">
 
+                    <div class="ad-guide-section-title">
 
-						<div class="ad-guide-section-head">
+                        <span>02</span>
 
+                        <div>
 
-							<span class="ad-guide-section-number"> 02 </span>
+                            <h2>광고 비용</h2>
 
+                            <p>
+                                홈 카드 광고 기준 가격입니다.
+                            </p>
 
-							<div>
+                        </div>
 
-								<h2>광고 가격 안내</h2>
+                    </div>
 
 
-								<p>원하는 광고 위치와 기간을 확인하세요.</p>
+                    <div class="ad-guide-price">
 
-							</div>
+                        <div class="head">
+                            <span>광고 상품</span>
+                            <span>7일</span>
+                            <span>14일</span>
+                            <span>30일</span>
+                        </div>
 
 
-						</div>
+                        <div>
+                            <strong>
+                                홈 슬라이딩 카드
+                                <small>TRIP_CARD</small>
+                            </strong>
 
+                            <span>30,000원</span>
 
+                            <span class="recommend">
+                                50,000원
+                            </span>
 
-						<div class="ad-price-panel">
+                            <span>90,000원</span>
+                        </div>
 
 
-							<div class="ad-price-table-wrap">
+                        <div>
+                            <strong>
+                                여행 꿀팁 사이드
+                                <small>TIP_SIDE</small>
+                            </strong>
 
+                            <span class="consult">
+                                문의 후 안내
+                            </span>
+                        </div>
 
-								<table class="ad-price-table">
 
+                        <div>
+                            <strong>
+                                여행 메이트 사이드
+                                <small>MATE_SIDE</small>
+                            </strong>
 
-									<thead>
+                            <span class="consult">
+                                문의 후 안내
+                            </span>
+                        </div>
 
-										<tr>
+                    </div>
 
-											<th>광고 상품</th>
+                </section>
 
-											<th>7일</th>
 
-											<th>14일</th>
 
-											<th>30일</th>
-
-										</tr>
-
-									</thead>
-
-
-									<tbody>
-
-
-										<tr>
-
-											<td><strong> 메인 배너 </strong> <small> MAIN_BANNER
-											</small></td>
-
-
-											<td>50,000원</td>
-
-
-											<td class="ad-price-popular"><span> 추천 </span> 90,000원</td>
-
-
-											<td>160,000원</td>
-
-										</tr>
-
-
-
-										<tr>
-
-											<td><strong> 여행 카드 </strong> <small> TRIP_CARD </small>
-
-											</td>
-
-
-											<td>30,000원</td>
-
-
-											<td class="ad-price-popular"><span> 추천 </span> 50,000원</td>
-
-
-											<td>90,000원</td>
-
-										</tr>
-
-
-									</tbody>
-
-
-								</table>
-
-
-							</div>
-
-
-
-							<div class="ad-price-notice">
-
-
-								<svg width="18" height="18" viewBox="0 0 24 24" fill="none"
-									stroke="currentColor" stroke-width="1.8">
-
-                                <circle cx="12" cy="12" r="9">
-                                </circle>
-
-                                <path d="M12 11v5">
-                                </path>
-
-                                <path d="M12 8h.01">
-                                </path>
-
-                            </svg>
-
-
-								<div>
-
-									<strong> 가격 안내 </strong>
-
-
-									<p>
-
-										표시된 가격은 기본 광고 비용입니다. 노출 위치, 지역 및 요청 내용에 따라 최종 금액이 달라질 수 있습니다.
-
-										<br> 문의 접수 후 담당자가 광고 내용을 검토하여 최종 금액을 안내드립니다.
-
-									</p>
-
-								</div>
-
-
-							</div>
-
-
-						</div>
-
-
-					</section>
-
-
-
-					<!-- =====================================================
-                     진행 절차
+                <!-- =====================================================
+                     PROCESS
                 ====================================================== -->
 
-					<section class="ad-guide-section">
+                <section class="ad-guide-section">
 
+                    <div class="ad-guide-section-title">
 
-						<div class="ad-guide-section-head">
+                        <span>03</span>
 
+                        <div>
 
-							<span class="ad-guide-section-number"> 03 </span>
+                            <h2>진행 절차</h2>
 
+                            <p>
+                                문의 접수부터 광고 게시까지의 과정입니다.
+                            </p>
 
-							<div>
+                        </div>
 
-								<h2>광고 진행 절차</h2>
+                    </div>
 
 
-								<p>문의 접수부터 광고 게시까지의 과정입니다.</p>
+                    <div class="ad-guide-process">
 
-							</div>
+                        <div>
+                            <span>01</span>
+                            <strong>문의 접수</strong>
+                            <p>업체 정보와 광고 내용을 입력합니다.</p>
+                        </div>
 
+                        <div>
+                            <span>02</span>
+                            <strong>관리자 검토</strong>
+                            <p>이미지, 링크와 노출 일정을 확인합니다.</p>
+                        </div>
 
-						</div>
+                        <div>
+                            <span>03</span>
+                            <strong>승인 안내</strong>
+                            <p>광고 진행 가능 여부를 안내합니다.</p>
+                        </div>
 
+                        <div>
+                            <span>04</span>
+                            <strong>광고 게시</strong>
+                            <p>승인된 기간에 광고를 노출합니다.</p>
+                        </div>
 
+                    </div>
 
-						<div class="ad-process-grid">
+                </section>
 
 
-							<article class="ad-process-item">
 
-
-								<span class="ad-process-number"> 01 </span>
-
-
-								<div class="ad-process-icon">
-
-									<svg width="22" height="22" viewBox="0 0 24 24" fill="none"
-										stroke="currentColor" stroke-width="1.7">
-
-                                    <path d="M4 4h16v16H4z">
-                                    </path>
-
-                                    <path d="M8 9h8M8 13h8M8 17h5">
-                                    </path>
-
-                                </svg>
-
-								</div>
-
-
-								<h3>광고 문의 접수</h3>
-
-
-								<p>업체 정보와 광고 이미지, 희망 기간 및 위치를 입력합니다.</p>
-
-
-							</article>
-
-
-
-							<div class="ad-process-arrow">→</div>
-
-
-
-							<article class="ad-process-item">
-
-
-								<span class="ad-process-number"> 02 </span>
-
-
-								<div class="ad-process-icon">
-
-									<svg width="22" height="22" viewBox="0 0 24 24" fill="none"
-										stroke="currentColor" stroke-width="1.7">
-
-                                    <circle cx="11" cy="11" r="6">
-                                    </circle>
-
-                                    <path d="m16 16 4 4">
-                                    </path>
-
-                                </svg>
-
-								</div>
-
-
-								<h3>관리자 검토</h3>
-
-
-								<p>광고 이미지와 내용, 희망 노출 기간을 검토합니다.</p>
-
-
-							</article>
-
-
-
-							<div class="ad-process-arrow">→</div>
-
-
-
-							<article class="ad-process-item">
-
-
-								<span class="ad-process-number"> 03 </span>
-
-
-								<div class="ad-process-icon">
-
-									<svg width="22" height="22" viewBox="0 0 24 24" fill="none"
-										stroke="currentColor" stroke-width="1.7">
-
-                                    <path d="m5 12 4 4L19 6">
-                                    </path>
-
-                                </svg>
-
-								</div>
-
-
-								<h3>광고 승인</h3>
-
-
-								<p>검토가 완료되면 담당자가 승인 결과를 안내합니다.</p>
-
-
-							</article>
-
-
-
-							<div class="ad-process-arrow">→</div>
-
-
-
-							<article class="ad-process-item">
-
-
-								<span class="ad-process-number"> 04 </span>
-
-
-								<div class="ad-process-icon">
-
-									<svg width="22" height="22" viewBox="0 0 24 24" fill="none"
-										stroke="currentColor" stroke-width="1.7">
-
-                                    <path d="M4 5h16v11H4z">
-                                    </path>
-
-                                    <path d="M9 20h6">
-                                    </path>
-
-                                    <path d="M12 16v4">
-                                    </path>
-
-                                </svg>
-
-								</div>
-
-
-								<h3>광고 게시</h3>
-
-
-								<p>승인된 광고는 지정된 시작일부터 노출됩니다.</p>
-
-
-							</article>
-
-
-						</div>
-
-
-					</section>
-
-
-
-					<!-- =====================================================
-                     준비 사항
+                <!-- =====================================================
+                     READY
                 ====================================================== -->
 
-					<section class="ad-guide-section">
+                <section class="ad-guide-section">
 
+                    <div class="ad-guide-section-title">
 
-						<div class="ad-guide-section-head">
+                        <span>04</span>
 
+                        <div>
 
-							<span class="ad-guide-section-number"> 04 </span>
+                            <h2>문의 전 준비사항</h2>
 
+                            <p>
+                                아래 내용을 미리 준비해주세요.
+                            </p>
 
-							<div>
+                        </div>
 
-								<h2>광고 신청 전 준비사항</h2>
+                    </div>
 
 
-								<p>아래 내용을 미리 준비하면 빠르게 접수할 수 있습니다.</p>
+                    <div class="ad-guide-ready">
 
-							</div>
+                        <div>
+                            <span>01</span>
+                            <strong>업체 정보</strong>
+                            <small>업체명 · 담당자명</small>
+                        </div>
 
+                        <div>
+                            <span>02</span>
+                            <strong>연락처</strong>
+                            <small>전화번호 · 이메일</small>
+                        </div>
 
-						</div>
+                        <div>
+                            <span>03</span>
+                            <strong>광고 이미지</strong>
+                            <small>위치별 권장 규격</small>
+                        </div>
 
+                        <div>
+                            <span>04</span>
+                            <strong>광고 내용</strong>
+                            <small>상품 · 서비스 소개</small>
+                        </div>
 
+                        <div>
+                            <span>05</span>
+                            <strong>연결 주소</strong>
+                            <small>광고 클릭 URL</small>
+                        </div>
 
-						<div class="ad-prepare-grid">
+                        <div>
+                            <span>06</span>
+                            <strong>희망 기간</strong>
+                            <small>시작일 · 종료일</small>
+                        </div>
 
+                    </div>
 
-							<div class="ad-prepare-item">
+                </section>
 
-								<span>✓</span>
 
-								<div>
 
-									<strong> 업체 정보 </strong> <small> 업체명과 담당자명 </small>
-
-								</div>
-
-							</div>
-
-
-
-							<div class="ad-prepare-item">
-
-								<span>✓</span>
-
-								<div>
-
-									<strong> 연락처 </strong> <small> 전화번호와 이메일 </small>
-
-								</div>
-
-							</div>
-
-
-
-							<div class="ad-prepare-item">
-
-								<span>✓</span>
-
-								<div>
-
-									<strong> 광고 이미지 </strong> <small> 실제 노출할 광고 이미지 </small>
-
-								</div>
-
-							</div>
-
-
-
-							<div class="ad-prepare-item">
-
-								<span>✓</span>
-
-								<div>
-
-									<strong> 광고 내용 </strong> <small> 홍보하려는 상품 또는 서비스 </small>
-
-								</div>
-
-							</div>
-
-
-
-							<div class="ad-prepare-item">
-
-								<span>✓</span>
-
-								<div>
-
-									<strong> 연결 주소 </strong> <small> 광고 클릭 시 이동할 URL </small>
-
-								</div>
-
-							</div>
-
-
-
-							<div class="ad-prepare-item">
-
-								<span>✓</span>
-
-								<div>
-
-									<strong> 희망 기간 </strong> <small> 광고 시작일과 종료일 </small>
-
-								</div>
-
-							</div>
-
-
-						</div>
-
-
-					</section>
-
-
-
-					<!-- =====================================================
-                     마지막 CTA
+                <!-- =====================================================
+                     CTA
                 ====================================================== -->
 
-					<section class="ad-guide-final">
+                <section class="ad-guide-cta">
+
+                    <div>
+
+                        <span>READY TO ADVERTISE?</span>
+
+                        <h2>
+                            광고 문의를 시작해보세요.
+                        </h2>
+
+                        <p>
+                            원하는 광고 위치를 선택해 문의를 접수할 수 있습니다.
+                        </p>
+
+                    </div>
 
 
-						<span> READY TO ADVERTISE? </span>
+                    <a href="<%=ctx%>/support/adInquiry">
+                        광고 문의하기 →
+                    </a>
+
+                </section>
 
 
-						<h2>광고를 시작해 볼까요?</h2>
+            </div>
+
+        </main>
+
+    </div>
+
+</div>
 
 
-						<p>원하는 광고 위치와 기간을 선택하고 광고 문의를 접수해주세요.</p>
-
-
-						<a href="<%=ctx%>/support/adInquiry"
-							class="ad-guide-final-button"> 광고 문의하기 <svg width="17"
-								height="17" viewBox="0 0 24 24" fill="none"
-								stroke="currentColor" stroke-width="2">
-
-                            <path d="m9 18 6-6-6-6">
-                            </path>
-
-                        </svg>
-
-						</a>
-
-
-					</section>
-
-
-				</div>
-
-
-			</main>
-
-
-		</div>
-
-
-	</div>
-
-
-	<jsp:include page="/common/footer.jsp" />
-
+<jsp:include page="/common/footer.jsp" />
 
 </body>
-
 </html>
