@@ -116,6 +116,7 @@ public class ScheduleDetail extends HttpServlet {
 							point.put("blockId", block.getBlockId());
 							point.put("sequence", blockNumber);
 							point.put("type", block.getBlockType());
+							point.put("googlePlaceId", block.getGooglePlaceId());
 							point.put("title", block.getTitle());
 							point.put("placeName", block.getPlaceName());
 							point.put("address", block.getPlaceAddress());

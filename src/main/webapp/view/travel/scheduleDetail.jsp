@@ -13,7 +13,7 @@ request.setAttribute("activePage", "travel");
 <title><c:out value="${itinerary.title}" /> | Planb</title>
 <jsp:include page="/common/headStyles.jsp" />
 <link rel="stylesheet"
-   href="${pageContext.request.contextPath}/view/assets/css/travel/scheduleDetail.css?v=6">
+   href="${pageContext.request.contextPath}/view/assets/css/travel/scheduleDetail.css?v=7">
 </head>
 <body class="site-shell"><jsp:include page="/common/header.jsp" />
    <main id="scheduleDetail" class="detail-layout"
@@ -835,7 +835,7 @@ request.setAttribute("activePage", "travel");
          </div>
 
          <div class="detail-map-type-legend">
-            <span><i style="background: #3B82F6"></i>관광</span> <span><i
+            <span><i style="background: #6369D1"></i>관광</span> <span><i
                style="background: #F97316"></i>식사</span> <span><i
                style="background: #10B981"></i>숙소</span> <span><i
                style="background: #3B82F6"></i>교통</span> <span><i
@@ -950,7 +950,7 @@ request.setAttribute("activePage", "travel");
       src="${pageContext.request.contextPath}/view/assets/js/travel/scheduleDetail.js?v=13"></script>
       
    <script
-       src="${pageContext.request.contextPath}/view/assets/js/travel/scheduleDetailMap.js"></script>
+       src="${pageContext.request.contextPath}/view/assets/js/travel/scheduleDetailMap.js?v=2"></script>
 
    <script async
        onerror="detailMapLoadFailed()"

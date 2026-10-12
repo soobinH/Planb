@@ -788,7 +788,10 @@
 }
 
 .detail-map-filter-menu button {
-	display: block;
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: 12px;
 	width: 100%;
 	padding: 9px 10px;
 	border: 0;
@@ -798,6 +801,14 @@
 	text-align: left;
 	font-size: 12px;
 	font-weight: 600;
+}
+
+.detail-map-filter-line {
+	display: inline-block;
+	width: 24px;
+	height: 4px;
+	flex-shrink: 0;
+	border-radius: 999px;
 }
 
 .detail-map-filter-menu button:hover, .detail-map-filter-menu button[aria-pressed="true"]
@@ -853,7 +864,7 @@
 .detail-map-day-legend {
 	position: absolute;
 	top: 12px;
-	right: 12px;
+	left: 12px;
 	z-index: 2;
 	padding: 10px 12px;
 	border-radius: 12px;
@@ -866,11 +877,26 @@
 .detail-map-day-legend>div {
 	display: flex;
 	align-items: center;
-	gap: 7px;
+	justify-content: space-between;
+	gap: 12px;
+	min-width: 92px;
 }
 
 .detail-map-day-legend>div+div {
 	margin-top: 6px;
+}
+
+.detail-map-day-legend-label {
+	font-weight: 700;
+	white-space: nowrap;
+}
+
+.detail-map-day-legend-line {
+	display: inline-block;
+	width: 24px;
+	height: 4px;
+	border-radius: 999px;
+	flex-shrink: 0;
 }
 
 /* BLOCK 종류별 핀 범례 */
