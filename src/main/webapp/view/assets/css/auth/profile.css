@@ -1317,3 +1317,58 @@ body.profile-modal-open {
     }
 
 }
+
+/* ============================================================
+   프로필 무한스크롤
+============================================================ */
+
+.profile-feed-sentinel {
+    width: 100%;
+    height: 1px;
+}
+
+
+.profile-feed-loading {
+    width: 100%;
+
+    padding: 22px 0 8px;
+
+    text-align: center;
+
+    font-size: 12px;
+    font-weight: 700;
+
+    color: #9ca3af;
+}
+
+
+.profile-feed-loading::before {
+    content: "";
+
+    display: inline-block;
+
+    width: 14px;
+    height: 14px;
+
+    margin-right: 7px;
+
+    border: 2px solid #e5e7eb;
+    border-top-color: #6369D1;
+    border-radius: 50%;
+
+    vertical-align: -2px;
+
+    animation:
+        profile-feed-spin
+        .7s
+        linear
+        infinite;
+}
+
+
+@keyframes profile-feed-spin {
+
+    to {
+        transform: rotate(360deg);
+    }
+}

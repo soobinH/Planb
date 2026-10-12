@@ -1,282 +1,137 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE mapper PUBLIC
-    "-//mybatis.org//DTD Mapper 3.0//EN"
+
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
 <mapper namespace="mapper.profile.profileFeed">
+
+
+	<!-- ===================================================== 프로필 카드 공통 SELECT 
+		컬럼 좋아요/북마크 수에서는 작성자 본인이 자기 글에 누른 값은 제외한다. ====================================================== -->
+
+	<sql id="profileFeedColumns">
+
+		i.itinerary_id AS itineraryId,
+		i.title AS title,
+		i.country AS country,
+		i.city AS city,
+		i.thumbnail_img AS thumbnailImg,
+		i.visibility AS visibility,
+
+		(
+		SELECT COUNT(*)
+
+		FROM TB_ITINERARY_LIKE profileLike
+
+		WHERE profileLike.itinerary_id = i.itinerary_id
+
+		AND profileLike.user_id != i.user_id
+		) AS likeCount,
+
+		(
+		SELECT COUNT(*)
+
+		FROM TB_ITINERARY_BOOKMARK profileBookmark
+
+		WHERE profileBookmark.itinerary_id = i.itinerary_id
+
+		AND profileBookmark.user_id != i.user_id
+		) AS bookmarkCount,
+
+		(
+		SELECT COUNT(*)
+
+		FROM TB_ITINERARY_COMMENT profileComment
+
+		WHERE profileComment.itinerary_id = i.itinerary_id
+
+		AND profileComment.status = 'ACTIVE'
+		) AS commentCount
+
+	</sql>
+
+
+	<!-- ===================================================== 기존 전체 조회 다른 코드가 
+		기존 Service 메서드를 사용해도 깨지지 않게 유지 ====================================================== -->
 
 	<select id="selectMyItineraries" parameterType="long"
 		resultType="dto.profile.ProfileFeedDto">
 
 		SELECT
-
-		i.itinerary_id AS itineraryId,
-
-		i.title AS title,
-
-		i.country AS country,
-
-		i.city AS city,
-
-		i.thumbnail_img AS thumbnailImg,
-
-		i.visibility AS visibility,
-
-
-		/* 좋아요 개수 */
-		(
-		SELECT COUNT(*)
-
-		FROM
-		TB_ITINERARY_LIKE l
-
-		WHERE l.itinerary_id =
-		i.itinerary_id
-
-		) AS likeCount,
-
-
-		/* 북마크 개수 */
-		(
-		SELECT COUNT(*)
-
-		FROM TB_ITINERARY_BOOKMARK b
-
-		WHERE
-		b.itinerary_id =
-		i.itinerary_id
-
-		) AS bookmarkCount,
-
-
-		/* 삭제되지 않은 댓글 개수 */
-		(
-		SELECT COUNT(*)
-
-		FROM TB_ITINERARY_COMMENT c
-
-		WHERE c.itinerary_id =
-		i.itinerary_id
-
-		AND c.status =
-		'ACTIVE'
-
-		) AS commentCount
-
-
-		FROM TB_ITINERARY
-		i
-
-
-		WHERE i.user_id =
-		#{userId}
-
-		AND i.status =
-		'ACTIVE'
-
-
-		ORDER BY
-		i.created_at
-		DESC
-
-	</select>
-
-	<!-- ========================================= 내가 북마크한 여행 일정 ========================================== -->
-
-	<select id="selectBookmarkedItineraries" parameterType="long"
-		resultType="dto.profile.ProfileFeedDto">
-
-		SELECT
-
-		i.itinerary_id AS itineraryId,
-		i.title AS title,
-		i.country AS country,
-		i.city AS city,
-		i.thumbnail_img AS thumbnailImg,
-		i.visibility AS visibility,
-
-
-		(
-		SELECT COUNT(*)
-		FROM TB_ITINERARY_LIKE l
-		WHERE l.itinerary_id = i.itinerary_id
-		) AS likeCount,
-
-
-		(
-		SELECT COUNT(*)
-		FROM TB_ITINERARY_BOOKMARK bm
-		WHERE bm.itinerary_id = i.itinerary_id
-		)
-		AS bookmarkCount,
-
-
-		(
-		SELECT COUNT(*)
-		FROM TB_ITINERARY_COMMENT c
-		WHERE
-		c.itinerary_id = i.itinerary_id
-		AND c.status = 'ACTIVE'
-		) AS
-		commentCount
-
-
-		FROM TB_ITINERARY_BOOKMARK b
-
-
-		INNER JOIN TB_ITINERARY i
-
-		ON
-		i.itinerary_id =
-		b.itinerary_id
-
-
-		WHERE b.user_id = #{value}
-
-		AND i.status =
-		'ACTIVE'
-
-
-		ORDER BY b.created_at DESC
-
-	</select>
-
-	<!-- ========================================= 내가 좋아요한 여행 일정 ========================================== -->
-
-	<select id="selectLikedItineraries" parameterType="long"
-		resultType="dto.profile.ProfileFeedDto">
-
-		SELECT
-
-		i.itinerary_id AS itineraryId,
-
-		i.title AS title,
-
-		i.country AS country,
-
-		i.city AS city,
-
-		i.thumbnail_img AS thumbnailImg,
-
-		i.visibility AS visibility,
-
-
-		/* 좋아요 개수 */
-		(
-		SELECT COUNT(*)
-
-		FROM
-		TB_ITINERARY_LIKE x
-
-		WHERE x.itinerary_id =
-		i.itinerary_id
-
-		) AS likeCount,
-
-
-		/* 북마크 개수 */
-		(
-		SELECT COUNT(*)
-
-		FROM TB_ITINERARY_BOOKMARK b
-
-		WHERE
-		b.itinerary_id =
-		i.itinerary_id
-
-		) AS bookmarkCount,
-
-
-		/* 댓글 개수 */
-		(
-		SELECT
-		COUNT(*)
-
-		FROM TB_ITINERARY_COMMENT c
-
-		WHERE c.itinerary_id =
-		i.itinerary_id
-
-		AND c.status =
-		'ACTIVE'
-
-		) AS commentCount
-
-
-		FROM
-		TB_ITINERARY_LIKE l
-
-
-		INNER JOIN TB_ITINERARY i
-
-		ON i.itinerary_id =
-		l.itinerary_id
-
-
-		WHERE l.user_id =
-		#{value}
-
-
-		/* 삭제된 일정 제외 */
-		AND i.status =
-		'ACTIVE'
-
-
-		/* 내가 작성한 게시글 제외 */
-		AND i.user_id !=
-		#{value}
-
-
-		/* 다른 사람의 공개 일정만 */
-		AND i.visibility =
-		'PUBLIC'
-
-
-		ORDER BY
-		l.created_at DESC
-
-	</select>
-
-	<select id="selectPublicItineraries" parameterType="long"
-		resultType="dto.profile.ProfileFeedDto">
-
-		SELECT
-
-		i.itinerary_id AS itineraryId,
-		i.title AS title,
-		i.country AS country,
-		i.city AS city,
-		i.thumbnail_img AS thumbnailImg,
-		i.visibility AS visibility,
-
-		(
-		SELECT COUNT(*)
-		FROM TB_ITINERARY_LIKE l
-		WHERE l.itinerary_id = i.itinerary_id
-		) AS likeCount,
-
-		(
-		SELECT COUNT(*)
-		FROM TB_ITINERARY_BOOKMARK b
-		WHERE b.itinerary_id = i.itinerary_id
-		) AS
-		bookmarkCount,
-
-		(
-		SELECT COUNT(*)
-		FROM TB_ITINERARY_COMMENT c
-		WHERE
-		c.itinerary_id = i.itinerary_id
-		AND c.status = 'ACTIVE'
-		) AS
-		commentCount
+		<include refid="profileFeedColumns" />
 
 		FROM TB_ITINERARY i
 
 		WHERE i.user_id = #{value}
 
-		AND i.status
-		= 'ACTIVE'
+		AND i.status = 'ACTIVE'
+
+		ORDER BY i.created_at DESC
+
+	</select>
+
+
+	<select id="selectBookmarkedItineraries" parameterType="long"
+		resultType="dto.profile.ProfileFeedDto">
+
+		SELECT
+		<include refid="profileFeedColumns" />
+
+		FROM TB_ITINERARY_BOOKMARK myBookmark
+
+		INNER JOIN TB_ITINERARY i
+		ON i.itinerary_id = myBookmark.itinerary_id
+
+		WHERE myBookmark.user_id = #{value}
+
+		AND i.status = 'ACTIVE'
+
+		AND (
+		i.user_id = #{value}
+		OR i.visibility = 'PUBLIC'
+		)
+
+		ORDER BY myBookmark.created_at DESC
+
+	</select>
+
+
+	<select id="selectLikedItineraries" parameterType="long"
+		resultType="dto.profile.ProfileFeedDto">
+
+		SELECT
+		<include refid="profileFeedColumns" />
+
+		FROM TB_ITINERARY_LIKE myLike
+
+		INNER JOIN TB_ITINERARY i
+		ON i.itinerary_id = myLike.itinerary_id
+
+		WHERE myLike.user_id = #{value}
+
+		AND i.status = 'ACTIVE'
+
+		AND i.visibility = 'PUBLIC'
+
+		AND i.user_id != #{value}
+
+		ORDER BY myLike.created_at DESC
+
+	</select>
+
+
+	<select id="selectPublicItineraries" parameterType="long"
+		resultType="dto.profile.ProfileFeedDto">
+
+		SELECT
+		<include refid="profileFeedColumns" />
+
+		FROM TB_ITINERARY i
+
+		WHERE i.user_id = #{value}
+
+		AND i.status = 'ACTIVE'
 
 		AND i.visibility = 'PUBLIC'
 
@@ -284,176 +139,255 @@
 
 	</select>
 
+
 	<select id="selectPublicLikedItineraries" parameterType="long"
 		resultType="dto.profile.ProfileFeedDto">
 
 		SELECT
+		<include refid="profileFeedColumns" />
 
-		i.itinerary_id AS itineraryId,
-
-		i.title,
-
-		i.country,
-
-		i.city,
-
-		i.thumbnail_img AS thumbnailImg,
-
-		i.visibility,
-
-
-		/*
-		* 현재 일정의 전체 좋아요 수
-		*/
-		(
-		SELECT COUNT(*)
-
-		FROM TB_ITINERARY_LIKE x
-
-		WHERE x.itinerary_id =
-		i.itinerary_id
-
-		) AS likeCount,
-
-
-		/*
-		* 현재 일정의 전체 북마크 수
-		*/
-		(
-		SELECT COUNT(*)
-
-		FROM TB_ITINERARY_BOOKMARK b
-
-		WHERE b.itinerary_id =
-		i.itinerary_id
-
-		) AS bookmarkCount,
-
-
-		/*
-		* 삭제되지 않은 댓글 수
-		*/
-		(
-		SELECT COUNT(*)
-
-		FROM TB_ITINERARY_COMMENT c
-
-		WHERE c.itinerary_id =
-		i.itinerary_id
-
-		AND c.status =
-		'ACTIVE'
-
-		) AS commentCount
-
-
-		FROM TB_ITINERARY_LIKE l
-
+		FROM TB_ITINERARY_LIKE profileLiked
 
 		INNER JOIN TB_ITINERARY i
+		ON i.itinerary_id = profileLiked.itinerary_id
 
-		ON i.itinerary_id =
-		l.itinerary_id
+		WHERE profileLiked.user_id = #{value}
 
+		AND i.status = 'ACTIVE'
 
-		WHERE l.user_id =
-		#{value}
+		AND i.visibility = 'PUBLIC'
 
+		AND i.user_id != #{value}
 
-		/* 삭제된 일정 제외 */
-		AND i.status =
-		'ACTIVE'
-
-
-		/* 공개 일정만 */
-		AND i.visibility =
-		'PUBLIC'
-
-
-		/*
-		* 중요
-		*
-		* 본인이 작성한 게시글은
-		* 좋아요한 게시글 목록에서 제외
-		*/
-		AND i.user_id !=
-		#{value}
-
-
-		ORDER BY
-		l.created_at DESC
+		ORDER BY profileLiked.created_at DESC
 
 	</select>
+
 
 	<select id="selectPublicBookmarkedItineraries"
 		parameterType="long" resultType="dto.profile.ProfileFeedDto">
 
 		SELECT
-		i.itinerary_id AS itineraryId,
-		i.title,
-		i.country,
-		i.city,
-		i.thumbnail_img AS thumbnailImg,
-		i.visibility,
+		<include refid="profileFeedColumns" />
 
-		(
-		SELECT COUNT(*)
-		FROM TB_ITINERARY_LIKE l
-		WHERE
-		l.itinerary_id = i.itinerary_id
-		) AS likeCount,
-
-		(
-		SELECT COUNT(*)
-		FROM
-		TB_ITINERARY_BOOKMARK x
-		WHERE x.itinerary_id = i.itinerary_id
-		) AS
-		bookmarkCount,
-
-		(
-		SELECT COUNT(*)
-		FROM TB_ITINERARY_COMMENT c
-		WHERE
-		c.itinerary_id = i.itinerary_id
-		AND c.status = 'ACTIVE'
-		) AS
-		commentCount
-
-		FROM TB_ITINERARY_BOOKMARK b
+		FROM TB_ITINERARY_BOOKMARK profileSaved
 
 		INNER JOIN TB_ITINERARY i
-		ON
-		i.itinerary_id = b.itinerary_id
+		ON i.itinerary_id = profileSaved.itinerary_id
 
-		WHERE b.user_id = #{value}
+		WHERE profileSaved.user_id = #{value}
 
-		AND i.status
-		= 'ACTIVE'
+		AND i.status = 'ACTIVE'
 
 		AND i.visibility = 'PUBLIC'
 
-		ORDER BY b.created_at DESC
+		ORDER BY profileSaved.created_at DESC
 
 	</select>
+
+
+	<!-- ===================================================== 무한 스크롤 - 내 프로필 
+		====================================================== -->
+
+	<select id="selectMyItinerariesPage" parameterType="map"
+		resultType="dto.profile.ProfileFeedDto">
+
+		SELECT
+		<include refid="profileFeedColumns" />
+
+		FROM TB_ITINERARY i
+
+		WHERE i.user_id = #{userId}
+
+		AND i.status = 'ACTIVE'
+
+		ORDER BY i.created_at DESC
+
+		LIMIT #{limit}
+		OFFSET #{offset}
+
+	</select>
+
+
+	<select id="selectBookmarkedItinerariesPage" parameterType="map"
+		resultType="dto.profile.ProfileFeedDto">
+
+		SELECT
+		<include refid="profileFeedColumns" />
+
+		FROM TB_ITINERARY_BOOKMARK myBookmark
+
+		INNER JOIN TB_ITINERARY i
+		ON i.itinerary_id = myBookmark.itinerary_id
+
+		WHERE myBookmark.user_id = #{userId}
+
+		AND i.status = 'ACTIVE'
+
+		AND (
+		i.user_id = #{userId}
+		OR i.visibility = 'PUBLIC'
+		)
+
+		ORDER BY myBookmark.created_at DESC
+
+		LIMIT #{limit}
+		OFFSET #{offset}
+
+	</select>
+
+
+	<select id="selectLikedItinerariesPage" parameterType="map"
+		resultType="dto.profile.ProfileFeedDto">
+
+		SELECT
+		<include refid="profileFeedColumns" />
+
+		FROM TB_ITINERARY_LIKE myLike
+
+		INNER JOIN TB_ITINERARY i
+		ON i.itinerary_id = myLike.itinerary_id
+
+		WHERE myLike.user_id = #{userId}
+
+		AND i.status = 'ACTIVE'
+
+		AND i.visibility = 'PUBLIC'
+
+		AND i.user_id != #{userId}
+
+		ORDER BY myLike.created_at DESC
+
+		LIMIT #{limit}
+		OFFSET #{offset}
+
+	</select>
+
+
+	<!-- ===================================================== 무한 스크롤 - 상대 프로필 
+		====================================================== -->
+
+	<select id="selectPublicItinerariesPage" parameterType="map"
+		resultType="dto.profile.ProfileFeedDto">
+
+		SELECT
+		<include refid="profileFeedColumns" />
+
+		FROM TB_ITINERARY i
+
+		WHERE i.user_id = #{userId}
+
+		AND i.status = 'ACTIVE'
+
+		AND i.visibility = 'PUBLIC'
+
+		ORDER BY i.created_at DESC
+
+		LIMIT #{limit}
+		OFFSET #{offset}
+
+	</select>
+
+
+	<select id="selectPublicLikedItinerariesPage"
+		parameterType="map" resultType="dto.profile.ProfileFeedDto">
+
+		SELECT
+		<include refid="profileFeedColumns" />
+
+		FROM TB_ITINERARY_LIKE profileLiked
+
+		INNER JOIN TB_ITINERARY i
+		ON i.itinerary_id = profileLiked.itinerary_id
+
+		WHERE profileLiked.user_id = #{userId}
+
+		AND i.status = 'ACTIVE'
+
+		AND i.visibility = 'PUBLIC'
+
+		AND i.user_id != #{userId}
+
+		ORDER BY profileLiked.created_at DESC
+
+		LIMIT #{limit}
+		OFFSET #{offset}
+
+	</select>
+
+
+	<select id="selectPublicBookmarkedItinerariesPage"
+		parameterType="map" resultType="dto.profile.ProfileFeedDto">
+
+		SELECT
+		<include refid="profileFeedColumns" />
+
+		FROM TB_ITINERARY_BOOKMARK profileSaved
+
+		INNER JOIN TB_ITINERARY i
+		ON i.itinerary_id = profileSaved.itinerary_id
+
+		WHERE profileSaved.user_id = #{userId}
+
+		AND i.status = 'ACTIVE'
+
+		AND i.visibility = 'PUBLIC'
+
+		ORDER BY profileSaved.created_at DESC
+
+		LIMIT #{limit}
+		OFFSET #{offset}
+
+	</select>
+
+
+	<!-- ===================================================== 상단 통계 ====================================================== -->
+
+	<select id="countMyItineraries" parameterType="long"
+		resultType="int">
+
+		SELECT COUNT(*)
+
+		FROM TB_ITINERARY
+
+		WHERE user_id = #{value}
+
+		AND status = 'ACTIVE'
+
+	</select>
+
+
+	<select id="countPublicItineraries" parameterType="long"
+		resultType="int">
+
+		SELECT COUNT(*)
+
+		FROM TB_ITINERARY
+
+		WHERE user_id = #{value}
+
+		AND status = 'ACTIVE'
+
+		AND visibility = 'PUBLIC'
+
+	</select>
+
 
 	<select id="selectReceivedLikeCount" parameterType="long"
 		resultType="int">
 
 		SELECT COUNT(*)
 
-		FROM TB_ITINERARY_LIKE l
+		FROM TB_ITINERARY_LIKE profileLike
 
-		INNER JOIN
-		TB_ITINERARY i
-		ON i.itinerary_id = l.itinerary_id
+		INNER JOIN TB_ITINERARY i
+		ON i.itinerary_id = profileLike.itinerary_id
 
-		WHERE i.user_id =
-		#{value}
+		WHERE i.user_id = #{value}
 
 		AND i.status = 'ACTIVE'
 
-		AND l.user_id != i.user_id
+		AND profileLike.user_id != i.user_id
 
 	</select>
 
@@ -463,21 +397,85 @@
 
 		SELECT COUNT(*)
 
-		FROM TB_ITINERARY_BOOKMARK b
+		FROM TB_ITINERARY_BOOKMARK profileBookmark
 
-		INNER JOIN
-		TB_ITINERARY i
-		ON i.itinerary_id = b.itinerary_id
+		INNER JOIN TB_ITINERARY i
+		ON i.itinerary_id = profileBookmark.itinerary_id
 
-		WHERE i.user_id =
-		#{value}
+		WHERE i.user_id = #{value}
 
 		AND i.status = 'ACTIVE'
 
-		AND b.user_id != i.user_id
+		AND profileBookmark.user_id != i.user_id
 
 	</select>
 
+
+	<select id="selectPublicReceivedLikeCount" parameterType="long"
+		resultType="int">
+
+		SELECT COUNT(*)
+
+		FROM TB_ITINERARY_LIKE profileLike
+
+		INNER JOIN TB_ITINERARY i
+		ON i.itinerary_id = profileLike.itinerary_id
+
+		WHERE i.user_id = #{value}
+
+		AND i.status = 'ACTIVE'
+
+		AND i.visibility = 'PUBLIC'
+
+		AND profileLike.user_id != i.user_id
+
+	</select>
+
+
+	<select id="selectPublicReceivedBookmarkCount"
+		parameterType="long" resultType="int">
+
+		SELECT COUNT(*)
+
+		FROM TB_ITINERARY_BOOKMARK profileBookmark
+
+		INNER JOIN TB_ITINERARY i
+		ON i.itinerary_id = profileBookmark.itinerary_id
+
+		WHERE i.user_id = #{value}
+
+		AND i.status = 'ACTIVE'
+
+		AND i.visibility = 'PUBLIC'
+
+		AND profileBookmark.user_id != i.user_id
+
+	</select>
+
+
+	<!-- ===================================================== 내 일정 soft delete 
+		====================================================== -->
+
+	<update id="deleteItinerary" parameterType="map">
+
+		UPDATE TB_ITINERARY
+
+		SET
+		status = 'DELETED',
+		deleted_by_user_id = #{userId},
+		deleted_at = NOW()
+
+		WHERE itinerary_id = #{itineraryId}
+
+		AND user_id = #{userId}
+
+		AND status = 'ACTIVE'
+
+	</update>
+
+
+	<!-- ===================================================== 프로필 활동 기존 기능 
+		유지 ====================================================== -->
 
 	<select id="selectProfileActivities" parameterType="long"
 		resultType="dto.profile.ProfileActivityDto">
@@ -493,134 +491,117 @@
 
 		FROM (
 
-		<!-- ======================================== 1. 내가 작성한 여행꿀팁 ========================================= -->
-
 		SELECT
 		'TIP_POST' AS activityType,
 		'POST' AS activityGroup,
-		t.tip_id AS
-		activityId,
+		t.tip_id AS activityId,
 		t.tip_id AS targetId,
 		t.title AS targetTitle,
-		t.content AS
-		content,
+		t.content AS content,
 		t.created_at AS createdAt
 
 		FROM tb_tip t
 
-		WHERE t.user_id =
-		#{value}
+		WHERE t.user_id = #{value}
+
 		AND t.status = 'ACTIVE'
 
 
 		UNION ALL
 
 
-		<!-- ======================================== 2. 내가 작성한 여행메이트 글 ========================================= -->
-
 		SELECT
 		'MATE_POST' AS activityType,
 		'POST' AS activityGroup,
-		m.mate_id AS
-		activityId,
+		m.mate_id AS activityId,
 		m.mate_id AS targetId,
 		m.title AS targetTitle,
-		m.content AS
-		content,
+		m.content AS content,
 		m.created_at AS createdAt
 
 		FROM tb_mate m
 
-		WHERE m.user_id =
-		#{value}
+		WHERE m.user_id = #{value}
+
 		AND m.status = 'ACTIVE'
 
 
 		UNION ALL
 
-
-		<!-- ======================================== 3. 내가 작성한 여행꿀팁 댓글 ========================================= -->
 
 		SELECT
 		'TIP_COMMENT' AS activityType,
 		'COMMENT' AS activityGroup,
 		c.comment_id AS activityId,
 		t.tip_id AS targetId,
-		t.title AS
-		targetTitle,
+		t.title AS targetTitle,
 		c.content AS content,
 		c.created_at AS createdAt
 
-		FROM
-		tb_tip_comment c
+		FROM tb_tip_comment c
 
 		INNER JOIN tb_tip t
 		ON t.tip_id = c.tip_id
 
-		WHERE
-		c.user_id = #{value}
+		WHERE c.user_id = #{value}
+
 		AND c.status = 'ACTIVE'
+
 		AND t.status = 'ACTIVE'
 
 
 		UNION ALL
 
 
-		<!-- ======================================== 4. 내가 작성한 여행메이트 댓글 ========================================= -->
-
 		SELECT
 		'MATE_COMMENT' AS activityType,
 		'COMMENT' AS activityGroup,
 		c.comment_id AS activityId,
 		m.mate_id AS targetId,
-		m.title AS
-		targetTitle,
+		m.title AS targetTitle,
 		c.content AS content,
 		c.created_at AS createdAt
 
-		FROM
-		tb_mate_comment c
+		FROM tb_mate_comment c
 
 		INNER JOIN tb_mate m
 		ON m.mate_id = c.mate_id
 
-		WHERE
-		c.user_id = #{value}
+		WHERE c.user_id = #{value}
+
 		AND c.status = 'ACTIVE'
+
 		AND m.status = 'ACTIVE'
 
 
 		UNION ALL
 
 
-		<!-- ======================================== 5. 내가 작성한 여행 일정 댓글 ========================================= -->
-
 		SELECT
 		'ITINERARY_COMMENT' AS activityType,
 		'COMMENT' AS activityGroup,
 		c.comment_id AS activityId,
 		i.itinerary_id AS targetId,
-		i.title AS
-		targetTitle,
+		i.title AS targetTitle,
 		c.content AS content,
 		c.created_at AS createdAt
 
-		FROM
-		tb_itinerary_comment c
+		FROM tb_itinerary_comment c
 
 		INNER JOIN tb_itinerary i
-		ON i.itinerary_id =
-		c.itinerary_id
+		ON i.itinerary_id = c.itinerary_id
 
 		WHERE c.user_id = #{value}
+
 		AND c.status = 'ACTIVE'
-		AND
-		i.status = 'ACTIVE'
+
+		AND i.status = 'ACTIVE'
 
 		) activity
 
 		ORDER BY createdAt DESC
 
 	</select>
+
 
 </mapper>

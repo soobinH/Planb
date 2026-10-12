@@ -12,10 +12,8 @@ import javax.servlet.http.HttpServletResponse;
 
 import dto.member.UserDto;
 import dto.profile.ProfileFeedDto;
-
 import service.member.UserService;
 import service.member.UserServiceImpl;
-
 import service.profile.ProfileFeedService;
 import service.profile.ProfileFeedServiceImpl;
 
@@ -24,42 +22,22 @@ public class userProfile extends HttpServlet {
 
 	private static final long serialVersionUID = 1L;
 
-	/*
-	 * ========================================================= Service
-	 * =========================================================
-	 */
+	private static final int PAGE_SIZE = 9;
 
-	private UserService userService = new UserServiceImpl();
+	private final UserService userService = new UserServiceImpl();
 
-	private ProfileFeedService profileFeedService = new ProfileFeedServiceImpl();
-
-	/*
-	 * ========================================================= 생성자
-	 * =========================================================
-	 */
+	private final ProfileFeedService profileFeedService = new ProfileFeedServiceImpl();
 
 	public userProfile() {
 
 		super();
 	}
 
-	/*
-	 * ========================================================= GET
-	 *
-	 * 예: /profile/userProfile?userId=3
-	 * =========================================================
-	 */
-
 	@Override
 	protected void doGet(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
 
 		try {
-
-			/*
-			 * ================================================= 1. 조회할 회원 번호
-			 * =================================================
-			 */
 
 			String userIdParam = request.getParameter("userId");
 
@@ -70,17 +48,7 @@ public class userProfile extends HttpServlet {
 				return;
 			}
 
-			/*
-			 * ================================================= 2. String -> long
-			 * =================================================
-			 */
-
 			long targetUserId = Long.parseLong(userIdParam);
-
-			/*
-			 * ================================================= 3. 상대방 회원정보 조회
-			 * =================================================
-			 */
 
 			UserDto targetUser = userService.getUserById(targetUserId);
 
@@ -91,41 +59,15 @@ public class userProfile extends HttpServlet {
 				return;
 			}
 
-			/*
-			 * ================================================= 4. 프로필 비공개 여부
-			 * =================================================
-			 *
-			 * profile_visibility
-			 *
-			 * PUBLIC PRIVATE
-			 */
-
 			boolean privateProfile = "PRIVATE".equalsIgnoreCase(targetUser.getProfileVisibility());
-
-			/*
-			 * ================================================= 5. 상대방 회원정보는 항상 JSP에 전달
-			 * =================================================
-			 *
-			 * 비공개 계정이어도
-			 *
-			 * 프로필 이미지 닉네임 로그인 아이디 신고 버튼
-			 *
-			 * 정도는 표시하기 위해 필요
-			 */
 
 			request.setAttribute("targetUser", targetUser);
 
 			request.setAttribute("privateProfile", privateProfile);
 
 			/*
-			 * ================================================= 6. 비공개 프로필
-			 * =================================================
-			 *
-			 * 중요한 부분:
-			 *
-			 * 비공개라면 일정/좋아요/북마크를 DB에서 아예 조회하지 않는다.
+			 * 비공개 프로필은 피드 데이터를 조회하지 않는다.
 			 */
-
 			if (privateProfile) {
 
 				request.setAttribute("itineraries", new ArrayList<ProfileFeedDto>());
@@ -134,17 +76,9 @@ public class userProfile extends HttpServlet {
 
 				request.setAttribute("bookmarkedItineraries", new ArrayList<ProfileFeedDto>());
 
-				/*
-				 * 프로필 자체가 비공개이면 좋아요/북마크 개별 공개설정보다 비공개 설정이 우선한다.
-				 */
-
 				request.setAttribute("showLikedItinerary", false);
 
 				request.setAttribute("showBookmarkedItinerary", false);
-
-				/*
-				 * 통계도 노출하지 않는다.
-				 */
 
 				request.setAttribute("postCount", 0);
 
@@ -152,9 +86,11 @@ public class userProfile extends HttpServlet {
 
 				request.setAttribute("bookmarkCount", 0);
 
-				/*
-				 * JSP 이동 후 종료
-				 */
+				request.setAttribute("userPostsHasMore", false);
+
+				request.setAttribute("userSavedHasMore", false);
+
+				request.setAttribute("userLikedHasMore", false);
 
 				request.getRequestDispatcher("/view/profile/userProfile.jsp").forward(request, response);
 
@@ -162,94 +98,57 @@ public class userProfile extends HttpServlet {
 			}
 
 			/*
-			 * ================================================= 여기부터는 PUBLIC 프로필만 실행
-			 * =================================================
+			 * PUBLIC 프로필의 작성 일정. 다음 페이지 존재 여부를 확인하기 위해 10개 조회.
 			 */
+			List<ProfileFeedDto> itineraryPage = profileFeedService.getPublicItinerariesPage(targetUserId, 0,
+					PAGE_SIZE + 1);
 
-			/*
-			 * ================================================= 7. 상대방이 작성한 PUBLIC 일정
-			 * =================================================
-			 */
+			boolean userPostsHasMore = hasMore(itineraryPage);
 
-			List<ProfileFeedDto> itineraries = profileFeedService.getPublicItineraries(targetUserId);
-
-			if (itineraries == null) {
-
-				itineraries = new ArrayList<ProfileFeedDto>();
-			}
-
-			/*
-			 * ================================================= 8. 좋아요 / 북마크 공개 설정
-			 * =================================================
-			 *
-			 * Boolean이 null일 수도 있으므로 Boolean.TRUE.equals() 사용
-			 */
+			List<ProfileFeedDto> itineraries = firstPage(itineraryPage);
 
 			boolean showLikedItinerary = Boolean.TRUE.equals(targetUser.getShowLikedItinerary());
 
 			boolean showBookmarkedItinerary = Boolean.TRUE.equals(targetUser.getShowBookmarkedItinerary());
 
-			/*
-			 * ================================================= 9. 좋아요한 PUBLIC 일정
-			 * =================================================
-			 */
-
 			List<ProfileFeedDto> likedItineraries = new ArrayList<ProfileFeedDto>();
-
-			if (showLikedItinerary) {
-
-				likedItineraries = profileFeedService.getPublicLikedItineraries(targetUserId);
-
-				if (likedItineraries == null) {
-
-					likedItineraries = new ArrayList<ProfileFeedDto>();
-				}
-			}
-
-			/*
-			 * ================================================= 10. 북마크한 PUBLIC 일정
-			 * =================================================
-			 */
 
 			List<ProfileFeedDto> bookmarkedItineraries = new ArrayList<ProfileFeedDto>();
 
+			boolean userLikedHasMore = false;
+
+			boolean userSavedHasMore = false;
+
+			if (showLikedItinerary) {
+
+				List<ProfileFeedDto> likedPage = profileFeedService.getPublicLikedItinerariesPage(targetUserId, 0,
+						PAGE_SIZE + 1);
+
+				userLikedHasMore = hasMore(likedPage);
+
+				likedItineraries = firstPage(likedPage);
+			}
+
 			if (showBookmarkedItinerary) {
 
-				bookmarkedItineraries = profileFeedService.getPublicBookmarkedItineraries(targetUserId);
+				List<ProfileFeedDto> savedPage = profileFeedService.getPublicBookmarkedItinerariesPage(targetUserId, 0,
+						PAGE_SIZE + 1);
 
-				if (bookmarkedItineraries == null) {
+				userSavedHasMore = hasMore(savedPage);
 
-					bookmarkedItineraries = new ArrayList<ProfileFeedDto>();
-				}
+				bookmarkedItineraries = firstPage(savedPage);
 			}
 
 			/*
-			 * ================================================= 11. 게시물 수
-			 * =================================================
-			 */
-
-			int postCount = itineraries.size();
-
-			/*
-			 * ================================================= 12. 받은 좋아요 총합
+			 * 상단 통계는 현재 화면에 로딩된 9개가 아니라 전체 공개 일정 기준으로 계산한다.
 			 *
-			 * 본인이 본인 일정에 누른 좋아요는 제외 =================================================
+			 * 본인이 본인 글에 누른 좋아요/북마크는 제외한다.
 			 */
+			int postCount = profileFeedService.countPublicItineraries(targetUserId);
 
-			int likeCount = profileFeedService.getReceivedLikeCount(targetUserId);
+			int likeCount = profileFeedService.getPublicReceivedLikeCount(targetUserId);
 
-			/*
-			 * ================================================= 13. 받은 북마크 총합
-			 *
-			 * 본인이 본인 일정에 누른 북마크는 제외 =================================================
-			 */
-
-			int bookmarkCount = profileFeedService.getReceivedBookmarkCount(targetUserId);
-
-			/*
-			 * ================================================= 14. JSP에 데이터 전달
-			 * =================================================
-			 */
+			int bookmarkCount = profileFeedService.getPublicReceivedBookmarkCount(targetUserId);
 
 			request.setAttribute("itineraries", itineraries);
 
@@ -267,26 +166,17 @@ public class userProfile extends HttpServlet {
 
 			request.setAttribute("bookmarkCount", bookmarkCount);
 
-			/*
-			 * ================================================= 15. JSP 이동
-			 * =================================================
-			 */
+			request.setAttribute("userPostsHasMore", userPostsHasMore);
+
+			request.setAttribute("userSavedHasMore", userSavedHasMore);
+
+			request.setAttribute("userLikedHasMore", userLikedHasMore);
 
 			request.getRequestDispatcher("/view/profile/userProfile.jsp").forward(request, response);
-
-			/*
-			 * ===================================================== userId=abc
-			 * =====================================================
-			 */
 
 		} catch (NumberFormatException e) {
 
 			response.sendError(HttpServletResponse.SC_BAD_REQUEST, "잘못된 회원 번호입니다.");
-
-			/*
-			 * ===================================================== DB / Service 오류
-			 * =====================================================
-			 */
 
 		} catch (Exception e) {
 
@@ -294,5 +184,22 @@ public class userProfile extends HttpServlet {
 
 			throw new ServletException("사용자 프로필 조회 중 오류가 발생했습니다.", e);
 		}
+	}
+
+	private boolean hasMore(List<ProfileFeedDto> items) {
+
+		return items != null && items.size() > PAGE_SIZE;
+	}
+
+	private List<ProfileFeedDto> firstPage(List<ProfileFeedDto> items) {
+
+		if (items == null || items.isEmpty()) {
+
+			return new ArrayList<ProfileFeedDto>();
+		}
+
+		int end = Math.min(PAGE_SIZE, items.size());
+
+		return new ArrayList<ProfileFeedDto>(items.subList(0, end));
 	}
 }
