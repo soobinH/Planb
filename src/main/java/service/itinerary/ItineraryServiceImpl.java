@@ -643,6 +643,74 @@ public class ItineraryServiceImpl implements ItineraryService {
 		}
 
 	}
+	
+	@Override
+	public Map<String, Object> updateItineraryComment(Long itineraryId, Long commentId, Long loginUserId, String content) throws Exception {
+
+	    if (loginUserId == null || loginUserId <= 0) {
+	        throw new SecurityException("로그인 후 이용할 수 있습니다.");
+	    }
+
+	    if (itineraryId == null || itineraryId <= 0) {
+	        throw new IllegalArgumentException("올바른 일정 번호가 아닙니다.");
+	    }
+
+	    if (commentId == null || commentId <= 0) {
+	        throw new IllegalArgumentException("올바른 댓글 번호가 아닙니다.");
+	    }
+
+	    if (content == null || content.strip().isEmpty()) {
+	        throw new IllegalArgumentException("댓글 내용을 입력해주세요.");
+	    }
+
+	    content = content.strip();
+
+	    if (content.codePointCount(0, content.length()) > 1000) {
+	        throw new IllegalArgumentException("댓글은 1,000자까지 입력할 수 있습니다.");
+	    }
+
+	    try (SqlSession sqlSession = MybatisSqlSessionFactory.getSqlSessionFactory().openSession(false)) {
+
+	        try {
+	        	ItineraryDto itinerary = itineraryBookmarkDao.selectBookmarkTargetForUpdate(sqlSession,itineraryId);
+
+	            // 일정 상태와 공개 여부·작성자 접근 검사
+	            checkCommentAccess(itinerary, loginUserId);
+
+	            ItineraryCommentDto comment = new ItineraryCommentDto();
+
+	            comment.setItineraryId(itineraryId);
+	            comment.setCommentId(commentId);
+	            comment.setUserId(loginUserId);
+	            comment.setContent(content);
+
+	            // SQL의 user_id 조건으로 본인 댓글만 수정
+	            int updatedRows = itineraryCommentDao.updateItineraryComment(sqlSession, comment);
+
+	            if (updatedRows != 1) {
+	                throw new IllegalArgumentException("수정할 수 있는 댓글이 없습니다.");
+	            }
+
+	            // 기존 등록·삭제 응답과 동일한 구조
+	            List<ItineraryCommentDto> comments = itineraryCommentDao.selectItineraryComments(sqlSession, itineraryId);
+
+	            int commentCount = itineraryCommentDao.countItineraryComments(sqlSession, itineraryId);
+
+	            Map<String, Object> result = new HashMap<>();
+
+	            result.put("comments", comments);
+	            result.put("commentCount", commentCount);
+
+	            sqlSession.commit();
+
+	            return result;
+
+	        } catch (Exception e) {
+	            sqlSession.rollback();
+	            throw e;
+	        }
+	    }
+	}
 
 	///////////////////////////////////////////////////////////////////////////////////////////////
 

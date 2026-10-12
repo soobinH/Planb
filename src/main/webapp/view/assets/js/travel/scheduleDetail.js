@@ -411,6 +411,7 @@
 
 	// 작성과 삭제 요청이 동시에 진행되지 않도록 관리
 	let processing = false;
+	let editingArticle = null;
 
 	function updateLength() {
 		// 서버의 codePointCount와 동일하게 글자 수 계산
@@ -434,16 +435,28 @@
 
 	function setProcessing(value) {
 		processing = value;
-		submit.disabled = value;
-		input.readOnly = value;
 
-		submit.style.opacity = value ? "0.6" : "";
+		const editing = editingArticle !== null;
+
+		submit.disabled = value || editing;
+		input.readOnly = value || editing;
+
+		submit.style.opacity = submit.disabled ? "0.6" : "";
 		submit.setAttribute("aria-busy", String(value));
 
-		list.querySelectorAll("[data-comment-delete]")
-			.forEach(function(button) {
-				button.disabled = value;
-			});
+		list.querySelectorAll("[data-comment-edit], [data-comment-delete]").forEach(function(button) {
+			button.disabled = value || editing;
+		});
+
+		list.querySelectorAll("[data-comment-save], [data-comment-cancel]").forEach(function(button) {
+			button.disabled = value;
+		});
+
+		const textarea = list.querySelector("[data-comment-edit-input]");
+
+		if (textarea) {
+			textarea.readOnly = value;
+		}
 	}
 
 	async function requestComment(url, params) {
@@ -556,6 +569,46 @@
 		return profile;
 	}
 
+	function parseCommentDate(value) {
+		if (!value) {
+			return null;
+		}
+
+		if (typeof value === "number") {
+			const date = new Date(value);
+			return Number.isNaN(date.getTime()) ? null : date;
+		}
+
+		let text = String(value).trim();
+
+		// yyyy.MM.dd 또는 yyyy-MM-dd 형식 처리
+		text = text.replace(/^(\d{4})\.(\d{2})\.(\d{2})/, "$1-$2-$3");
+
+		text = text.replace(/^(\d{4}-\d{2}-\d{2}) /, "$1T");
+
+		const date = new Date(text);
+
+		return Number.isNaN(date.getTime()) ? null : date;
+	}
+
+	function formatCommentDate(value) {
+		const date = parseCommentDate(value);
+
+		if (!date) {
+			return value || "";
+		}
+
+		function pad(number) {
+			return String(number).padStart(2, "0");
+		}
+
+		return date.getFullYear()
+			+ "." + pad(date.getMonth() + 1)
+			+ "." + pad(date.getDate())
+			+ " " + pad(date.getHours())
+			+ ":" + pad(date.getMinutes());
+	}
+
 	function renderComments(comments) {
 		const fragment = document.createDocumentFragment();
 
@@ -575,9 +628,12 @@
 				"flex items-start gap-3"
 			);
 
+			article.setAttribute("data-comment-item", "");
+			article.dataset.commentId = String(comment.commentId);
 			article.appendChild(createProfile(comment));
 
 			const body = createElement("div", "flex-1 min-w-0");
+
 			const header = createElement(
 				"div",
 				"flex items-center gap-2 flex-wrap"
@@ -595,28 +651,61 @@
 				createElement(
 					"span",
 					"text-[11px] text-gray-400",
-					comment.createdAt || ""
+					formatCommentDate(comment.createdAt)
 				)
 			);
 
-			// 본인 댓글에만 삭제 버튼 표시
+			const created = parseCommentDate(comment.createdAt);
+			const updated = parseCommentDate(comment.updatedAt);
+
+			if (created && updated
+				&& updated.getTime() > created.getTime()) {
+
+				const edited = createElement(
+					"span",
+					"text-[10px] text-gray-400",
+					"수정됨"
+				);
+
+				edited.setAttribute("data-comment-edited", "");
+				header.appendChild(edited);
+			}
+
 			if (panel.dataset.loggedIn === "true"
 				&& String(comment.userId)
 				=== panel.dataset.loginUserId) {
 
+				const actions = createElement(
+					"div",
+					"ml-auto flex items-center gap-2"
+				);
+
+				actions.setAttribute("data-comment-actions", "");
+
+				const editButton = createElement(
+					"button",
+					"text-[11px] text-gray-400 hover:text-[#6369D1]",
+					"수정"
+				);
+
+				editButton.type = "button";
+				editButton.setAttribute("data-comment-edit", "");
+				editButton.dataset.commentId = String(comment.commentId);
+
 				const deleteButton = createElement(
 					"button",
-					"ml-auto text-[11px] text-gray-400 hover:text-red-500",
+					"text-[11px] text-gray-400 hover:text-red-500",
 					"삭제"
 				);
 
 				deleteButton.type = "button";
 				deleteButton.setAttribute("data-comment-delete", "");
-				deleteButton.dataset.commentId =
-					String(comment.commentId);
-				deleteButton.disabled = processing;
+				deleteButton.dataset.commentId = String(comment.commentId);
 
-				header.appendChild(deleteButton);
+				actions.appendChild(editButton);
+				actions.appendChild(deleteButton);
+
+				header.appendChild(actions);
 			}
 
 			const content = createElement(
@@ -625,6 +714,7 @@
 				comment.content || ""
 			);
 
+			content.setAttribute("data-comment-content", "");
 			content.style.whiteSpace = "pre-wrap";
 			content.style.overflowWrap = "anywhere";
 
@@ -638,6 +728,8 @@
 	}
 
 	function updateComments(result) {
+		editingArticle = null;
+
 		renderComments(result.comments);
 
 		count.textContent =
@@ -645,7 +737,7 @@
 	}
 
 	submit.addEventListener("click", async function() {
-		if (!checkLogin() || processing) {
+		if (!checkLogin() || processing || editingArticle) {
 			return;
 		}
 
@@ -702,7 +794,7 @@
 			return;
 		}
 
-		if (!checkLogin() || processing) {
+		if (!checkLogin() || processing || editingArticle) {
 			return;
 		}
 
@@ -731,6 +823,220 @@
 			console.error(error);
 			window.tripilyToast(
 				error.message || "댓글 삭제 중 오류가 발생했습니다."
+			);
+
+		} finally {
+			setProcessing(false);
+		}
+	});
+
+	function closeCommentEditor(article) {
+		const editor = article.querySelector("[data-comment-editor]");
+		const content = article.querySelector("[data-comment-content]");
+		const actions = article.querySelector("[data-comment-actions]");
+
+		if (editor) {
+			editor.remove();
+		}
+
+		if (content) {
+			content.hidden = false;
+		}
+
+		if (actions) {
+			actions.hidden = false;
+			actions.style.display = "";
+		}
+
+		editingArticle = null;
+		setProcessing(false);
+	}
+
+	function openCommentEditor(article) {
+		const content = article.querySelector("[data-comment-content]");
+		const actions = article.querySelector("[data-comment-actions]");
+
+		if (!content || !actions) {
+			return;
+		}
+
+		editingArticle = article;
+
+		const editor = createElement(
+			"div",
+			"mt-2 rounded-xl border p-3"
+		);
+
+		editor.setAttribute("data-comment-editor", "");
+		editor.style.borderColor = "#D1D2F9";
+		editor.style.background = "#fafafa";
+
+		const textarea = createElement(
+			"textarea",
+			"w-full bg-transparent text-[13px] outline-none resize-y"
+		);
+
+		textarea.setAttribute("data-comment-edit-input", "");
+		textarea.setAttribute("aria-label", "댓글 수정 내용");
+		textarea.style.minHeight = "90px";
+		textarea.value = content.textContent;
+
+		const footer = createElement(
+			"div",
+			"flex items-center justify-between gap-2 mt-2"
+		);
+
+		const lengthText = createElement(
+			"span",
+			"text-[11px] text-gray-400"
+		);
+
+		function updateEditLength() {
+			const size = Array.from(textarea.value).length;
+
+			lengthText.textContent =
+				size.toLocaleString("ko-KR") + " / 1,000";
+
+			lengthText.style.color = size > 1000 ? "#ef4444" : "";
+		}
+
+		textarea.addEventListener("input", updateEditLength);
+		updateEditLength();
+
+		const controls = createElement(
+			"div",
+			"flex items-center gap-2"
+		);
+
+		const cancel = createElement(
+			"button",
+			"px-3 py-1.5 rounded-lg text-[12px] text-gray-500",
+			"취소"
+		);
+
+		cancel.type = "button";
+		cancel.setAttribute("data-comment-cancel", "");
+
+		const save = createElement(
+			"button",
+			"px-3 py-1.5 rounded-lg text-[12px] font-semibold text-white",
+			"저장"
+		);
+
+		save.type = "button";
+		save.style.background = "#6369D1";
+		save.setAttribute("data-comment-save", "");
+
+		controls.appendChild(cancel);
+		controls.appendChild(save);
+
+		footer.appendChild(lengthText);
+		footer.appendChild(controls);
+
+		editor.appendChild(textarea);
+		editor.appendChild(footer);
+
+		content.hidden = true;
+		actions.hidden = true;
+		actions.style.display = "none";
+
+		content.after(editor);
+
+		setProcessing(false);
+		textarea.focus();
+	}
+
+	list.addEventListener("click", async function(event) {
+		const button = event.target.closest(
+			"[data-comment-edit], "
+			+ "[data-comment-save], "
+			+ "[data-comment-cancel]"
+		);
+
+		if (!button || !list.contains(button)) {
+			return;
+		}
+
+		event.preventDefault();
+
+		if (!checkLogin() || processing) {
+			return;
+		}
+
+		const article = button.closest("[data-comment-item]");
+
+		if (!article) {
+			return;
+		}
+
+		if (button.hasAttribute("data-comment-edit")) {
+			if (!editingArticle) {
+				openCommentEditor(article);
+			}
+
+			return;
+		}
+
+		if (button.hasAttribute("data-comment-cancel")) {
+			closeCommentEditor(article);
+			return;
+		}
+
+		const textarea = article.querySelector(
+			"[data-comment-edit-input]"
+		);
+
+		if (!textarea) {
+			return;
+		}
+
+		const content = textarea.value.trim();
+
+		if (!content) {
+			window.tripilyToast("댓글 내용을 입력해주세요.");
+			textarea.focus();
+			return;
+		}
+
+		if (Array.from(content).length > 1000) {
+			window.tripilyToast("댓글은 1,000자까지 입력할 수 있습니다.");
+			textarea.focus();
+			return;
+		}
+
+		const original = article.querySelector(
+			"[data-comment-content]"
+		);
+
+		// 내용이 같으면 UPDATE 없이 수정창만 닫기
+		if (original && content === original.textContent.trim()) {
+			closeCommentEditor(article);
+			return;
+		}
+
+		setProcessing(true);
+
+		try {
+			const params = new URLSearchParams();
+
+			params.set("itineraryId", panel.dataset.itineraryId);
+			params.set("commentId", article.dataset.commentId);
+			params.set("content", content);
+
+			const result = await requestComment(
+				panel.dataset.updateUrl,
+				params
+			);
+
+			updateComments(result);
+
+			window.tripilyToast("댓글을 수정했어요.");
+
+		} catch (error) {
+			console.error(error);
+
+			window.tripilyToast(
+				error.message || "댓글 수정 중 오류가 발생했습니다."
 			);
 
 		} finally {
@@ -1252,5 +1558,81 @@
 	if (loggedIn) {
 		loadInitialState();
 	}
+
+})();
+
+(function() {
+
+	const button =
+		document.getElementById("scheduleDeleteButton");
+
+	if (!button) {
+		return;
+	}
+
+	button.addEventListener("click", async function() {
+
+		if (button.disabled) {
+			return;
+		}
+
+		if (!window.confirm("이 일정을 삭제하시겠습니까?")) {
+			return;
+		}
+
+		button.disabled = true;
+		button.setAttribute("aria-busy", "true");
+
+		let deleted = false;
+
+		try {
+			const params = new URLSearchParams();
+
+			params.set(
+				"itineraryId",
+				button.dataset.itineraryId
+			);
+
+			const response = await fetch(
+				button.dataset.deleteUrl,
+				{
+					method: "POST",
+					credentials: "same-origin",
+					headers: {
+						"Content-Type":
+							"application/x-www-form-urlencoded;charset=UTF-8",
+						"Accept": "application/json"
+					},
+					body: params.toString()
+				}
+			);
+
+			const result = await response.json();
+
+			if (!response.ok || result.success !== true) {
+				throw new Error(
+					result.message || "일정 삭제에 실패했습니다."
+				);
+			}
+
+			deleted = true;
+
+			window.location.replace(button.dataset.listUrl);
+
+		} catch (error) {
+			console.error(error);
+
+			window.tripilyToast(
+				error.message || "일정 삭제 중 오류가 발생했습니다."
+			);
+
+		} finally {
+			if (!deleted) {
+				button.disabled = false;
+			}
+
+			button.removeAttribute("aria-busy");
+		}
+	});
 
 })();

@@ -49,4 +49,6 @@ public interface ItineraryService {
 
 	boolean toggleBookmark(Long itineraryId, Long loginUserId) throws Exception;
 
+	Map<String, Object> updateItineraryComment(Long itineraryId, Long commentId, Long loginUserId, String content) throws Exception;
+
 }

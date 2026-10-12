@@ -268,16 +268,15 @@ request.setAttribute("activePage", "travel");
 						</button>
 					</div>
 					<!-- 본인 일정에서만 수정·삭제 표시 -->
-					<c:if test="${not empty sessionScope.user and itinerary.userId eq sessionScope.user.userId}">
+					<c:if
+						test="${not empty sessionScope.user and itinerary.userId eq sessionScope.user.userId}">
 						<c:url var="modifyPlanUrl" value="/modifyplan">
 							<c:param name="itineraryId" value="${itinerary.itineraryId}" />
 						</c:url>
 
 						<div class="detail-owner-actions">
-							<a 
-								href="${modifyPlanUrl}"
-								class="detail-owner-button detail-owner-edit"> 
-								<svg
+							<a href="${modifyPlanUrl}"
+								class="detail-owner-button detail-owner-edit"> <svg
 									width="14" height="14" viewBox="0 0 24 24" fill="none"
 									stroke="currentColor" stroke-width="2" stroke-linecap="round"
 									stroke-linejoin="round" aria-hidden="true">
@@ -299,7 +298,8 @@ request.setAttribute("activePage", "travel");
                 					<path d="M9 6V4h6v2" />
                 					<path d="m5 6 1 14h12l1-14" />
                 					<path d="M10 10v6M14 10v6" />
-            					</svg>일정 삭제
+            					</svg>
+								일정 삭제
 							</button>
 						</div>
 					</c:if>
@@ -394,7 +394,9 @@ request.setAttribute("activePage", "travel");
 					data-login-url="${pageContext.request.contextPath}/auth/login"
 					data-context-path="${pageContext.request.contextPath}"
 					data-write-url="${pageContext.request.contextPath}/itinerary/comment/write"
+					data-update-url="${pageContext.request.contextPath}/itinerary/comment/update"
 					data-delete-url="${pageContext.request.contextPath}/itinerary/comment/delete">
+					>
 
 					<!-- 댓글 입력 -->
 					<div class="rounded-2xl border p-4 mb-5"
@@ -426,7 +428,8 @@ request.setAttribute("activePage", "travel");
 
 						<c:forEach var="comment" items="${comments}">
 
-							<article class="flex items-start gap-3">
+							<article class="flex items-start gap-3" data-comment-item
+								data-comment-id="${comment.commentId}">
 
 								<!-- 작성자 사진 -->
 								<div
@@ -479,19 +482,32 @@ request.setAttribute("activePage", "travel");
 										</span>
 
 										<c:if
-											test="${not empty sessionScope.user
-                            and comment.userId eq sessionScope.user.userId}">
-											<button type="button" data-comment-delete
-												data-comment-id="${comment.commentId}"
-												class="ml-auto text-[11px] text-gray-400 hover:text-red-500">
-												삭제</button>
+											test="${not empty comment.updatedAt and not empty comment.createdAt and comment.updatedAt.time gt comment.createdAt.time}">
+											<span class="text-[10px] text-gray-400" data-comment-edited>수정됨
+											</span>
+										</c:if>
+
+										<c:if
+											test="${not empty sessionScope.user and comment.userId eq sessionScope.user.userId}">
+
+											<div class="ml-auto flex items-center gap-2"
+												data-comment-actions>
+
+												<button type="button" data-comment-edit
+													data-comment-id="${comment.commentId}"
+													class="text-[11px] text-gray-400 hover:text-[#6369D1]">
+													수정</button>
+
+												<button type="button" data-comment-delete
+													data-comment-id="${comment.commentId}"
+													class="text-[11px] text-gray-400 hover:text-red-500">
+													삭제</button>
+											</div>
 										</c:if>
 									</div>
 
-									<p class="mt-1 text-[13px] text-gray-600"
-										style="white-space: no-wrap; overflow-wrap: anywhere;">
-										<c:out value="${comment.content}" />
-									</p>
+									<p data-comment-content class="mt-1 text-[13px] text-gray-600"
+										style="white-space: pre-wrap; overflow-wrap: anywhere;"><c:out value="${comment.content}" /></p>
 								</div>
 							</article>
 
@@ -695,9 +711,7 @@ request.setAttribute("activePage", "travel");
 											<!-- 메모: 태그 안쪽의 불필요한 공백 제거 -->
 											<c:if test="${not empty block.memo}">
 												<p class="mt-2 text-[20px] text-gray-600 leading-relaxed"
-													style="white-space: pre-wrap; overflow-wrap: anywhere;">
-													<c:out value="${block.memo}" />
-												</p>
+													style="white-space: pre-wrap; overflow-wrap: anywhere;"><c:out value="${block.memo}" /></p>
 											</c:if>
 
 											<!-- 비용: 0원도 표시 -->
@@ -902,6 +916,6 @@ request.setAttribute("activePage", "travel");
 		src="${pageContext.request.contextPath}/view/assets/js/auth/tripily.js"></script>
 
 	<script
-		src="${pageContext.request.contextPath}/view/assets/js/travel/scheduleDetail.js?v=11"></script>
+		src="${pageContext.request.contextPath}/view/assets/js/travel/scheduleDetail.js?v=13"></script>
 </body>
 </html>

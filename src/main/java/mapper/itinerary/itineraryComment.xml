@@ -5,7 +5,8 @@
 
 <mapper namespace="mapper.itinerary.itineraryComment">
 
-	<resultMap id="itineraryCommentMap" type="dto.itinerary.ItineraryCommentDto">
+	<resultMap id="itineraryCommentMap"
+		type="dto.itinerary.ItineraryCommentDto">
 		<id property="commentId" column="comment_id" />
 		<result property="itineraryId" column="itinerary_id" />
 		<result property="userId" column="user_id" />
@@ -18,7 +19,8 @@
 	</resultMap>
 
 	<!-- 삭제되지 않은 댓글 수 -->
-	<select id="countItineraryComments" parameterType="java.lang.Long" resultType="int">
+	<select id="countItineraryComments"
+		parameterType="java.lang.Long" resultType="int">
 
 		SELECT COUNT(*)
 		FROM
@@ -30,7 +32,8 @@
 	</select>
 
 	<!-- 댓글 목록: 먼저 작성된 댓글부터 -->
-	<select id="selectItineraryComments" parameterType="java.lang.Long" resultMap="itineraryCommentMap">
+	<select id="selectItineraryComments"
+		parameterType="java.lang.Long" resultMap="itineraryCommentMap">
 
 		SELECT
 		c.comment_id,
@@ -43,11 +46,12 @@
 		u.nickname,
 		u.profile_img
 		FROM tb_itinerary_comment c
-		JOIN tb_user u
+		JOIN
+		tb_user u
 		ON u.user_id = c.user_id
 		WHERE c.itinerary_id = #{itineraryId}
 		AND c.status = 'ACTIVE'
-		ORDER BY c.created_at ASC, c.comment_id ASC
+		ORDER BY c.created_at DESC, c.comment_id DESC
 
 	</select>
 
@@ -85,4 +89,18 @@
 
 	</update>
 
+
+	<!-- 본인이 작성한 ACTIVE 댓글만 수정 -->
+	<update id="updateItineraryComment"
+		parameterType="dto.itinerary.ItineraryCommentDto">
+
+		UPDATE tb_itinerary_comment
+		SET content = #{content},
+		updated_at = CURRENT_TIMESTAMP
+		WHERE comment_id = #{commentId}
+		AND itinerary_id = #{itineraryId}
+		AND user_id = #{userId}
+		AND status = 'ACTIVE'
+
+	</update>
 </mapper>

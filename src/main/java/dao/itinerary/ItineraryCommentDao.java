@@ -15,4 +15,6 @@ public interface ItineraryCommentDao {
 	int insertItineraryComment(SqlSession sqlSession, ItineraryCommentDto comment) throws Exception;
 
 	int softDeleteItineraryComment(SqlSession sqlSession, ItineraryCommentDto comment) throws Exception;
+
+	int updateItineraryComment(SqlSession sqlSession, ItineraryCommentDto comment) throws Exception;
 }

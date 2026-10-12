@@ -31,4 +31,10 @@ public class ItineraryCommentDaoImpl implements ItineraryCommentDao {
 
 		return sqlSession.update("mapper.itinerary.itineraryComment.softDeleteItineraryComment", comment);
 	}
+
+	@Override
+	public int updateItineraryComment(SqlSession sqlSession, ItineraryCommentDto comment) throws Exception {
+
+		return sqlSession.update("mapper.itinerary.itineraryComment.updateItineraryComment", comment);
+	}
 }
