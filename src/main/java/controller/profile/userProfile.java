@@ -232,27 +232,19 @@ public class userProfile extends HttpServlet {
 
 			/*
 			 * ================================================= 12. 받은 좋아요 총합
-			 * =================================================
+			 *
+			 * 본인이 본인 일정에 누른 좋아요는 제외 =================================================
 			 */
 
-			int likeCount = 0;
-
-			for (ProfileFeedDto item : itineraries) {
-
-				likeCount += item.getLikeCount();
-			}
+			int likeCount = profileFeedService.getReceivedLikeCount(targetUserId);
 
 			/*
 			 * ================================================= 13. 받은 북마크 총합
-			 * =================================================
+			 *
+			 * 본인이 본인 일정에 누른 북마크는 제외 =================================================
 			 */
 
-			int bookmarkCount = 0;
-
-			for (ProfileFeedDto item : itineraries) {
-
-				bookmarkCount += item.getBookmarkCount();
-			}
+			int bookmarkCount = profileFeedService.getReceivedBookmarkCount(targetUserId);
 
 			/*
 			 * ================================================= 14. JSP에 데이터 전달
