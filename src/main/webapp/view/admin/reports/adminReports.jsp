@@ -1,130 +1,79 @@
-<%@ page language="java" contentType="text/html; charset=UTF-8"
-	pageEncoding="UTF-8" import="java.util.List"
-	import="java.text.SimpleDateFormat" import="dto.report.ReportDto"%>
+<%@ page language="java"
+    contentType="text/html; charset=UTF-8"
+    pageEncoding="UTF-8"
+    import="java.util.List"
+    import="java.text.SimpleDateFormat"
+    import="dto.report.ReportDto" %>
 
 <%!
-    /*
-     * 사용자 입력값을 화면에 출력할 때
-     * HTML 태그 실행 방지
-     */
-    private String escapeHtml(String value) {
-
-        if (value == null) {
-            return "";
-        }
-
-        return value
-                .replace("&", "&amp;")
-                .replace("<", "&lt;")
-                .replace(">", "&gt;")
-                .replace("\"", "&quot;")
-                .replace("'", "&#39;");
+private String escapeHtml(String value) {
+    if (value == null) {
+        return "";
     }
+
+    return value
+            .replace("&", "&amp;")
+            .replace("<", "&lt;")
+            .replace(">", "&gt;")
+            .replace("\"", "&quot;")
+            .replace("'", "&#39;");
+}
 %>
 
-
 <%
+request.setAttribute("activePage", "reports");
 
-request.setAttribute(
-        "activePage",
-        "admin"
-);
+String ctx = request.getContextPath();
 
-
-String ctx =
-        request.getContextPath();
-
-
-/* =========================================
-   신고 목록
-========================================== */
-
+@SuppressWarnings("unchecked")
 List<ReportDto> reports =
-        (List<ReportDto>)
-        request.getAttribute("reports");
-
+        (List<ReportDto>) request.getAttribute("reports");
 
 if (reports == null) {
-
-    reports =
-        new java.util.ArrayList<ReportDto>();
+    reports = new java.util.ArrayList<ReportDto>();
 }
 
-
-/* =========================================
-   현재 선택 탭
-========================================== */
-
 String currentTab =
-        (String)
-        request.getAttribute("currentTab");
+        (String) request.getAttribute("currentTab");
 
-
-if (currentTab == null) {
-
+if (currentTab == null || currentTab.trim().isEmpty()) {
     currentTab = "PENDING";
 }
 
-
-/* =========================================
-   개수
-========================================== */
-
 Integer pendingCount =
-        (Integer)
-        request.getAttribute(
-                "pendingCount"
-        );
-
+        (Integer) request.getAttribute("pendingCount");
 
 Integer deletedCount =
-        (Integer)
-        request.getAttribute(
-                "deletedCount"
-        );
-
+        (Integer) request.getAttribute("deletedCount");
 
 Integer rejectedCount =
-        (Integer)
-        request.getAttribute(
-                "rejectedCount"
-        );
-
+        (Integer) request.getAttribute("rejectedCount");
 
 Integer totalCount =
-        (Integer)
-        request.getAttribute(
-                "totalCount"
-        );
-
+        (Integer) request.getAttribute("totalCount");
 
 if (pendingCount == null) {
     pendingCount = 0;
 }
 
-
 if (deletedCount == null) {
     deletedCount = 0;
 }
-
 
 if (rejectedCount == null) {
     rejectedCount = 0;
 }
 
-
 if (totalCount == null) {
     totalCount = 0;
 }
 
-
 SimpleDateFormat dateFormat =
-        new SimpleDateFormat(
-                "yyyy.MM.dd HH:mm"
-        );
+        new SimpleDateFormat("yyyy.MM.dd HH:mm");
 
+String result =
+        request.getParameter("result");
 %>
-
 
 <!DOCTYPE html>
 
@@ -134,896 +83,934 @@ SimpleDateFormat dateFormat =
 
 <meta charset="UTF-8">
 
-<meta name="viewport" content="width=device-width, initial-scale=1">
-
-
-<jsp:include page="/common/headStyles.jsp" />
-
+<meta
+    name="viewport"
+    content="width=device-width, initial-scale=1">
 
 <title>신고 관리 | Tripily</title>
 
-</head>
+<jsp:include
+    page="/common/headStyles.jsp" />
 
+<link
+    rel="stylesheet"
+    href="<%=ctx%>/view/assets/css/admin/adminReports.css?v=1">
+
+</head>
 
 <body class="site-shell">
 
-
-	<jsp:include page="/common/header.jsp" />
-
-
-
-	<main class="max-w-5xl mx-auto px-6 py-10">
+<jsp:include
+    page="/common/header.jsp" />
 
 
-		<!-- ======================================
-         페이지 상단
-    ======================================= -->
-
-		<div class="flex items-end justify-between gap-4 mb-7">
+<main class="admin-reports-page">
 
 
-			<div>
+    <!-- =====================================================
+         상단
+    ====================================================== -->
+
+    <section class="admin-reports-head">
+
+        <div>
+
+            <span class="admin-reports-eyebrow">
+                ADMIN · REPORTS
+            </span>
+
+            <h1>
+                신고 관리
+            </h1>
+
+            <p>
+                접수된 신고 내용을 검토하고
+                문제 없음, 콘텐츠 삭제, 계정 정지 등의 조치를 처리합니다.
+            </p>
+
+        </div>
 
 
-				<div
-					class="inline-flex items-center gap-2 px-2.5 py-1 rounded-full bg-[#F0F0FF] text-[#6369D1] text-[11px] font-black">
+        <div class="admin-reports-head-summary">
 
-					ADMIN · REPORTS</div>
+            <span>
+                처리 대기
+            </span>
 
+            <strong>
+                <%=pendingCount%>
+            </strong>
 
-				<h1 class="text-3xl font-black mt-3">신고 관리</h1>
+        </div>
 
-
-				<p class="text-sm text-gray-500 mt-2">접수된 신고를 확인하고 게시글 보기, 문제
-					없음, 삭제 조치를 바로 처리합니다.</p>
-
-
-			</div>
-
+    </section>
 
 
-			<div class="hidden sm:block text-right">
-
-
-				<strong class="text-2xl text-[#6369D1]"> <%=pendingCount%>
-
-				</strong>
-
-
-				<div class="text-xs text-gray-400">처리 대기</div>
-
-
-			</div>
-
-
-		</div>
-
-
-
-		<!-- ======================================
+    <!-- =====================================================
          처리 결과 메시지
-    ======================================= -->
+    ====================================================== -->
 
-		<%
-    String result =
-            request.getParameter("result");
-
-
+    <%
     if ("success".equals(result)) {
     %>
 
+    <div class="admin-reports-result success">
 
-		<div
-			class="mb-5 px-4 py-3 rounded-xl bg-green-50 text-green-700 text-sm font-bold">
+        <span class="admin-reports-result-icon">
 
-			신고 처리가 완료되었습니다.</div>
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+                <path d="m5 12 4 4L19 6" />
+            </svg>
 
+        </span>
 
-		<%
+        <div>
+            <strong>처리가 완료되었습니다.</strong>
+            <span>신고 상태가 정상적으로 변경되었습니다.</span>
+        </div>
+
+    </div>
+
+    <%
     } else if ("fail".equals(result)) {
     %>
 
+    <div class="admin-reports-result error">
 
-		<div
-			class="mb-5 px-4 py-3 rounded-xl bg-red-50 text-red-600 text-sm font-bold">
+        <span class="admin-reports-result-icon">
 
-			신고 처리 중 오류가 발생했습니다.</div>
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+                <circle cx="12" cy="12" r="8" />
+                <path d="M12 8v5M12 16.5h.01" />
+            </svg>
 
+        </span>
 
-		<%
+        <div>
+            <strong>신고 처리에 실패했습니다.</strong>
+            <span>잠시 후 다시 시도해 주세요.</span>
+        </div>
+
+    </div>
+
+    <%
     }
     %>
 
 
+    <!-- =====================================================
+         요약 카드
+    ====================================================== -->
 
-		<!-- ======================================
+    <section class="admin-reports-summary-grid">
+
+
+        <a
+            href="<%=ctx%>/admin/reports?tab=PENDING"
+            class="admin-reports-summary-card <%="PENDING".equals(currentTab) ? "selected" : ""%>">
+
+            <span class="admin-reports-summary-icon purple">
+
+                <svg viewBox="0 0 24 24" aria-hidden="true">
+                    <circle cx="12" cy="12" r="8" />
+                    <path d="M12 7v5l3 2" />
+                </svg>
+
+            </span>
+
+            <div>
+                <span>처리 대기</span>
+                <strong><%=pendingCount%></strong>
+            </div>
+
+        </a>
+
+
+        <a
+            href="<%=ctx%>/admin/reports?tab=DELETED"
+            class="admin-reports-summary-card <%="DELETED".equals(currentTab) ? "selected" : ""%>">
+
+            <span class="admin-reports-summary-icon red">
+
+                <svg viewBox="0 0 24 24" aria-hidden="true">
+                    <path d="M4 7h16" />
+                    <path d="M9 7V4h6v3" />
+                    <path d="M7 7l1 13h8l1-13" />
+                </svg>
+
+            </span>
+
+            <div>
+                <span>삭제 처리</span>
+                <strong><%=deletedCount%></strong>
+            </div>
+
+        </a>
+
+
+        <a
+            href="<%=ctx%>/admin/reports?tab=REJECTED"
+            class="admin-reports-summary-card <%="REJECTED".equals(currentTab) ? "selected" : ""%>">
+
+            <span class="admin-reports-summary-icon green">
+
+                <svg viewBox="0 0 24 24" aria-hidden="true">
+                    <path d="m5 12 4 4L19 6" />
+                </svg>
+
+            </span>
+
+            <div>
+                <span>문제 없음</span>
+                <strong><%=rejectedCount%></strong>
+            </div>
+
+        </a>
+
+
+        <a
+            href="<%=ctx%>/admin/reports?tab=ALL"
+            class="admin-reports-summary-card <%="ALL".equals(currentTab) ? "selected" : ""%>">
+
+            <span class="admin-reports-summary-icon gray">
+
+                <svg viewBox="0 0 24 24" aria-hidden="true">
+                    <path d="M6 5h12M6 12h12M6 19h12" />
+                </svg>
+
+            </span>
+
+            <div>
+                <span>전체 신고</span>
+                <strong><%=totalCount%></strong>
+            </div>
+
+        </a>
+
+
+    </section>
+
+
+    <!-- =====================================================
          상태 탭
-    ======================================= -->
+    ====================================================== -->
 
-		<div class="flex gap-2 flex-wrap mb-5">
+    <section class="admin-reports-toolbar">
 
+        <nav
+            class="admin-reports-tabs"
+            aria-label="신고 상태">
 
-			<!-- 처리 대기 -->
+            <a
+                class="<%="PENDING".equals(currentTab) ? "active" : ""%>"
+                href="<%=ctx%>/admin/reports?tab=PENDING">
 
-			<a href="<%=ctx%>/admin/reports?tab=PENDING"
-				class="px-4 py-2 rounded-full border text-sm font-bold
-            <%=
-                "PENDING".equals(currentTab)
-                ? "bg-[#6369D1] border-[#6369D1] text-white"
-                : "bg-white border-gray-200 text-gray-500"
-            %>">
+                처리 대기
+                <span><%=pendingCount%></span>
 
-				처리 대기 <span> <%=pendingCount%>
-			</span>
+            </a>
 
-			</a>
+            <a
+                class="<%="DELETED".equals(currentTab) ? "active" : ""%>"
+                href="<%=ctx%>/admin/reports?tab=DELETED">
 
+                삭제 처리
+                <span><%=deletedCount%></span>
 
+            </a>
 
-			<!-- 삭제 처리 -->
+            <a
+                class="<%="REJECTED".equals(currentTab) ? "active" : ""%>"
+                href="<%=ctx%>/admin/reports?tab=REJECTED">
 
-			<a href="<%=ctx%>/admin/reports?tab=DELETED"
-				class="px-4 py-2 rounded-full border text-sm font-bold
-            <%=
-                "DELETED".equals(currentTab)
-                ? "bg-[#6369D1] border-[#6369D1] text-white"
-                : "bg-white border-gray-200 text-gray-500"
-            %>">
+                문제 없음
+                <span><%=rejectedCount%></span>
 
-				삭제 처리 <span> <%=deletedCount%>
-			</span>
+            </a>
 
-			</a>
+            <a
+                class="<%="ALL".equals(currentTab) ? "active" : ""%>"
+                href="<%=ctx%>/admin/reports?tab=ALL">
 
+                전체
+                <span><%=totalCount%></span>
 
+            </a>
 
-			<!-- 문제 없음 -->
-
-			<a href="<%=ctx%>/admin/reports?tab=REJECTED"
-				class="px-4 py-2 rounded-full border text-sm font-bold
-            <%=
-                "REJECTED".equals(currentTab)
-                ? "bg-[#6369D1] border-[#6369D1] text-white"
-                : "bg-white border-gray-200 text-gray-500"
-            %>">
-
-				문제 없음 <span> <%=rejectedCount%>
-			</span>
-
-			</a>
+        </nav>
 
 
+        <div class="admin-reports-toolbar-note">
 
-			<!-- 전체 -->
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+                <circle cx="12" cy="12" r="8" />
+                <path d="M12 10v6M12 7h.01" />
+            </svg>
 
-			<a href="<%=ctx%>/admin/reports?tab=ALL"
-				class="px-4 py-2 rounded-full border text-sm font-bold
-            <%=
-                "ALL".equals(currentTab)
-                ? "bg-[#6369D1] border-[#6369D1] text-white"
-                : "bg-white border-gray-200 text-gray-500"
-            %>">
+            처리 대기 신고만 조치할 수 있습니다.
 
-				전체 <span> <%=totalCount%>
-			</span>
+        </div>
 
-			</a>
+    </section>
 
 
-		</div>
-
-
-
-		<!-- ======================================
+    <!-- =====================================================
          신고 목록
-    ======================================= -->
+    ====================================================== -->
 
-		<div class="space-y-3">
+    <section class="admin-reports-list">
 
 
-			<%
-
+        <%
         if (!reports.isEmpty()) {
 
-
             for (ReportDto report : reports) {
-
 
                 String targetType =
                         report.getTargetType();
 
-
                 String typeName =
                         "신고";
 
+                String typeClass =
+                        "default";
 
                 String viewButtonText =
                         "게시글 보기";
-
 
                 String targetUrl =
                         "#";
 
 
+                /* =============================================
+                   대상별 링크
+                ============================================= */
 
-                /* =================================
-                   여행 일정
-                ================================== */
+                if ("ITINERARY".equals(targetType)) {
 
-                if ("ITINERARY".equals(
-                        targetType)) {
-
-
-                    typeName =
-                            "여행일정";
-
+                    typeName = "여행일정";
+                    typeClass = "itinerary";
 
                     targetUrl =
                             ctx
                             + "/schedules/detail?id="
                             + report.getViewTargetId();
 
+                } else if ("TIP".equals(targetType)) {
 
-
-                /* =================================
-                   여행 꿀팁
-                ================================== */
-
-                } else if (
-                    "TIP".equals(targetType)
-                ) {
-
-
-                    typeName =
-                            "여행꿀팁";
-
+                    typeName = "여행꿀팁";
+                    typeClass = "tip";
 
                     targetUrl =
                             ctx
                             + "/tipDetail?tipId="
                             + report.getViewTargetId();
 
+                } else if ("MATE".equals(targetType)) {
 
-
-                /* =================================
-                   여행 메이트
-                ================================== */
-
-                } else if (
-                    "MATE".equals(targetType)
-                ) {
-
-
-                    typeName =
-                            "여행메이트";
-
+                    typeName = "여행메이트";
+                    typeClass = "mate";
 
                     targetUrl =
                             ctx
                             + "/mateDetail?mateId="
                             + report.getViewTargetId();
 
+                } else if ("TIP_COMMENT".equals(targetType)) {
 
-
-                /* =================================
-                   여행 꿀팁 댓글
-                ================================== */
-
-                } else if (
-                    "TIP_COMMENT".equals(
-                            targetType)
-                ) {
-
-
-                    typeName =
-                            "여행꿀팁 댓글";
-
+                    typeName = "여행꿀팁 댓글";
+                    typeClass = "comment";
 
                     viewButtonText =
                             "원글 보기";
-
 
                     targetUrl =
                             ctx
                             + "/tipDetail?tipId="
                             + report.getViewTargetId();
 
+                } else if ("MATE_COMMENT".equals(targetType)) {
 
-
-                /* =================================
-                   메이트 댓글
-                ================================== */
-
-                } else if (
-                    "MATE_COMMENT".equals(
-                            targetType)
-                ) {
-
-
-                    typeName =
-                            "여행메이트 댓글";
-
+                    typeName = "여행메이트 댓글";
+                    typeClass = "comment";
 
                     viewButtonText =
                             "원글 보기";
-
 
                     targetUrl =
                             ctx
                             + "/mateDetail?mateId="
                             + report.getViewTargetId();
 
+                } else if ("ITINERARY_COMMENT".equals(targetType)) {
 
-
-                /* =================================
-                   여행 일정 댓글
-                ================================== */
-
-                } else if (
-                    "ITINERARY_COMMENT".equals(
-                            targetType)
-                ) {
-
-
-                    typeName =
-                            "일정 댓글";
-
+                    typeName = "일정 댓글";
+                    typeClass = "comment";
 
                     viewButtonText =
                             "원글 보기";
-
 
                     targetUrl =
                             ctx
                             + "/schedules/detail?id="
                             + report.getViewTargetId();
 
+                } else if ("USER".equals(targetType)) {
 
-
-                /* =================================
-                   사용자 프로필
-                ================================== */
-
-                } else if (
-                    "USER".equals(targetType)
-                ) {
-
-
-                    typeName =
-                            "프로필";
-
+                    typeName = "사용자 프로필";
+                    typeClass = "user";
 
                     viewButtonText =
                             "프로필 보기";
-
 
                     targetUrl =
                             ctx
                             + "/profile/userProfile?userId="
                             + report.getViewTargetId();
 
+                } else if ("POST".equals(targetType)) {
 
-
-                /* =================================
-                   과거 POST 데이터
-                ================================== */
-
-                } else if (
-                    "POST".equals(targetType)
-                ) {
-
-
-                    typeName =
-                            "게시글";
-
+                    typeName = "게시글";
+                    typeClass = "post";
 
                     targetUrl = "#";
 
+                } else if ("COMMENT".equals(targetType)) {
 
-
-                } else if (
-                    "COMMENT".equals(targetType)
-                ) {
-
-
-                    typeName =
-                            "댓글";
-
+                    typeName = "댓글";
+                    typeClass = "comment";
 
                     viewButtonText =
                             "원글 보기";
 
-
                     targetUrl = "#";
                 }
 
 
+                /* =============================================
+                   상태
+                ============================================= */
 
-                /* =================================
-                   상태 표시
-                ================================== */
+                String statusName =
+                        "처리 완료";
 
-                String statusName = "";
-
-                String statusClass = "";
+                String statusClass =
+                        "done";
 
 
-                if ("PENDING".equals(
-                        report.getStatus())) {
-
+                if ("PENDING".equals(report.getStatus())) {
 
                     statusName =
                             "처리 대기";
 
-
                     statusClass =
-                            "bg-amber-50 text-amber-700";
+                            "pending";
 
-
-                } else if (
-                    "REJECTED".equals(
-                            report.getStatus())
-                ) {
-
+                } else if ("REJECTED".equals(report.getStatus())) {
 
                     statusName =
                             "문제 없음";
 
-
                     statusClass =
-                            "bg-gray-100 text-gray-500";
-
+                            "rejected";
 
                 } else if (
                     "CONTENT_DELETE".equals(
-                            report.getActionType())
+                            report.getActionType()
+                    )
                 ) {
-
 
                     statusName =
                             "삭제 처리";
 
-
                     statusClass =
-                            "bg-red-50 text-red-600";
-
+                            "deleted";
 
                 } else if (
                     "USER_SUSPEND".equals(
-                            report.getActionType())
+                            report.getActionType()
+                    )
                 ) {
-
 
                     statusName =
                             "계정 정지";
 
-
                     statusClass =
-                            "bg-red-50 text-red-600";
-
-
-                } else {
-
-
-                    statusName =
-                            "처리 완료";
-
-
-                    statusClass =
-                            "bg-gray-100 text-gray-500";
+                            "suspended";
                 }
 
 
-
-                /* =================================
-                   신고 대상 회원 표시
-                ================================== */
+                /* =============================================
+                   신고 대상 회원
+                ============================================= */
 
                 String targetUser =
                         report.getTargetNickname();
 
-
-                if (targetUser == null
-                        || targetUser
-                            .trim()
-                            .isEmpty()) {
-
+                if (
+                    targetUser == null
+                    ||
+                    targetUser.trim().isEmpty()
+                ) {
 
                     targetUser =
                             report.getTargetLoginId();
                 }
 
-
-                if (targetUser == null
-                        || targetUser
-                            .trim()
-                            .isEmpty()) {
-
+                if (
+                    targetUser == null
+                    ||
+                    targetUser.trim().isEmpty()
+                ) {
 
                     targetUser =
                             "알 수 없음";
                 }
 
 
-
-                /* =================================
+                /* =============================================
                    신고자
-                ================================== */
+                ============================================= */
 
                 String reporter =
                         report.getReporterLoginId();
 
-
-                if (reporter == null
-                        || reporter
-                            .trim()
-                            .isEmpty()) {
-
+                if (
+                    reporter == null
+                    ||
+                    reporter.trim().isEmpty()
+                ) {
 
                     reporter =
                             "탈퇴 회원";
                 }
 
 
-
-                /* =================================
+                /* =============================================
                    제목
-                ================================== */
+                ============================================= */
 
                 String targetTitle =
                         report.getTargetTitle();
 
-
-                if (targetTitle == null
-                        || targetTitle
-                            .trim()
-                            .isEmpty()) {
-
+                if (
+                    targetTitle == null
+                    ||
+                    targetTitle.trim().isEmpty()
+                ) {
 
                     targetTitle =
                             "신고 대상";
                 }
 
+
+                String createdAtText =
+                        "";
+
+                if (report.getCreatedAt() != null) {
+
+                    createdAtText =
+                            dateFormat.format(
+                                    report.getCreatedAt()
+                            );
+                }
         %>
 
 
-
-			<article
-				class="border border-gray-200 rounded-2xl bg-white p-5 shadow-sm">
+        <article class="admin-report-card">
 
 
-				<div class="flex flex-col sm:flex-row sm:items-start gap-4">
+            <!-- =================================================
+                 왼쪽 타입 영역
+            ================================================== -->
+
+            <div class="admin-report-type-panel <%=typeClass%>">
+
+                <span class="admin-report-type-icon">
+
+                    <svg viewBox="0 0 24 24" aria-hidden="true">
+
+                        <path d="M5 21V4" />
+                        <path d="M5 4h11l-2 3 2 3H5" />
+
+                    </svg>
+
+                </span>
+
+                <span class="admin-report-type-name">
+                    <%=escapeHtml(typeName)%>
+                </span>
+
+                <span class="admin-report-id">
+                    REPORT #<%=report.getReportId()%>
+                </span>
+
+            </div>
 
 
-					<!-- ================================
-                     신고 내용
-                ================================= -->
+            <!-- =================================================
+                 본문
+            ================================================== -->
 
-					<div class="flex-1 min-w-0">
-
-
-						<div class="flex items-center gap-2 flex-wrap">
+            <div class="admin-report-body">
 
 
-							<!-- 대상 종류 -->
-
-							<span
-								class="text-[10px] font-black px-2 py-1 rounded-full bg-[#F0F0FF] text-[#6369D1]">
-
-								<%=escapeHtml(typeName)%>
-
-							</span>
+                <div class="admin-report-title-row">
 
 
-
-							<!-- 처리 상태 -->
-
-							<span
-								class="text-[10px] font-black px-2 py-1 rounded-full <%=statusClass%>">
-
-								<%=escapeHtml(statusName)%>
-
-							</span>
+                    <div class="admin-report-title-copy">
 
 
+                        <div class="admin-report-meta-top">
 
-							<!-- 신고 일시 -->
+                            <span class="admin-report-status <%=statusClass%>">
+                                <%=escapeHtml(statusName)%>
+                            </span>
 
-							<span class="text-xs text-gray-400"> <%
-                            if (report.getCreatedAt()
-                                    != null) {
-                            %> <%=dateFormat.format(
-                                    report.getCreatedAt()
-                            )%> <%
+                            <%
+                            if (!createdAtText.isEmpty()) {
+                            %>
+
+                            <span class="admin-report-created">
+                                <%=escapeHtml(createdAtText)%>
+                            </span>
+
+                            <%
                             }
                             %>
 
-
-							</span>
-
-
-						</div>
+                        </div>
 
 
-
-						<!-- 제목 -->
-
-						<h2 class="font-black text-lg mt-3">
-
-							<%=escapeHtml(
-                            targetTitle
-                        )%>
-
-						</h2>
+                        <h2>
+                            <%=escapeHtml(targetTitle)%>
+                        </h2>
 
 
-
-						<!-- 정보 -->
-
-						<div class="grid sm:grid-cols-[90px_1fr] gap-y-2 mt-4 text-sm">
+                    </div>
 
 
-							<!-- 신고 사유 -->
+                    <%
+                    if (!"#".equals(targetUrl)) {
+                    %>
 
-							<span class="text-gray-400 font-bold"> 신고 사유 </span> <span
-								class="text-gray-700"> <%=escapeHtml(
-                                report.getReasonName()
-                            )%>
+                    <a
+                        href="<%=targetUrl%>"
+                        class="admin-report-detail-link">
 
-							</span>
+                        <%=escapeHtml(viewButtonText)%>
 
+                        <svg viewBox="0 0 24 24" aria-hidden="true">
+                            <path d="m9 18 6-6-6-6" />
+                        </svg>
 
+                    </a>
 
-							<!-- 신고 대상 -->
-
-							<span class="text-gray-400 font-bold"> 신고 대상 </span> <span
-								class="text-gray-700"> <%=escapeHtml(
-                                targetUser
-                            )%>
-
-							</span>
-
-
-
-							<!-- 신고자 -->
-
-							<span class="text-gray-400 font-bold"> 신고자 </span> <span
-								class="text-gray-700"> <%=escapeHtml(
-                                reporter
-                            )%>
-
-							</span>
+                    <%
+                    }
+                    %>
 
 
+                </div>
 
-							<!-- 상세 내용 -->
 
-							<%
+                <!-- =================================================
+                     핵심 정보
+                ================================================== -->
 
-                        if (report.getDetail()
-                                != null
-                                &&
-                                !report.getDetail()
-                                    .trim()
-                                    .isEmpty()) {
+                <div class="admin-report-info-grid">
 
+
+                    <div>
+
+                        <span>
+                            신고 사유
+                        </span>
+
+                        <strong>
+                            <%=escapeHtml(report.getReasonName())%>
+                        </strong>
+
+                    </div>
+
+
+                    <div>
+
+                        <span>
+                            신고 대상
+                        </span>
+
+                        <strong>
+                            <%=escapeHtml(targetUser)%>
+                        </strong>
+
+                    </div>
+
+
+                    <div>
+
+                        <span>
+                            신고자
+                        </span>
+
+                        <strong>
+                            <%=escapeHtml(reporter)%>
+                        </strong>
+
+                    </div>
+
+
+                </div>
+
+
+                <!-- =================================================
+                     상세 내용
+                ================================================== -->
+
+                <%
+                if (
+                    report.getDetail() != null
+                    &&
+                    !report.getDetail().trim().isEmpty()
+                ) {
+                %>
+
+                <div class="admin-report-detail-box">
+
+                    <span>
+                        상세 내용
+                    </span>
+
+                    <p>
+                        <%=escapeHtml(report.getDetail())%>
+                    </p>
+
+                </div>
+
+                <%
+                } else {
+                %>
+
+                <div class="admin-report-detail-box empty">
+
+                    <span>
+                        상세 내용
+                    </span>
+
+                    <p>
+                        별도로 작성된 상세 내용이 없습니다.
+                    </p>
+
+                </div>
+
+                <%
+                }
+                %>
+
+
+                <!-- =================================================
+                     하단 / 액션
+                ================================================== -->
+
+                <div class="admin-report-footer">
+
+
+                    <span class="admin-report-footer-note">
+
+                        <svg viewBox="0 0 24 24" aria-hidden="true">
+                            <circle cx="12" cy="12" r="8" />
+                            <path d="M12 10v6M12 7h.01" />
+                        </svg>
+
+                        신고 내용을 확인한 뒤 조치를 선택해 주세요.
+
+                    </span>
+
+
+                    <div class="admin-report-actions">
+
+
+                        <%
+                        if ("PENDING".equals(report.getStatus())) {
                         %>
 
 
-							<span class="text-gray-400 font-bold"> 상세 내용 </span> <span
-								class="text-gray-600"> <%=escapeHtml(
-                                report.getDetail()
-                            )%>
+                        <!-- 문제 없음 -->
 
-							</span>
+                        <form
+                            action="<%=ctx%>/admin/reports/process"
+                            method="post"
+                            onsubmit="return confirm('이 신고를 문제 없음으로 처리하시겠습니까?');">
+
+                            <input
+                                type="hidden"
+                                name="reportId"
+                                value="<%=report.getReportId()%>">
+
+                            <input
+                                type="hidden"
+                                name="action"
+                                value="REJECT">
+
+                            <button
+                                type="submit"
+                                class="admin-report-outline-action">
+
+                                문제 없음
+
+                            </button>
+
+                        </form>
 
 
-							<%
+                        <%
+                        if ("USER".equals(targetType)) {
+                        %>
+
+
+                        <!-- 계정 정지 -->
+
+                        <form
+                            action="<%=ctx%>/admin/reports/process"
+                            method="post"
+                            onsubmit="return confirm('이 회원의 계정을 정지하시겠습니까?');">
+
+                            <input
+                                type="hidden"
+                                name="reportId"
+                                value="<%=report.getReportId()%>">
+
+                            <input
+                                type="hidden"
+                                name="action"
+                                value="SUSPEND">
+
+                            <button
+                                type="submit"
+                                class="admin-report-danger-action">
+
+                                계정 정지
+
+                            </button>
+
+                        </form>
+
+
+                        <%
+                        } else if (
+                            !"POST".equals(targetType)
+                            &&
+                            !"COMMENT".equals(targetType)
+                        ) {
+                        %>
+
+
+                        <!-- 콘텐츠 삭제 -->
+
+                        <form
+                            action="<%=ctx%>/admin/reports/process"
+                            method="post"
+                            onsubmit="return confirm('신고된 콘텐츠를 삭제하시겠습니까?');">
+
+                            <input
+                                type="hidden"
+                                name="reportId"
+                                value="<%=report.getReportId()%>">
+
+                            <input
+                                type="hidden"
+                                name="action"
+                                value="DELETE">
+
+                            <button
+                                type="submit"
+                                class="admin-report-danger-action">
+
+                                <%=
+                                    targetType != null
+                                    &&
+                                    targetType.contains("COMMENT")
+                                    ? "댓글 삭제"
+                                    : "삭제 조치"
+                                %>
+
+                            </button>
+
+                        </form>
+
+
+                        <%
                         }
                         %>
 
 
-						</div>
+                        <%
+                        } else {
+                        %>
 
+                        <span class="admin-report-completed-label">
+                            처리 완료
+                        </span>
 
-					</div>
+                        <%
+                        }
+                        %>
 
 
+                    </div>
 
-					<!-- ================================
-                     버튼
-                ================================= -->
 
-					<div class="flex sm:flex-col gap-2 shrink-0">
+                </div>
 
 
-						<!-- 대상 보기 -->
+            </div>
 
-						<%
 
-                    if (!"#".equals(targetUrl)) {
+        </article>
 
-                    %>
 
-
-						<a href="<%=targetUrl%>"
-							class="text-center px-4 py-2.5 rounded-xl border border-gray-200 text-sm font-bold text-gray-600">
-
-							<%=viewButtonText%>
-
-						</a>
-
-
-						<%
-                    }
-                    %>
-
-
-
-						<!-- 처리 대기인 경우만 관리자 버튼 표시 -->
-
-						<%
-
-                    if ("PENDING".equals(
-                            report.getStatus())) {
-
-                    %>
-
-
-
-						<!-- 문제 없음 -->
-
-						<form action="<%=ctx%>/admin/reports/process" method="post"
-							onsubmit="return confirm('이 신고를 문제 없음으로 처리하시겠습니까?');">
-
-
-							<input type="hidden" name="reportId"
-								value="<%=report.getReportId()%>"> <input type="hidden"
-								name="action" value="REJECT">
-
-
-							<button type="submit"
-								class="w-full px-4 py-2.5 rounded-xl border border-gray-200 text-sm font-bold text-gray-500">
-
-								문제 없음</button>
-
-
-						</form>
-
-
-
-						<!-- =============================
-                         프로필 신고
-                    ============================== -->
-
-						<%
-
-                    if ("USER".equals(targetType)) {
-
-                    %>
-
-
-						<form action="<%=ctx%>/admin/reports/process" method="post"
-							onsubmit="return confirm('이 회원의 계정을 정지하시겠습니까?');">
-
-
-							<input type="hidden" name="reportId"
-								value="<%=report.getReportId()%>"> <input type="hidden"
-								name="action" value="SUSPEND">
-
-
-							<button type="submit"
-								class="w-full px-4 py-2.5 rounded-xl bg-red-500 text-white text-sm font-bold">
-
-								계정 정지</button>
-
-
-						</form>
-
-
-
-						<%
-
-                    } else if (
-                        !"POST".equals(targetType)
-                        &&
-                        !"COMMENT".equals(targetType)
-                    ) {
-
-                    %>
-
-
-
-						<!-- =============================
-                         콘텐츠 삭제
-                    ============================== -->
-
-						<form action="<%=ctx%>/admin/reports/process" method="post"
-							onsubmit="return confirm('신고된 콘텐츠를 삭제하시겠습니까?');">
-
-
-							<input type="hidden" name="reportId"
-								value="<%=report.getReportId()%>"> <input type="hidden"
-								name="action" value="DELETE">
-
-
-							<button type="submit"
-								class="w-full px-4 py-2.5 rounded-xl bg-red-500 text-white text-sm font-bold">
-
-
-								<%=
-                                targetType != null
-                                && targetType.contains(
-                                    "COMMENT"
-                                )
-                                ? "댓글 삭제"
-                                : "삭제 조치"
-                            %>
-
-
-							</button>
-
-
-						</form>
-
-
-						<%
-                    }
-                    %>
-
-
-						<%
-                    }
-                    %>
-
-
-					</div>
-
-
-				</div>
-
-
-			</article>
-
-
-			<%
-
+        <%
             }
 
         } else {
-
         %>
 
 
+        <div class="admin-reports-empty">
 
-			<!-- 신고 없음 -->
+            <span class="admin-reports-empty-icon">
 
-			<div
-				class="border border-gray-200 rounded-2xl bg-white p-12 text-center">
+                <svg viewBox="0 0 24 24" aria-hidden="true">
+                    <path d="M5 21V4" />
+                    <path d="M5 4h11l-2 3 2 3H5" />
+                </svg>
+
+            </span>
+
+            <strong>
+                해당 상태의 신고 내역이 없습니다.
+            </strong>
+
+            <p>
+                새로운 신고가 접수되면 이곳에 표시됩니다.
+            </p>
+
+        </div>
 
 
-				<div class="text-gray-400 font-bold">해당 상태의 신고 내역이 없습니다.</div>
-
-
-			</div>
-
-
-
-			<%
-
+        <%
         }
-
         %>
 
 
-		</div>
+    </section>
 
 
-	</main>
+</main>
 
 
-
-	<jsp:include page="/common/footer.jsp" />
+<jsp:include
+    page="/common/footer.jsp" />
 
 
 </body>
