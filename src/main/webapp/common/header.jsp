@@ -129,7 +129,7 @@ if (user != null && user.getProfileImg() != null && !user.getProfileImg().trim()
 			%>
 			<span class="site-badge-wrap"> <a
 				class="site-icon-btn site-admin-direct-btn <%="reports".equals(activePage) ? "active" : ""%>"
-				href="<%=request.getContextPath()%>/admin/reports" title="신고 관리"
+				href="<%=ctx%>/view/admin/reports/adminReports.jsp" title="신고 관리"
 				aria-label="신고 관리"> <svg width="19" height="19"
 						viewBox="0 0 24 24" fill="none" stroke="currentColor"
 						stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
@@ -268,3 +268,6 @@ if (user != null && user.getProfileImg() != null && !user.getProfileImg().trim()
 	</div>
 </header>
 <script src="<%=ctx%>/view/assets/js/common/headerCart.js?v=2" defer></script>
+<script src="<%=ctx%>/view/assets/js/googlePlaceThumbnail.js?v=1"
+	data-google-place-thumbnail-loader
+	data-google-maps-key="AIzaSyB7ioaQS08aAzCl7gZPk6SyE1w7EeIrYhI" defer></script>

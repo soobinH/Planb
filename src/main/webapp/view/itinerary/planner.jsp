@@ -507,9 +507,270 @@ request.setAttribute("activePage", "planner");
 
     .planner-day-header[draggable="true"] { cursor:grab; }
     .planner-day-header[draggable="true"]:active { cursor:grabbing; }
+    .planner-structure-grip {
+        flex:0 0 auto;
+        display:inline-flex;
+        align-items:center;
+        justify-content:center;
+        width:16px;
+        height:24px;
+        font-size:15px;
+        line-height:1;
+        letter-spacing:-2px;
+        opacity:.58;
+        user-select:none;
+        pointer-events:none;
+    }
+    .planner-day-header .planner-structure-grip { color:rgba(255,255,255,.92); }
+    .planner-block-header .planner-structure-grip { color:#9CA3AF; }
+    .planner-day-header:hover .planner-structure-grip,
+    .planner-block-header:hover .planner-structure-grip { opacity:.95; }
+    .planner-block-header[draggable="true"] { cursor:grab; }
+    .planner-block-header[draggable="true"]:active { cursor:grabbing; }
     .planner-day.is-day-dragging { opacity:.48; }
     .planner-day.is-day-drag-over { outline:2px solid rgba(99,105,209,.35); outline-offset:3px; border-radius:14px; }
 
+
+    /* 드래그 중에만 나타나는 구조 편집 모드 */
+    #plannerDays.planner-structure-drag-mode {
+        position: relative;
+        padding-top: 12px;
+        padding-bottom: 20px;
+    }
+    #plannerDays.planner-structure-drag-mode .planner-add-day-btn,
+    #plannerDays.planner-structure-drag-mode #plannerAddDay { opacity:.28; pointer-events:none; }
+    #plannerDays.planner-structure-drag-mode .planner-day {
+        margin-bottom: 8px !important;
+        transition: opacity .15s ease, transform .15s ease;
+    }
+    #plannerDays.planner-drag-day-mode .planner-day-body { display:none !important; }
+    #plannerDays.planner-drag-day-mode .planner-day-header {
+        min-height: 52px;
+        box-shadow: 0 1px 0 rgba(17,24,39,.02);
+    }
+    /*
+     * BLOCK 드래그 중에는 모든 DAY를 한꺼번에 펼치지 않는다.
+     * 현재 마우스가 올라간 DAY만 본문을 열어 드롭 위치를 보여준다.
+     * 기존 is-collapsed 상태 자체는 건드리지 않으므로 드래그 종료 후 원래 상태로 돌아간다.
+     */
+    #plannerDays.planner-drag-block-mode .planner-day-body,
+    #plannerDays.planner-drag-block-mode .planner-day-body.is-collapsed {
+        display:none !important;
+    }
+    #plannerDays.planner-drag-block-mode .planner-day.planner-block-drag-hover > .planner-day-body,
+    #plannerDays.planner-drag-block-mode .planner-day.planner-block-drag-hover > .planner-day-body.is-collapsed {
+        display:flex !important;
+        gap:7px !important;
+        min-height:58px;
+        padding:10px;
+        background:#FCFCFF;
+    }
+    #plannerDays.planner-drag-block-mode .planner-day.planner-block-drag-hover > .planner-day-header {
+        box-shadow:0 0 0 2px rgba(99,105,209,.18);
+    }
+    #plannerDays.planner-drag-block-mode .planner-block-body { display:none !important; }
+    #plannerDays.planner-drag-block-mode .planner-block-card {
+        padding:7px 9px !important;
+        margin:0 !important;
+        border-color:#E6E7F2 !important;
+        background:#fff;
+        box-shadow:none !important;
+    }
+    #plannerDays.planner-drag-block-mode .planner-block-header {
+        min-height:34px;
+        padding:0 2px !important;
+        border-radius:8px;
+    }
+    #plannerDays.planner-drag-block-mode .planner-add-block-btn,
+    #plannerDays.planner-drag-block-mode .planner-empty-day-hint { display:none !important; }
+    .planner-structure-source { opacity:.38 !important; }
+    /* 가져온 DAY/일정이 기본 빈 D1을 대체하는 경우 드래그 미리보기에서도 D1을 숨긴다. */
+    .planner-day.planner-import-replaced-starter { display:none !important; }
+
+    .planner-drop-slot {
+        position:relative;
+        display:flex;
+        align-items:center;
+        justify-content:center;
+        width:100%;
+        min-height:18px;
+        margin:4px 0;
+        border:1px dashed transparent;
+        border-radius:12px;
+        color:#777CCF;
+        transition:min-height .14s ease, background .14s ease, border-color .14s ease, margin .14s ease;
+        overflow:hidden;
+    }
+    .planner-drop-slot::before {
+        content:'';
+        width:calc(100% - 24px);
+        height:2px;
+        border-radius:999px;
+        background:#D8DAF7;
+        transition:height .14s ease, background .14s ease;
+    }
+    .planner-drop-slot.is-active {
+        min-height:72px;
+        margin:8px 0;
+        border-color:#8B91FF;
+        background:rgba(99,105,209,.055);
+        box-shadow:inset 0 0 0 1px rgba(99,105,209,.04);
+    }
+    .planner-drop-slot.is-active::before { display:none; }
+    .planner-drop-slot.is-block-slot.is-active { min-height:56px; }
+    .planner-drop-preview {
+        display:none;
+        width:calc(100% - 18px);
+        padding:8px 10px;
+        border:1px solid rgba(99,105,209,.34);
+        border-radius:10px;
+        background:rgba(255,255,255,.78);
+        color:#4F56BE;
+        box-shadow:0 8px 22px rgba(79,86,190,.10);
+        pointer-events:none;
+    }
+    .planner-drop-slot.is-active .planner-drop-preview { display:block; }
+    .planner-drop-preview-title {
+        display:flex;
+        align-items:center;
+        gap:7px;
+        min-width:0;
+        font-size:12px;
+        font-weight:800;
+    }
+    .planner-drop-preview-title span:last-child {
+        overflow:hidden;
+        text-overflow:ellipsis;
+        white-space:nowrap;
+    }
+    .planner-drop-preview-days { display:flex; flex-direction:column; gap:5px; margin-top:6px; }
+    .planner-drop-preview-day {
+        display:flex;
+        align-items:center;
+        gap:7px;
+        min-height:30px;
+        padding:5px 8px;
+        border:1px solid rgba(99,105,209,.22);
+        border-radius:8px;
+        background:rgba(248,248,255,.92);
+        font-size:11px;
+        font-weight:700;
+    }
+    .planner-drop-preview-day-badge {
+        flex:0 0 auto;
+        min-width:26px;
+        padding:2px 5px;
+        border-radius:6px;
+        background:#6369D1;
+        color:#fff;
+        text-align:center;
+        font-size:9px;
+        font-weight:900;
+    }
+    .planner-drop-preview-block {
+        display:flex;
+        align-items:center;
+        gap:8px;
+        min-width:0;
+    }
+    .planner-drop-preview-type {
+        flex:0 0 auto;
+        padding:3px 7px;
+        border-radius:999px;
+        font-size:9px;
+        font-weight:800;
+    }
+    .planner-drop-preview-name {
+        min-width:0;
+        overflow:hidden;
+        text-overflow:ellipsis;
+        white-space:nowrap;
+        color:#374151;
+        font-size:11px;
+        font-weight:700;
+    }
+    .planner-drag-help {
+        position:sticky;
+        top:4px;
+        z-index:12;
+        display:flex;
+        align-items:center;
+        justify-content:center;
+        gap:7px;
+        width:max-content;
+        max-width:calc(100% - 20px);
+        margin:0 auto 10px;
+        padding:7px 11px;
+        border:1px solid #E0E1FA;
+        border-radius:999px;
+        background:rgba(255,255,255,.96);
+        color:#6369D1;
+        font-size:11px;
+        font-weight:800;
+        box-shadow:0 6px 18px rgba(99,105,209,.10);
+        pointer-events:none;
+    }
+
+
+
+
+    /* 구조 드래그 v2: 원본은 자리에서 빠지고, 삽입 위치에 작성 폼 헤더와 동일한 미리보기만 표시 */
+    .planner-structure-source {
+        opacity:0 !important;
+        height:0 !important;
+        min-height:0 !important;
+        max-height:0 !important;
+        margin:0 !important;
+        padding:0 !important;
+        border-width:0 !important;
+        overflow:hidden !important;
+        pointer-events:none !important;
+    }
+    .planner-drop-slot { overflow:visible; }
+    .planner-drop-preview {
+        display:none;
+        width:calc(100% - 10px);
+        padding:0;
+        border:0;
+        border-radius:0;
+        background:transparent;
+        color:inherit;
+        box-shadow:none;
+        pointer-events:none;
+    }
+    .planner-drop-slot.is-active .planner-drop-preview { display:block; }
+    .planner-drop-preview-stack { display:flex; flex-direction:column; gap:8px; width:100%; }
+    .planner-drop-form-day { width:100%; opacity:.72; }
+    .planner-drop-form-day .planner-day-header {
+        width:100%;
+        min-height:52px;
+        box-shadow:0 8px 22px rgba(79,86,190,.12);
+        pointer-events:none;
+    }
+    .planner-drop-form-block-card {
+        width:100%;
+        padding:10px 12px;
+        border:1px solid #E6E7F2;
+        border-radius:12px;
+        background:rgba(255,255,255,.84);
+        box-shadow:0 8px 22px rgba(17,24,39,.08);
+        opacity:.74;
+        pointer-events:none;
+    }
+    .planner-drop-form-block-card .planner-block-header {
+        min-height:34px;
+        padding:0 2px !important;
+    }
+    .planner-native-drag-ghost {
+        position:fixed;
+        left:-10000px;
+        top:-10000px;
+        z-index:-1;
+        width:320px;
+        max-width:320px;
+        padding:4px;
+        pointer-events:none;
+    }
 
     .planner-publish-backdrop {
         position: fixed;
@@ -1275,9 +1536,9 @@ request.setAttribute("activePage", "planner");
 
                 <div id="plannerDays" class="flex-1 overflow-y-auto px-5 py-4">
                     <div class="planner-day mb-4" data-day-number="1">
-                        <div class="planner-day-header flex items-center gap-3 rounded-xl px-4 py-3 cursor-pointer select-none transition-all group/hdr hover:brightness-[0.93]"
+                        <div class="planner-day-header flex items-center gap-3 rounded-xl px-4 py-3 cursor-pointer select-none transition-all group/hdr hover:brightness-[0.93]" draggable="true"
                             style="background: linear-gradient(135deg, #6369D1, #8B5CF6)">
-                            <div class="w-7 h-7 rounded-full flex items-center justify-center font-black text-[11px] text-white shrink-0"
+                            <div class="planner-day-number-badge w-7 h-7 rounded-full flex items-center justify-center font-black text-[11px] text-white shrink-0"
                                 style="background: rgba(255, 255, 255, .22)">D1</div>
                             <div class="flex-1 min-w-0">
                                 <p class="planner-day-title font-bold text-sm truncate" style="color: #fff" title="클릭하여 제목 수정">Day 1</p>
@@ -1299,7 +1560,7 @@ request.setAttribute("activePage", "planner");
 
                         <div class="planner-day-body mt-3 flex flex-col gap-3">
                             <div class="planner-block-card p-3" data-item-type="meal">
-                                <div class="planner-block-header flex items-center justify-between px-2 pb-3">
+                                <div class="planner-block-header flex items-center justify-between px-2 pb-3" draggable="true">
                                     <div class="flex items-center gap-2">
                                         <span class="planner-block-type-badge text-[10px] font-bold rounded-full px-2 py-1"
                                             style="background: #FFF1E8; color: #F97316">식사</span>
@@ -1523,10 +1784,11 @@ request.setAttribute("activePage", "planner");
                 <div class="px-4 py-3 border-t border-gray-100 shrink-0">
                     <p class="text-[10px] text-gray-400 mb-2 font-medium">핀 범례</p>
                     <div class="flex flex-wrap gap-2">
-                        <div class="flex items-center gap-1"><div class="w-4 h-4 rounded flex items-center justify-center" style="background:#3B82F618"><span style="color:#3B82F6;font-size:9px">●</span></div><span class="text-[10px] font-medium" style="color:#3B82F6">관광</span></div>
+                        <div class="flex items-center gap-1"><div class="w-4 h-4 rounded flex items-center justify-center" style="background:#6369D118"><span style="color:#6369D1;font-size:9px">●</span></div><span class="text-[10px] font-medium" style="color:#6369D1">관광</span></div>
                         <div class="flex items-center gap-1"><div class="w-4 h-4 rounded flex items-center justify-center" style="background:#F9731618"><span style="color:#F97316;font-size:9px">●</span></div><span class="text-[10px] font-medium" style="color:#F97316">식사</span></div>
-                        <div class="flex items-center gap-1"><div class="w-4 h-4 rounded flex items-center justify-center" style="background:#8B5CF618"><span style="color:#8B5CF6;font-size:9px">●</span></div><span class="text-[10px] font-medium" style="color:#8B5CF6">숙박</span></div>
-                        <div class="flex items-center gap-1"><div class="w-4 h-4 rounded flex items-center justify-center" style="background:#10B98118"><span style="color:#10B981;font-size:9px">●</span></div><span class="text-[10px] font-medium" style="color:#10B981">활동</span></div>
+                        <div class="flex items-center gap-1"><div class="w-4 h-4 rounded flex items-center justify-center" style="background:#10B98118"><span style="color:#10B981;font-size:9px">●</span></div><span class="text-[10px] font-medium" style="color:#10B981">숙박</span></div>
+                        <div class="flex items-center gap-1"><div class="w-4 h-4 rounded flex items-center justify-center" style="background:#3B82F618"><span style="color:#3B82F6;font-size:9px">●</span></div><span class="text-[10px] font-medium" style="color:#3B82F6">교통</span></div>
+                        <div class="flex items-center gap-1"><div class="w-4 h-4 rounded flex items-center justify-center" style="background:#EC489918"><span style="color:#EC4899;font-size:9px">●</span></div><span class="text-[10px] font-medium" style="color:#EC4899">활동</span></div>
                     </div>
                 </div>
             </div>
@@ -1540,7 +1802,6 @@ request.setAttribute("activePage", "planner");
             var DRAFT_KEY = 'tripily_planner_draft_write_v4';
             var PLANNER_CONTEXT_PATH='${pageContext.request.contextPath}';
             var restoringDraft=false;
-            var draftSaveTimer=null;
             var lastPlannerActivityAt=Date.now();
             var lastKeepAliveAt=Date.now();
             var keepAliveInFlight=false;
@@ -1553,8 +1814,11 @@ request.setAttribute("activePage", "planner");
                 activity:{label:'활동',color:'#EC4899',bg:'#FDF2F8'}
             };
             var map, mapMarkers=[], mapPolylines=[], mapSearchMarkers=[];
+            var plannerPlaceDetailsCache={};
+            var plannerMapInfoSeq=0;
             var plannerActiveMapDay='all';
-            var plannerDayLinePalette=['#6369D1','#F59E0B','#10B981','#EC4899','#06B6D4','#8B5CF6','#EF4444','#14B8A6'];
+            // DAY 동선 색상은 장소 유형(관광/식사/숙박/교통/활동) 핀 색상과 겹치지 않도록 별도 팔레트를 사용한다.
+            var plannerDayLinePalette=['#111827','#92400E','#0E7490','#A16207','#991B1B','#475569','#4D7C0F','#713F12'];
             function getPlannerDayLineColor(dayNumber){
                 var dayIndex=parseInt(dayNumber,10);
                 if(!dayIndex||dayIndex<1){
@@ -1737,7 +2001,7 @@ request.setAttribute("activePage", "planner");
                 if(restoringDraft) return;
                 dirty=true;
                 lastPlannerActivityAt=Date.now();
-                scheduleDraftSave();
+                // 임시저장은 세션 만료가 실제로 확인된 경우에만 수행한다.
                 keepPlannerSessionAlive(false);
             }
 
@@ -1758,15 +2022,10 @@ request.setAttribute("activePage", "planner");
                 }
             },60*1000);
 
-            document.addEventListener('visibilitychange',function(){
-                if(document.visibilityState==='hidden' && dirty){
-                    saveDraftNow();
-                }
-            });
-
             window.addEventListener('beforeunload', function(e){
                 if(!dirty) return;
-                saveDraftToSessionStorage();
+                // 일반 페이지 이동/새로고침에서는 임시저장하지 않는다.
+                // 저장하지 않은 변경사항이 있다는 경고만 표시한다.
                 e.preventDefault();
                 e.returnValue='';
             });
@@ -1779,10 +2038,627 @@ request.setAttribute("activePage", "planner");
             });
 
             var search=$('#plannerPlanSearch'), count=$('#plannerPlanCount');
+
+            /*
+             * 일정 가져오기 / 작성 중 DAY / 작성 중 BLOCK을 하나의 드래그 UX로 처리한다.
+             * 드래그를 시작한 동안에만 #plannerDays를 구조 편집 모드로 바꾸고,
+             * 넓은 drop slot + 반투명 미리보기를 표시한다.
+             */
+            var plannerStructureDrag=null;
+
+            function plannerBlockPrefill(item){
+                item=item||{};
+                return {
+                    sourceBlockId:item.sourceBlockId||null,
+                    title:item.name||item.title||'',
+                    type:item.type||'sightseeing',
+                    startTime:item.time||item.startTime||'',
+                    endTime:item.endTime||'',
+                    cost:item.cost||'',
+                    costType:item.costType||'TOTAL',
+                    place:item.location||'',
+                    googlePlaceId:item.googlePlaceId||'',
+                    placeName:item.placeName||'',
+                    placeAddress:item.placeAddress||'',
+                    placeLat:item.placeLat,
+                    placeLng:item.placeLng,
+                    note:item.note||item.memo||''
+                };
+            }
+
+            function createPlannerDayShell(title){
+                var n=$$('.planner-day').length+1;
+                var d=document.createElement('div');
+                d.className='planner-day mb-4';
+                d.dataset.dayNumber=String(n);
+                d.dataset.dayOrder=String(n);
+                d.innerHTML='<div class="planner-day-header flex items-center gap-3 rounded-xl px-4 py-3 cursor-pointer select-none transition-all" draggable="true" style="background:linear-gradient(135deg,#6369D1,#8B5CF6)"><div class="planner-day-number-badge w-7 h-7 rounded-full flex items-center justify-center font-black text-[11px] text-white shrink-0" style="background:rgba(255,255,255,.22)">D'+n+'</div><div class="flex-1 min-w-0"><p class="planner-day-title font-bold text-sm truncate" style="color:#fff" title="클릭하여 제목 수정">'+escapeImportHtml(title||('Day '+n))+'</p><button type="button" class="planner-day-edit-icon" title="DAY 제목 수정" aria-label="DAY 제목 수정"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg></button></div><button type="button" class="planner-day-delete p-1 rounded" style="color:rgba(255,255,255,.6)" title="이 날 삭제"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6m3 0V4h8v2M10 11v6M14 11v6"/></svg></button></div><div class="planner-day-body mt-3 flex flex-col gap-3"></div>';
+                return d;
+            }
+
+            function insertBlockAt(day,prefill,beforeNode){
+                var body=$('.planner-day-body',day);
+                if(!body) return null;
+                body.classList.remove('is-collapsed');
+                clearEmptyHint(body);
+                var card=createBlock(prefill||{});
+                if(!card) return null;
+                var addBtn=$('.planner-add-block-btn',body);
+                body.insertBefore(card,beforeNode && beforeNode.parentNode===body ? beforeNode : (addBtn||null));
+                ensureDayControls(day);
+                updateDayDeleteButtons();
+                syncBudget();
+                syncCountryEditLock();
+                return card;
+            }
+
+            function insertImportedDayAt(beforeNode,dayData){
+                dayData=dayData||{};
+                var daysWrap=$('#plannerDays');
+                var addDayBtn=$('#plannerAddDay');
+                if(!daysWrap) return null;
+                var d=createPlannerDayShell(dayData.theme||dayData.title||'Day');
+                d.dataset.sourceDayId=dayData.sourceDayId||'';
+                daysWrap.insertBefore(d,beforeNode && beforeNode.parentNode===daysWrap ? beforeNode : addDayBtn);
+                setupDay(d);
+                (dayData.items||dayData.blocks||[]).forEach(function(item){
+                    insertBlockAt(d,plannerBlockPrefill(item),null);
+                });
+                ensureDayControls(d);
+                return d;
+            }
+
+            function plannerDragModeFor(state){
+                if(!state) return '';
+                return (state.kind==='item' || state.kind==='internal-block') ? 'block' : 'day';
+            }
+
+            function plannerDayHeaderPreviewHtml(dayNumber,title,sourceElement){
+                if(sourceElement){
+                    var sourceHeader=$('.planner-day-header',sourceElement);
+                    if(sourceHeader){
+                        var dayClone=sourceHeader.cloneNode(true);
+                        dayClone.removeAttribute('draggable');
+                        dayClone.querySelectorAll('button').forEach(function(btn){btn.remove();});
+                        return '<div class="planner-drop-form-day">'+dayClone.outerHTML+'</div>';
+                    }
+                }
+
+                var number=(dayNumber==null || dayNumber==='') ? '' : String(dayNumber).replace(/^D/i,'');
+                var badge=number ? ('D'+number) : 'DAY';
+                return '<div class="planner-drop-form-day">'
+                    +'<div class="planner-day-header flex items-center gap-3 rounded-xl px-4 py-3 select-none transition-all" style="background:linear-gradient(135deg,#6369D1,#8B5CF6)">'
+                    +'<span class="planner-structure-grip" aria-hidden="true">⠿</span>'
+                    +'<div class="planner-day-number-badge w-7 h-7 rounded-full flex items-center justify-center font-black text-[11px] text-white shrink-0" style="background:rgba(255,255,255,.22)">'+escapeImportHtml(badge)+'</div>'
+                    +'<div class="flex-1 min-w-0"><p class="planner-day-title font-bold text-sm truncate" style="color:#fff">'+escapeImportHtml(title||'Day')+'</p></div>'
+                    +'</div></div>';
+            }
+
+            function plannerBlockHeaderPreviewHtml(type,name,sourceElement){
+                if(sourceElement){
+                    var sourceHeader=$('.planner-block-header',sourceElement);
+                    if(sourceHeader){
+                        var blockClone=sourceHeader.cloneNode(true);
+                        blockClone.removeAttribute('draggable');
+                        blockClone.querySelectorAll('button').forEach(function(btn){btn.remove();});
+                        return '<div class="planner-drop-form-block-card">'+blockClone.outerHTML+'</div>';
+                    }
+                }
+
+                var cfg=TYPE_CONFIG[type]||TYPE_CONFIG.sightseeing;
+                return '<div class="planner-drop-form-block-card">'
+                    +'<div class="planner-block-header flex items-center justify-between px-2 pb-3">'
+                    +'<div class="flex items-center gap-2">'
+                    +'<span class="planner-structure-grip" aria-hidden="true">⠿</span>'
+                    +'<span class="planner-block-type-badge text-[10px] font-bold rounded-full px-2 py-1" style="background:'+cfg.bg+';color:'+cfg.color+'">'+escapeImportHtml(cfg.label)+'</span>'
+                    +'<span class="planner-block-title-label font-bold text-sm text-gray-800">'+escapeImportHtml(name||'일정 블록')+'</span>'
+                    +'</div><div></div></div></div>';
+            }
+
+            function plannerDragPreviewHtml(state){
+                if(!state) return '';
+                var payload=state.payload||{};
+                var html=[];
+
+                if(state.kind==='plan'){
+                    var schedules=(payload.plan && payload.plan.daySchedules)||[];
+                    schedules.forEach(function(day,i){
+                        html.push(plannerDayHeaderPreviewHtml(day.dayNum||day.dayNumber||(i+1),day.theme||day.title||('Day '+(i+1)),null));
+                    });
+                    return '<div class="planner-drop-preview-stack">'+html.join('')+'</div>';
+                }
+
+                if(state.kind==='day'){
+                    var importedDay=payload.day||{};
+                    return '<div class="planner-drop-preview-stack">'
+                        +plannerDayHeaderPreviewHtml(importedDay.dayNum||importedDay.dayNumber||'',importedDay.theme||importedDay.title||'Day',null)
+                        +'</div>';
+                }
+
+                if(state.kind==='internal-day'){
+                    return '<div class="planner-drop-preview-stack">'
+                        +plannerDayHeaderPreviewHtml('', '', state.element)
+                        +'</div>';
+                }
+
+                var item=state.kind==='item' ? (payload.item||{}) : null;
+                var card=state.element;
+                var type=item ? item.type : (card ? card.dataset.itemType : 'sightseeing');
+                var name=item ? (item.name||item.title||'일정 블록') : '';
+                if(!name && card){
+                    var label=$('.planner-block-title-label',card);
+                    var input=$('.planner-item-title',card);
+                    name=(label&&label.textContent.trim()) || (input&&input.value.trim()) || '일정 블록';
+                }
+                return '<div class="planner-drop-preview-stack">'
+                    +plannerBlockHeaderPreviewHtml(type,name,state.kind==='internal-block'?card:null)
+                    +'</div>';
+            }
+
+            var plannerNativeDragGhost=null;
+
+            function clearPlannerNativeDragGhost(){
+                if(plannerNativeDragGhost){
+                    plannerNativeDragGhost.remove();
+                    plannerNativeDragGhost=null;
+                }
+            }
+
+            function setPlannerNativeDragImage(e,state){
+                if(!e || !e.dataTransfer || typeof e.dataTransfer.setDragImage!=='function') return;
+                clearPlannerNativeDragGhost();
+                var ghost=document.createElement('div');
+                ghost.className='planner-native-drag-ghost';
+                ghost.innerHTML=plannerDragPreviewHtml(state);
+                document.body.appendChild(ghost);
+                plannerNativeDragGhost=ghost;
+                var rect=ghost.getBoundingClientRect();
+                e.dataTransfer.setDragImage(ghost,Math.min(150,Math.max(24,rect.width/2)),24);
+            }
+
+            var plannerBlockDragHoverDay=null;
+
+            function setPlannerBlockDragHoverDay(day){
+                if(plannerBlockDragHoverDay===day) return;
+                $$('.planner-day.planner-block-drag-hover').forEach(function(node){
+                    node.classList.remove('planner-block-drag-hover');
+                });
+                plannerBlockDragHoverDay=day||null;
+                if(plannerBlockDragHoverDay){
+                    plannerBlockDragHoverDay.classList.add('planner-block-drag-hover');
+                }
+            }
+
+            function removePlannerDropSlots(){
+                $$('.planner-drop-slot,.planner-drag-help').forEach(function(node){node.remove();});
+                $$('.planner-day.planner-import-replaced-starter').forEach(function(day){
+                    day.classList.remove('planner-import-replaced-starter');
+                });
+                setPlannerBlockDragHoverDay(null);
+                var root=$('#plannerDays');
+                if(root){
+                    root.classList.remove('planner-structure-drag-mode','planner-drag-day-mode','planner-drag-block-mode');
+                }
+            }
+
+            function activatePlannerDropSlot(slot){
+                $$('.planner-drop-slot').forEach(function(s){
+                    var active=s===slot;
+                    s.classList.toggle('is-active',active);
+                    s.style.minHeight='';
+                    if(active){
+                        var preview=$('.planner-drop-preview',s);
+                        var base=s.classList.contains('is-block-slot') ? 56 : 72;
+                        var needed=preview ? (preview.scrollHeight+16) : base;
+                        s.style.minHeight=Math.max(base,needed)+'px';
+                    }
+                });
+            }
+
+            function makePlannerDropSlot(meta){
+                var slot=document.createElement('div');
+                slot.className='planner-drop-slot '+(meta.mode==='block'?'is-block-slot':'is-day-slot');
+                slot._plannerDropMeta=meta;
+                var preview=document.createElement('div');
+                preview.className='planner-drop-preview';
+                preview.innerHTML=plannerDragPreviewHtml(plannerStructureDrag);
+                slot.appendChild(preview);
+
+                slot.addEventListener('dragenter',function(e){
+                    if(!plannerStructureDrag) return;
+                    e.preventDefault();
+                    e.stopPropagation();
+                    activatePlannerDropSlot(slot);
+                });
+                slot.addEventListener('dragover',function(e){
+                    if(!plannerStructureDrag) return;
+                    e.preventDefault();
+                    e.stopPropagation();
+                    if(e.dataTransfer){
+                        e.dataTransfer.dropEffect=plannerStructureDrag.source==='internal' ? 'move' : 'copy';
+                    }
+                    activatePlannerDropSlot(slot);
+                });
+                slot.addEventListener('drop',function(e){
+                    if(!plannerStructureDrag) return;
+                    e.preventDefault();
+                    e.stopPropagation();
+
+                    /*
+                     * 반투명 미리보기가 실제로 보이는 슬롯만 유효한 삽입 위치다.
+                     * 미리보기가 활성화되지 않은 슬롯이면 변경하지 않고 취소한다.
+                     */
+                    if(!slot.classList.contains('is-active')){
+                        cancelPlannerStructureDrag();
+                        return;
+                    }
+
+                    performPlannerStructureDrop(slot._plannerDropMeta);
+                });
+                return slot;
+            }
+
+            function buildPlannerDropSlots(){
+                removePlannerDropSlots();
+                if(!plannerStructureDrag) return;
+                var root=$('#plannerDays');
+                if(!root) return;
+                var mode=plannerDragModeFor(plannerStructureDrag);
+                root.classList.add('planner-structure-drag-mode',mode==='block'?'planner-drag-block-mode':'planner-drag-day-mode');
+
+                var help=document.createElement('div');
+                help.className='planner-drag-help';
+                help.textContent=mode==='block' ? '원하는 DAY의 블록 사이에 놓으세요' : '원하는 DAY 사이에 놓으세요';
+                root.insertBefore(help,root.firstChild);
+
+                if(mode==='day'){
+                    /*
+                     * 새 일정의 기본 빈 D1만 있는 상태에서 왼쪽 DAY/일정 전체를 가져오면
+                     * 실제 DROP 시 D1이 삭제되는 동작과 미리보기도 동일해야 한다.
+                     * 따라서 드래그 중에도 기본 D1을 화면/슬롯 계산에서 제외한다.
+                     */
+                    var replacedStarterDay=null;
+                    if(plannerStructureDrag.source==='import'
+                            && (plannerStructureDrag.kind==='day' || plannerStructureDrag.kind==='plan')){
+                        replacedStarterDay=getPlannerEmptyStarterDay();
+                        if(replacedStarterDay){
+                            replacedStarterDay.classList.add('planner-import-replaced-starter');
+                        }
+                    }
+
+                    /* 이동 중인 DAY와 가져오기로 대체될 기본 빈 D1은 원래 자리에서 빠진 것으로 계산한다. */
+                    var days=$$('.planner-day').filter(function(day){
+                        if(plannerStructureDrag.kind==='internal-day' && day===plannerStructureDrag.element) return false;
+                        if(replacedStarterDay && day===replacedStarterDay) return false;
+                        return true;
+                    });
+                    var addDayBtn=$('#plannerAddDay');
+                    for(var i=0;i<=days.length;i++){
+                        var before=i<days.length ? days[i] : addDayBtn;
+                        root.insertBefore(makePlannerDropSlot({mode:'day',beforeDay:before||null,index:i}),before||null);
+                    }
+                    return;
+                }
+
+                $$('.planner-day').forEach(function(day){
+                    var body=$('.planner-day-body',day);
+                    if(!body) return;
+                    /* 이동 중인 BLOCK 역시 원래 자리에서 제외하고 슬롯을 계산한다. */
+                    var blocks=$$('.planner-block-card',body).filter(function(block){
+                        return !(plannerStructureDrag.kind==='internal-block' && block===plannerStructureDrag.element);
+                    });
+                    var addBtn=$('.planner-add-block-btn',body);
+                    for(var i=0;i<=blocks.length;i++){
+                        var before=i<blocks.length ? blocks[i] : addBtn;
+                        body.insertBefore(makePlannerDropSlot({mode:'block',day:day,beforeBlock:before||null,index:i}),before||null);
+                    }
+                });
+
+                /*
+                 * 작성 중인 블록을 잡은 순간에는 마우스가 원본 DAY 위에 있으므로
+                 * 그 DAY만 우선 펼친다. 왼쪽에서 가져오는 블록은 DAY 위에 진입할 때까지
+                 * 모두 닫힌 상태를 유지한다.
+                 */
+                if(plannerStructureDrag.kind==='internal-block' && plannerStructureDrag.originDay){
+                    setPlannerBlockDragHoverDay(plannerStructureDrag.originDay);
+                }else{
+                    setPlannerBlockDragHoverDay(null);
+                }
+            }
+
+
+            var plannerStructureBuildFrame=0;
+
+            function startPlannerStructureDrag(options){
+                var nextState=options||null;
+                if(!nextState) return;
+
+                if(plannerStructureBuildFrame){
+                    cancelAnimationFrame(plannerStructureBuildFrame);
+                    plannerStructureBuildFrame=0;
+                }
+
+                plannerStructureDrag=nextState;
+
+                /*
+                 * 내부 DAY/BLOCK을 native dragstart 안에서 바로 재배치하면
+                 * 드래그 원본이 들어 있는 DOM 자체가 변해서 Chrome에서 drag가
+                 * 즉시 취소될 수 있다. 따라서 브라우저가 native drag를 시작한
+                 * 다음 프레임에만 삽입 슬롯 UI를 만든다.
+                 */
+                if(nextState.source==='internal'){
+                    plannerStructureBuildFrame=requestAnimationFrame(function(){
+                        plannerStructureBuildFrame=0;
+                        if(plannerStructureDrag!==nextState) return;
+                        if(nextState.element){
+                            nextState.element.classList.add('planner-structure-source');
+                        }
+                        buildPlannerDropSlots();
+                    });
+                    return;
+                }
+
+                if(nextState.element){
+                    nextState.element.classList.add('planner-structure-source');
+                }
+                buildPlannerDropSlots();
+            }
+
+            function endPlannerStructureDrag(){
+                if(plannerStructureBuildFrame){
+                    cancelAnimationFrame(plannerStructureBuildFrame);
+                    plannerStructureBuildFrame=0;
+                }
+                if(plannerStructureDrag && plannerStructureDrag.element){
+                    plannerStructureDrag.element.classList.remove('planner-structure-source');
+                }
+                plannerStructureDrag=null;
+                removePlannerDropSlots();
+                clearPlannerNativeDragGhost();
+            }
+
+
+            /*
+             * 구조 드래그 취소 공통 처리.
+             * 유효한 삽입 위치가 아닌 곳에 놓은 경우에만 아무 변경 없이 취소한다.
+             * 유효 여부는 화면의 반투명 삽입 미리보기 표시 여부와 정확히 일치한다.
+             * 가져오기 중 숨겨 둔 기본 빈 D1 / 국가 잠금 상태도 원래대로 복구한다.
+             */
+            function cancelPlannerStructureDrag(){
+                if(!plannerStructureDrag) return;
+
+                var wasImport=plannerStructureDrag.source==='import';
+
+                if(wasImport){
+                    finishImportDrag();
+                }else{
+                    clearDayDragState();
+                    endPlannerStructureDrag();
+                    syncCountryEditLock();
+                }
+            }
+
+            /*
+             * 삽입 슬롯 자체의 drop은 슬롯 이벤트에서 먼저 처리되고 stopPropagation 된다.
+             * 그 외 영역에 마우스를 놓은 경우에는 여기까지 올라오므로 단순 취소로 본다.
+             */
+            document.addEventListener('drop',function(e){
+                if(!plannerStructureDrag) return;
+                e.preventDefault();
+                cancelPlannerStructureDrag();
+            });
+
+            /*
+             * 작성/수정 중인 DAY와 BLOCK은 헤더 자체를 드래그 핸들로 사용한다.
+             * 개별 카드 생성 시마다 dragstart를 다시 바인딩하지 않고 이벤트 위임으로
+             * 처리해서 새로 추가된 DAY/BLOCK도 즉시 동일하게 동작한다.
+             */
+            function plannerInternalDragHeaderFromTarget(target){
+                if(!target || !target.closest) return null;
+                var header=target.closest('.planner-day-header,.planner-block-header');
+                if(!header || !header.closest('#plannerDays')) return null;
+                return header;
+            }
+
+            function plannerIsHeaderControlTarget(target,header){
+                if(!target || !target.closest || !header) return false;
+                var control=target.closest('button,input,textarea,select,a,[contenteditable="true"]');
+                return !!(control && header.contains(control));
+            }
+
+            document.addEventListener('mousedown',function(e){
+                var header=plannerInternalDragHeaderFromTarget(e.target);
+                if(!header) return;
+
+                /* 삭제/접기/제목수정 같은 실제 버튼 조작 중에는 드래그하지 않는다. */
+                if(plannerIsHeaderControlTarget(e.target,header)){
+                    header.setAttribute('draggable','false');
+                    var restore=function(){
+                        header.setAttribute('draggable','true');
+                        document.removeEventListener('mouseup',restore,true);
+                    };
+                    document.addEventListener('mouseup',restore,true);
+                    return;
+                }
+
+                /* 마우스를 누른 순간 확실히 draggable 상태로 만든다. */
+                header.setAttribute('draggable','true');
+            },true);
+
+            /*
+             * BLOCK 드래그 중 DAY 헤더/본문 위로 마우스가 들어가면 해당 DAY만 펼친다.
+             * 다른 DAY로 이동하면 직전 DAY는 즉시 닫혀 한 번에 하나만 열린다.
+             */
+            document.addEventListener('dragover',function(e){
+                if(!plannerStructureDrag) return;
+
+                var target=e.target;
+                var slot=target && target.closest ? target.closest('.planner-drop-slot') : null;
+                if(slot && !slot.closest('#plannerDays')) slot=null;
+
+                /*
+                 * 마우스가 유효한 삽입 슬롯 밖으로 벗어나면 이전 슬롯의
+                 * 미리보기를 즉시 끈다. 따라서 '미리보기가 보임 = 드롭 가능',
+                 * '미리보기가 안 보임 = 드롭 시 취소'가 항상 성립한다.
+                 */
+                if(!slot){
+                    activatePlannerDropSlot(null);
+                }
+
+                if(plannerDragModeFor(plannerStructureDrag)!=='block') return;
+
+                var day=target && target.closest ? target.closest('.planner-day') : null;
+                if(day && !day.closest('#plannerDays')) day=null;
+                setPlannerBlockDragHoverDay(day);
+            },true);
+
+            document.addEventListener('dragstart',function(e){
+                var header=plannerInternalDragHeaderFromTarget(e.target);
+                if(!header) return;
+
+                var day=header.closest('.planner-day');
+                var block=header.closest('.planner-block-card');
+                if(!day) return;
+
+                /*
+                 * dataTransfer를 먼저 채우고, DOM 변경은 startPlannerStructureDrag에서
+                 * 다음 animation frame으로 미룬다.
+                 */
+                if(e.dataTransfer){
+                    e.dataTransfer.effectAllowed='move';
+                    e.dataTransfer.setData(
+                        'text/plain',
+                        block ? 'planner-block' : 'planner-day'
+                    );
+                }
+
+                var internalDragState=block
+                    ? {source:'internal',kind:'internal-block',element:block,originDay:day}
+                    : {source:'internal',kind:'internal-day',element:day};
+
+                /* native ghost도 중앙 작성 폼의 DAY/BLOCK 헤더 모양으로 통일한다. */
+                setPlannerNativeDragImage(e,internalDragState);
+                startPlannerStructureDrag(internalDragState);
+            },true);
+
+            document.addEventListener('dragend',function(){
+                if(plannerStructureDrag && plannerStructureDrag.source==='internal'){
+                    clearDayDragState();
+                    endPlannerStructureDrag();
+                }
+            },true);
+
+            /*
+             * 새 일정의 기본 빈 D1만 남아 있는 상태에서 왼쪽의 DAY/일정 전체를
+             * 가져오면, 빈 D1을 자리표시자로 남기지 않고 자동으로 제거한다.
+             * 블록 1개를 가져오는 경우에는 그 블록을 담을 DAY가 필요하므로 제거하지 않는다.
+             */
+            function getPlannerEmptyStarterDay(){
+                var days=$$('.planner-day');
+                if(days.length!==1) return null;
+
+                var day=days[0];
+                var body=$('.planner-day-body',day);
+                if(!body) return null;
+
+                /* 이미 가져온 DAY는 내용이 비었더라도 사용자가 가진 DAY이므로 자동 삭제하지 않는다. */
+                if(day.dataset.sourceDayId) return null;
+
+                if($('.planner-block-card,.planner-block-summary',body)) return null;
+                return day;
+            }
+
+            function removePlannerEmptyStarterDayBeforeImport(beforeNode){
+                var emptyDay=getPlannerEmptyStarterDay();
+                if(!emptyDay) return beforeNode;
+
+                var wasBeforeTarget=(beforeNode===emptyDay);
+                emptyDay.remove();
+
+                /* 제거한 D1 자체가 삽입 기준점이었다면 맨 앞/유일 위치로 삽입되도록 null 처리 */
+                return wasBeforeTarget ? null : beforeNode;
+            }
+
+            function performPlannerStructureDrop(meta){
+                var state=plannerStructureDrag;
+                if(!state || !meta) return;
+                var changed=false;
+
+                if(meta.mode==='day'){
+                    var before=meta.beforeDay;
+                    if(state.kind==='internal-day' && state.element){
+                        var moving=state.element;
+                        var root=$('#plannerDays');
+                        var addBtn=$('#plannerAddDay');
+                        if(before!==moving){
+                            root.insertBefore(moving,before && before.parentNode===root ? before : addBtn);
+                            changed=true;
+                        }
+                    }else if(state.kind==='day'){
+                        applyImportHeaderDefaults(state.payload);
+
+                        /* 기본으로 생성된 빈 D1뿐이면 가져온 DAY가 그 자리를 대신한다. */
+                        before=removePlannerEmptyStarterDayBeforeImport(before);
+                        insertImportedDayAt(before,state.payload.day||{});
+
+                        toast('DAY 일정을 가져왔습니다.');
+                        changed=true;
+                    }else if(state.kind==='plan'){
+                        applyImportHeaderDefaults(state.payload);
+                        var schedules=(state.payload.plan && state.payload.plan.daySchedules)||[];
+
+                        /* 일정 전체를 빈 새 일정에 가져오는 경우도 불필요한 기본 D1을 남기지 않는다. */
+                        if(schedules.length>0){
+                            before=removePlannerEmptyStarterDayBeforeImport(before);
+                        }
+                        schedules.forEach(function(dayData){ insertImportedDayAt(before,dayData); });
+                        toast('일정 '+schedules.length+'개 DAY를 가져왔습니다.');
+                        changed=schedules.length>0;
+                    }
+                }else if(meta.mode==='block'){
+                    var targetDay=meta.day;
+                    var beforeBlock=meta.beforeBlock;
+                    if(state.kind==='internal-block' && state.element){
+                        var card=state.element;
+                        var oldDay=card.closest('.planner-day');
+                        var body=$('.planner-day-body',targetDay);
+                        if(beforeBlock!==card){
+                            body.classList.remove('is-collapsed');
+                            clearEmptyHint(body);
+                            body.insertBefore(card,beforeBlock && beforeBlock.parentNode===body ? beforeBlock : $('.planner-add-block-btn',body));
+                            ensureDayControls(targetDay);
+                            if(oldDay && oldDay!==targetDay) ensureDayControls(oldDay);
+                            changed=true;
+                        }
+                    }else if(state.kind==='item'){
+                        applyImportHeaderDefaults(state.payload);
+                        insertBlockAt(targetDay,plannerBlockPrefill(state.payload.item||{}),beforeBlock);
+                        toast('일정 블록 1개를 가져왔습니다.');
+                        changed=true;
+                    }
+                }
+
+                endPlannerStructureDrag();
+                finishImportDrag();
+                if(changed){
+                    $$('.planner-day').forEach(ensureDayControls);
+                    renumberDays();
+                    updateDayDeleteButtons();
+                    syncBudget();
+                    syncCountryEditLock();
+                    markDirty();
+                    if(typeof refreshMap==='function') refreshMap(plannerActiveMapDay||'all');
+                }
+            }
+
             function dragPayload(e, payload){
                 e.dataTransfer.effectAllowed='copy';
                 e.dataTransfer.setData('application/x-tripily-import', JSON.stringify(payload));
                 e.dataTransfer.setData('text/plain', payload.kind);
+                var importDragState={source:'import',kind:payload.kind,payload:payload};
+                /* 왼쪽 일정 가져오기도 중앙 작성 폼의 헤더 모양을 drag ghost로 사용한다. */
+                setPlannerNativeDragImage(e,importDragState);
+                startPlannerStructureDrag(importDragState);
 
                 /*
                  * 국가 미선택 상태에서도 '일정 가져오기'는 가능해야 하므로
@@ -1797,6 +2673,7 @@ request.setAttribute("activePage", "planner");
             }
 
             function finishImportDrag(){
+                endPlannerStructureDrag();
                 var center=$('#plannerCenterPanel');
 
                 if(center){
@@ -2658,6 +3535,7 @@ request.setAttribute("activePage", "planner");
                     body.dataset.importDropReady='1';
 
                     body.addEventListener('dragover',function(e){
+                        if(plannerStructureDrag) return;
                         if(!e.dataTransfer.types.includes('application/x-tripily-import')) return;
                         e.preventDefault();
                         e.dataTransfer.dropEffect='copy';
@@ -2669,6 +3547,7 @@ request.setAttribute("activePage", "planner");
                     });
 
                     body.addEventListener('drop',function(e){
+                        if(plannerStructureDrag) return;
                         var raw=e.dataTransfer.getData('application/x-tripily-import');
                         if(!raw)return;
 
@@ -3800,6 +4679,25 @@ request.setAttribute("activePage", "planner");
 
                 $$('input,textarea',card).forEach(function(el){ if(el!==cost) el.addEventListener('input',markDirty); });
 
+                /*
+                 * 작성/수정 중인 블록도 왼쪽에서 가져오는 블록과 완전히 같은 드래그 UI를 쓴다.
+                 * 별도 순서변경 버튼은 만들지 않고 기존 헤더 전체(버튼 제외)를 드래그 영역으로 사용한다.
+                 */
+                if(header && header.dataset.structureDragReady!=='1'){
+                    header.dataset.structureDragReady='1';
+                    header.setAttribute('draggable','true');
+                    header.title='드래그하여 블록 순서 변경 / 다른 DAY로 이동';
+
+                    var blockHeadLeft=header.firstElementChild;
+                    if(blockHeadLeft && !$('.planner-structure-grip',blockHeadLeft)){
+                        var blockGrip=document.createElement('span');
+                        blockGrip.className='planner-structure-grip';
+                        blockGrip.setAttribute('aria-hidden','true');
+                        blockGrip.textContent='⠿';
+                        blockHeadLeft.insertBefore(blockGrip,blockHeadLeft.firstChild);
+                    }
+                }
+
                 setupPlannerPlaceSearch(card);
             }
             $$('.planner-block-card').forEach(setupBlock);
@@ -3833,10 +4731,35 @@ request.setAttribute("activePage", "planner");
                 $$('.planner-day').forEach(function(day,i){
                     var oldNo=Number(day.dataset.dayNumber||i+1);
                     var newNo=i+1;
-                    day.dataset.dayNumber=newNo;
-                    day.dataset.dayOrder=newNo;
-                    var circle=day.querySelector('.planner-day-header > div:first-child');
-                    if(circle) circle.textContent='D'+newNo;
+                    day.dataset.dayNumber=String(newNo);
+                    day.dataset.dayOrder=String(newNo);
+
+                    /*
+                     * DAY 헤더 앞에 드래그 그립(span)이 추가된 뒤에는
+                     * ':first-child'가 번호 배지가 아니라 그립을 가리키게 된다.
+                     * 번호 배지를 전용 클래스로 찾아 삭제/이동/가져오기 후에도
+                     * D1, D2 ... 가 현재 화면 순서와 항상 일치하도록 갱신한다.
+                     */
+                    var badge=day.querySelector('.planner-day-number-badge');
+                    if(!badge){
+                        var header=day.querySelector('.planner-day-header');
+                        if(header){
+                            badge=Array.prototype.slice.call(header.children).find(function(child){
+                                return child.tagName==='DIV' && child.classList.contains('w-7') && child.classList.contains('h-7');
+                            })||null;
+                            if(badge) badge.classList.add('planner-day-number-badge');
+                        }
+                    }
+                    if(badge) badge.textContent='D'+newNo;
+
+                    /* 사용자가 직접 바꾼 제목은 유지하고, 기본 Day N 제목만 함께 재번호화한다. */
+                    var title=day.querySelector('.planner-day-title');
+                    if(title && !title.querySelector('input')){
+                        var titleText=(title.textContent||'').trim();
+                        if(/^Day\s+\d+$/i.test(titleText)){
+                            title.textContent='Day '+newNo;
+                        }
+                    }
                 });
                 updateAddDayButton(); rebuildMapFilter(); updateDayDeleteButtons();
             }
@@ -3876,11 +4799,9 @@ request.setAttribute("activePage", "planner");
                 }
             }
 
-            var draggedPlannerDay=null;
-
             function clearDayDragState(){
                 $$('.planner-day').forEach(function(d){
-                    d.classList.remove('is-day-dragging','is-day-drag-over');
+                    d.classList.remove('is-day-dragging','is-day-drag-over','planner-structure-source');
                 });
             }
 
@@ -3889,64 +4810,16 @@ request.setAttribute("activePage", "planner");
                 var h=$('.planner-day-header',day), b=$('.planner-day-body',day), del=$('.planner-day-delete',day);
                 if(h){
                     h.setAttribute('draggable','true');
-                    h.title=h.title||'드래그하여 DAY 순서 변경';
+                    h.title='드래그하여 DAY 순서 변경';
 
-                    h.addEventListener('dragstart',function(e){
-                        if(e.target.closest('.planner-day-delete') ||
-                           e.target.closest('.planner-day-title') ||
-                           e.target.closest('.planner-day-edit-icon') ||
-                           e.target.closest('input,button,a,textarea,select')){
-                            e.preventDefault();
-                            return;
-                        }
-                        draggedPlannerDay=day;
-                        day.classList.add('is-day-dragging');
-                        if(e.dataTransfer){
-                            e.dataTransfer.effectAllowed='move';
-                            e.dataTransfer.setData('text/plain','planner-day');
-                        }
-                    });
+                    if(!$('.planner-structure-grip',h)){
+                        var dayGrip=document.createElement('span');
+                        dayGrip.className='planner-structure-grip';
+                        dayGrip.setAttribute('aria-hidden','true');
+                        dayGrip.textContent='⠿';
+                        h.insertBefore(dayGrip,h.firstChild);
+                    }
 
-                    h.addEventListener('dragend',function(){
-                        draggedPlannerDay=null;
-                        clearDayDragState();
-                        renumberDays();
-                        markDirty();
-                    });
-
-                    day.addEventListener('dragover',function(e){
-                        if(!draggedPlannerDay || draggedPlannerDay===day) return;
-                        e.preventDefault();
-                        if(e.dataTransfer) e.dataTransfer.dropEffect='move';
-
-                        $$('.planner-day').forEach(function(d){d.classList.remove('is-day-drag-over');});
-                        day.classList.add('is-day-drag-over');
-
-                        var rect=day.getBoundingClientRect();
-                        var before=e.clientY < rect.top + rect.height/2;
-                        var parent=day.parentNode;
-                        if(before){
-                            if(draggedPlannerDay!==day.previousElementSibling){
-                                parent.insertBefore(draggedPlannerDay,day);
-                                renumberDays();
-                            }
-                        }else{
-                            var next=day.nextElementSibling;
-                            if(next!==draggedPlannerDay){
-                                parent.insertBefore(draggedPlannerDay,next);
-                                renumberDays();
-                            }
-                        }
-                    });
-
-                    day.addEventListener('drop',function(e){
-                        if(!draggedPlannerDay) return;
-                        e.preventDefault();
-                        clearDayDragState();
-                        draggedPlannerDay=null;
-                        renumberDays();
-                        markDirty();
-                    });
                 }
                 if(h&&b) h.addEventListener('click',function(e){ if(e.target.closest('.planner-day-delete') || e.target.closest('.planner-day-title') || e.target.closest('.planner-day-edit-icon'))return; b.classList.toggle('is-collapsed'); });
                 enableDayTitleEdit(day);
@@ -3989,8 +4862,7 @@ request.setAttribute("activePage", "planner");
                 addDay.appendChild(label);
                 addDay.addEventListener('click',function(){
                     var n=$$('.planner-day').length+1;
-                    var d=document.createElement('div'); d.className='planner-day mb-4'; d.dataset.dayNumber=n;
-                    d.innerHTML='<div class="planner-day-header flex items-center gap-3 rounded-xl px-4 py-3 cursor-pointer select-none transition-all" style="background:linear-gradient(135deg,#6369D1,#8B5CF6)"><div class="w-7 h-7 rounded-full flex items-center justify-center font-black text-[11px] text-white shrink-0" style="background:rgba(255,255,255,.22)">D'+n+'</div><div class="flex-1 min-w-0"><p class="planner-day-title font-bold text-sm truncate" style="color:#fff" title="클릭하여 제목 수정">Day '+n+'</p><button type="button" class="planner-day-edit-icon" title="DAY 제목 수정" aria-label="DAY 제목 수정"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg></button></div><button type="button" class="planner-day-delete p-1 rounded" style="color:rgba(255,255,255,.6)" title="이 날 삭제"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6m3 0V4h8v2M10 11v6M14 11v6"/></svg></button></div><div class="planner-day-body mt-3 flex flex-col gap-3"></div>';
+                    var d=createPlannerDayShell('Day '+n);
                     daysWrap.insertBefore(d,addDay); setupDay(d); renumberDays(); markDirty();
                     d.scrollIntoView({behavior:'smooth',block:'nearest'});
                 });
@@ -4029,9 +4901,8 @@ request.setAttribute("activePage", "planner");
                     var lineColor=getPlannerDayLineColor(dayNumber);
                     return '<div class="flex items-center gap-2 py-1">'
                         +'<span class="font-bold text-white/90">'+dayNumber+'일차</span>'
-                        +'<span class="inline-flex items-center gap-1.5 ml-auto">'
-                        +'<span style="width:18px;height:4px;border-radius:999px;background:'+lineColor+';display:inline-block"></span>'
-                        +'<span style="width:10px;height:10px;border-radius:999px;background:'+lineColor+';display:inline-block"></span>'
+                        +'<span class="inline-flex items-center ml-auto">'
+                        +'<span style="width:24px;height:4px;border-radius:999px;background:'+lineColor+';display:inline-block"></span>'
                         +'</span>'
                         +'</div>';
                 }).join('');
@@ -4046,7 +4917,7 @@ request.setAttribute("activePage", "planner");
                 }
                 if(dot){
                     dot.style.background=plannerActiveMapDay==='all'
-                        ? '#6369D1'
+                        ? '#6B7280'
                         : getPlannerDayLineColor(plannerActiveMapDay);
                 }
                 renderPlannerMapAllLegend();
@@ -4060,9 +4931,8 @@ request.setAttribute("activePage", "planner");
                         var lineColor=getPlannerDayLineColor(n);
                         return '<button type="button" data-map-day="'+n+'" class="w-full flex flex-nowrap items-center justify-between gap-3 text-left px-3 py-2 text-xs font-bold hover:bg-purple-50 text-gray-700 whitespace-nowrap">'
                             +'<span>'+n+'일차</span>'
-                            +'<span class="inline-flex items-center gap-1.5 shrink-0">'
-                            +'<span style="width:18px;height:4px;border-radius:999px;background:'+lineColor+';display:inline-block"></span>'
-                            +'<span style="width:10px;height:10px;border-radius:999px;background:'+lineColor+';display:inline-block"></span>'
+                            +'<span class="inline-flex items-center shrink-0">'
+                            +'<span style="width:24px;height:4px;border-radius:999px;background:'+lineColor+';display:inline-block"></span>'
                             +'</span>'
                             +'</button>';
                     }).join('');
@@ -4571,7 +5441,8 @@ request.setAttribute("activePage", "planner");
 
             function collectDraft(){
                 return {
-                    version:4,
+                    version:5,
+                    reason:'session-expired',
                     mode:'write',
                     itineraryId:(typeof plannerItineraryId!=='undefined' && plannerItineraryId) ? Number(plannerItineraryId) : null,
                     payload:collectPlannerPayload(),
@@ -4597,15 +5468,6 @@ request.setAttribute("activePage", "planner");
                 return savePlannerDraftFiles(collectDraftFiles()).catch(function(e){
                     console.warn('일정 사진 임시저장에 실패했습니다.',e);
                 });
-            }
-
-            function scheduleDraftSave(){
-                if(restoringDraft) return;
-                if(draftSaveTimer) clearTimeout(draftSaveTimer);
-                draftSaveTimer=setTimeout(function(){
-                    draftSaveTimer=null;
-                    saveDraftNow();
-                },700);
             }
 
             function refreshPlannerDraftGallery(gallery){
@@ -4827,10 +5689,16 @@ request.setAttribute("activePage", "planner");
                 if(!draft || !draft.payload) return Promise.resolve(false);
                 if(draft.mode && draft.mode!=='write') return Promise.resolve(false);
 
+                // 예전 자동저장본이나 일반 페이지 이동 중 만들어진 임시저장본은 복구하지 않는다.
+                if(draft.reason!=='session-expired'){
+                    return deletePlannerDraft().then(function(){ return false; });
+                }
+
                 return loadPlannerDraftFiles().then(function(files){
                     applyPlannerDraftPayload(draft.payload,files);
-                    toast('임시저장된 작성 내용을 복구했습니다.');
-                    return true;
+                    toast('세션 만료 전에 임시저장된 작성 내용을 복구했습니다.');
+                    // 세션 만료 복구본은 한 번만 사용한다.
+                    return deletePlannerDraft().then(function(){ return true; });
                 });
             }
             function plannerBlockTypeToDb(type){
@@ -5115,18 +5983,90 @@ request.setAttribute("activePage", "planner");
                 refreshPublishCard();
             }
 
-            function renderPublishPhotoCandidates(){
+            var plannerPublishPlacePhotoLoadToken=0;
+
+            function collectPublishPlacePhotoSources(){
+                var result=[];
+                var seen={};
+
+                $$('.planner-day').forEach(function(day,dayIndex){
+                    $$('.planner-block-card',day).forEach(function(card,blockIndex){
+                        var input=$('.planner-place-search',card);
+                        var point=plannerSelectedPlacePoint(input);
+                        var placeId=point && point.googlePlaceId
+                            ? String(point.googlePlaceId).trim()
+                            : '';
+
+                        if(!placeId || seen[placeId]) return;
+                        seen[placeId]=true;
+
+                        result.push({
+                            key:'place:'+dayIndex+':'+blockIndex,
+                            point:point,
+                            placeId:placeId,
+                            dayIndex:dayIndex,
+                            blockIndex:blockIndex
+                        });
+                    });
+                });
+
+                return result;
+            }
+
+            function collectPublishPlacePhotoCandidates(){
+                var sources=collectPublishPlacePhotoSources();
+                if(!sources.length) return Promise.resolve([]);
+
+                return Promise.all(sources.map(function(source){
+                    return fetchPlannerPlaceDetails(source.point)
+                        .then(function(details){
+                            if(!details || !details.photos || !details.photos.length){
+                                return null;
+                            }
+
+                            var photo=details.photos[0];
+                            var src='';
+                            try{
+                                src=photo.getURI({
+                                    maxWidth:960,
+                                    maxHeight:720
+                                }) || '';
+                            }catch(e){
+                                src='';
+                            }
+
+                            if(!src) return null;
+
+                            return {
+                                key:source.key,
+                                src:src,
+                                source:'place',
+                                placeId:source.placeId,
+                                placeName:details.displayName
+                                    || source.point.name
+                                    || '장소',
+                                attributionNames:(photo.authorAttributions || []).map(function(attr){
+                                    return attr && attr.displayName
+                                        ? String(attr.displayName)
+                                        : '사용자';
+                                }),
+                                dayIndex:source.dayIndex,
+                                blockIndex:source.blockIndex
+                            };
+                        })
+                        .catch(function(){
+                            return null;
+                        });
+                })).then(function(items){
+                    return items.filter(function(item){ return !!item; });
+                });
+            }
+
+            function renderPublishPhotoCandidateButtons(candidates){
                 var list=$('#plannerPublishPhotoList');
-                var empty=$('#plannerPublishPhotoEmpty');
                 if(!list) return;
 
-                var candidates=collectPublishPhotoCandidates();
                 list.innerHTML='';
-
-                if(empty){
-                    empty.classList.toggle('hidden',candidates.length>0);
-                }
-                list.classList.toggle('hidden',candidates.length===0);
 
                 candidates.forEach(function(candidate){
                     var btn=document.createElement('button');
@@ -5134,10 +6074,38 @@ request.setAttribute("activePage", "planner");
                     btn.className='planner-publish-photo-option';
                     btn.dataset.imageKey=candidate.key;
 
+                    if(candidate.source==='place'){
+                        btn.dataset.placePhoto='1';
+                        btn.title=(candidate.placeName || '장소')+' 장소 사진';
+                    }
+
                     var img=document.createElement('img');
                     img.src=candidate.src;
-                    img.alt='대표 이미지 후보';
+                    img.alt=candidate.source==='place'
+                        ? (candidate.placeName || '장소')+' 사진'
+                        : '대표 이미지 후보';
                     btn.appendChild(img);
+
+                    if(candidate.source==='place'){
+                        var credit=document.createElement('span');
+                        credit.style.position='absolute';
+                        credit.style.left='5px';
+                        credit.style.top='5px';
+                        credit.style.maxWidth='88%';
+                        credit.style.padding='2px 4px';
+                        credit.style.borderRadius='4px';
+                        credit.style.background='rgba(0,0,0,.52)';
+                        credit.style.color='#fff';
+                        credit.style.fontSize='8px';
+                        credit.style.lineHeight='1.2';
+                        credit.style.textAlign='left';
+                        credit.style.pointerEvents='none';
+                        credit.textContent='Google Maps'
+                            +(candidate.attributionNames && candidate.attributionNames.length
+                                ? ' · 사진: '+candidate.attributionNames.join(', ')
+                                : '');
+                        btn.appendChild(credit);
+                    }
 
                     btn.addEventListener('click',function(){
                         selectPublishImage(candidate);
@@ -5145,21 +6113,75 @@ request.setAttribute("activePage", "planner");
 
                     list.appendChild(btn);
                 });
+            }
 
-                /* 이미 선택했던 사진이 아직 존재하면 선택 표시 유지 */
-                if(plannerPublishState.imageKey){
-                    var selected=candidates.find(function(candidate){
-                        return candidate.key===plannerPublishState.imageKey;
-                    });
+            function applyPlannerPublishCandidateSelection(candidates){
+                if(!plannerPublishState.imageKey) return;
 
-                    if(selected){
-                        selectPublishImage(selected);
-                    }else{
-                        plannerPublishState.imageKey='';
-                        plannerPublishState.thumbnailUrl='';
-                        refreshPublishCard();
-                    }
+                var selected=candidates.find(function(candidate){
+                    return candidate.key===plannerPublishState.imageKey;
+                });
+
+                if(selected){
+                    selectPublishImage(selected);
+                }else{
+                    plannerPublishState.imageKey='';
+                    plannerPublishState.thumbnailUrl='';
+                    refreshPublishCard();
                 }
+            }
+
+            function renderPublishPhotoCandidates(){
+                var list=$('#plannerPublishPhotoList');
+                var empty=$('#plannerPublishPhotoEmpty');
+                if(!list) return;
+
+                var loadToken=++plannerPublishPlacePhotoLoadToken;
+                var candidates=collectPublishPhotoCandidates();
+
+                if(candidates.length){
+                    renderPublishPhotoCandidateButtons(candidates);
+                    if(empty) empty.classList.add('hidden');
+                    list.classList.remove('hidden');
+                    applyPlannerPublishCandidateSelection(candidates);
+                    return;
+                }
+
+                list.innerHTML='';
+                list.classList.add('hidden');
+
+                var isPublic=visibility
+                    && visibility.dataset.visibility==='PUBLIC';
+
+                if(!isPublic){
+                    if(empty){
+                        empty.textContent='일정 블록에 사진을 등록하면 대표 이미지로 선택할 수 있습니다.';
+                        empty.classList.remove('hidden');
+                    }
+                    return;
+                }
+
+                if(empty){
+                    empty.textContent='업로드한 사진이 없어 일정 장소의 사진을 불러오는 중입니다.';
+                    empty.classList.remove('hidden');
+                }
+
+                collectPublishPlacePhotoCandidates().then(function(placeCandidates){
+                    if(loadToken!==plannerPublishPlacePhotoLoadToken) return;
+
+                    if(placeCandidates.length){
+                        renderPublishPhotoCandidateButtons(placeCandidates);
+                        list.classList.remove('hidden');
+                        if(empty) empty.classList.add('hidden');
+                        applyPlannerPublishCandidateSelection(placeCandidates);
+                    }else{
+                        list.classList.add('hidden');
+                        if(empty){
+                            empty.textContent='대표 이미지로 사용할 수 있는 업로드 사진 또는 장소 사진이 없습니다.';
+                            empty.classList.remove('hidden');
+                        }
+                    }
+                });
             }
 
             function openPublishPreviewModal(){
@@ -5225,12 +6247,13 @@ request.setAttribute("activePage", "planner");
 
                 form.action='${pageContext.request.contextPath}/itinerary/write';
 
-                saveDraftNow().then(function(){
-                    return keepPlannerSessionAlive(true);
-                }).then(function(sessionOk){
+                keepPlannerSessionAlive(true).then(function(sessionOk){
                     if(!sessionOk || sessionExpiredHandling) return;
-                    dirty=false;
-                    form.submit();
+                    // 정상 저장에서는 임시저장본을 남기지 않는다.
+                    return deletePlannerDraft().then(function(){
+                        dirty=false;
+                        form.submit();
+                    });
                 });
             }
 
@@ -5484,6 +6507,163 @@ request.setAttribute("activePage", "planner");
                     }
                 }catch(e){ showPlannerMapFallback(); }
             };
+            function plannerGoogleMapsDetailUrl(point){
+                var placeId=point && point.googlePlaceId
+                    ? String(point.googlePlaceId).trim()
+                    : '';
+                var query=point && point.name
+                    ? String(point.name).trim()
+                    : '';
+
+                if(point && isFinite(Number(point.lat))
+                        && isFinite(Number(point.lng))){
+                    query=(query ? query+' ' : '')
+                        +Number(point.lat)+','+Number(point.lng);
+                }
+
+                var url='https://www.google.com/maps/search/?api=1';
+                if(query){
+                    url+='&query='+encodeURIComponent(query);
+                }
+                if(placeId){
+                    url+='&query_place_id='+encodeURIComponent(placeId);
+                }
+                return url;
+            }
+
+            function fetchPlannerPlaceDetails(point){
+                var placeId=point && point.googlePlaceId
+                    ? String(point.googlePlaceId).trim()
+                    : '';
+
+                if(!placeId){
+                    return Promise.resolve(null);
+                }
+
+                if(plannerPlaceDetailsCache[placeId]){
+                    return plannerPlaceDetailsCache[placeId];
+                }
+
+                plannerPlaceDetailsCache[placeId]=
+                    getPlannerPlacesLibrary()
+                    .then(function(placesLib){
+                        if(!placesLib || !placesLib.Place){
+                            return null;
+                        }
+
+                        var place=new placesLib.Place({id:placeId});
+                        return place.fetchFields({
+                            fields:[
+                                'displayName',
+                                'formattedAddress',
+                                'rating',
+                                'userRatingCount',
+                                'photos',
+                                'googleMapsURI'
+                            ]
+                        }).then(function(){
+                            return place;
+                        });
+                    })
+                    .catch(function(error){
+                        delete plannerPlaceDetailsCache[placeId];
+                        throw error;
+                    });
+
+                return plannerPlaceDetailsCache[placeId];
+            }
+
+            function plannerPlaceInfoHtml(point,details,infoId){
+                var name=details && details.displayName
+                    ? details.displayName
+                    : point.name;
+                var address=details && details.formattedAddress
+                    ? details.formattedAddress
+                    : point.address;
+                var rating=details && typeof details.rating==='number'
+                    ? details.rating
+                    : null;
+                var ratingCount=details
+                    && typeof details.userRatingCount==='number'
+                    ? details.userRatingCount
+                    : null;
+                var mapsUrl=details && details.googleMapsURI
+                    ? details.googleMapsURI
+                    : plannerGoogleMapsDetailUrl(point);
+
+                var photoHtml='';
+                if(details && details.photos && details.photos.length){
+                    var photo=details.photos[0];
+                    var photoUrl='';
+                    try{
+                        photoUrl=photo.getURI({
+                            maxWidth:320,
+                            maxHeight:180
+                        });
+                    }catch(e){}
+
+                    if(photoUrl){
+                        var attributionHtml='';
+                        var attributions=photo.authorAttributions || [];
+                        if(attributions.length){
+                            attributionHtml='<div style="position:absolute;left:8px;bottom:6px;max-width:calc(100% - 16px);padding:2px 5px;border-radius:4px;background:rgba(17,24,39,.72);font-size:9px;line-height:1.3;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">사진: ';
+                            attributionHtml+=attributions.map(function(attr){
+                                var attrName=attr && attr.displayName
+                                    ? escapeHtml(attr.displayName)
+                                    : 'Google Maps 사용자';
+                                if(attr && attr.uri){
+                                    return '<a href="'+escapeHtml(attr.uri)+'" target="_blank" rel="noopener noreferrer" style="color:#fff;text-decoration:underline">'+attrName+'</a>';
+                                }
+                                return attrName;
+                            }).join(', ');
+                            attributionHtml+='</div>';
+                        }
+
+                        photoHtml=
+                            '<div style="position:relative;width:260px;height:130px;overflow:hidden;border-radius:9px 9px 0 0;background:#F3F4F6">'
+                            +'<img src="'+escapeHtml(photoUrl)+'" alt="'+escapeHtml(name)+' 사진" style="width:100%;height:100%;display:block;object-fit:cover">'
+                            +attributionHtml
+                            +'</div>';
+                    }
+                }
+
+                if(!photoHtml){
+                    photoHtml=
+                        '<div style="width:260px;height:78px;display:flex;align-items:center;justify-content:center;border-radius:9px 9px 0 0;background:#F3F4F6;color:#9CA3AF;font-size:11px">'
+                        +(details===null && point.googlePlaceId
+                            ? '장소 정보를 불러오는 중...'
+                            : '등록된 사진이 없습니다.')
+                        +'</div>';
+                }
+
+                var ratingHtml='';
+                if(rating!=null){
+                    ratingHtml=
+                        '<div style="margin-top:8px;display:flex;align-items:center;gap:5px;font-size:12px;color:#374151">'
+                        +'<span style="color:#F59E0B">★</span>'
+                        +'<strong>'+escapeHtml(rating.toFixed(1))+'</strong>'
+                        +(ratingCount!=null
+                            ? '<span style="color:#6B7280">평가 '+escapeHtml(Number(ratingCount).toLocaleString())+'개</span>'
+                            : '')
+                        +'</div>';
+                }else if(details){
+                    ratingHtml=
+                        '<div style="margin-top:8px;font-size:11px;color:#9CA3AF">평점 정보 없음</div>';
+                }
+
+                return '<div id="'+escapeHtml(infoId)+'" style="width:260px;font-family:Arial,\'Noto Sans KR\',sans-serif">'
+                    +photoHtml
+                    +'<div style="padding:11px 12px 12px">'
+                    +'<div style="font-size:14px;line-height:1.35;font-weight:700;color:#111827">'+escapeHtml(name || '장소')+'</div>'
+                    +(address
+                        ? '<div style="margin-top:5px;font-size:11px;line-height:1.45;color:#6B7280">'+escapeHtml(address)+'</div>'
+                        : '')
+                    +ratingHtml
+                    +'<a href="'+escapeHtml(mapsUrl)+'" target="_blank" rel="noopener noreferrer" style="display:inline-flex;margin-top:10px;align-items:center;font-size:12px;font-weight:700;color:#4F46E5;text-decoration:none">구글맵에서 자세히 보기 ↗</a>'
+                    +'</div>'
+                    +'</div>';
+            }
+
             function plannerMapPoints(){
                 var points=[];
 
@@ -5512,6 +6692,7 @@ request.setAttribute("activePage", "planner");
                                     ? title.value.trim()
                                     : place.name,
                                 address:place.address,
+                                googlePlaceId:place.googlePlaceId || '',
                                 lat:place.lat,
                                 lng:place.lng,
                                 color:cfg.color
@@ -5554,7 +6735,6 @@ request.setAttribute("activePage", "planner");
 
                 var bounds=new google.maps.LatLngBounds();
                 var has=false;
-                var hasIncomingTransitionMarker=false;
 
                 visiblePoints.forEach(function(point,index){
                     var marker=new google.maps.Marker({
@@ -5579,25 +6759,98 @@ request.setAttribute("activePage", "planner");
                         }
                     });
 
-                    var infoHtml=
-                        '<div style="font-size:13px;padding:4px">'
-                        +'<div style="font-weight:700">'
-                        +escapeHtml(point.name)
-                        +'</div>'
-                        +(point.address
-                            ? '<div style="margin-top:3px;color:#6B7280;font-size:11px">'
-                                +escapeHtml(point.address)
-                                +'</div>'
-                            : '')
-                        +'</div>';
+                    var infoId='planner-map-info-'+(++plannerMapInfoSeq);
+                    var infoWindow=new google.maps.InfoWindow({
+                        content:plannerPlaceInfoHtml(point,null,infoId),
+                        disableAutoPan:true
+                    });
+                    var infoCloseTimer=null;
+                    var markerHovered=false;
+                    var infoHovered=false;
 
-                    var infoWindow=
-                        new google.maps.InfoWindow({
-                            content:infoHtml
+                    function cancelInfoClose(){
+                        if(infoCloseTimer){
+                            clearTimeout(infoCloseTimer);
+                            infoCloseTimer=null;
+                        }
+                    }
+
+                    function scheduleInfoClose(){
+                        cancelInfoClose();
+                        infoCloseTimer=setTimeout(function(){
+                            if(!markerHovered && !infoHovered){
+                                infoWindow.close();
+                            }
+                        },220);
+                    }
+
+                    /*
+                     * 정보창 안의 '구글맵에서 자세히 보기' 링크까지
+                     * 마우스를 옮길 수 있도록 정보창 자체도 hover 영역으로 취급한다.
+                     */
+                    infoWindow.addListener('domready',function(){
+                        var infoRoot=document.getElementById(infoId);
+                        if(!infoRoot || infoRoot.dataset.hoverBound==='1'){
+                            return;
+                        }
+
+                        infoRoot.dataset.hoverBound='1';
+                        infoRoot.addEventListener('mouseenter',function(){
+                            infoHovered=true;
+                            cancelInfoClose();
                         });
+                        infoRoot.addEventListener('mouseleave',function(){
+                            infoHovered=false;
+                            scheduleInfoClose();
+                        });
+                    });
 
-                    marker.addListener('click',function(){
+                    infoWindow.addListener('closeclick',function(){
+                        markerHovered=false;
+                        infoHovered=false;
+                        cancelInfoClose();
+                    });
+
+                    marker.addListener('mouseover',function(){
+                        markerHovered=true;
+                        cancelInfoClose();
+                        infoWindow.setContent(
+                            plannerPlaceInfoHtml(point,null,infoId)
+                        );
                         infoWindow.open(map,marker);
+
+                        fetchPlannerPlaceDetails(point)
+                            .then(function(details){
+                                if(markerHovered || infoHovered){
+                                    infoWindow.setContent(
+                                        plannerPlaceInfoHtml(
+                                            point,
+                                            details,
+                                            infoId
+                                        )
+                                    );
+                                }
+                            })
+                            .catch(function(error){
+                                console.warn(
+                                    '지도 핀 상세정보 조회 실패:',
+                                    error
+                                );
+                                if(markerHovered || infoHovered){
+                                    infoWindow.setContent(
+                                        plannerPlaceInfoHtml(
+                                            point,
+                                            false,
+                                            infoId
+                                        )
+                                    );
+                                }
+                            });
+                    });
+
+                    marker.addListener('mouseout',function(){
+                        markerHovered=false;
+                        scheduleInfoClose();
                     });
 
                     mapMarkers.push(marker);
@@ -5648,126 +6901,14 @@ request.setAttribute("activePage", "planner");
                 });
 
                 /*
-                 * N일차 마지막 일정 → N+1일차 첫 일정도 연결한다.
-                 * 전환선 색상은 도착하는 N+1일차의 동선 색상을 사용한다.
-                 * 전체 보기에서는 모든 전환선을, 특정 DAY 보기에서는
-                 * 그 DAY로 들어오는 전환선만 표시한다.
+                 * DAY 간 경계는 연결하지 않는다.
+                 * 각 DAY의 동선은 해당 DAY 내부 장소끼리만 표시한다.
                  */
-                var allDayGroups={};
-
-                allPoints.forEach(function(point){
-                    if(!allDayGroups[point.day]){
-                        allDayGroups[point.day]=[];
-                    }
-                    allDayGroups[point.day].push(point);
-                });
-
-                Object.keys(allDayGroups).forEach(function(dayKey){
-                    allDayGroups[dayKey].sort(function(a,b){
-                        return a.order-b.order;
-                    });
-                });
-
-                Object.keys(allDayGroups).forEach(function(dayKey){
-                    var currentDayNumber=parseInt(dayKey,10);
-
-                    if(!currentDayNumber){
-                        return;
-                    }
-
-                    var nextDayKey=String(currentDayNumber+1);
-                    var currentGroup=allDayGroups[dayKey];
-                    var nextGroup=allDayGroups[nextDayKey];
-
-                    if(!currentGroup || !currentGroup.length
-                            || !nextGroup || !nextGroup.length){
-                        return;
-                    }
-
-                    if(day!=='all' && String(day)!==nextDayKey){
-                        return;
-                    }
-
-                    var fromPoint=currentGroup[currentGroup.length-1];
-                    var toPoint=nextGroup[0];
-
-                    var transitionLine=
-                        new google.maps.Polyline({
-                            path:[
-                                {lat:fromPoint.lat,lng:fromPoint.lng},
-                                {lat:toPoint.lat,lng:toPoint.lng}
-                            ],
-                            geodesic:true,
-                            strokeColor:getPlannerDayLineColor(nextDayKey),
-                            strokeOpacity:.82,
-                            strokeWeight:4,
-                            map:map
-                        });
-
-                    mapPolylines.push(transitionLine);
-
-                    /*
-                     * 특정 N+1일차만 보는 경우에는
-                     * N일차 마지막 일정 → N+1일차 첫 일정의 연결 맥락이 보이도록
-                     * 이전 DAY의 마지막 일정 핀도 함께 표시한다.
-                     */
-                    if(day!=='all' && String(day)===nextDayKey){
-                        var incomingMarker=new google.maps.Marker({
-                            position:{
-                                lat:fromPoint.lat,
-                                lng:fromPoint.lng
-                            },
-                            map:map,
-                            title:fromPoint.name,
-                            label:{
-                                text:String(fromPoint.sequence),
-                                color:'#fff',
-                                fontWeight:'bold'
-                            },
-                            icon:{
-                                path:google.maps.SymbolPath.CIRCLE,
-                                scale:14,
-                                fillColor:fromPoint.color,
-                                fillOpacity:1,
-                                strokeColor:'#fff',
-                                strokeWeight:2
-                            }
-                        });
-
-                        var incomingInfoHtml=
-                            '<div style="font-size:13px;padding:4px">'
-                            +'<div style="font-weight:700">'
-                            +escapeHtml(fromPoint.name)
-                            +'</div>'
-                            +(fromPoint.address
-                                ? '<div style="margin-top:3px;color:#6B7280;font-size:11px">'
-                                    +escapeHtml(fromPoint.address)
-                                    +'</div>'
-                                : '')
-                            +'<div style="margin-top:4px;color:#9CA3AF;font-size:10px">'
-                            +'이전 일차 마지막 일정'
-                            +'</div>'
-                            +'</div>';
-
-                        var incomingInfoWindow=
-                            new google.maps.InfoWindow({
-                                content:incomingInfoHtml
-                            });
-
-                        incomingMarker.addListener('click',function(){
-                            incomingInfoWindow.open(map,incomingMarker);
-                        });
-
-                        mapMarkers.push(incomingMarker);
-                        bounds.extend(incomingMarker.getPosition());
-                        hasIncomingTransitionMarker=true;
-                    }
-                });
 
                 renderPlannerMapAllLegend();
 
                 if(has){
-                    if(visiblePoints.length===1 && !hasIncomingTransitionMarker){
+                    if(visiblePoints.length===1){
                         map.setCenter({
                             lat:visiblePoints[0].lat,
                             lng:visiblePoints[0].lng
@@ -5983,7 +7124,7 @@ request.setAttribute("activePage", "planner");
                         <div class="mb-5">
                             <div class="flex items-center justify-between mb-2 gap-3">
                                 <label class="text-xs font-bold text-gray-700">대표 이미지 선택 <span class="font-normal text-gray-400">(선택)</span></label>
-                                <span class="text-[10px] text-gray-400">일정에 등록한 사진 중 1장</span>
+                                <span class="text-[10px] text-gray-400">업로드 사진 우선 · 없으면 일정 장소 사진</span>
                             </div>
 
                             <div id="plannerPublishPhotoList"
@@ -5991,7 +7132,7 @@ request.setAttribute("activePage", "planner");
 
                             <p id="plannerPublishPhotoEmpty"
                                 class="hidden py-8 px-3 text-center text-xs text-gray-400 rounded-xl bg-gray-50">
-                                일정 블록에 사진을 먼저 등록해 주세요.
+                                대표 이미지 후보를 확인해 주세요.
                             </p>
 
                             
