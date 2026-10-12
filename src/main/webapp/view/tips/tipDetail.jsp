@@ -120,7 +120,33 @@ request.setAttribute("activePage", "tips");
 								        </p>
 								    </div>
 								</div>
+								
 								<div class="flex items-center gap-4 text-sm text-gray-400">
+									<button
+										type="button"
+										id="tipReportButton"
+										data-logged-in="${not empty sessionScope.user}"
+										data-is-owner="${not empty sessionScope.user and tip.userId eq sessionScope.user.userId}"
+										data-login-url="${pageContext.request.contextPath}/auth/login"
+										aria-haspopup="dialog"
+										aria-controls="tipReportModal"
+										class="flex items-center gap-1 px-3 py-2 rounded-xl text-[12px] font-bold border transition-all hover:bg-[#FFE8DE] hover:border-[#FF8A5B] hover:text-[#D95B2B]"
+										style="background: #FFF5F0; border-color: #FFB08A; color: #E76F3C;">
+									
+										<svg
+											class="w-3.5 h-3.5"
+											fill="none"
+											stroke="currentColor"
+											viewBox="0 0 24 24">
+											<path
+												stroke-linecap="round"
+												stroke-linejoin="round"
+												stroke-width="2"
+												d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+										</svg>
+									
+										신고
+									</button>
 									<button
 										class="flex items-center gap-1.5 hover:text-red-400 transition-colors">
 										<svg width="16" height="16" viewBox="0 0 24 24" fill="none"
@@ -319,5 +345,174 @@ request.setAttribute("activePage", "tips");
 		</div>
 	</div>
 	<jsp:include page="/common/footer.jsp" />
+	<div id="tipReportToast" class="tip-report-toast">
+		<svg
+			width="18"
+			height="18"
+			viewBox="0 0 24 24"
+			fill="none"
+			stroke="currentColor"
+			stroke-width="2">
+			<path
+				stroke-linecap="round"
+				stroke-linejoin="round"
+				d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+		</svg>
+	
+		<span>본인이 작성한 게시글은 신고할 수 없습니다.</span>
+	</div>
+	
+	<!-- 꿀팁 신고 팝업 -->
+	<dialog
+		id="tipReportModal"
+		class="tip-report-modal"
+		aria-labelledby="tipReportTitle"
+		aria-describedby="tipReportNotice">
+	
+		<div class="tip-report-header">
+			<div>
+				<h2 id="tipReportTitle">신고하기</h2>
+				<p id="tipReportNotice">허위신고 시 불이익이 발생할 수 있습니다.</p>
+			</div>
+	
+			<button
+				type="button"
+				class="tip-report-close"
+				data-tip-report-close
+				aria-label="신고 팝업 닫기">
+	
+				<svg
+					width="20"
+					height="20"
+					viewBox="0 0 24 24"
+					fill="none"
+					stroke="currentColor"
+					stroke-width="2"
+					aria-hidden="true">
+	
+					<path d="M6 6l12 12M18 6L6 18" />
+				</svg>
+			</button>
+		</div>
+	
+		<!-- 신고 입력 화면 -->
+		<form
+			id="tipReportForm"
+			class="tip-report-form"
+			action="${pageContext.request.contextPath}/tip/report"
+			method="post">
+	
+			<input
+				type="hidden"
+				name="tipId"
+				value="${tip.tipId}">
+	
+			<fieldset class="tip-report-reasons">
+				<legend>
+					신고 사유를 선택해 주세요
+					<span class="tip-report-required">*</span>
+				</legend>
+	
+				<c:forEach var="reason" items="${reportReasons}">
+					<label class="tip-report-reason">
+						<input
+							type="radio"
+							name="reasonId"
+							value="${reason.reasonId}"
+							required>
+	
+						<span>
+							<c:out value="${reason.reasonName}" />
+						</span>
+					</label>
+				</c:forEach>
+	
+				<c:if test="${empty reportReasons}">
+					<p class="tip-report-empty">등록된 신고 사유가 없습니다.</p>
+				</c:if>
+			</fieldset>
+	
+			<div class="tip-report-detail">
+				<label for="tipReportDetail">
+					상세 내용
+					<span>(선택)</span>
+				</label>
+	
+				<textarea
+					id="tipReportDetail"
+					name="detail"
+					rows="4"
+					aria-describedby="tipReportLength"
+					placeholder="신고 사유에 대해 자세히 설명해 주세요."></textarea>
+	
+				<p class="tip-report-counter">
+					<span id="tipReportLength">0</span>/300
+				</p>
+			</div>
+	
+			<p
+				id="tipReportError"
+				class="tip-report-error"
+				role="alert"
+				hidden></p>
+	
+			<div class="tip-report-actions">
+				<button
+					type="button"
+					class="tip-report-cancel"
+					data-tip-report-close>
+					취소
+				</button>
+	
+				<button
+					type="submit"
+					id="tipReportSubmit"
+					class="tip-report-submit"
+					disabled>
+					신고하기
+				</button>
+			</div>
+		</form>
+	
+		<!-- 접수 성공 화면 -->
+		<div
+			id="tipReportSuccess"
+			class="tip-report-success"
+			role="status"
+			hidden>
+	
+			<div class="tip-report-success-icon">
+				<svg
+					width="32"
+					height="32"
+					viewBox="0 0 24 24"
+					fill="none"
+					stroke="currentColor"
+					stroke-width="2.5"
+					aria-hidden="true">
+	
+					<path
+						stroke-linecap="round"
+						stroke-linejoin="round"
+						d="M5 12l4 4L19 6" />
+				</svg>
+			</div>
+	
+			<h3>신고가 접수되었습니다</h3>
+	
+			<p>
+				검토 후 적절한 조치를 취하겠습니다.
+				<br>
+				신고해 주셔서 감사합니다.
+			</p>
+	
+			<button
+				type="button"
+				class="tip-report-confirm"
+				data-tip-report-close>
+				확인
+			</button>
+		</div>
+	</dialog>
 </body>
 </html>

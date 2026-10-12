@@ -10,19 +10,21 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import dto.community.TipCommentDto;
 import dto.community.TipDto;
 import dto.community.TipLikeDto;
 import dto.community.TipMediaDto;
 import dto.member.UserDto;
+import service.community.TipCommentService;
+import service.community.TipCommentServiceImpl;
 import service.community.TipLikeService;
 import service.community.TipLikeServiceImpl;
 import service.community.TipMediaService;
 import service.community.TipMediaServiceImpl;
 import service.community.TipService;
 import service.community.TipServiceImpl;
-import dto.community.TipCommentDto;
-import service.community.TipCommentService;
-import service.community.TipCommentServiceImpl;
+import service.report.ReportService;
+import service.report.ReportServiceImpl;
 
 @WebServlet("/tipDetail")
 public class TipDetail extends HttpServlet {
@@ -98,10 +100,18 @@ public class TipDetail extends HttpServlet {
          	request.setAttribute("liked", liked);
          	request.setAttribute("tipCommentList", tipCommentList);
          	
+         	// 신고 팝업에 표시할 활성 신고 사유 조회
+         	ReportService reportService = new ReportServiceImpl();
+
+         	request.setAttribute("reportReasons", reportService.getContentReportReasons());
+         	
             // 5. 상세 JSP 이동
             request.getRequestDispatcher("/view/tips/tipDetail.jsp").forward(request, response);
         } catch (NumberFormatException e) {
-            response.sendRedirect(request.getContextPath() + "/tips");
-        }
+        	response.sendRedirect(request.getContextPath() + "/tips");
+        } catch (Exception e) {
+        	e.printStackTrace();
+        	response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+        } 
     }
 }

@@ -506,3 +506,256 @@ if (tipDeleteButton) {
     });
 }
 
+/* 꿀팁 신고 팝업 */
+(function() {
+
+	const openButton =
+		document.getElementById("tipReportButton");
+
+	const modal =
+		document.getElementById("tipReportModal");
+
+	const form =
+		document.getElementById("tipReportForm");
+
+	const detail =
+		document.getElementById("tipReportDetail");
+
+	const length =
+		document.getElementById("tipReportLength");
+
+	const submit =
+		document.getElementById("tipReportSubmit");
+
+	const errorText =
+		document.getElementById("tipReportError");
+
+	const success =
+		document.getElementById("tipReportSuccess");
+
+	const toast =
+		document.getElementById("tipReportToast");
+
+	if (!openButton || !modal || !form || !detail
+		|| !length || !submit || !errorText || !success) {
+		return;
+	}
+
+	const closeButtons =
+		modal.querySelectorAll("[data-tip-report-close]");
+
+	let processing = false;
+	let previousBodyOverflow = "";
+
+	function showError(message) {
+		errorText.textContent = message;
+		errorText.hidden = !message;
+	}
+
+	function updateFormState() {
+		const size = Array.from(detail.value).length;
+
+		const selected =
+			form.querySelector('input[name="reasonId"]:checked');
+
+		length.textContent = size.toLocaleString("ko-KR");
+		length.style.color = size > 300 ? "#ef4444" : "";
+
+		submit.disabled =
+			processing || !selected || size > 300;
+	}
+
+	function setProcessing(value) {
+		processing = value;
+
+		form.querySelectorAll("input, textarea")
+			.forEach(function(element) {
+				element.disabled = value;
+			});
+
+		closeButtons.forEach(function(button) {
+			button.disabled = value;
+		});
+
+		submit.textContent = value ? "접수 중..." : "신고하기";
+		form.setAttribute("aria-busy", String(value));
+
+		updateFormState();
+	}
+
+	function showOwnerToast() {
+		if (!toast) {
+			return;
+		}
+
+		toast.classList.add("show");
+
+		clearTimeout(window.tipReportToastTimer);
+
+		window.tipReportToastTimer = setTimeout(function() {
+			toast.classList.remove("show");
+		}, 2500);
+	}
+
+	openButton.addEventListener("click", function(event) {
+		event.preventDefault();
+
+		// 비로그인
+		if (openButton.dataset.loggedIn !== "true") {
+			window.location.href = openButton.dataset.loginUrl;
+			return;
+		}
+
+		// 본인 게시글
+		if (openButton.dataset.isOwner === "true") {
+			showOwnerToast();
+			return;
+		}
+
+		// 이미 열려 있으면 중복 실행 방지
+		if (modal.open) {
+			return;
+		}
+
+		form.reset();
+		form.hidden = false;
+		success.hidden = true;
+
+		showError("");
+		setProcessing(false);
+
+		previousBodyOverflow = document.body.style.overflow;
+
+		modal.showModal();
+		document.body.style.overflow = "hidden";
+	});
+
+	function closeModal() {
+		if (!processing && modal.open) {
+			modal.close();
+		}
+	}
+
+	closeButtons.forEach(function(button) {
+		button.addEventListener("click", closeModal);
+	});
+
+	// ESC로 닫기
+	// 신고 처리 중에는 닫기 차단
+	modal.addEventListener("cancel", function(event) {
+		if (processing) {
+			event.preventDefault();
+		}
+	});
+
+	modal.addEventListener("close", function() {
+		document.body.style.overflow = previousBodyOverflow;
+		openButton.focus();
+	});
+
+	// 신고 사유 선택
+	form.addEventListener("change", function() {
+		showError("");
+		updateFormState();
+	});
+
+	// 상세 내용 입력
+	detail.addEventListener("input", function() {
+		showError("");
+		updateFormState();
+	});
+
+		// 신고 제출
+	form.addEventListener("submit", function(event) {
+		event.preventDefault();
+
+		if (processing) {
+			return;
+		}
+
+		const selected =
+			form.querySelector('input[name="reasonId"]:checked');
+
+		if (!selected) {
+			showError("신고 사유를 선택해주세요.");
+			return;
+		}
+
+		if (Array.from(detail.value).length > 300) {
+			showError("상세 내용은 최대 300자까지 입력할 수 있습니다.");
+			detail.focus();
+			return;
+		}
+
+		const params = new URLSearchParams();
+
+		params.set(
+			"tipId",
+			form.elements.namedItem("tipId").value
+		);
+
+		params.set("reasonId", selected.value);
+		params.set("detail", detail.value.trim());
+
+		showError("");
+		setProcessing(true);
+
+		fetch(form.action, {
+			method: "POST",
+			credentials: "same-origin",
+			headers: {
+				"Content-Type":
+					"application/x-www-form-urlencoded;charset=UTF-8",
+				"Accept": "application/json"
+			},
+			body: params.toString()
+		})
+		.then(function(response) {
+			return response.json().then(function(result) {
+				return {
+					ok: response.ok,
+					result: result
+				};
+			});
+		})
+		.then(function(data) {
+			if (!data.ok || data.result.success !== true) {
+				throw new Error(
+					data.result.message || "신고 접수에 실패했습니다."
+				);
+			}
+
+			form.hidden = true;
+			success.hidden = false;
+
+			const successButton =
+				success.querySelector("button");
+
+			if (successButton) {
+				successButton.focus();
+			}
+		})
+		.catch(function(error) {
+			console.error(error);
+
+			showError(
+				error.message || "신고 접수 중 오류가 발생했습니다."
+			);
+		})
+		.then(function() {
+			setProcessing(false);
+
+			if (!success.hidden) {
+				const successButton =
+					success.querySelector("button");
+
+				if (successButton) {
+					successButton.focus();
+				}
+			}
+		});
+	});
+
+	updateFormState();
+
+})();
