@@ -50,14 +50,14 @@ request.setAttribute("activePage", "home");
 				    &nbsp;·&nbsp;실제로 다녀온 사람들의 진짜 이야기
 				</p>
 				<form
-				    action="${pageContext.request.contextPath}/view/search/searchResult.jsp"
+				    action="${pageContext.request.contextPath}/search"
 				    method="get"
 				    class="home-hero-search w-full max-w-2xl rounded-full flex items-center px-5 py-3.5 gap-3 border border-white/30">
 					<svg class="shrink-0 text-white/70" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
 						<circle cx="11" cy="11" r="8" />
 						<path d="m21 21-4.35-4.35" />
 					</svg>
-					<input type="text" name="q" placeholder="여행지, 일정, 꿀팁 등 무엇이든 검색해보세요"
+					<input type="text" name="q" placeholder="여행지, 일정, 꿀팁 등 무엇이든 검색해보세요" aria-label="전체 검색"
 						class="flex-1 text-sm text-white placeholder-white/60 outline-none bg-transparent">
 					<button type="submit"
 					    class="home-hero-search-btn shrink-0 w-9 h-9 rounded-full flex items-center justify-center text-white transition-all jsp-brand-hover"

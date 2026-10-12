@@ -157,10 +157,112 @@ public final class ItineraryImageUploadUtil {
             ItineraryDto itineraryDto,
             String imageKey) {
 
-        if (itineraryDto == null
-                || imageKey == null
-                || imageKey.trim().isEmpty()) {
+        if (itineraryDto == null) {
             return null;
+        }
+
+        boolean publicItinerary =
+                "PUBLIC".equalsIgnoreCase(
+                        itineraryDto.getVisibility()
+                );
+
+        if (imageKey == null
+                || imageKey.trim().isEmpty()) {
+            if (publicItinerary) {
+                throw new IllegalArgumentException(
+                        "공개 일정은 대표 이미지를 선택해야 합니다."
+                );
+            }
+            return null;
+        }
+
+        imageKey = imageKey.trim();
+
+        /*
+         * 비공개 일정은 선택한 국가의 국기를 대표 이미지로 사용한다.
+         * 클라이언트는 flag:{ISO 3166-1 alpha-2} 형식으로 전달한다.
+         * 공개 일정에서는 국기를 대표 이미지 선택으로 인정하지 않는다.
+         */
+        if (imageKey.startsWith("flag:")) {
+            if (publicItinerary) {
+                throw new IllegalArgumentException(
+                        "공개 일정은 대표 이미지를 선택해야 합니다."
+                );
+            }
+
+            String countryCode =
+                    imageKey.substring("flag:".length())
+                            .trim()
+                            .toUpperCase(java.util.Locale.ROOT);
+
+            if (!countryCode.matches("[A-Z]{2}")) {
+                throw new IllegalArgumentException(
+                        "대표 이미지 국가 정보가 올바르지 않습니다."
+                );
+            }
+
+            /*
+             * 외부 이미지 URL 자체를 DB에 넣으면 기존 JSP들이 contextPath를
+             * 앞에 붙여 /Planbhttps://... 형태로 만들 수 있다.
+             * 따라서 Google 장소 사진과 마찬가지로 의미 토큰만 저장하고,
+             * 공통 썸네일 스크립트에서 실제 국기 URL로 변환한다.
+             */
+            return "flag:" + countryCode;
+        }
+
+        /*
+         * Google Places 사진은 URL/사진 자체를 DB에 캐시하지 않고
+         * 저장 가능한 Place ID만 gplace:{placeId} 형태로 보관한다.
+         *
+         * 신규 선택: place:{dayIndex}:{blockIndex}
+         * 기존 대표 이미지 유지: placeId:{placeId}
+         */
+        if (imageKey.startsWith("place:")) {
+            String[] placeParts = imageKey.split(":");
+
+            if (placeParts.length != 3) {
+                throw new IllegalArgumentException(
+                        "대표 장소 이미지 선택 정보가 올바르지 않습니다."
+                );
+            }
+
+            int dayIndex;
+            int blockIndex;
+
+            try {
+                dayIndex = Integer.parseInt(placeParts[1]);
+                blockIndex = Integer.parseInt(placeParts[2]);
+            } catch (NumberFormatException e) {
+                throw new IllegalArgumentException(
+                        "대표 장소 이미지 선택 정보가 올바르지 않습니다."
+                );
+            }
+
+            ItineraryBlockDto block =
+                    findBlock(itineraryDto, dayIndex, blockIndex);
+
+            if (block == null
+                    || !hasText(block.getGooglePlaceId())) {
+                throw new IllegalArgumentException(
+                        "대표 이미지로 선택한 장소를 찾을 수 없습니다."
+                );
+            }
+
+            return "gplace:" + block.getGooglePlaceId().trim();
+        }
+
+        if (imageKey.startsWith("placeId:")) {
+            String placeId =
+                    imageKey.substring("placeId:".length()).trim();
+
+            if (!hasText(placeId)
+                    || !containsGooglePlaceId(itineraryDto, placeId)) {
+                throw new IllegalArgumentException(
+                        "기존 대표 장소 이미지를 찾을 수 없습니다."
+                );
+            }
+
+            return "gplace:" + placeId;
         }
 
         String[] parts = imageKey.split(":");
@@ -230,6 +332,60 @@ public final class ItineraryImageUploadUtil {
         throw new IllegalArgumentException(
                 "대표 이미지로 선택한 사진을 찾을 수 없습니다."
         );
+    }
+
+
+    private static ItineraryBlockDto findBlock(
+            ItineraryDto itineraryDto,
+            int dayIndex,
+            int blockIndex) {
+
+        if (itineraryDto == null
+                || itineraryDto.getDays() == null
+                || dayIndex < 0
+                || dayIndex >= itineraryDto.getDays().size()) {
+            return null;
+        }
+
+        ItineraryDayDto day =
+                itineraryDto.getDays().get(dayIndex);
+
+        if (day == null
+                || day.getBlocks() == null
+                || blockIndex < 0
+                || blockIndex >= day.getBlocks().size()) {
+            return null;
+        }
+
+        return day.getBlocks().get(blockIndex);
+    }
+
+
+    private static boolean containsGooglePlaceId(
+            ItineraryDto itineraryDto,
+            String placeId) {
+
+        if (itineraryDto == null
+                || itineraryDto.getDays() == null
+                || !hasText(placeId)) {
+            return false;
+        }
+
+        for (ItineraryDayDto day : itineraryDto.getDays()) {
+            if (day == null || day.getBlocks() == null) {
+                continue;
+            }
+
+            for (ItineraryBlockDto block : day.getBlocks()) {
+                if (block != null
+                        && hasText(block.getGooglePlaceId())
+                        && placeId.equals(block.getGooglePlaceId().trim())) {
+                    return true;
+                }
+            }
+        }
+
+        return false;
     }
 
 

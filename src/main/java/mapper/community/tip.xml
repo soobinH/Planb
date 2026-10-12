@@ -139,19 +139,33 @@
 		OFFSET #{offset}
 	</select>
 	
-	<select id="countTipListByFilter" resultType="int">
-		SELECT COUNT(*) FROM TB_TIP t WHERE t.status = 'ACTIVE' AND t.visibility = 'PUBLIC'
+	<select id="countTipListByFilter" parameterType="map" resultType="int">
+		SELECT COUNT(*)
+		FROM TB_TIP t
+		WHERE t.status = 'ACTIVE'
+		  AND t.visibility = 'PUBLIC'
 	
+		<!-- 국가 필터 -->
 		<if test="countryKeywords != null and countryKeywords.size() > 0">
 			AND (
-				<foreach collection="countryKeywords" item="countryKeyword" separator=" OR ">
-					t.hashtag LIKE CONCAT('%#', #{countryKeyword}, '%')
+				<foreach
+					collection="countryKeywords"
+					item="countryKeyword"
+					separator=" OR ">
+					t.country = #{countryKeyword}
 				</foreach>
 			)
 		</if>
 	
+		<!-- 키워드 검색 -->
 		<if test="keyword != null and keyword != ''">
-			AND t.hashtag LIKE CONCAT('%', #{keyword}, '%')
+			AND (
+				t.title LIKE CONCAT('%', #{keyword}, '%')
+				OR t.content LIKE CONCAT('%', #{keyword}, '%')
+				OR t.country LIKE CONCAT('%', #{keyword}, '%')
+				OR t.city LIKE CONCAT('%', #{keyword}, '%')
+				OR t.hashtag LIKE CONCAT('%', #{keyword}, '%')
+			)
 		</if>
 	</select>
 	
