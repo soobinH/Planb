@@ -233,6 +233,24 @@ public class ItineraryServiceImpl implements ItineraryService {
 		return itineraryDao.countScheduleList(params);
 
 	}
+	
+	// 통합검색용
+	@Override
+	public List<ItineraryDto> getSearchScheduleList(Long loginUserId, String keyword, int limit) throws Exception {
+		Map<String, Object> params = new HashMap<>();
+
+		params.put("loginUserId", loginUserId);
+		params.put("keyword", keyword == null ? "" : keyword.trim());
+		params.put("country", "");
+		params.put("durations", validateFilterValues(null));
+		params.put("budgets", validateFilterValues(null));
+		params.put("travelers", validateFilterValues(null));
+		params.put("sort", "latest");
+		params.put("limit", limit);
+		params.put("offset", 0);
+
+		return itineraryDao.selectScheduleList(params);
+	}
 
 	@Override
 

@@ -38,7 +38,7 @@ request.setAttribute("activePage", "tips");
 							<c:choose>
 							    <c:when test="${not empty tip.thumbnailImg}">
 							        <img src="${pageContext.request.contextPath}${tip.thumbnailImg}" alt="${tip.title}"
-							            class="absolute inset-0 w-full h-full object-cover">=
+							            class="absolute inset-0 w-full h-full object-cover">
 							    </c:when>
 							    <c:otherwise>
 							        <div class="absolute inset-0 flex items-center justify-center bg-gray-100 text-gray-400">

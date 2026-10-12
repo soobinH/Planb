@@ -24,6 +24,9 @@ public interface ItineraryService {
 
 	long countScheduleList(String keyword, String country, String[] durations, String[] budgets, String[] travelers)
 			throws Exception;
+	
+	// 통합검색용
+	List<ItineraryDto> getSearchScheduleList(Long loginUserId, String keyword, int limit) throws Exception;
 
 	ItineraryDto getScheduleDetail(Long itineraryId, Long loginUserId) throws Exception;
 
@@ -48,5 +51,7 @@ public interface ItineraryService {
 	void deleteItinerary(Long itineraryId, Long userId) throws Exception;
 
 	boolean toggleBookmark(Long itineraryId, Long loginUserId) throws Exception;
+	
+	
 
 }
