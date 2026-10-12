@@ -1,0 +1,333 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+
+<mapper namespace="mapper.advertisement.admin">
+
+
+	<!-- ===================================================== 관리자 광고 전체 조회 
+		====================================================== -->
+
+	<select id="selectAllAds" resultType="map">
+
+		SELECT
+
+		ad_id AS adId,
+
+		applicant_user_id AS applicantUserId,
+
+		business_name AS businessName,
+
+		manager_name AS managerName,
+
+		contact_phone AS contactPhone,
+
+		contact_email AS contactEmail,
+
+		ad_content AS adContent,
+
+		image_url AS
+		imageUrl,
+
+		link_url AS linkUrl,
+
+		ad_position AS adPosition,
+
+		start_date AS
+		startDate,
+
+		end_date AS endDate,
+
+		status AS status,
+
+		rejection_reason AS
+		rejectionReason,
+
+		processed_by_user_id AS processedByUserId,
+
+		approved_at
+		AS approvedAt,
+
+		processed_at AS processedAt,
+
+		deleted_at AS deletedAt,
+
+		created_at AS createdAt,
+
+		updated_at AS updatedAt
+
+		FROM TB_ADVERTISEMENT
+
+		ORDER BY
+		created_at DESC,
+		ad_id DESC
+
+	</select>
+
+
+
+	<!-- ===================================================== 광고 한 건 조회 ====================================================== -->
+
+	<select id="selectAdForUpdate" parameterType="long"
+		resultType="map">
+
+		SELECT
+
+		ad_id AS adId,
+
+		status AS status,
+
+		start_date AS
+		startDate,
+
+		end_date AS endDate
+
+		FROM TB_ADVERTISEMENT
+
+		WHERE ad_id =
+		#{value}
+
+		FOR UPDATE
+
+	</select>
+
+
+
+	<!-- ===================================================== 승인 PENDING_APPROVAL 
+		-> PENDING_PUBLICATION ====================================================== -->
+
+	<update id="approveAd" parameterType="map">
+
+		UPDATE TB_ADVERTISEMENT
+
+		SET
+
+		status =
+		'PENDING_PUBLICATION',
+
+		processed_by_user_id =
+		#{adminUserId},
+
+		approved_at =
+		CURRENT_TIMESTAMP,
+
+		processed_at =
+		CURRENT_TIMESTAMP,
+
+		rejection_reason =
+		NULL
+
+		WHERE ad_id =
+		#{adId}
+
+		AND status =
+		'PENDING_APPROVAL'
+
+	</update>
+
+
+
+	<!-- ===================================================== 거절 ====================================================== -->
+
+	<update id="rejectAd" parameterType="map">
+
+		UPDATE TB_ADVERTISEMENT
+
+		SET
+
+		status =
+		'REJECTED',
+
+		rejection_reason =
+		#{reason},
+
+		processed_by_user_id =
+		#{adminUserId},
+
+		processed_at =
+		CURRENT_TIMESTAMP
+
+		WHERE ad_id =
+		#{adId}
+
+		AND
+		status =
+		'PENDING_APPROVAL'
+
+	</update>
+
+
+
+	<!-- ===================================================== 게시 시작 ====================================================== -->
+
+	<update id="activateAd" parameterType="map">
+
+		UPDATE TB_ADVERTISEMENT
+
+		SET
+
+		status =
+		'ACTIVE',
+
+		processed_by_user_id =
+		#{adminUserId},
+
+		processed_at
+		=
+		CURRENT_TIMESTAMP
+
+		WHERE ad_id =
+		#{adId}
+
+		AND status =
+		'PENDING_PUBLICATION'
+
+	</update>
+
+
+
+	<!-- ===================================================== 게시 철회 ====================================================== -->
+
+	<update id="withdrawAd" parameterType="map">
+
+		UPDATE TB_ADVERTISEMENT
+
+		SET
+
+		status =
+		'WITHDRAWN',
+
+		processed_by_user_id =
+		#{adminUserId},
+
+		processed_at =
+		CURRENT_TIMESTAMP
+
+		WHERE ad_id =
+		#{adId}
+
+		AND status IN
+		(
+		'PENDING_PUBLICATION',
+		'ACTIVE'
+		)
+
+	</update>
+
+
+
+	<!-- ===================================================== 광고 기간 연장 ====================================================== -->
+
+	<update id="extendAd" parameterType="map">
+
+		UPDATE TB_ADVERTISEMENT
+
+		SET
+
+		end_date =
+		#{newEndDate},
+
+		processed_by_user_id =
+		#{adminUserId},
+
+		processed_at =
+		CURRENT_TIMESTAMP
+
+		WHERE ad_id =
+		#{adId}
+
+		AND status =
+		'ACTIVE'
+
+	</update>
+
+
+
+	<!-- ===================================================== 광고 삭제 실제 DELETE가 
+		아니라 DELETED 상태 처리 ====================================================== -->
+
+	<update id="deleteAd" parameterType="map">
+
+		UPDATE TB_ADVERTISEMENT
+
+		SET
+
+		status =
+		'DELETED',
+
+		processed_by_user_id =
+		#{adminUserId},
+
+		processed_at =
+		CURRENT_TIMESTAMP,
+
+		deleted_at =
+		CURRENT_TIMESTAMP
+
+		WHERE ad_id =
+		#{adId}
+
+		AND status =
+		'ACTIVE'
+
+	</update>
+
+
+
+	<!-- ===================================================== 처리 이력 ====================================================== -->
+
+	<insert id="insertHistory" parameterType="map">
+
+		INSERT INTO
+		TB_ADVERTISEMENT_HISTORY
+		(
+		ad_id,
+		admin_user_id,
+		action_type,
+		from_status,
+		to_status,
+		previous_end_date,
+		new_end_date,
+		reason,
+		created_at
+		)
+
+		VALUES
+		(
+		#{adId},
+
+		#{adminUserId},
+
+		#{actionType},
+
+		#{fromStatus},
+
+		#{toStatus},
+
+		#{previousEndDate, jdbcType=DATE},
+
+		#{newEndDate, jdbcType=DATE},
+
+		#{reason, jdbcType=VARCHAR},
+
+		CURRENT_TIMESTAMP
+		)
+
+	</insert>
+	<!-- ===================================================== 관리자 헤더 - 승인 대기 
+		광고 문의 개수 ====================================================== -->
+
+	<select id="countPendingAds" resultType="int">
+
+		SELECT COUNT(*)
+
+		FROM TB_ADVERTISEMENT
+
+		WHERE status = 'PENDING_APPROVAL'
+
+	</select>
+
+</mapper>

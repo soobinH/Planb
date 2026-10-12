@@ -918,3 +918,396 @@ body.admin-ad-modal-open {
         grid-column: auto;
     }
 }
+
+
+/* ============================================================
+   처리 결과 메시지
+============================================================ */
+
+.admin-ads-result {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    margin-bottom: 14px;
+    padding: 11px 13px;
+    border-radius: 11px;
+    font-size: 10px;
+}
+
+.admin-ads-result strong {
+    font-size: 10.5px;
+    font-weight: 900;
+}
+
+.admin-ads-result.success {
+    border: 1px solid #d8ecdf;
+    background: #f4fbf6;
+    color: #39744e;
+}
+
+.admin-ads-result.error {
+    border: 1px solid #f0d5d8;
+    background: #fff6f7;
+    color: #bd414b;
+}
+
+/* ============================================================
+   관리자 광고 관리 - 가독성 개선
+   기존 레이아웃은 유지하고 글씨만 확대
+============================================================ */
+
+
+/* ============================================================
+   상단 제목
+============================================================ */
+
+.admin-ads-eyebrow {
+    font-size: 10.5px;
+}
+
+.admin-ads-head h1 {
+    font-size: 34px;
+}
+
+.admin-ads-head p {
+    font-size: 14.5px;
+    line-height: 1.7;
+}
+
+
+/* 우측 승인 대기 요약 */
+
+.admin-ads-head-summary span {
+    font-size: 11px;
+}
+
+.admin-ads-head-summary strong {
+    font-size: 26px;
+}
+
+
+/* ============================================================
+   상태 요약 카드
+============================================================ */
+
+.admin-ads-summary-card > div span {
+    font-size: 12px;
+}
+
+.admin-ads-summary-card > div strong {
+    font-size: 20px;
+}
+
+
+/* ============================================================
+   상태 탭
+============================================================ */
+
+.admin-ads-tabs a {
+    min-height: 38px;
+
+    padding-left: 14px;
+    padding-right: 14px;
+
+    font-size: 12px;
+}
+
+.admin-ads-tabs a span {
+    font-size: 10.5px;
+}
+
+
+/* ============================================================
+   검색창
+============================================================ */
+
+.admin-ads-search input {
+    height: 40px;
+
+    font-size: 12.5px;
+}
+
+
+/* ============================================================
+   광고 카드
+============================================================ */
+
+/* 이미지 없을 때 */
+
+.admin-ad-image > span:not(.admin-ad-position) {
+    font-size: 11px;
+}
+
+
+/* 이미지 하단 광고 위치 */
+
+.admin-ad-position {
+    min-height: 28px;
+
+    padding-left: 10px;
+    padding-right: 10px;
+
+    font-size: 10px;
+}
+
+
+/* AD 번호 */
+
+.admin-ad-id {
+    font-size: 10px;
+}
+
+
+/* 상태 배지 */
+
+.admin-ad-status {
+    min-height: 24px;
+
+    padding-left: 9px;
+    padding-right: 9px;
+
+    font-size: 10px;
+}
+
+
+/* 업체명 */
+
+.admin-ad-title-row h2 {
+    font-size: 20px;
+}
+
+
+/* 상세보기 버튼 */
+
+.admin-ad-detail-btn {
+    padding: 8px 12px;
+
+    font-size: 11.5px;
+}
+
+
+/* ============================================================
+   광고 기본 정보
+   담당자 / 연락처 / 이메일 / 희망 기간
+============================================================ */
+
+.admin-ad-info-grid span {
+    font-size: 10.5px;
+}
+
+.admin-ad-info-grid strong {
+    margin-top: 4px;
+
+    font-size: 12px;
+}
+
+
+/* ============================================================
+   광고 설명
+============================================================ */
+
+.admin-ad-description {
+    font-size: 12.5px;
+    line-height: 1.65;
+}
+
+
+/* ============================================================
+   접수일
+============================================================ */
+
+.admin-ad-created {
+    font-size: 10.5px;
+}
+
+
+/* ============================================================
+   광고 처리 버튼
+============================================================ */
+
+.admin-ad-outline-action,
+.admin-ad-primary-action {
+    min-height: 35px;
+
+    padding-left: 13px;
+    padding-right: 13px;
+
+    font-size: 11.5px;
+}
+
+
+/* ============================================================
+   광고 없음 화면
+============================================================ */
+
+.admin-ads-empty strong {
+    font-size: 15px;
+}
+
+.admin-ads-empty p {
+    font-size: 12px;
+}
+
+
+/* ============================================================
+   상세 모달
+============================================================ */
+
+/* ADVERTISEMENT DETAIL */
+
+.admin-ad-modal-head span {
+    font-size: 9.5px;
+}
+
+
+/* 광고 상세 */
+
+.admin-ad-modal-head h2 {
+    font-size: 21px;
+}
+
+
+/* 이미지 없음 */
+
+.admin-ad-modal-image {
+    font-size: 11px;
+}
+
+
+/* 광고 위치 */
+
+.admin-ad-modal-position {
+    min-height: 24px;
+
+    padding-left: 9px;
+    padding-right: 9px;
+
+    font-size: 10px;
+}
+
+
+/* AD 번호 */
+
+.admin-ad-modal-business > span {
+    font-size: 10px;
+}
+
+
+/* 업체명 */
+
+.admin-ad-modal-business h3 {
+    font-size: 23px;
+}
+
+
+/* ============================================================
+   상세 모달 정보
+============================================================ */
+
+/* 담당자, 전화번호 등의 제목 */
+
+.admin-ad-detail-grid dt {
+    font-size: 10.5px;
+}
+
+
+/* 실제 값 */
+
+.admin-ad-detail-grid dd {
+    margin-top: 5px;
+
+    font-size: 12px;
+    line-height: 1.6;
+}
+
+
+/* ============================================================
+   광고 내용
+============================================================ */
+
+.admin-ad-content-box > span {
+    font-size: 10.5px;
+}
+
+.admin-ad-content-box p {
+    margin-top: 7px;
+
+    font-size: 12.5px;
+    line-height: 1.7;
+}
+
+
+/* ============================================================
+   처리 성공 / 실패 메시지
+============================================================ */
+
+.admin-ads-result {
+    font-size: 12px;
+}
+
+.admin-ads-result strong {
+    font-size: 13px;
+}
+
+
+/* ============================================================
+   모바일
+============================================================ */
+
+@media (max-width: 620px) {
+
+    .admin-ads-head h1 {
+        font-size: 30px;
+    }
+
+    .admin-ads-head p {
+        font-size: 14px;
+    }
+
+    .admin-ads-summary-card > div span {
+        font-size: 12px;
+    }
+
+    .admin-ads-tabs a {
+        font-size: 11.5px;
+    }
+
+    .admin-ads-search input {
+        font-size: 13px;
+    }
+
+    .admin-ad-title-row h2 {
+        font-size: 19px;
+    }
+
+    .admin-ad-info-grid span {
+        font-size: 10.5px;
+    }
+
+    .admin-ad-info-grid strong {
+        font-size: 12px;
+    }
+
+    .admin-ad-description {
+        font-size: 12px;
+    }
+
+    .admin-ad-outline-action,
+    .admin-ad-primary-action {
+        min-height: 38px;
+
+        font-size: 12px;
+    }
+
+    .admin-ad-detail-grid dt {
+        font-size: 10.5px;
+    }
+
+    .admin-ad-detail-grid dd {
+        font-size: 12px;
+    }
+
+    .admin-ad-content-box p {
+        font-size: 12px;
+    }
+}

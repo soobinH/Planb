@@ -41,7 +41,7 @@ public class MateLoad extends HttpServlet {
 		}
 
 		int page = 1;
-		int pageSize = 6;
+		int pageSize = 12;
 
 		try {
 			String pageParam = request.getParameter("page");
@@ -67,7 +67,7 @@ public class MateLoad extends HttpServlet {
 
 		request.setAttribute("mateList", mateList);
 
-		RequestDispatcher dispatcher = request.getRequestDispatcher("/view/mate/mateCardFragment.jsp");
+		RequestDispatcher dispatcher = request.getRequestDispatcher("/view/mates/mateCardFragment.jsp");
 		dispatcher.forward(request, response);
 	}
 }

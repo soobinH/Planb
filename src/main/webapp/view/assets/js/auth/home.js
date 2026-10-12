@@ -63,62 +63,82 @@
    HOME - 인기 여행일정 자동 슬라이드
 ======================================== */
 (function () {
-    // 여행일정 슬라이드 영역 찾기
+
     const carousel =
         document.querySelector('[data-home-carousel]');
-    // 여행일정 슬라이드가 없으면 실행하지 않음
+
     if (!carousel) {
         return;
     }
-    // 자동 슬라이드 정지 여부
-    let paused = false;
-    /* ----------------------------------------
-       마우스를 올리면 자동 슬라이드 정지
-    ---------------------------------------- */
-    carousel.addEventListener(
-        'mouseenter',
-        function () {
-            paused = true;
-        }
-    );
-    /* ----------------------------------------
-       마우스가 빠져나가면 다시 시작
-    ---------------------------------------- */
-    carousel.addEventListener(
-        'mouseleave',
-        function () {
-            paused = false;
-        }
-    );
-    /* ----------------------------------------
-       자동 슬라이드 실행
-    ---------------------------------------- */
-    function moveCarousel() {
-        if (!paused) {
-            // 오른쪽으로 조금씩 이동
-            carousel.scrollLeft += 0.7;
-            
-            /* 복제된 카드까지 포함한 전체 너비의 절반 */
-			const loopWidth =
-			    carousel.scrollWidth / 2;
 
-            // 첫 번째 카드 묶음이 끝나면
-            // 처음 위치로 이동
-            if (
-               carousel.scrollLeft >= loopWidth
-            ) {
-                carousel.scrollLeft = 0;
-           	}
+    const originalCards =
+        Array.from(carousel.children);
+
+    if (originalCards.length === 0) {
+        return;
+    }
+
+    /*
+     * DB 일정 개수가 적어도
+     * 화면 전체를 충분히 채우도록 반복 생성
+     */
+    const originalSet = originalCards.map(function (card) {
+        return card.cloneNode(true);
+    });
+
+    while (
+        carousel.scrollWidth <
+        window.innerWidth * 2
+    ) {
+        originalSet.forEach(function (card) {
+            carousel.appendChild(
+                card.cloneNode(true)
+            );
+        });
+    }
+
+    /*
+     * 무한 반복용으로
+     * 완성된 카드 묶음을 한 번 더 복제
+     */
+    const firstSetCards =
+        Array.from(carousel.children);
+
+    const loopWidth =
+        carousel.scrollWidth;
+
+    firstSetCards.forEach(function (card) {
+        carousel.appendChild(
+            card.cloneNode(true)
+        );
+    });
+
+    /*
+     * 계속 오른쪽 방향으로 이동
+     */
+    function moveCarousel() {
+
+        carousel.scrollLeft += 0.7;
+
+        /*
+         * 첫 번째 카드 묶음이 끝나면
+         * 같은 위치의 두 번째 묶음으로 자연스럽게 연결
+         */
+        if (
+            carousel.scrollLeft >= loopWidth
+        ) {
+            carousel.scrollLeft -= loopWidth;
         }
-        // 다음 화면에서도 계속 실행
+
         requestAnimationFrame(
             moveCarousel
         );
     }
-    // 자동 슬라이드 시작
+
     requestAnimationFrame(
         moveCarousel
     );
+
 })();
 
 /* ========================================

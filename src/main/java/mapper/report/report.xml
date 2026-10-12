@@ -72,18 +72,22 @@
 	<select id="selectAllReports" resultType="dto.report.ReportDto">
 
 		SELECT
-		r.report_id AS reportId,
+		r.report_id AS
+		reportId,
 		r.reporter_user_id AS reporterUserId,
-		reporter.login_id AS reporterLoginId,
+		reporter.login_id AS
+		reporterLoginId,
 
 		r.target_type AS targetType,
 		r.target_id AS targetId,
 		r.target_user_id AS targetUserId,
 
-		target_user.login_id AS targetLoginId,
+		target_user.login_id AS
+		targetLoginId,
 		target_user.nickname AS targetNickname,
 
-		r.target_field AS targetField,
+		r.target_field AS
+		targetField,
 		r.reason_id AS reasonId,
 		reason.reason_name AS reasonName,
 
@@ -92,7 +96,8 @@
 		r.action_type AS actionType,
 
 		r.processed_by_user_id AS processedByUserId,
-		r.processed_at AS processedAt,
+		r.processed_at AS
+		processedAt,
 		r.created_at AS createdAt,
 		r.updated_at AS updatedAt,
 
@@ -102,7 +107,8 @@
 		WHEN r.target_type = 'ITINERARY'
 		THEN (
 		SELECT i.title
-		FROM tb_itinerary i
+		FROM tb_itinerary
+		i
 		WHERE i.itinerary_id = r.target_id
 		)
 
@@ -113,11 +119,13 @@
 		WHERE t.tip_id = r.target_id
 		)
 
-		WHEN r.target_type = 'MATE'
+		WHEN
+		r.target_type = 'MATE'
 		THEN (
 		SELECT m.title
 		FROM tb_mate m
-		WHERE m.mate_id = r.target_id
+		WHERE
+		m.mate_id = r.target_id
 		)
 
 		WHEN r.target_type = 'TIP_COMMENT'
@@ -125,15 +133,18 @@
 		SELECT t.title
 		FROM tb_tip_comment c
 		INNER JOIN tb_tip t
-		ON t.tip_id = c.tip_id
+		ON t.tip_id =
+		c.tip_id
 		WHERE c.comment_id = r.target_id
 		)
 
-		WHEN r.target_type = 'MATE_COMMENT'
+		WHEN r.target_type =
+		'MATE_COMMENT'
 		THEN (
 		SELECT m.title
 		FROM tb_mate_comment c
-		INNER JOIN tb_mate m
+		INNER JOIN
+		tb_mate m
 		ON m.mate_id = c.mate_id
 		WHERE c.comment_id = r.target_id
 		)
@@ -141,19 +152,23 @@
 		WHEN r.target_type = 'ITINERARY_COMMENT'
 		THEN (
 		SELECT i.title
-		FROM tb_itinerary_comment c
+		FROM
+		tb_itinerary_comment c
 		INNER JOIN tb_itinerary i
-		ON i.itinerary_id = c.itinerary_id
+		ON i.itinerary_id =
+		c.itinerary_id
 		WHERE c.comment_id = r.target_id
 		)
 
-		WHEN r.target_type = 'USER'
+		WHEN r.target_type =
+		'USER'
 		THEN COALESCE(
 		target_user.nickname,
 		target_user.login_id
 		)
 
-		ELSE CONCAT(
+		ELSE
+		CONCAT(
 		'신고 대상 #',
 		r.target_id
 		)
@@ -163,7 +178,8 @@
 
 		CASE
 
-		WHEN r.target_type = 'TIP_COMMENT'
+		WHEN r.target_type
+		= 'TIP_COMMENT'
 		THEN COALESCE(
 		(
 		SELECT c.tip_id
@@ -173,7 +189,8 @@
 		0
 		)
 
-		WHEN r.target_type = 'MATE_COMMENT'
+		WHEN r.target_type =
+		'MATE_COMMENT'
 		THEN COALESCE(
 		(
 		SELECT c.mate_id
@@ -183,41 +200,49 @@
 		0
 		)
 
-		WHEN r.target_type = 'ITINERARY_COMMENT'
+		WHEN r.target_type =
+		'ITINERARY_COMMENT'
 		THEN COALESCE(
 		(
 		SELECT c.itinerary_id
-		FROM tb_itinerary_comment c
+		FROM
+		tb_itinerary_comment c
 		WHERE c.comment_id = r.target_id
 		),
 		0
 		)
 
-		WHEN r.target_type = 'USER'
+		WHEN
+		r.target_type = 'USER'
 		THEN COALESCE(
 		r.target_user_id,
 		r.target_id
 		)
 
-		ELSE r.target_id
+		ELSE
+		r.target_id
 
 		END AS viewTargetId
 
 
 		FROM tb_report r
 
-		LEFT JOIN tb_report_reason reason
+		LEFT JOIN
+		tb_report_reason reason
 		ON reason.reason_id = r.reason_id
 
-		LEFT JOIN tb_user reporter
+		LEFT JOIN
+		tb_user reporter
 		ON reporter.user_id =
 		r.reporter_user_id
 
-		LEFT JOIN tb_user target_user
+		LEFT JOIN
+		tb_user target_user
 		ON target_user.user_id =
 		r.target_user_id
 
-		ORDER BY r.created_at DESC
+		ORDER BY
+		r.created_at DESC
 
 	</select>
 
@@ -230,12 +255,14 @@
 
 		SELECT
 		report_id AS reportId,
-		reporter_user_id AS reporterUserId,
+		reporter_user_id AS
+		reporterUserId,
 		target_type AS targetType,
 		target_id AS targetId,
 		target_user_id AS targetUserId,
 		target_field AS targetField,
-		reason_id AS reasonId,
+		reason_id
+		AS reasonId,
 		detail,
 		status,
 		action_type AS actionType,
@@ -246,7 +273,8 @@
 
 		FROM tb_report
 
-		WHERE report_id = #{value}
+		WHERE
+		report_id = #{value}
 
 	</select>
 
@@ -260,7 +288,8 @@
 
 		SET
 		status = 'REJECTED',
-		action_type = 'NONE',
+		action_type =
+		'NONE',
 		processed_by_user_id = #{adminUserId},
 		processed_at = NOW()
 
@@ -282,7 +311,8 @@
 		deleted_by_user_id = #{adminUserId},
 		deleted_at = NOW()
 
-		WHERE itinerary_id = #{targetId}
+		WHERE
+		itinerary_id = #{targetId}
 		AND status = 'ACTIVE'
 
 	</update>
@@ -300,7 +330,8 @@
 		deleted_by_user_id = #{adminUserId},
 		deleted_at = NOW()
 
-		WHERE tip_id = #{targetId}
+		WHERE tip_id =
+		#{targetId}
 		AND status = 'ACTIVE'
 
 	</update>
@@ -318,7 +349,8 @@
 		deleted_by_user_id = #{adminUserId},
 		deleted_at = NOW()
 
-		WHERE mate_id = #{targetId}
+		WHERE mate_id =
+		#{targetId}
 		AND status = 'ACTIVE'
 
 	</update>
@@ -333,7 +365,8 @@
 
 		SET status = 'DELETED'
 
-		WHERE comment_id = #{value}
+		WHERE
+		comment_id = #{value}
 		AND status = 'ACTIVE'
 
 	</update>
@@ -348,7 +381,8 @@
 
 		SET status = 'DELETED'
 
-		WHERE comment_id = #{value}
+		WHERE
+		comment_id = #{value}
 		AND status = 'ACTIVE'
 
 	</update>
@@ -378,9 +412,11 @@
 
 		SET
 		status = 'RESOLVED',
-		action_type = 'CONTENT_DELETE',
+		action_type =
+		'CONTENT_DELETE',
 		processed_by_user_id = #{adminUserId},
-		processed_at = NOW()
+		processed_at =
+		NOW()
 
 		WHERE report_id = #{reportId}
 		AND status = 'PENDING'
@@ -397,7 +433,8 @@
 
 		SET
 		status = 'SUSPENDED',
-		updated_at = NOW()
+		updated_at =
+		NOW()
 
 		WHERE user_id = #{value}
 		AND role != 'ADMIN'
@@ -415,9 +452,11 @@
 
 		SET
 		status = 'RESOLVED',
-		action_type = 'USER_SUSPEND',
+		action_type =
+		'USER_SUSPEND',
 		processed_by_user_id = #{adminUserId},
-		processed_at = NOW()
+		processed_at =
+		NOW()
 
 		WHERE report_id = #{reportId}
 		AND status = 'PENDING'
@@ -451,6 +490,19 @@
 		)
 
 	</insert>
+
+	<!-- ===================================================== 관리자 헤더 - 미처리 
+		신고 개수 ====================================================== -->
+
+	<select id="countPendingReports" resultType="int">
+
+		SELECT COUNT(*)
+
+		FROM TB_REPORT
+
+		WHERE status = 'PENDING'
+
+	</select>
 
 
 </mapper>
