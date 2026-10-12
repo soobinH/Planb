@@ -94,6 +94,7 @@ public class ItineraryCartServiceImpl implements ItineraryCartService {
 		dto.setCity(cart.getCity());
 		dto.setTravelerCount(
 				cart.getTravelerCount() == null || cart.getTravelerCount() < 1 ? 1 : cart.getTravelerCount());
+		dto.setThumbnailImg(cart.getThumbnailImg());
 		dto.setNickname(cart.getAuthorNickname());
 
 		return dto;
@@ -151,6 +152,80 @@ public class ItineraryCartServiceImpl implements ItineraryCartService {
 	@Override
 	public void removeBlock(Long userId, Long blockId) throws Exception {
 		executeWrite(sqlSession -> cartDao.deleteBlock(sqlSession, userId, blockId));
+	}
+
+	@Override
+	public void removeFromCart(Long userId, Long itineraryId, String itemType, Long targetId) throws Exception {
+		if (userId == null || userId <= 0) {
+			throw new SecurityException("로그인 후 이용할 수 있습니다.");
+		}
+
+		if (itineraryId == null || itineraryId <= 0 || targetId == null || targetId <= 0) {
+			throw new IllegalArgumentException("올바른 장바구니 삭제 대상이 아닙니다.");
+		}
+
+		if (!"ITINERARY".equals(itemType) && !"DAY".equals(itemType) && !"BLOCK".equals(itemType)) {
+			throw new IllegalArgumentException("올바른 장바구니 삭제 유형이 아닙니다.");
+		}
+
+		if ("ITINERARY".equals(itemType) && !itineraryId.equals(targetId)) {
+			throw new IllegalArgumentException("일정 번호가 일치하지 않습니다.");
+		}
+
+		try (SqlSession sqlSession = MybatisSqlSessionFactory.getSqlSessionFactory().openSession(false)) {
+			try {
+				Long cartId = cartDao.selectCartId(sqlSession, userId, itineraryId);
+
+				if (cartId == null) {
+					throw new IllegalArgumentException("장바구니에서 해당 일정을 찾을 수 없습니다.");
+				}
+
+				int deletedRows = 0;
+
+				if ("ITINERARY".equals(itemType)) {
+					deletedRows = cartDao.deleteItinerary(sqlSession, userId, itineraryId);
+				} else if ("DAY".equals(itemType)) {
+					deletedRows = cartDao.deleteDay(sqlSession, userId, targetId);
+					cartDao.deleteEmptyCart(sqlSession, userId, cartId);
+				} else {
+					Long parentDayId = null;
+					List<ItineraryDayCartDto> daySnapshots = cartDao.selectDaySnapshots(sqlSession, cartId);
+
+					for (ItineraryDayCartDto daySnapshot : daySnapshots) {
+						List<ItineraryBlockCartDto> blockSnapshots = cartDao.selectBlockSnapshots(
+								sqlSession, daySnapshot.getDayCartId());
+
+						for (ItineraryBlockCartDto blockSnapshot : blockSnapshots) {
+							if (targetId.equals(blockSnapshot.getSourceBlockId())) {
+								parentDayId = daySnapshot.getSourceDayId();
+								break;
+							}
+						}
+
+						if (parentDayId != null) {
+							break;
+						}
+					}
+
+					deletedRows = cartDao.deleteBlock(sqlSession, userId, targetId);
+
+					if (parentDayId != null) {
+						cartDao.deleteEmptyDay(sqlSession, userId, cartId, parentDayId);
+					}
+
+					cartDao.deleteEmptyCart(sqlSession, userId, cartId);
+				}
+
+				if (deletedRows == 0) {
+					throw new IllegalArgumentException("장바구니에서 삭제할 항목을 찾을 수 없습니다.");
+				}
+
+				sqlSession.commit();
+			} catch (Exception e) {
+				sqlSession.rollback();
+				throw e;
+			}
+		}
 	}
 
 	@Override

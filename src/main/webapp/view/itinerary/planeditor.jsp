@@ -1902,6 +1902,7 @@ request.setAttribute("activePage", "planner");
                     title:itinerary.title||'제목 없는 일정',
                     country:itinerary.country||'',
                     countryCode:'',
+                    thumbnailImg:itinerary.thumbnailImg||'',
                     region:itinerary.city||'',
                     travelerCount:itinerary.travelerCount == null
                         ? 1
@@ -2787,6 +2788,62 @@ request.setAttribute("activePage", "planner");
                 }
             }
 
+            function plannerImportThumbnailHtml(plan){
+                plan=plan||{};
+
+                var raw=String(plan.thumbnailImg||'').trim();
+                var countryMark=plan.countryCode
+                    || (plan.country ? String(plan.country).substring(0,2) : '—');
+                var fallback='<span class="absolute inset-0 flex items-center justify-center text-white text-[10px] font-black">'
+                    +escapeImportHtml(countryMark)
+                    +'</span>';
+
+                if(!raw){
+                    return '<div class="relative w-8 h-8 rounded-lg overflow-hidden shrink-0 flex items-center justify-center" style="background:'+escapeImportHtml(plan.color||'#6369D1')+'">'
+                        +fallback
+                        +'</div>';
+                }
+
+                var imgAttrs='';
+                var src='';
+
+                if(raw.indexOf('gplace:')===0){
+                    var placeId=raw.substring('gplace:'.length).trim();
+                    if(placeId){
+                        src='data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///ywAAAAAAQABAAACAUwAOw==';
+                        imgAttrs=' data-google-place-id="'+escapeImportHtml(placeId)+'"';
+                    }
+                }else if(raw.indexOf('flag:')===0){
+                    var countryCode=raw.substring('flag:'.length).trim().toUpperCase();
+                    if(/^[A-Z]{2}$/.test(countryCode)){
+                        src='data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///ywAAAAAAQABAAACAUwAOw==';
+                        imgAttrs=' data-country-flag-code="'+escapeImportHtml(countryCode)+'"';
+                    }
+                }else if(/^https?:\/\//i.test(raw)
+                        || raw.indexOf('blob:')===0
+                        || raw.indexOf('data:')===0){
+                    src=raw;
+                }else if(PLANNER_CONTEXT_PATH
+                        && raw.indexOf(PLANNER_CONTEXT_PATH + '/')===0){
+                    src=raw;
+                }else if(raw.charAt(0)==='/'){
+                    src=PLANNER_CONTEXT_PATH + raw;
+                }else{
+                    src=PLANNER_CONTEXT_PATH + '/' + raw;
+                }
+
+                if(!src){
+                    return '<div class="relative w-8 h-8 rounded-lg overflow-hidden shrink-0 flex items-center justify-center" style="background:'+escapeImportHtml(plan.color||'#6369D1')+'">'
+                        +fallback
+                        +'</div>';
+                }
+
+                return '<div class="relative w-8 h-8 rounded-lg overflow-hidden shrink-0" style="background:'+escapeImportHtml(plan.color||'#6369D1')+'">'
+                    +fallback
+                    +'<img src="'+escapeImportHtml(src)+'" alt="" loading="lazy" class="absolute inset-0 w-full h-full object-cover"'+imgAttrs+' onerror="this.style.display=\'none\'">'
+                    +'</div>';
+            }
+
             function renderSavedPlans(){
                 var list=$('#plannerSavedPlansList'); if(!list)return; list.innerHTML='';
                 SAVED_PLANS.forEach(function(plan){
@@ -2794,8 +2851,7 @@ request.setAttribute("activePage", "planner");
                     card.dataset.country=plan.country||'';
                     card.dataset.search=(plan.title+' '+plan.country+' '+plan.region+' '+plan.daySchedules.map(function(d){return d.theme+' '+d.items.map(function(i){return i.name+' '+i.location}).join(' ')}).join(' ')).toLowerCase();
                     var head=document.createElement('div'); head.className='planner-saved-plan-head flex items-center gap-2.5 px-3 py-2.5 cursor-pointer hover:bg-gray-50 transition-colors select-none'; head.draggable=true;
-                    var countryMark=plan.countryCode || (plan.country ? plan.country.substring(0,2) : '—');
-                    head.innerHTML='<span class="text-gray-300 text-xs">⠿</span><div class="w-8 h-8 rounded-lg flex items-center justify-center text-white text-[10px] font-black shrink-0" style="background:'+plan.color+'">'+escapeImportHtml(countryMark)+'</div><div class="flex-1 min-w-0"><p class="text-xs font-bold text-gray-800 truncate">'+escapeImportHtml(plan.title)+'</p><p class="text-[10px] text-gray-400">'+escapeImportHtml(plan.country)+' · '+plan.nights+'박 '+plan.days+'일</p></div><span class="planner-plan-chevron text-gray-400 text-xs">⌄</span>';
+                    head.innerHTML='<span class="text-gray-300 text-xs">⠿</span>'+plannerImportThumbnailHtml(plan)+'<div class="flex-1 min-w-0"><p class="text-xs font-bold text-gray-800 truncate">'+escapeImportHtml(plan.title)+'</p><p class="text-[10px] text-gray-400">'+escapeImportHtml(plan.country)+' · '+plan.nights+'박 '+plan.days+'일</p></div><span class="planner-plan-chevron text-gray-400 text-xs">⌄</span>';
                     var body=document.createElement('div'); body.className='planner-saved-plan-body hidden border-t border-gray-100';
                     plan.daySchedules.forEach(function(day){
                         var wrap=document.createElement('div'); wrap.className='border-b border-gray-50 last:border-0';

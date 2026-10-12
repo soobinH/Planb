@@ -5,22 +5,28 @@
 
 <mapper namespace="mapper.itinerary.itineraryCart">
 
-	<!-- 카트 조회: 원본이 아니라 담을 당시 스냅샷만 읽는다. -->
+	<!--
+		카트의 일정/DAY/블록 내용은 담을 당시 스냅샷을 사용한다.
+		카트 화면의 작은 대표이미지만 해당 원본 게시글의 현재 thumbnail_img를 함께 읽는다.
+	-->
 	<select id="selectCartSnapshots" parameterType="long"
 		resultType="dto.itinerary.ItineraryCartDto">
 		SELECT
-		cart_id,
-		user_id,
-		source_itinerary_id,
-		author_nickname,
-		title,
-		country,
-		city,
-		traveler_count,
-		added_at
-		FROM TB_ITINERARY_CART
-		WHERE user_id = #{value}
-		ORDER BY added_at DESC, cart_id DESC
+		c.cart_id,
+		c.user_id,
+		c.source_itinerary_id,
+		c.author_nickname,
+		c.title,
+		c.country,
+		c.city,
+		c.traveler_count,
+		i.thumbnail_img,
+		c.added_at
+		FROM TB_ITINERARY_CART c
+		LEFT JOIN TB_ITINERARY i
+		ON i.itinerary_id = c.source_itinerary_id
+		WHERE c.user_id = #{value}
+		ORDER BY c.added_at DESC, c.cart_id DESC
 	</select>
 
 	<select id="selectDaySnapshots" parameterType="long"

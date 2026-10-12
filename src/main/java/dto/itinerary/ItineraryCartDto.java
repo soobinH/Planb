@@ -13,6 +13,7 @@ public class ItineraryCartDto {
     private String country;
     private String city;
     private Integer travelerCount;
+    private String thumbnailImg;
 
     private Timestamp addedAt;
 
@@ -104,6 +105,15 @@ public class ItineraryCartDto {
         this.travelerCount = travelerCount;
     }
 
+
+    public String getThumbnailImg() {
+        return thumbnailImg;
+    }
+
+    public void setThumbnailImg(String thumbnailImg) {
+        this.thumbnailImg = thumbnailImg;
+    }
+
     public Timestamp getAddedAt() {
         return addedAt;
     }
@@ -116,7 +126,7 @@ public class ItineraryCartDto {
 	public String toString() {
 		return "ItineraryCartDto [cartId=" + cartId + ", userId=" + userId + ", sourceItineraryId=" + sourceItineraryId
 				+ ", authorNickname=" + authorNickname + ", title=" + title + ", country=" + country + ", city=" + city
-				+ ", travelerCount=" + travelerCount + ", addedAt=" + addedAt + "]";
+				+ ", travelerCount=" + travelerCount + ", thumbnailImg=" + thumbnailImg + ", addedAt=" + addedAt + "]";
 	}
     
 }

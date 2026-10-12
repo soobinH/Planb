@@ -627,7 +627,7 @@ if (
 
                 <a
                     class="site-icon-btn"
-                    href="<%=ctx%>/view/travel/cart.jsp"
+                    href="<%=ctx%>/cart"
                     title="일정 장바구니"
                     aria-label="일정 장바구니">
 

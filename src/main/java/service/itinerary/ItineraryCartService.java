@@ -15,6 +15,8 @@ public interface ItineraryCartService {
 
 	void removeBlock(Long userId, Long blockId) throws Exception;
 
+	void removeFromCart(Long userId, Long itineraryId, String itemType, Long targetId) throws Exception;
+
 	Map<String, Object> addToCart(Long loginUserId, Long itineraryId, String itemType, Long targetId) throws Exception;
 
 	Map<String, Object> toggleCart(Long loginUserId, Long itineraryId, String itemType, Long targetId) throws Exception;
