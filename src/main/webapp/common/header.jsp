@@ -105,13 +105,13 @@ if (user != null && user.getProfileImg() != null && !user.getProfileImg().trim()
 		if (!homeHeader) {
 		%>
 		<form class="site-header-search-bar"
-			action="<%=ctx%>/view/search/searchResult.jsp" method="get">
+			action="${pageContext.request.contextPath}/search" method="get">
 			<svg width="14" height="14" viewBox="0 0 24 24" fill="none"
 				stroke="currentColor" stroke-width="2.2">
                 <circle cx="11" cy="11" r="7" />
                 <path d="m20 20-3.4-3.4" />
             </svg>
-			<input name="q" placeholder="여행지, 일정, 키워드로 검색해보세요."
+			<input type="text" name="q" placeholder="여행지, 일정, 키워드로 검색해보세요."
 				aria-label="전체 검색">
 		</form>
 		<%

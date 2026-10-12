@@ -1,233 +1,830 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
 	pageEncoding="UTF-8"%>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
+
 <%
 request.setAttribute("activePage", "search");
-String q = request.getParameter("q");
-String displayQ = (q == null || q.trim().isEmpty()) ? "전체" : q;
+
+String keyword = (String) request.getAttribute("keyword");
+String displayQ = (keyword == null || keyword.trim().isEmpty()) ? "전체" : keyword;
 %>
+
 <!DOCTYPE html>
 <html lang="ko">
+
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>통합 검색 · Tripily</title><jsp:include page="/common/headStyles.jsp" /></head>
-<body class="site-shell"><jsp:include page="/common/header.jsp" />
-	<main class="max-w-6xl mx-auto px-6 py-10">
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+
+	<title>통합 검색 · Tripily</title>
+
+	<jsp:include page="/common/headStyles.jsp" />
+	<script
+		src="${pageContext.request.contextPath}/view/assets/js/search/searchResult.js">
+	</script>
+	
+</head>
+
+<body class="site-shell">
+
+	<jsp:include page="/common/header.jsp" />
+
+	<main class="max-w-6xl mx-auto px-4 sm:px-6 py-8 sm:py-10">
+
+		<!-- =========================
+		     검색 결과 상단
+		========================= -->
 		<div class="mb-8">
-			<p class="text-xs font-bold tracking-widest text-[#6369D1]">GLOBAL
-				SEARCH</p>
-			<h1 class="text-3xl font-black mt-2">
+			<p class="text-xs font-bold tracking-widest text-[#6369D1]">
+				GLOBAL SEARCH
+			</p>
+
+			<h1 class="text-2xl sm:text-3xl font-black mt-2">
 				“<%=displayQ%>” 통합 검색
 			</h1>
-			<p class="text-sm text-gray-500 mt-2">여행일정 · 여행꿀팁 · 여행 메이트를 한 번에
-				검색합니다. 총 21건</p>
+
+			<p class="text-sm text-gray-500 mt-2">
+				여행일정 · 여행꿀팁 · 여행 메이트를 한 번에 검색합니다.
+				총 ${totalCount}건
+			</p>
 		</div>
-		<div class="flex gap-2 flex-wrap mb-8">
+
+
+		<!-- 검색 결과 탭 -->
+		<div class="flex flex-wrap gap-2 mb-8" id="searchTabs">
+		
 			<button
-				class="px-4 py-2 rounded-full text-sm font-bold border bg-[#6369D1] text-white border-[#6369D1]">전체</button>
+				type="button"
+				class="search-tab px-4 py-2 rounded-full text-sm font-bold bg-[#6369D1] text-white"
+				data-search-tab="all">
+				전체
+			</button>
+		
 			<button
-				class="px-4 py-2 rounded-full text-sm font-bold border bg-white text-gray-600 border-gray-200">여행일정</button>
+				type="button"
+				class="search-tab px-4 py-2 rounded-full text-sm font-bold border border-gray-200 bg-white text-gray-600"
+				data-search-tab="schedule">
+				여행일정
+			</button>
+		
 			<button
-				class="px-4 py-2 rounded-full text-sm font-bold border bg-white text-gray-600 border-gray-200">여행꿀팁</button>
+				type="button"
+				class="search-tab px-4 py-2 rounded-full text-sm font-bold border border-gray-200 bg-white text-gray-600"
+				data-search-tab="tip">
+				여행꿀팁
+			</button>
+		
 			<button
-				class="px-4 py-2 rounded-full text-sm font-bold border bg-white text-gray-600 border-gray-200">여행
-				메이트</button>
+				type="button"
+				class="search-tab px-4 py-2 rounded-full text-sm font-bold border border-gray-200 bg-white text-gray-600"
+				data-search-tab="mate">
+				여행 메이트
+			</button>
+		
 		</div>
-		<section class="mb-10">
-			<div class="flex items-center justify-between mb-3">
-				<h2 class="text-lg font-black">
-					여행일정 <span class="text-[#6369D1]">4</span>
+
+
+			<!-- ==================================================
+			     여행일정
+			     실제 DB 검색 결과
+			     PC 2열 / 모바일 1열 / 최대 4개
+			================================================== -->
+			<section class="mb-10" data-search-section="schedule">
+		
+				<div class="flex items-center justify-between gap-4 mb-3">
+		
+					<h2 class="text-lg font-black shrink-0">
+						여행일정
+						<span class="text-[#6369D1]">
+							${scheduleTotalCount}
+						</span>
+					</h2>
+		
+					<c:url var="scheduleListUrl" value="/schedules">
+						<c:param name="keyword" value="${keyword}" />
+					</c:url>
+		
+					<a
+						href="${scheduleListUrl}"
+						class="text-sm font-bold text-[#6369D1] text-right">
+						상세 조건으로 더 보기 →
+					</a>
+		
+				</div>
+		
+		
+				<c:choose>
+		
+					<c:when test="${not empty scheduleList}">
+		
+						<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+		
+							<c:forEach var="schedule" items="${scheduleList}">
+		
+								<c:url var="scheduleDetailUrl" value="/schedules/detail">
+									<c:param name="id" value="${schedule.itineraryId}" />
+								</c:url>
+		
+		
+								<article
+									class="bg-white rounded-2xl overflow-hidden border group transition-all duration-200"
+									style="border-color: #D1D2F9; box-shadow: 0 2px 8px rgba(0, 0, 0, .06);">
+		
+									<!-- =========================
+									     이미지
+									========================= -->
+									<div
+										class="relative overflow-hidden"
+										style="aspect-ratio: 4 / 3;">
+		
+										<a
+											href="${scheduleDetailUrl}"
+											class="block w-full h-full">
+		
+											<c:choose>
+		
+												<c:when test="${not empty schedule.thumbnailImg}">
+		
+													<c:choose>
+		
+														<c:when test="${schedule.thumbnailImg.startsWith('/')}">
+															<c:url
+																var="scheduleThumbnailUrl"
+																value="${schedule.thumbnailImg}" />
+														</c:when>
+		
+														<c:otherwise>
+															<c:url
+																var="scheduleThumbnailUrl"
+																value="/${schedule.thumbnailImg}" />
+														</c:otherwise>
+		
+													</c:choose>
+		
+													<img
+														src="<c:out value='${scheduleThumbnailUrl}' />"
+														alt="<c:out value='${schedule.title}' />"
+														class="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105">
+		
+												</c:when>
+		
+												<c:otherwise>
+		
+													<div
+														class="w-full h-full flex items-center justify-center text-sm font-bold"
+														style="background: #F0F0FF; color: #6369D1;">
+														이미지 없음
+													</div>
+		
+												</c:otherwise>
+		
+											</c:choose>
+		
+										</a>
+		
+		
+										<!-- 국가 · 도시 -->
+										<span
+											class="absolute top-2.5 left-2.5 text-[10px] font-bold px-2.5 py-1 rounded-full"
+											style="background: #6369D1; color: white;">
+		
+											<c:out value="${schedule.country}" />
+		
+											<c:if test="${not empty schedule.city}">
+												· <c:out value="${schedule.city}" />
+											</c:if>
+		
+										</span>
+		
+		
+										<!-- 여행 기간 -->
+										<c:if test="${not empty schedule.durationText}">
+		
+											<span
+												class="absolute bottom-2.5 left-2.5 text-white text-[10px] font-bold bg-black/50 rounded-full px-2.5 py-1">
+		
+												<c:out value="${schedule.durationText}" />
+		
+											</span>
+		
+										</c:if>
+		
+									</div>
+		
+		
+									<!-- =========================
+									     카드 내용
+									========================= -->
+									<div class="p-4">
+		
+										<a href="${scheduleDetailUrl}">
+		
+											<h3
+												class="font-bold text-[14px] leading-snug line-clamp-2 transition-colors group-hover:text-[#6369D1]"
+												style="color: #18181b;">
+		
+												<c:out value="${schedule.title}" />
+		
+											</h3>
+		
+										</a>
+		
+		
+										<p
+											class="text-gray-500 text-[12px] mt-1.5 line-clamp-2"
+											style="min-height: 2.8em;">
+		
+											<c:out value="${schedule.summary}" />
+		
+										</p>
+		
+		
+										<!-- 좋아요 · 댓글 · 조회 -->
+										<div class="flex items-center gap-3 text-[11px] text-gray-400 mt-3">
+		
+											<span class="inline-flex items-center gap-1">
+		
+												<svg
+													width="12"
+													height="12"
+													viewBox="0 0 24 24"
+													fill="${schedule.liked ? '#ef4444' : 'none'}"
+													stroke="${schedule.liked ? '#ef4444' : '#9ca3af'}"
+													stroke-width="2"
+													aria-hidden="true">
+		
+													<path
+														stroke-linecap="round"
+														stroke-linejoin="round"
+														d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78Z" />
+		
+												</svg>
+		
+												${schedule.likeCount}
+		
+											</span>
+		
+		
+											<span class="inline-flex items-center gap-1">
+		
+												<svg
+													width="12"
+													height="12"
+													viewBox="0 0 24 24"
+													fill="none"
+													stroke="#9ca3af"
+													stroke-width="2"
+													aria-hidden="true">
+		
+													<path
+														stroke-linecap="round"
+														stroke-linejoin="round"
+														d="M7.9 20A9 9 0 1 0 4 16.1L2 22Z" />
+		
+												</svg>
+		
+												${schedule.commentCount}
+		
+											</span>
+		
+		
+											<span class="inline-flex items-center gap-1">
+		
+												<svg
+													width="12"
+													height="12"
+													viewBox="0 0 24 24"
+													fill="none"
+													stroke="#9ca3af"
+													stroke-width="2"
+													aria-hidden="true">
+		
+													<path
+														stroke-linecap="round"
+														stroke-linejoin="round"
+														d="M2.062 12.348a1 1 0 0 1 0-.696 10.75 10.75 0 0 1 19.876 0 1 1 0 0 1 0 .696 10.75 10.75 0 0 1-19.876 0" />
+		
+													<circle
+														cx="12"
+														cy="12"
+														r="3" />
+		
+												</svg>
+		
+												${empty schedule.viewCount ? 0 : schedule.viewCount}
+		
+											</span>
+		
+										</div>
+		
+		
+										<!-- 작성자 -->
+										<div
+											class="flex items-center justify-between gap-2 border-t pt-2.5 mt-3"
+											style="border-color: #D1D2F9;">
+		
+											<div class="flex items-center gap-1.5 min-w-0">
+		
+												<span
+													class="inline-flex items-center justify-center w-6 h-6 rounded-full shrink-0 overflow-hidden"
+													style="background: #F0F0FF; color: #6369D1;">
+		
+													<svg
+														width="14"
+														height="14"
+														viewBox="0 0 24 24"
+														fill="none"
+														stroke="currentColor"
+														stroke-width="1.8"
+														aria-hidden="true">
+		
+														<circle
+															cx="12"
+															cy="8"
+															r="4" />
+		
+														<path d="M4 21c0-4.3 3.6-7 8-7s8 2.7 8 7" />
+		
+													</svg>
+		
+												</span>
+		
+		
+												<span
+													class="text-[11px] text-gray-500 font-medium truncate">
+		
+													<c:out
+														value="${schedule.nickname}"
+														default="알 수 없음" />
+		
+												</span>
+		
+											</div>
+		
+		
+											<span class="text-[10px] text-gray-400 shrink-0">
+		
+												<c:if test="${not empty schedule.createdAt}">
+													${schedule.createdAt}
+												</c:if>
+		
+											</span>
+		
+										</div>
+		
+									</div>
+		
+								</article>
+		
+							</c:forEach>
+		
+						</div>
+		
+					</c:when>
+		
+		
+					<c:otherwise>
+		
+						<div
+							class="py-10 px-4 text-center text-sm text-gray-400 border border-gray-100 rounded-2xl bg-white">
+		
+							검색된 여행일정이 없습니다.
+		
+						</div>
+		
+					</c:otherwise>
+		
+				</c:choose>
+		
+			</section>
+
+
+		<!-- ==================================================
+		     여행꿀팁
+		     실제 DB 검색 결과
+		     PC 4열 / 태블릿 2열 / 모바일 1열
+		================================================== -->
+		<section class="mb-10" data-search-section="tip">
+
+			<div class="flex items-center justify-between gap-4 mb-3">
+
+				<h2 class="text-lg font-black shrink-0">
+					여행꿀팁
+					<span class="text-[#6369D1]">
+						${tipTotalCount}
+					</span>
 				</h2>
+
+				<c:url var="tipListUrl" value="/tips">
+					<c:param name="keyword" value="${keyword}" />
+				</c:url>
+
 				<a
-					href="${pageContext.request.contextPath}/view/travel/scheduleList.jsp"
-					class="text-sm font-bold text-[#6369D1]">상세 조건으로 더 보기 →</a>
+					href="${tipListUrl}"
+					class="text-sm font-bold text-[#6369D1]">
+					전체 보기 →
+				</a>
+
 			</div>
-			<div class="grid md:grid-cols-2 gap-3">
-				<div class="relative">
-					<a
-						href="${pageContext.request.contextPath}/view/travel/scheduleDetail.jsp?id=1"
-						class="block p-5 pr-16 rounded-2xl border bg-white hover:border-[#6369D1] transition"><div
-							class="text-xs font-bold text-[#6369D1]">제주</div>
-						<div class="font-black mt-1">제주 3박 4일 감성 여행</div>
-						<p class="text-sm text-gray-500 mt-1">성산일출봉, 협재해변, 맛집을 담은 일정</p></a>
-				</div>
-				<div class="relative">
-					<a
-						href="${pageContext.request.contextPath}/view/travel/scheduleDetail.jsp?id=7"
-						class="block p-5 pr-16 rounded-2xl border bg-white hover:border-[#6369D1] transition"><div
-							class="text-xs font-bold text-[#6369D1]">일본 · 도쿄</div>
-						<div class="font-black mt-1">도쿄 3박 4일 완전 정복</div>
-						<p class="text-sm text-gray-500 mt-1">시부야, 아사쿠사, 아키하바라 핵심 일정</p></a>
-				</div>
-				<div class="relative">
-					<a
-						href="${pageContext.request.contextPath}/view/travel/scheduleDetail.jsp?id=9"
-						class="block p-5 pr-16 rounded-2xl border bg-white hover:border-[#6369D1] transition"><div
-							class="text-xs font-bold text-[#6369D1]">프랑스 · 파리</div>
-						<div class="font-black mt-1">파리 5박 6일 예술 &amp; 낭만</div>
-						<p class="text-sm text-gray-500 mt-1">에펠탑과 루브르 중심의 일정</p></a>
-				</div>
-				<div class="relative">
-					<a
-						href="${pageContext.request.contextPath}/view/travel/scheduleDetail.jsp?id=16"
-						class="block p-5 pr-16 rounded-2xl border bg-white hover:border-[#6369D1] transition"><div
-							class="text-xs font-bold text-[#6369D1]">일본 · 오사카</div>
-						<div class="font-black mt-1">오사카 2박 3일 먹방 여행</div>
-						<p class="text-sm text-gray-500 mt-1">도톤보리와 시장을 중심으로 한 먹방 코스</p></a>
-				</div>
-			</div>
+
+
+			<c:choose>
+
+				<c:when test="${not empty tipList}">
+
+					<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+
+						<c:forEach var="tip" items="${tipList}">
+
+							<a
+								href="${pageContext.request.contextPath}/tipDetail?tipId=${tip.tipId}"
+								class="relative bg-white rounded-2xl border border-gray-100 shadow-sm hover:shadow-md transition-shadow cursor-pointer group overflow-hidden flex flex-col">
+
+								<!-- 이미지 -->
+								<div
+									class="relative shrink-0 overflow-hidden"
+									style="aspect-ratio: 4 / 3;">
+
+									<c:choose>
+
+										<c:when test="${not empty tip.thumbnailImg}">
+											<img
+												src="${pageContext.request.contextPath}${tip.thumbnailImg}"
+												alt="${tip.title}"
+												class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300">
+										</c:when>
+
+										<c:otherwise>
+											<div class="w-full h-full flex items-center justify-center bg-gray-100 text-gray-400 text-sm">
+												이미지 없음
+											</div>
+										</c:otherwise>
+
+									</c:choose>
+
+								</div>
+
+
+								<!-- 카드 내용 -->
+								<div class="flex flex-col flex-1 p-3 min-h-0">
+
+									<h3
+										class="font-bold text-[13px] text-gray-900 leading-snug line-clamp-2 group-hover:text-brand transition-colors mb-1.5"
+										style="min-height: 2.6em;">
+
+										<c:out value="${tip.title}" />
+
+									</h3>
+
+
+									<p class="text-[11px] text-gray-500 leading-relaxed line-clamp-2 flex-1">
+										<c:out value="${tip.content}" />
+									</p>
+
+
+									<!-- 해시태그 -->
+									<c:if test="${not empty tip.hashtag}">
+
+										<div class="flex flex-wrap gap-1.5 mt-2 mb-3">
+
+											<c:forEach var="tag" items="${tip.hashtagList}">
+
+												<span
+													class="inline-flex items-center rounded-full px-2.5 py-1 text-[11px] font-semibold"
+													style="background: #FFD447; color: #6369D1; border: 1px solid #E0E1FF;">
+
+													<c:out value="${tag}" />
+
+												</span>
+
+											</c:forEach>
+
+										</div>
+
+									</c:if>
+
+
+									<!-- 작성자 -->
+									<div class="pt-2 mt-auto border-t border-gray-50">
+
+										<div class="flex items-center gap-1.5 mb-1.5">
+
+											<div
+												class="w-5 h-5 rounded-full flex items-center justify-center text-white text-[9px] font-bold shrink-0"
+												style="background: #8B5CF6;">
+
+												<c:choose>
+
+													<c:when test="${not empty tip.nickname}">
+														${tip.nickname.substring(0, 1)}
+													</c:when>
+
+													<c:otherwise>
+														?
+													</c:otherwise>
+
+												</c:choose>
+
+											</div>
+
+
+											<span class="text-[10px] text-gray-500">
+
+												<c:out
+													value="${tip.nickname}"
+													default="알 수 없음" />
+
+											</span>
+
+
+											<span class="text-[10px] text-gray-300">
+												·
+											</span>
+
+
+											<span class="text-[10px] text-gray-400">
+												${tip.timeAgo}
+											</span>
+
+										</div>
+
+
+										<!-- 통계 -->
+										<div class="flex items-center justify-between mt-2">
+
+											<div class="flex items-center gap-3 text-[11px] text-gray-400">
+
+												<span class="flex items-center gap-1">
+													♡ ${tip.likeCount}
+												</span>
+
+												<span class="flex items-center gap-1">
+													▢ ${tip.commentCount}
+												</span>
+
+											</div>
+
+
+											<span class="flex items-center gap-1 text-[11px] text-gray-400">
+
+												<svg
+													width="13"
+													height="13"
+													viewBox="0 0 24 24"
+													fill="none"
+													stroke="currentColor"
+													stroke-width="2">
+
+													<path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12Z" />
+													<circle cx="12" cy="12" r="3" />
+
+												</svg>
+
+												${tip.viewCount}
+
+											</span>
+
+										</div>
+
+									</div>
+
+								</div>
+
+							</a>
+
+						</c:forEach>
+
+					</div>
+
+				</c:when>
+
+
+				<c:otherwise>
+
+					<div class="py-10 px-4 text-center text-sm text-gray-400 border border-gray-100 rounded-2xl bg-white">
+						검색된 여행꿀팁이 없습니다.
+					</div>
+
+				</c:otherwise>
+
+			</c:choose>
+
 		</section>
-		<section class="mb-10">
-			<div class="flex items-center justify-between mb-3">
-				<h2 class="text-lg font-black">
-					여행꿀팁 <span class="text-[#6369D1]">8</span>
+
+
+		<!-- ==================================================
+		     여행 메이트
+		     실제 DB 검색 결과
+		     가로형 / 최대 4개
+		================================================== -->
+		<section class="mb-10" data-search-section="mate">
+
+			<div class="flex items-center justify-between gap-4 mb-3">
+
+				<h2 class="text-lg font-black shrink-0">
+					여행 메이트
+					<span class="text-[#6369D1]">
+						${mateTotalCount}
+					</span>
 				</h2>
-				<a href="${pageContext.request.contextPath}/view/tips/tipList.jsp"
-					class="text-sm font-bold text-[#6369D1]">전체 보기 →</a>
+
+				<c:url var="mateListUrl" value="/mates">
+					<c:param name="keyword" value="${keyword}" />
+				</c:url>
+
+				<a
+					href="${mateListUrl}"
+					class="text-sm font-bold text-[#6369D1]">
+					전체 보기 →
+				</a>
+
 			</div>
-			<div class="grid md:grid-cols-3 gap-3">
-				<div class="relative">
-					<a
-						href="${pageContext.request.contextPath}/view/tips/tipDetail.jsp?id=1"
-						class="block rounded-2xl border bg-white overflow-hidden hover:border-[#6369D1] transition"><img
-						src="https://images.unsplash.com/photo-1585208798174-6cedd86e019a?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHx0cmFtJTIwbGlzYm9uJTIwc3RyZWV0JTIwdHJhbnNwb3J0YXRpb258ZW58MXx8fHwxNzg5MjgzNjU4fDA&ixlib=rb-4.1.0&q=80&w=600"
-						alt="" class="w-full h-28 object-cover">
-					<div class="p-4">
-							<span class="text-[11px] font-bold" style="color: #EC4899">교통</span>
-							<div class="font-bold text-sm mt-1 line-clamp-2 pr-10">리스본
-								대중교통 완벽 가이드 (트램, 지하철, 교통카드)</div>
-						</div></a>
-				</div>
-				<div class="relative">
-					<a
-						href="${pageContext.request.contextPath}/view/tips/tipDetail.jsp?id=2"
-						class="block rounded-2xl border bg-white overflow-hidden hover:border-[#6369D1] transition"><img
-						src="https://images.unsplash.com/photo-1549294413-26f195200c16?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxob3RlbCUyMGx1eHVyeSUyMHJlc29ydCUyMGFjY29tbW9kYXRpb258ZW58MXx8fHwxNzg5MjgzNjU4fDA&ixlib=rb-4.1.0&q=80&w=600"
-						alt="" class="w-full h-28 object-cover">
-					<div class="p-4">
-							<span class="text-[11px] font-bold" style="color: #3B82F6">숙박</span>
-							<div class="font-bold text-sm mt-1 line-clamp-2 pr-10">제주도
-								숙소 추천 오션뷰 가성비 숙소 모음</div>
-						</div></a>
-				</div>
-				<div class="relative">
-					<a
-						href="${pageContext.request.contextPath}/view/tips/tipDetail.jsp?id=3"
-						class="block rounded-2xl border bg-white overflow-hidden hover:border-[#6369D1] transition"><img
-						src="https://images.unsplash.com/photo-1591814468924-caf88d1232e1?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxyYW1lbiUyMG5vb2RsZSUyMGphcGFuZXNlJTIwZm9vZCUyMGJvd2x8ZW58MXx8fHwxNzg5MjgzNjU5fDA&ixlib=rb-4.1.0&q=80&w=600"
-						alt="" class="w-full h-28 object-cover">
-					<div class="p-4">
-							<span class="text-[11px] font-bold" style="color: #F59E0B">음식</span>
-							<div class="font-bold text-sm mt-1 line-clamp-2 pr-10">후쿠오카에서
-								꼭 먹어야 하는 현지 음식 7가지</div>
-						</div></a>
-				</div>
-				<div class="relative">
-					<a
-						href="${pageContext.request.contextPath}/view/tips/tipDetail.jsp?id=4"
-						class="block rounded-2xl border bg-white overflow-hidden hover:border-[#6369D1] transition"><img
-						src="https://images.unsplash.com/photo-1488415032361-b7e238421f1b?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxub3J0aGVybiUyMGxpZ2h0cyUyMGF1cm9yYSUyMGljZWxhbmQlMjBjdWx0dXJlfGVufDF8fHx8MTc4OTI4MzY1OXww&ixlib=rb-4.1.0&q=80&w=600"
-						alt="" class="w-full h-28 object-cover">
-					<div class="p-4">
-							<span class="text-[11px] font-bold" style="color: #10B981">문화</span>
-							<div class="font-bold text-sm mt-1 line-clamp-2 pr-10">아이슬란드
-								오로라 여행 팁 (시기, 준비물, 촬영방법)</div>
-						</div></a>
-				</div>
-				<div class="relative">
-					<a
-						href="${pageContext.request.contextPath}/view/tips/tipDetail.jsp?id=5"
-						class="block rounded-2xl border bg-white overflow-hidden hover:border-[#6369D1] transition"><img
-						src="https://images.unsplash.com/photo-1619794578892-cbdd3ff81c95?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxwYXJpcyUyMGVpZmZlbCUyMHRvd2VyJTIwc3ByaW5nJTIwY2hlcnJ5JTIwYmxvc3NvbXxlbnwxfHx8fDE3ODkyODM2NjF8MA&ixlib=rb-4.1.0&q=80&w=600"
-						alt="" class="w-full h-28 object-cover">
-					<div class="p-4">
-							<span class="text-[11px] font-bold" style="color: #6B7280">기타</span>
-							<div class="font-bold text-sm mt-1 line-clamp-2 pr-10">파리
-								여행 준비 체크리스트 (비자, 환전, 유심 등)</div>
-						</div></a>
-				</div>
-				<div class="relative">
-					<a
-						href="${pageContext.request.contextPath}/view/tips/tipDetail.jsp?id=6"
-						class="block rounded-2xl border bg-white overflow-hidden hover:border-[#6369D1] transition"><img
-						src="https://images.unsplash.com/photo-1561501900-3701fa6a0864?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwyfHxob3RlbCUyMGx1eHVyeSUyMHJlc29ydCUyMGFjY29tbW9kYXRpb258ZW58MXx8fHwxNzg5MjgzNjU4fDA&ixlib=rb-4.1.0&q=80&w=600"
-						alt="" class="w-full h-28 object-cover">
-					<div class="p-4">
-							<span class="text-[11px] font-bold" style="color: #3B82F6">숙박</span>
-							<div class="font-bold text-sm mt-1 line-clamp-2 pr-10">발리
-								숙소 지역별 추천 (꾸따, 스미냑, 우붓 비교)</div>
-						</div></a>
-				</div>
-			</div>
+
+
+			<c:choose>
+
+				<c:when test="${not empty mateList}">
+
+					<div class="space-y-3">
+
+						<c:forEach var="mate" items="${mateList}">
+
+							<a
+								href="${pageContext.request.contextPath}/mateDetail?mateId=${mate.mateId}"
+								class="block relative bg-white rounded-2xl border border-gray-100 shadow-sm hover:shadow-md transition-all cursor-pointer group p-4 sm:p-5 hover:border-[#D1D2F9]">
+
+								<!-- 위쪽 -->
+								<div class="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3">
+
+									<div class="flex-1 min-w-0">
+
+										<!-- 국가 / 모집상태 -->
+										<div class="flex items-center gap-2 mb-3 flex-wrap">
+
+											<span
+												class="flex items-center gap-1 text-xs font-bold px-2.5 py-1 rounded-full"
+												style="background: var(--brand-soft); color: var(--brand);">
+
+												<svg
+													width="10"
+													height="10"
+													viewBox="0 0 24 24"
+													fill="none"
+													stroke="currentColor"
+													stroke-width="2">
+
+													<path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" />
+													<circle cx="12" cy="10" r="3" />
+
+												</svg>
+
+												<c:out value="${mate.country}" />
+
+											</span>
+
+
+											<c:choose>
+
+												<c:when test="${mate.recruitStatus eq 'OPEN'}">
+
+													<span
+														class="inline-flex items-center gap-1 text-[11px] font-bold px-2.5 py-1 rounded-full"
+														style="background: #ecfdf5; color: #059669;">
+
+														<span
+															class="inline-block w-1.5 h-1.5 rounded-full"
+															style="background: #10b981;">
+														</span>
+
+														모집중
+
+													</span>
+
+												</c:when>
+
+
+												<c:otherwise>
+
+													<span
+														class="inline-flex items-center gap-1 text-[11px] font-bold px-2.5 py-1 rounded-full"
+														style="background: #fef2f2; color: #dc2626;">
+
+														<span
+															class="inline-block w-1.5 h-1.5 rounded-full"
+															style="background: #ef4444;">
+														</span>
+
+														모집완료
+
+													</span>
+
+												</c:otherwise>
+
+											</c:choose>
+
+										</div>
+
+
+										<!-- 제목 -->
+										<h3 class="font-bold text-[15px] text-gray-900 leading-snug group-hover:text-brand transition-colors">
+											<c:out value="${mate.title}" />
+										</h3>
+
+									</div>
+
+
+									<!-- 모집인원 -->
+									<div class="shrink-0">
+
+										<span
+											class="inline-flex text-[11px] font-semibold px-2.5 py-1 rounded-full"
+											style="background: var(--brand-light); color: var(--brand);">
+
+											👥 ${mate.recruitCount}명 모집
+
+										</span>
+
+									</div>
+
+								</div>
+
+
+								<!-- 아래쪽 -->
+								<div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mt-4 pt-3 border-t border-gray-50">
+
+									<!-- 작성자 -->
+									<div class="flex items-center gap-1.5 text-xs">
+
+										<span class="text-gray-600 font-medium">
+											<c:out value="${mate.nickname}" default="알 수 없음" />
+										</span>
+
+										<span class="text-[11px] text-gray-400">
+											· ${mate.timeAgo}
+										</span>
+
+									</div>
+
+
+									<!-- 통계 -->
+									<div class="flex items-center gap-3 text-[11px] text-gray-400">
+
+										<span class="flex items-center gap-1">
+											♡ ${mate.likeCount}
+										</span>
+
+										<span class="flex items-center gap-1">
+											▢ ${mate.commentCount}
+										</span>
+
+										<span class="flex items-center gap-1">
+
+											<svg
+												width="13"
+												height="13"
+												viewBox="0 0 24 24"
+												fill="none"
+												stroke="currentColor"
+												stroke-width="2">
+
+												<path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12Z" />
+												<circle cx="12" cy="12" r="3" />
+
+											</svg>
+
+											${mate.viewCount}
+
+										</span>
+
+									</div>
+
+								</div>
+
+							</a>
+
+						</c:forEach>
+
+					</div>
+
+				</c:when>
+
+
+				<c:otherwise>
+
+					<div class="py-10 px-4 text-center text-sm text-gray-400 border border-gray-100 rounded-2xl bg-white">
+						검색된 여행 메이트가 없습니다.
+					</div>
+
+				</c:otherwise>
+
+			</c:choose>
+
 		</section>
-		<section>
-			<div class="flex items-center justify-between mb-3">
-				<h2 class="text-lg font-black">
-					여행 메이트 <span class="text-[#6369D1]">9</span>
-				</h2>
-				<a href="${pageContext.request.contextPath}/view/mate/mateList.jsp"
-					class="text-sm font-bold text-[#6369D1]">전체 보기 →</a>
-			</div>
-			<div class="space-y-3">
-				<div class="relative">
-					<a
-						href="${pageContext.request.contextPath}/view/mate/mateDetail.jsp?id=1"
-						class="block rounded-2xl border bg-white p-5 pr-20 hover:border-[#6369D1] transition"><div
-							class="text-xs font-bold text-[#6369D1]">일본 · 도쿄 · 여행동행</div>
-						<div class="font-bold mt-1">🗼 11/10-14 도쿄 4박 · 맛집+카페+쇼핑 동행
-							1명</div>
-						<p class="text-sm text-gray-500 mt-1 line-clamp-1">11월 10일~14일
-							도쿄 여행 계획 중입니다. 맛집, 카페, 쇼핑 같이 다니면서 즐겁게 여행하실 분 구해요!</p></a>
-				</div>
-				<div class="relative">
-					<a
-						href="${pageContext.request.contextPath}/view/mate/mateDetail.jsp?id=2"
-						class="block rounded-2xl border bg-white p-5 pr-20 hover:border-[#6369D1] transition"><div
-							class="text-xs font-bold text-[#6369D1]">베트남 · 다낭 · 정보공유</div>
-						<div class="font-bold mt-1">✈️ 12월 다낭 · 항공+숙소 같이 알아볼 분 (최대
-							3명)</div>
-						<p class="text-sm text-gray-500 mt-1 line-clamp-1">12월 다낭 여행
-							준비 중이라 항공권, 숙소, 일정 같이 알아보고 의견 나눌 분 찾습니다!</p></a>
-				</div>
-				<div class="relative">
-					<a
-						href="${pageContext.request.contextPath}/view/mate/mateDetail.jsp?id=3"
-						class="block rounded-2xl border bg-white p-5 pr-20 hover:border-[#6369D1] transition"><div
-							class="text-xs font-bold text-[#6369D1]">태국 · 방콕 · 숙소/교통 같이</div>
-						<div class="font-bold mt-1">🛺 11월 초 방콕 아속역 숙소 셰어 · 비용 50%
-							절약</div>
-						<p class="text-sm text-gray-500 mt-1 line-clamp-1">11월 초 방콕 여행
-							가는데, 숙소를 같이 예약하면 비용을 나눠서 더 저렴할 것 같아요.</p></a>
-				</div>
-				<div class="relative">
-					<a
-						href="${pageContext.request.contextPath}/view/mate/mateDetail.jsp?id=4"
-						class="block rounded-2xl border bg-white p-5 pr-20 hover:border-[#6369D1] transition"><div
-							class="text-xs font-bold text-[#6369D1]">이탈리아 · 로마 · 맛집탐방</div>
-						<div class="font-bold mt-1">🍕 10/15-22 로마·피렌체·베네치아 맛집 여행 동행</div>
-						<p class="text-sm text-gray-500 mt-1 line-clamp-1">10월 중순~말
-							이탈리아 여행 예정입니다. 로마, 피렌체, 베네치아 위주로 다니려고 해요.</p></a>
-				</div>
-				<div class="relative">
-					<a
-						href="${pageContext.request.contextPath}/view/mate/mateDetail.jsp?id=5"
-						class="block rounded-2xl border bg-white p-5 pr-20 hover:border-[#6369D1] transition"><div
-							class="text-xs font-bold text-[#6369D1]">영국 · 런던 · 언어교환</div>
-						<div class="font-bold mt-1">🎓 11월 런던 어학연수 · 영어 회화 파트너 구해요</div>
-						<p class="text-sm text-gray-500 mt-1 line-clamp-1">11월에 런던으로
-							어학연수로 갑니다. 현지에서 영어 회화 연습할 분 구해요.</p></a>
-				</div>
-				<div class="relative">
-					<a
-						href="${pageContext.request.contextPath}/view/mate/mateDetail.jsp?id=6"
-						class="block rounded-2xl border bg-white p-5 pr-20 hover:border-[#6369D1] transition"><div
-							class="text-xs font-bold text-[#6369D1]">한국 · 제주도 · 여행동행</div>
-						<div class="font-bold mt-1">🌿 10/28-30 제주 2박3일 렌터카 여행 · 동행
-							1명</div>
-						<p class="text-sm text-gray-500 mt-1 line-clamp-1">10월 마지막 주
-							제주 여행 갈 예정입니다. 렌터카로 여러 곳 돌아보려고 해요.</p></a>
-				</div>
-			</div>
-		</section>
-	</main><jsp:include page="/common/footer.jsp" /></body>
+
+	</main>
+
+	<jsp:include page="/common/footer.jsp" />
+	
+
+</body>
 </html>
