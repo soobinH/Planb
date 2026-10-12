@@ -507,9 +507,7 @@ request.setAttribute("activePage", "travel");
 									</div>
 
 									<p data-comment-content class="mt-1 text-[13px] text-gray-600"
-										style="white-space: pre-wrap; overflow-wrap: anywhere;">
-										<c:out value="${comment.content}" />
-									</p>
+										style="white-space: pre-wrap; overflow-wrap: anywhere;"><c:out value="${comment.content}" /></p>
 								</div>
 							</article>
 
