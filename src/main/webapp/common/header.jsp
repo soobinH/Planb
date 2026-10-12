@@ -772,24 +772,9 @@ if (
     </div>
 
 </header>
-<<<<<<< HEAD
 
 
-<script
-    src="<%=ctx%>/view/assets/js/common/headerCart.js?v=2"
-    defer>
-</script>
-
-
-<script
-    src="<%=ctx%>/view/assets/js/googlePlaceThumbnail.js?v=1"
-    data-google-place-thumbnail-loader
-    data-google-maps-key="AIzaSyB7ioaQS08aAzCl7gZPk6SyE1w7EeIrYhI"
-    defer>
-</script>
-=======
 <script src="<%=ctx%>/view/assets/js/common/headerCart.js?v=2" defer></script>
 <script src="<%=ctx%>/view/assets/js/googlePlaceThumbnail.js?v=2"
 	data-google-place-thumbnail-loader
 	data-google-maps-key="AIzaSyB7ioaQS08aAzCl7gZPk6SyE1w7EeIrYhI" defer></script>
->>>>>>> branch 'origin' of https://github.com/yoooong96/Planb.git
