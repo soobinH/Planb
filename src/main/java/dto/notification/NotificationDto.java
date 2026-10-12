@@ -3,101 +3,168 @@ package dto.notification;
 import java.sql.Timestamp;
 
 public class NotificationDto {
-	private long notificationId;	// 알림 번호
-	private long recipientUserId;	// 수신 회원
-	private long senderUserId;		// 행동 회원
-	private String notificationType;// 알림 유형
-	private String targetType;		// 대상 유형
-	private long targetId;			// 대상 번호
-	private String message;			// 표시 문구
-	private Boolean isRead;			// 읽음 여부
-	private Timestamp readAt;		// 읽은 일시
-	private Timestamp createdAt;	// 생성 일시
-	public NotificationDto() {
-		super();
-		// TODO Auto-generated constructor stub
-	}
-	public NotificationDto(long notificationId, long recipientUserId, long senderUserId, String notificationType,
-			String targetType, long targetId, String message, Boolean isRead, Timestamp readAt, Timestamp createdAt) {
-		super();
-		this.notificationId = notificationId;
-		this.recipientUserId = recipientUserId;
-		this.senderUserId = senderUserId;
-		this.notificationType = notificationType;
-		this.targetType = targetType;
-		this.targetId = targetId;
-		this.message = message;
-		this.isRead = isRead;
-		this.readAt = readAt;
-		this.createdAt = createdAt;
-	}
-	public long getNotificationId() {
+
+	private Long notificationId;
+	private Long recipientUserId;
+	private Long senderUserId;
+
+	private String notificationType;
+	private String targetType;
+	private Long targetId;
+	private Long sourceCommentId;
+
+	private boolean read;
+	private Timestamp readAt;
+	private Timestamp createdAt;
+
+	// TB_USER JOIN으로 가져오는 화면 표시용 값
+	private String senderNickname;
+
+	public Long getNotificationId() {
 		return notificationId;
 	}
-	public void setNotificationId(long notificationId) {
+
+	public void setNotificationId(Long notificationId) {
 		this.notificationId = notificationId;
 	}
-	public long getRecipientUserId() {
+
+	public Long getRecipientUserId() {
 		return recipientUserId;
 	}
-	public void setRecipientUserId(long recipientUserId) {
+
+	public void setRecipientUserId(Long recipientUserId) {
 		this.recipientUserId = recipientUserId;
 	}
-	public long getSenderUserId() {
+
+	public Long getSenderUserId() {
 		return senderUserId;
 	}
-	public void setSenderUserId(long senderUserId) {
+
+	public void setSenderUserId(Long senderUserId) {
 		this.senderUserId = senderUserId;
 	}
+
 	public String getNotificationType() {
 		return notificationType;
 	}
+
 	public void setNotificationType(String notificationType) {
 		this.notificationType = notificationType;
 	}
+
 	public String getTargetType() {
 		return targetType;
 	}
+
 	public void setTargetType(String targetType) {
 		this.targetType = targetType;
 	}
-	public long getTargetId() {
+
+	public Long getTargetId() {
 		return targetId;
 	}
-	public void setTargetId(long targetId) {
+
+	public void setTargetId(Long targetId) {
 		this.targetId = targetId;
 	}
-	public String getMessage() {
-		return message;
+
+	public Long getSourceCommentId() {
+		return sourceCommentId;
 	}
-	public void setMessage(String message) {
-		this.message = message;
+
+	public void setSourceCommentId(Long sourceCommentId) {
+		this.sourceCommentId = sourceCommentId;
 	}
-	public Boolean getIsRead() {
-		return isRead;
+
+	public boolean isRead() {
+		return read;
 	}
-	public void setIsRead(Boolean isRead) {
-		this.isRead = isRead;
+
+	public void setRead(boolean read) {
+		this.read = read;
 	}
+
 	public Timestamp getReadAt() {
 		return readAt;
 	}
+
 	public void setReadAt(Timestamp readAt) {
 		this.readAt = readAt;
 	}
+
 	public Timestamp getCreatedAt() {
 		return createdAt;
 	}
+
 	public void setCreatedAt(Timestamp createdAt) {
 		this.createdAt = createdAt;
 	}
+
+	public String getSenderNickname() {
+		return senderNickname;
+	}
+
+	public void setSenderNickname(String senderNickname) {
+		this.senderNickname = senderNickname;
+	}
+
 	@Override
 	public String toString() {
 		return "NotificationDto [notificationId=" + notificationId + ", recipientUserId=" + recipientUserId
 				+ ", senderUserId=" + senderUserId + ", notificationType=" + notificationType + ", targetType="
-				+ targetType + ", targetId=" + targetId + ", message=" + message + ", isRead=" + isRead + ", readAt="
-				+ readAt + ", createdAt=" + createdAt + "]";
+				+ targetType + ", targetId=" + targetId + ", sourceCommentId=" + sourceCommentId + ", read=" + read
+				+ ", readAt=" + readAt + ", createdAt=" + createdAt + ", senderNickname=" + senderNickname + "]";
 	}
-	
-	
+
+	// 화면에 표시할 알림 제목
+	public String getLabel() {
+
+		if ("REPORT_RECEIVED".equals(notificationType)) {
+			return "신고 접수";
+		}
+
+		if ("COMMENT".equals(notificationType)) {
+			return "새 댓글";
+		}
+
+		if ("ITINERARY_LIKE".equals(notificationType) || "TIP_LIKE".equals(notificationType)
+				|| "MATE_LIKE".equals(notificationType)) {
+			return "새 좋아요";
+		}
+
+		return "알림";
+	}
+
+	// 최신 닉네임과 유형으로 문구 생성
+	public String getMessage() {
+
+		String nickname = senderNickname == null || senderNickname.isBlank() ? "탈퇴한 회원" : senderNickname;
+
+		if ("REPORT_RECEIVED".equals(notificationType)) {
+			return nickname + "님이 신고를 접수했습니다.";
+		}
+
+		String target;
+
+		if ("ITINERARY".equals(targetType)) {
+			target = "여행 일정";
+		} else if ("TIP".equals(targetType)) {
+			target = "여행 꿀팁";
+		} else if ("MATE".equals(targetType)) {
+			target = "메이트 게시글";
+		} else {
+			target = "게시글";
+		}
+
+		if ("COMMENT".equals(notificationType)) {
+			return nickname + "님이 내 " + target + "에 댓글을 남겼습니다.";
+		}
+
+		if ("ITINERARY_LIKE".equals(notificationType) || "TIP_LIKE".equals(notificationType)
+				|| "MATE_LIKE".equals(notificationType)) {
+			return nickname + "님이 내 " + target + "에 좋아요를 눌렀습니다.";
+		}
+
+		return "새 알림이 있습니다.";
+	}
 }

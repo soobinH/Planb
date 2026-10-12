@@ -143,4 +143,5 @@
 	    <!-- 고객지원 -->
 	    <mapper resource="mapper/support/supportInquiry.xml"/>
 	</mappers>
+
 </configuration>

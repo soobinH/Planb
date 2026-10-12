@@ -1,17 +1,102 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE mapper PUBLIC "-//mybatix.org//DTD mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
+<mapper namespace="mapper.notification.notification">
 
-<mapper namespace="mapper.itinerary.notification">
-	<insert id="insertNotification" parameterType="notification">
-	</insert>
+	<!-- 공통 조회 컬럼 -->
+	<sql id="notificationColumns">
+		n.notification_id,
+		n.recipient_user_id,
+		n.sender_user_id,
+		n.notification_type,
+		n.target_type,
+		n.target_id,
+		n.source_comment_id,
+		n.is_read,
+		n.read_at,
+		n.created_at,
+		u.nickname AS sender_nickname
+	</sql>
 
-	<select id="selectNotification" parameterType="Integer">
+	<!-- 헤더: 읽음 여부와 관계없이 최신 3건 -->
+	<select id="selectRecentNotifications"
+		parameterType="java.lang.Long" resultType="notification">
+
+		SELECT
+		<include refid="notificationColumns" />
+		FROM tb_notification n
+		LEFT JOIN tb_user u
+		ON u.user_id = n.sender_user_id
+		WHERE n.recipient_user_id = #{value}
+		ORDER BY n.created_at DESC, n.notification_id DESC
+		LIMIT 3
+
 	</select>
-	
-	<update id="updateNotification" parameterType="notification">
+
+	<!-- 전체보기: 로그인 회원의 미읽음 알림 -->
+	<select id="selectUnreadNotifications"
+		parameterType="java.lang.Long" resultType="notification">
+
+		SELECT
+		<include refid="notificationColumns" />
+		FROM tb_notification n
+		LEFT JOIN tb_user u
+		ON u.user_id = n.sender_user_id
+		WHERE n.recipient_user_id = #{value}
+		AND n.is_read = 0
+		ORDER BY n.created_at DESC, n.notification_id DESC
+
+	</select>
+
+	<!-- 헤더 배지 및 전체보기 미읽음 개수 -->
+	<select id="countUnreadNotifications"
+		parameterType="java.lang.Long" resultType="long">
+
+		SELECT COUNT(*)
+		FROM tb_notification
+		WHERE recipient_user_id = #{value}
+		AND is_read = 0
+
+	</select>
+
+	<!-- 알림 클릭: 본인에게 온 알림만 조회 -->
+	<select id="selectNotification" parameterType="map"
+		resultType="notification">
+
+		SELECT
+		<include refid="notificationColumns" />
+		FROM tb_notification n
+		LEFT JOIN tb_user u
+		ON u.user_id = n.sender_user_id
+		WHERE n.notification_id = #{notificationId}
+		AND n.recipient_user_id = #{recipientUserId}
+
+	</select>
+
+	<!-- 알림 한 건 읽음 처리 -->
+	<update id="markNotificationRead" parameterType="map">
+
+		UPDATE tb_notification
+		SET is_read = 1,
+		read_at = CURRENT_TIMESTAMP
+		WHERE notification_id = #{notificationId}
+		AND recipient_user_id = #{recipientUserId}
+		AND is_read = 0
+
 	</update>
-	
-	<delete id="deleteNotification" parameterType="notification">
-	</delete>
+
+	<!-- 로그인 회원의 미읽음 알림 모두 읽음 처리 -->
+	<update id="markAllNotificationsRead"
+		parameterType="java.lang.Long">
+
+		UPDATE tb_notification
+		SET is_read = 1,
+		read_at = CURRENT_TIMESTAMP
+		WHERE recipient_user_id = #{value}
+		AND is_read = 0
+
+	</update>
+
 </mapper>

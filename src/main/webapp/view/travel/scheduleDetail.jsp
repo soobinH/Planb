@@ -506,10 +506,17 @@ request.setAttribute("activePage", "travel");
                               </c:if>
                            </div>
 
+<<<<<<< HEAD
                            <p data-comment-content class="mt-1 text-[13px] text-gray-600"
                               style="white-space: pre-wrap; overflow-wrap: anywhere;"><c:out value="${comment.content}" /></p>
                         </div>
                      </article>
+=======
+									<p data-comment-content class="mt-1 text-[13px] text-gray-600"
+										style="white-space: pre-wrap; overflow-wrap: anywhere;"><c:out value="${comment.content}" /></p>
+								</div>
+							</article>
+>>>>>>> branch 'origin' of https://github.com/yoooong96/Planb.git
 
                   </c:forEach>
                </div>
@@ -701,6 +708,7 @@ request.setAttribute("activePage", "travel");
                                     </p>
                                  </c:if>
 
+<<<<<<< HEAD
                                  <c:if test="${not empty block.placeAddress}">
                                     <p class="mt-1 text-[11px] text-black-500"
                                        style="overflow-wrap: anywhere">
@@ -713,6 +721,20 @@ request.setAttribute("activePage", "travel");
                                     <p class="mt-2 text-[20px] text-gray-600 leading-relaxed"
                                        style="white-space: pre-wrap; overflow-wrap: anywhere;"><c:out value="${block.memo}" /></p>
                                  </c:if>
+=======
+											<c:if test="${not empty block.placeAddress}">
+												<p class="mt-1 text-[11px] text-black-500"
+													style="overflow-wrap: anywhere">
+													<c:out value="${block.placeAddress}" />
+												</p>
+											</c:if>
+											<br>
+											<!-- 메모: 태그 안쪽의 불필요한 공백 제거 -->
+											<c:if test="${not empty block.memo}">
+												<p class="mt-2 text-[20px] text-gray-600 leading-relaxed"
+													style="white-space: pre-wrap; overflow-wrap: anywhere;"><c:out value="${block.memo}" /></p>
+											</c:if>
+>>>>>>> branch 'origin' of https://github.com/yoooong96/Planb.git
 
                                  <!-- 비용: 0원도 표시 -->
                                  <c:if test="${not empty block.cost}">
