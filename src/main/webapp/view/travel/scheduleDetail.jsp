@@ -13,16 +13,15 @@ request.setAttribute("activePage", "travel");
 <title><c:out value="${itinerary.title}" /> | Planb</title>
 <jsp:include page="/common/headStyles.jsp" />
 <link rel="stylesheet"
-	href="${pageContext.request.contextPath}/view/assets/css/travel/scheduleDetail.css?v=4">
+	href="${pageContext.request.contextPath}/view/assets/css/travel/scheduleDetail.css?v=5">
 </head>
 <body class="site-shell"><jsp:include page="/common/header.jsp" />
-	<main id="scheduleDetail"
-      class="detail-layout"
-      data-cart-url="${pageContext.request.contextPath}/itinerary/cart/toggle"
-      data-cart-state-url="${pageContext.request.contextPath}/itinerary/cart/state"
-      data-itinerary-id="${itinerary.itineraryId}"
-      data-logged-in="${not empty sessionScope.user}"
-      data-login-url="${pageContext.request.contextPath}/auth/login">
+	<main id="scheduleDetail" class="detail-layout"
+		data-cart-url="${pageContext.request.contextPath}/itinerary/cart/toggle"
+		data-cart-state-url="${pageContext.request.contextPath}/itinerary/cart/state"
+		data-itinerary-id="${itinerary.itineraryId}"
+		data-logged-in="${not empty sessionScope.user}"
+		data-login-url="${pageContext.request.contextPath}/auth/login">
 		<!-- 좌측: 일정 정보 -->
 		<aside id="detailInfoPanel" class="detail-info-panel">
 			<div class="detail-panel-header detail-info-header">
@@ -238,12 +237,11 @@ request.setAttribute("activePage", "travel");
 					</div>
 					<div class="flex gap-2">
 						<button type="button" data-cart-add="ITINERARY"
-							data-target-id="${itinerary.itineraryId}"
-							data-cart-state="NONE"
+							data-target-id="${itinerary.itineraryId}" data-cart-state="NONE"
 							aria-pressed="false"
 							class="flex-1 py-2.5 rounded-xl text-[10px] font-semibold
            						flex items-center justify-center gap-1.5
-           						transition-all hover:opacity-90"	
+           						transition-all hover:opacity-90"
 							style="background: #6369D1; color: white">
 							<svg class="w-3.5 h-3.5 shrink-0" fill="none"
 								stroke="currentColor" viewBox="0 0 24 24">
@@ -269,6 +267,42 @@ request.setAttribute("activePage", "travel");
 							신고
 						</button>
 					</div>
+					<!-- 본인 일정에서만 수정·삭제 표시 -->
+					<c:if test="${not empty sessionScope.user and itinerary.userId eq sessionScope.user.userId}">
+						<c:url var="modifyPlanUrl" value="/modifyplan">
+							<c:param name="itineraryId" value="${itinerary.itineraryId}" />
+						</c:url>
+
+						<div class="detail-owner-actions">
+							<a 
+								href="${modifyPlanUrl}"
+								class="detail-owner-button detail-owner-edit"> 
+								<svg
+									width="14" height="14" viewBox="0 0 24 24" fill="none"
+									stroke="currentColor" stroke-width="2" stroke-linecap="round"
+									stroke-linejoin="round" aria-hidden="true">
+                					<path d="m16 3 5 5-12 12-6 1 1-6Z" />
+                					<path d="m14 5 5 5" />
+            					</svg> 일정 수정
+							</a>
+
+							<button type="button" id="scheduleDeleteButton"
+								class="detail-owner-button detail-owner-delete"
+								data-delete-url="${pageContext.request.contextPath}/itinerary/delete"
+								data-itinerary-id="${itinerary.itineraryId}"
+								data-list-url="${pageContext.request.contextPath}/schedules">
+
+								<svg width="14" height="14" viewBox="0 0 24 24" fill="none"
+									stroke="currentColor" stroke-width="2" stroke-linecap="round"
+									stroke-linejoin="round" aria-hidden="true">
+                					<path d="M3 6h18" />
+                					<path d="M9 6V4h6v2" />
+                					<path d="m5 6 1 14h12l1-14" />
+                					<path d="M10 10v6M14 10v6" />
+            					</svg>일정 삭제
+							</button>
+						</div>
+					</c:if>
 				</div>
 				<div class="px-5 py-3 border-b flex items-center gap-3"
 					style="border-color: #D1D2F9">
@@ -454,8 +488,9 @@ request.setAttribute("activePage", "travel");
 										</c:if>
 									</div>
 
-									<p class="mt-1 text-[13px] text-gray-600" style="white-space: no-wrap; overflow-wrap: anywhere;">
-									<c:out value="${comment.content}" />
+									<p class="mt-1 text-[13px] text-gray-600"
+										style="white-space: no-wrap; overflow-wrap: anywhere;">
+										<c:out value="${comment.content}" />
 									</p>
 								</div>
 							</article>
@@ -507,10 +542,8 @@ request.setAttribute("activePage", "travel");
 
 								</div>
 								<button type="button" data-cart-add="DAY"
-									data-target-id="${day.dayId}"
-									data-cart-state="NONE"
-									aria-pressed="false"
-									class="detail-cart-small"
+									data-target-id="${day.dayId}" data-cart-state="NONE"
+									aria-pressed="false" class="detail-cart-small"
 									title="이 일차의 모든 블록 담기" aria-label="${dayStatus.count}일차 전체 담기">
 
 									<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
@@ -601,11 +634,9 @@ request.setAttribute("activePage", "travel");
 												</div>
 
 												<button type="button" data-cart-add="BLOCK"
-													data-target-id="${block.blockId}"
-													data-cart-state="NONE"
-													aria-pressed="false"
-													class="detail-cart-small" title="블록 담기"
-													aria-label="블록 담기">
+													data-target-id="${block.blockId}" data-cart-state="NONE"
+													aria-pressed="false" class="detail-cart-small"
+													title="블록 담기" aria-label="블록 담기">
 
 													<svg xmlns="http://www.w3.org/2000/svg" width="12"
 														height="12" viewBox="0 0 24 24" fill="none"
@@ -627,30 +658,22 @@ request.setAttribute("activePage", "travel");
 
 											<!-- 블록 종류 -->
 											<c:if test="${not empty block.blockType}">
-												<span
-													class="inline-block mt-1 text-[15px]
-                                             text-gray-500">
-													<c:choose>
-														<c:when test="${block.blockType eq 'MEAL'}">
-                                            식사
-                                        </c:when>
-														<c:when test="${block.blockType eq 'ATTRACTION'}">
-                                            관광
-                                        </c:when>
-														<c:when test="${block.blockType eq 'LODGING'}">
-                                            숙박
-                                        </c:when>
-														<c:when test="${block.blockType eq 'TRANSPORT'}">
-                                            이동
-                                        </c:when>
-														<c:when test="${block.blockType eq 'ACTIVITY'}">
-                                            체험
-                                        </c:when>
-														<c:otherwise>
-															<c:out value="${block.blockType}" />
-														</c:otherwise>
-													</c:choose>
-												</span>
+												<div class="detail-block-type-row">
+													<span class="detail-block-type"
+														data-block-type="<c:out value='${block.blockType}'/>">
+
+														<c:choose>
+															<c:when test="${block.blockType eq 'ATTRACTION'}">관광</c:when>
+															<c:when test="${block.blockType eq 'MEAL'}">식사</c:when>
+															<c:when test="${block.blockType eq 'LODGING'}">숙소</c:when>
+															<c:when test="${block.blockType eq 'TRANSPORT'}">교통</c:when>
+															<c:when test="${block.blockType eq 'ACTIVITY'}">활동</c:when>
+															<c:otherwise>
+																<c:out value="${block.blockType}" />
+															</c:otherwise>
+														</c:choose>
+													</span>
+												</div>
 											</c:if>
 
 											<!-- 장소 -->
@@ -668,11 +691,13 @@ request.setAttribute("activePage", "travel");
 													<c:out value="${block.placeAddress}" />
 												</p>
 											</c:if>
-													<br>
+											<br>
 											<!-- 메모: 태그 안쪽의 불필요한 공백 제거 -->
 											<c:if test="${not empty block.memo}">
 												<p class="mt-2 text-[20px] text-gray-600 leading-relaxed"
-													style="white-space: pre-wrap; overflow-wrap: anywhere;"><c:out value="${block.memo}" /></p>
+													style="white-space: pre-wrap; overflow-wrap: anywhere;">
+													<c:out value="${block.memo}" />
+												</p>
 											</c:if>
 
 											<!-- 비용: 0원도 표시 -->

@@ -354,10 +354,10 @@ public class ItineraryCartServiceImpl implements ItineraryCartService {
 		}
 	}
 
-	private List<ItineraryDayDto> selectTargetDays(SqlSession sqlSession, Long itineraryId, String itemType,
-			Long targetId) throws Exception {
+	private List<ItineraryDayDto> selectTargetDays(SqlSession sqlSession, Long itineraryId, String itemType, Long targetId) throws Exception {
 
 		List<ItineraryDayDto> days = dayDao.selectItineraryDays(sqlSession, itineraryId);
+
 		List<ItineraryDayDto> selectedDays = new ArrayList<>();
 
 		for (ItineraryDayDto day : days) {
@@ -367,9 +367,9 @@ public class ItineraryCartServiceImpl implements ItineraryCartService {
 
 			List<ItineraryBlockDto> blocks = blockDao.selectItineraryBlocks(sqlSession, day.getDayId());
 
-			if ("BLOCK".equals(itemType)) {
-				List<ItineraryBlockDto> selectedBlocks = new ArrayList<>();
+			List<ItineraryBlockDto> selectedBlocks = new ArrayList<>();
 
+			if ("BLOCK".equals(itemType)) {
 				for (ItineraryBlockDto block : blocks) {
 					if (targetId.equals(block.getBlockId())) {
 						selectedBlocks.add(block);
@@ -381,13 +381,25 @@ public class ItineraryCartServiceImpl implements ItineraryCartService {
 					continue;
 				}
 
-				day.setBlocks(selectedBlocks);
-				selectedDays.add(day);
-				break;
-
 			} else {
-				day.setBlocks(blocks);
-				selectedDays.add(day);
+				selectedBlocks.addAll(blocks);
+			}
+
+			// MyBatis 조회 객체를 수정하지 않고
+			// 담기 범위에 사용할 DAY 객체를 별도로 생성
+			ItineraryDayDto selectedDay = new ItineraryDayDto();
+
+			selectedDay.setDayId(day.getDayId());
+			selectedDay.setItineraryId(day.getItineraryId());
+			selectedDay.setDayOrder(day.getDayOrder());
+			selectedDay.setDayDate(day.getDayDate());
+			selectedDay.setTitle(day.getTitle());
+			selectedDay.setBlocks(selectedBlocks);
+
+			selectedDays.add(selectedDay);
+
+			if ("BLOCK".equals(itemType)) {
+				break;
 			}
 		}
 
