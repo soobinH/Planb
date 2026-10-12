@@ -90,6 +90,44 @@
         return value.trim();
     }
 
+    function countryCodeFromImage(img) {
+        if (!img || img.tagName !== 'IMG') return '';
+
+        var explicit = String(img.dataset.countryFlagCode || '').trim().toUpperCase();
+        if (/^[A-Z]{2}$/.test(explicit)) return explicit;
+
+        var raw = String(img.getAttribute('src') || '');
+
+        /*
+         * 새 저장 형식: flag:KR
+         * 기존 JSP가 contextPath를 붙여 /Planbflag:KR 로 렌더링해도
+         * 문자열 안에서 flag: 토큰을 찾아 복원한다.
+         */
+        var tokenMatch = raw.match(/flag:([a-z]{2})(?:[^a-z]|$)/i);
+        if (tokenMatch) return tokenMatch[1].toUpperCase();
+
+        /*
+         * 이미 DB에 저장된 과거 값(https://flagcdn.com/w640/kr.png)도 호환한다.
+         * JSP가 /Planbhttps://... 로 잘못 붙인 경우에도 src 문자열에서 코드 추출.
+         */
+        var cdnMatch = raw.match(/flagcdn\.com\/w(?:80|160|320|640|1280|2560)\/([a-z]{2})\.png/i);
+        if (cdnMatch) return cdnMatch[1].toUpperCase();
+
+        return '';
+    }
+
+    function hydrateFlagImage(img) {
+        if (!img || img.dataset.countryFlagThumbnailState) return false;
+
+        var countryCode = countryCodeFromImage(img);
+        if (!countryCode) return false;
+
+        img.dataset.countryFlagThumbnailState = 'ready';
+        img.dataset.countryFlagCode = countryCode;
+        img.src = 'https://flagcdn.com/w640/' + countryCode.toLowerCase() + '.png';
+        return true;
+    }
+
     function fetchPlacePhoto(placeId) {
         if (placePhotoCache[placeId]) {
             return placePhotoCache[placeId];
@@ -182,7 +220,9 @@
         if (!root) return;
 
         if (root.nodeType === 1 && root.tagName === 'IMG') {
-            if (placeIdFromImage(root)) {
+            if (hydrateFlagImage(root)) {
+                if (observedImages) observedImages.add(root);
+            } else if (placeIdFromImage(root)) {
                 if (!observedImages || !observedImages.has(root)) {
                     if (observedImages) observedImages.add(root);
                     hydrateImage(root);
@@ -193,8 +233,14 @@
         if (!root.querySelectorAll) return;
 
         root.querySelectorAll('img').forEach(function (img) {
-            if (!placeIdFromImage(img)) return;
             if (observedImages && observedImages.has(img)) return;
+
+            if (hydrateFlagImage(img)) {
+                if (observedImages) observedImages.add(img);
+                return;
+            }
+
+            if (!placeIdFromImage(img)) return;
             if (observedImages) observedImages.add(img);
             hydrateImage(img);
         });

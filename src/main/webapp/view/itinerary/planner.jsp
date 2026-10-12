@@ -3824,6 +3824,9 @@ request.setAttribute("activePage", "planner");
 
             function clearPlannerMapSearchMarkers(){
                 mapSearchMarkers.forEach(function(marker){
+                    if(marker.__plannerSearchInfoWindow){
+                        marker.__plannerSearchInfoWindow.close();
+                    }
                     marker.setMap(null);
                 });
 
@@ -4042,6 +4045,149 @@ request.setAttribute("activePage", "planner");
                             },
                             zIndex:200+index
                         });
+
+                    /*
+                     * 지도 검색 결과 A~F 핀도 일정에 이미 지정된 핀과
+                     * 동일한 상세정보 hover UI를 사용한다.
+                     */
+                    var searchPoint={
+                        googlePlaceId:place.id || '',
+                        name:place.displayName
+                            || place.formattedAddress
+                            || '검색 결과',
+                        address:place.formattedAddress || '',
+                        lat:Number(lat),
+                        lng:Number(lng)
+                    };
+                    var searchInfoId=
+                        'planner-search-map-info-'+(++plannerMapInfoSeq);
+                    var searchInfoWindow=
+                        new google.maps.InfoWindow({
+                            content:plannerPlaceInfoHtml(
+                                searchPoint,
+                                null,
+                                searchInfoId
+                            ),
+                            disableAutoPan:true
+                        });
+                    var searchInfoCloseTimer=null;
+                    var searchMarkerHovered=false;
+                    var searchInfoHovered=false;
+
+                    marker.__plannerSearchInfoWindow=
+                        searchInfoWindow;
+
+                    function cancelSearchInfoClose(){
+                        if(searchInfoCloseTimer){
+                            clearTimeout(searchInfoCloseTimer);
+                            searchInfoCloseTimer=null;
+                        }
+                    }
+
+                    function scheduleSearchInfoClose(){
+                        cancelSearchInfoClose();
+                        searchInfoCloseTimer=setTimeout(function(){
+                            if(!searchMarkerHovered
+                                    && !searchInfoHovered){
+                                searchInfoWindow.close();
+                            }
+                        },220);
+                    }
+
+                    searchInfoWindow.addListener(
+                        'domready',
+                        function(){
+                            var infoRoot=
+                                document.getElementById(
+                                    searchInfoId
+                                );
+
+                            if(!infoRoot
+                                    || infoRoot.dataset.hoverBound==='1'){
+                                return;
+                            }
+
+                            infoRoot.dataset.hoverBound='1';
+                            infoRoot.addEventListener(
+                                'mouseenter',
+                                function(){
+                                    searchInfoHovered=true;
+                                    cancelSearchInfoClose();
+                                }
+                            );
+                            infoRoot.addEventListener(
+                                'mouseleave',
+                                function(){
+                                    searchInfoHovered=false;
+                                    scheduleSearchInfoClose();
+                                }
+                            );
+                        }
+                    );
+
+                    searchInfoWindow.addListener(
+                        'closeclick',
+                        function(){
+                            searchMarkerHovered=false;
+                            searchInfoHovered=false;
+                            cancelSearchInfoClose();
+                        }
+                    );
+
+                    marker.addListener(
+                        'mouseover',
+                        function(){
+                            searchMarkerHovered=true;
+                            cancelSearchInfoClose();
+
+                            searchInfoWindow.setContent(
+                                plannerPlaceInfoHtml(
+                                    searchPoint,
+                                    null,
+                                    searchInfoId
+                                )
+                            );
+                            searchInfoWindow.open(map,marker);
+
+                            fetchPlannerPlaceDetails(searchPoint)
+                                .then(function(details){
+                                    if(searchMarkerHovered
+                                            || searchInfoHovered){
+                                        searchInfoWindow.setContent(
+                                            plannerPlaceInfoHtml(
+                                                searchPoint,
+                                                details,
+                                                searchInfoId
+                                            )
+                                        );
+                                    }
+                                })
+                                .catch(function(error){
+                                    console.warn(
+                                        '지도 검색 핀 상세정보 조회 실패:',
+                                        error
+                                    );
+                                    if(searchMarkerHovered
+                                            || searchInfoHovered){
+                                        searchInfoWindow.setContent(
+                                            plannerPlaceInfoHtml(
+                                                searchPoint,
+                                                false,
+                                                searchInfoId
+                                            )
+                                        );
+                                    }
+                                });
+                        }
+                    );
+
+                    marker.addListener(
+                        'mouseout',
+                        function(){
+                            searchMarkerHovered=false;
+                            scheduleSearchInfoClose();
+                        }
+                    );
 
                     marker.addListener(
                         'click',
@@ -5985,6 +6131,46 @@ request.setAttribute("activePage", "planner");
 
             var plannerPublishPlacePhotoLoadToken=0;
 
+            function plannerPrivateFlagCandidate(){
+                var countryInput=$('#plannerCountry');
+                var matched=findPlannerCountry(
+                    countryInput ? countryInput.value : ''
+                );
+
+                if(!matched || !matched.code) return null;
+
+                var code=String(matched.code).toUpperCase();
+
+                return {
+                    key:'flag:'+code,
+                    src:'https://flagcdn.com/w640/'+code.toLowerCase()+'.png',
+                    source:'flag',
+                    countryCode:code,
+                    countryName:matched.name || (countryInput ? countryInput.value.trim() : '')
+                };
+            }
+
+            function isPlannerFlagThumbnailUrl(value){
+                return /^https:\/\/flagcdn\.com\/w640\/[a-z]{2}\.png(?:[?#].*)?$/i.test(
+                    String(value || '').trim()
+                );
+            }
+
+            function syncPublishPhotoRequirement(isPublic){
+                var requirement=$('#plannerPublishPhotoRequirement');
+                var hint=$('#plannerPublishPhotoHint');
+
+                if(requirement){
+                    requirement.textContent=isPublic ? '(필수)' : '(자동)';
+                }
+
+                if(hint){
+                    hint.textContent=isPublic
+                        ? '업로드 사진 우선 · 없으면 일정 장소 사진'
+                        : '비공개 일정은 선택한 국가의 국기를 자동 사용';
+                }
+            }
+
             function collectPublishPlacePhotoSources(){
                 var result=[];
                 var seen={};
@@ -6077,13 +6263,18 @@ request.setAttribute("activePage", "planner");
                     if(candidate.source==='place'){
                         btn.dataset.placePhoto='1';
                         btn.title=(candidate.placeName || '장소')+' 장소 사진';
+                    }else if(candidate.source==='flag'){
+                        btn.dataset.countryFlag='1';
+                        btn.title=(candidate.countryName || '선택 국가')+' 국기';
                     }
 
                     var img=document.createElement('img');
                     img.src=candidate.src;
                     img.alt=candidate.source==='place'
                         ? (candidate.placeName || '장소')+' 사진'
-                        : '대표 이미지 후보';
+                        : candidate.source==='flag'
+                            ? (candidate.countryName || '선택 국가')+' 국기'
+                            : '대표 이미지 후보';
                     btn.appendChild(img);
 
                     if(candidate.source==='place'){
@@ -6137,6 +6328,49 @@ request.setAttribute("activePage", "planner");
                 if(!list) return;
 
                 var loadToken=++plannerPublishPlacePhotoLoadToken;
+                var isPublic=visibility
+                    && visibility.dataset.visibility==='PUBLIC';
+
+                syncPublishPhotoRequirement(isPublic);
+
+                /*
+                 * 비공개 일정은 업로드/장소 사진 선택과 무관하게
+                 * 선택한 국가의 국기를 대표 이미지로 자동 지정한다.
+                 */
+                if(!isPublic){
+                    var flagCandidate=plannerPrivateFlagCandidate();
+
+                    if(flagCandidate){
+                        renderPublishPhotoCandidateButtons([flagCandidate]);
+                        list.classList.remove('hidden');
+                        if(empty) empty.classList.add('hidden');
+                        selectPublishImage(flagCandidate);
+                    }else{
+                        plannerPublishState.imageKey='';
+                        plannerPublishState.thumbnailUrl='';
+                        list.innerHTML='';
+                        list.classList.add('hidden');
+                        if(empty){
+                            empty.textContent='국가를 선택하면 해당 국가의 국기가 대표 이미지로 자동 지정됩니다.';
+                            empty.classList.remove('hidden');
+                        }
+                        refreshPublishCard();
+                    }
+                    return;
+                }
+
+                /*
+                 * 비공개에서 공개로 바뀐 경우 국기는 공개 대표 이미지로
+                 * 인정하지 않는다. 공개 일정은 사용자가 사진을 직접 골라야 한다.
+                 */
+                if((plannerPublishState.imageKey
+                        && plannerPublishState.imageKey.indexOf('flag:')===0)
+                        || isPlannerFlagThumbnailUrl(plannerPublishState.thumbnailUrl)){
+                    plannerPublishState.imageKey='';
+                    plannerPublishState.thumbnailUrl='';
+                    refreshPublishCard();
+                }
+
                 var candidates=collectPublishPhotoCandidates();
 
                 if(candidates.length){
@@ -6149,17 +6383,6 @@ request.setAttribute("activePage", "planner");
 
                 list.innerHTML='';
                 list.classList.add('hidden');
-
-                var isPublic=visibility
-                    && visibility.dataset.visibility==='PUBLIC';
-
-                if(!isPublic){
-                    if(empty){
-                        empty.textContent='일정 블록에 사진을 등록하면 대표 이미지로 선택할 수 있습니다.';
-                        empty.classList.remove('hidden');
-                    }
-                    return;
-                }
 
                 if(empty){
                     empty.textContent='업로드한 사진이 없어 일정 장소의 사진을 불러오는 중입니다.';
@@ -6346,11 +6569,28 @@ request.setAttribute("activePage", "planner");
 
                     plannerPublishConfirm.addEventListener('click',function(){
                         var summaryInput=$('#plannerPublishSummary');
+                        var isPublic=visibility
+                            && visibility.dataset.visibility==='PUBLIC';
+                        var photoError=$('#plannerPublishPhotoError');
 
-                        /*
-                         * summary / thumbnail은 선택사항.
-                         * 비어 있어도 최종 저장을 진행한다.
-                         */
+                        /* 공개 일정은 대표 이미지를 반드시 직접 선택해야 한다. */
+                        if(isPublic && (!plannerPublishState.imageKey
+                                || plannerPublishState.imageKey.indexOf('flag:')===0)){
+                            if(photoError){
+                                photoError.textContent='공개 일정은 대표 이미지를 선택해야 저장할 수 있습니다.';
+                                photoError.classList.add('is-visible');
+                            }
+
+                            var controls=$('#plannerPublishControls');
+                            if(controls){
+                                controls.scrollIntoView({
+                                    behavior:'smooth',
+                                    block:'nearest'
+                                });
+                            }
+                            return;
+                        }
+
                         plannerPublishState.summary=
                             summaryInput ? summaryInput.value : '';
 
@@ -7123,8 +7363,8 @@ request.setAttribute("activePage", "planner");
 
                         <div class="mb-5">
                             <div class="flex items-center justify-between mb-2 gap-3">
-                                <label class="text-xs font-bold text-gray-700">대표 이미지 선택 <span class="font-normal text-gray-400">(선택)</span></label>
-                                <span class="text-[10px] text-gray-400">업로드 사진 우선 · 없으면 일정 장소 사진</span>
+                                <label class="text-xs font-bold text-gray-700">대표 이미지 <span id="plannerPublishPhotoRequirement" class="font-normal text-gray-400">(필수)</span></label>
+                                <span id="plannerPublishPhotoHint" class="text-[10px] text-gray-400">업로드 사진 우선 · 없으면 일정 장소 사진</span>
                             </div>
 
                             <div id="plannerPublishPhotoList"
@@ -7135,7 +7375,10 @@ request.setAttribute("activePage", "planner");
                                 대표 이미지 후보를 확인해 주세요.
                             </p>
 
-                            
+                            <p id="plannerPublishPhotoError" class="planner-publish-error">
+                                공개 일정은 대표 이미지를 선택해야 저장할 수 있습니다.
+                            </p>
+
                         </div>
 
                         <div id="plannerPublishSummarySection" style="display:block; visibility:visible;">
