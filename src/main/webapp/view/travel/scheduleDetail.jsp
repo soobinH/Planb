@@ -711,9 +711,7 @@ request.setAttribute("activePage", "travel");
 											<!-- 메모: 태그 안쪽의 불필요한 공백 제거 -->
 											<c:if test="${not empty block.memo}">
 												<p class="mt-2 text-[20px] text-gray-600 leading-relaxed"
-													style="white-space: pre-wrap; overflow-wrap: anywhere;">
-													<c:out value="${block.memo}" />
-												</p>
+													style="white-space: pre-wrap; overflow-wrap: anywhere;"><c:out value="${block.memo}" /></p>
 											</c:if>
 
 											<!-- 비용: 0원도 표시 -->
