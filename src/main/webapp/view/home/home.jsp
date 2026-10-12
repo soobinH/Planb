@@ -322,13 +322,21 @@ request.setAttribute("activePage", "home");
 				<p class="home-create-plan-description">
 					가고 싶은 장소와 일정을 자유롭게 담아 <br> 나만의 특별한 여행 계획을 완성해보세요.
 				</p>
-
-				<!-- 일정 만들기 버튼 -->
-				<a
-					href="${pageContext.request.contextPath}/view/itinerary/planner.jsp"
-					class="home-create-plan-button"> 일정 만들기 <span
-					aria-hidden="true">→</span>
-				</a>
+				<c:choose>
+					<c:when test="${not empty sessionScope.user}">
+						<a href="${pageContext.request.contextPath}/writeplan" class="home-create-plan-button"> 
+							일정 만들기 
+							<span aria-hidden="true">→</span>
+						</a>
+					</c:when>
+				
+					<c:otherwise>
+						<a href="${pageContext.request.contextPath}/auth/login" class="home-create-plan-button"> 
+							일정 만들기 
+							<span aria-hidden="true">→</span>
+						</a>
+					</c:otherwise>
+				</c:choose>
 
 			</div>
 

@@ -9,6 +9,7 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 
 import dto.community.MateDto;
 import dto.community.TipDto;
@@ -54,8 +55,6 @@ public class Home extends HttpServlet {
 			request.setAttribute("itineraryList", itineraryList);
 			request.setAttribute("tipList", tipList);
 			request.setAttribute("mateList", mateList);
-			
-			System.out.println("HOME itineraryList = " + itineraryList);
 
 			request.getRequestDispatcher("/view/home/home.jsp").forward(request, response);
 

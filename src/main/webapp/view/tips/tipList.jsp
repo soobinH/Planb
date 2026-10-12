@@ -434,7 +434,7 @@ request.setAttribute("activePage", "tips");
 							<a href="${pageContext.request.contextPath}/tips?country=${country}&sort=likes"
 								class="text-sm pb-0.5 transition-colors"
 								style="${sort == 'likes' ? 'color:#6369D1; font-weight:600; border-bottom:2px solid #6369D1' : 'color:#9ca3af'}">
-								좋아요순
+								인기순
 							</a>
 				        </div>
 					    <!-- 글쓰기 -->

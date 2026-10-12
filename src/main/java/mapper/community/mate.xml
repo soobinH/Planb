@@ -155,36 +155,31 @@
 	
 	
 		<!-- 정렬 -->
+		ORDER BY
+			CASE
+				WHEN m.recruit_status = 'OPEN' THEN 0
+				ELSE 1
+			END ASC,
+		
 		<choose>
-	
+		
 			<!-- 조회수순 -->
 			<when test="sort == 'views'">
-	
-				ORDER BY
-					m.view_count DESC,
-					m.created_at DESC
-	
+				m.view_count DESC,
+				m.created_at DESC
 			</when>
-	
-	
-			<!-- 댓글순 -->
-			<when test="sort == 'comments'">
-	
-				ORDER BY
-					commentCount DESC,
-					m.created_at DESC
-	
+		
+			<!-- 인기순(좋아요순) -->
+			<when test="sort == 'likes'">
+				likeCount DESC,
+				m.created_at DESC
 			</when>
-	
-	
+		
 			<!-- 최신순 -->
 			<otherwise>
-	
-				ORDER BY
-					m.created_at DESC
-	
+				m.created_at DESC
 			</otherwise>
-	
+		
 		</choose>
 	
 	
