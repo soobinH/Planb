@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="mapper.notification.notificationDevice">
+
+    <!-- 브라우저 등록번호를 현재 로그인 회원에게 연결 -->
+    <insert id="saveNotificationDevice" parameterType="notificationDevice">
+
+        INSERT INTO TB_NOTIFICATION_DEVICE (
+            installation_id,
+            user_id,
+            last_seen_at
+        )
+        VALUES (
+            #{installationId},
+            #{userId},
+            CURRENT_TIMESTAMP
+        )
+        ON DUPLICATE KEY UPDATE
+            user_id = VALUES(user_id),
+            last_seen_at = CURRENT_TIMESTAMP
+
+    </insert>
+
+    <!-- 알림을 받을 회원의 등록된 브라우저 목록 -->
+    <select id="selectNotificationDevices" parameterType="java.lang.Long" resultType="notificationDevice">
+
+        SELECT
+            installation_id,
+            user_id,
+            last_seen_at
+        FROM TB_NOTIFICATION_DEVICE
+        WHERE user_id = #{value}
+
+    </select>
+
+    <!-- 해당 회원에게 연결된 브라우저만 연결 해제 -->
+    <delete id="deleteNotificationDevice" parameterType="notificationDevice">
+
+        DELETE FROM TB_NOTIFICATION_DEVICE
+        WHERE installation_id = #{installationId}
+          AND user_id = #{userId}
+
+    </delete>
+
+</mapper>

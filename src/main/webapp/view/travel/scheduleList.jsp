@@ -28,9 +28,6 @@ request.setAttribute("activePage", "travel");
 					</svg>
 					내가 작성한 글
 				</span>
-				<!-- <span class="text-xs rounded-full px-2 py-0.5 font-semibold" style="background: var(--brand-light); color: var(--brand)">
-					3
-				</span> -->
 			</a>
 			<div class="border-t border-gray-100 mb-3">
 			</div>
@@ -83,13 +80,17 @@ request.setAttribute("activePage", "travel");
 				<!-- 아시아 국가별 버튼 -->
 				<div class="continent-panel ml-2 mb-1 flex-col gap-0.5 border-l-2 pl-3 pt-1"
 					style="border-color: var(--brand-light)">
-					<button type="button" data-schedule-country="대한민국" class="text-left text-sm py-1.5 px-2 rounded-md text-gray-500 hover:text-[#6369D1]">대한민국</button>
-					<button type="button" data-schedule-country="일본" class="text-left text-sm py-1.5 px-2 rounded-md text-gray-500 hover:text-[#6369D1]">일본</button>
-					<button type="button" data-schedule-country="태국" class="text-left text-sm py-1.5 px-2 rounded-md text-gray-500 hover:text-[#6369D1]">태국</button>
-					<button type="button" data-schedule-country="베트남" class="text-left text-sm py-1.5 px-2 rounded-md text-gray-500 hover:text-[#6369D1]">베트남</button>
-					<button type="button" data-schedule-country="중국" class="text-left text-sm py-1.5 px-2 rounded-md text-gray-500 hover:text-[#6369D1]">중국</button>
-					<button type="button" data-schedule-country="대만" class="text-left text-sm py-1.5 px-2 rounded-md text-gray-500 hover:text-[#6369D1]">대만</button>
-					<button type="button" data-schedule-country="싱가포르" class="text-left text-sm py-1.5 px-2 rounded-md text-gray-500 hover:text-[#6369D1]">싱가포르</button>
+					<button type="button" data-schedule-country="대한민국" class="text-left text-sm py-1.5 px-2 rounded-md text-gray-500 hover:text-[#6369D1]">🇰🇷 대한민국</button>
+					<button type="button" data-schedule-country="일본" class="text-left text-sm py-1.5 px-2 rounded-md text-gray-500 hover:text-[#6369D1]">🇯🇵 일본</button>
+					<button type="button" data-schedule-country="중국" class="text-left text-sm py-1.5 px-2 rounded-md text-gray-500 hover:text-[#6369D1]">🇨🇳 중국</button>
+					<button type="button" data-schedule-country="대만" class="text-left text-sm py-1.5 px-2 rounded-md text-gray-500 hover:text-[#6369D1]">🇹🇼 대만</button>
+					<button type="button" data-schedule-country="홍콩" class="text-left text-sm py-1.5 px-2 rounded-md text-gray-500 hover:text-[#6369D1]">🇭🇰 홍콩</button>
+					<button type="button" data-schedule-country="태국" class="text-left text-sm py-1.5 px-2 rounded-md text-gray-500 hover:text-[#6369D1]">🇹🇭 태국</button>
+					<button type="button" data-schedule-country="베트남" class="text-left text-sm py-1.5 px-2 rounded-md text-gray-500 hover:text-[#6369D1]">🇻🇳 베트남</button>
+					<button type="button" data-schedule-country="필리핀" class="text-left text-sm py-1.5 px-2 rounded-md text-gray-500 hover:text-[#6369D1]">🇵🇭 필리핀</button>
+					<button type="button" data-schedule-country="싱가포르" class="text-left text-sm py-1.5 px-2 rounded-md text-gray-500 hover:text-[#6369D1]">🇸🇬 싱가포르</button>
+					<button type="button" data-schedule-country="말레이시아" class="text-left text-sm py-1.5 px-2 rounded-md text-gray-500 hover:text-[#6369D1]">🇲🇾 말레이시아</button>
+					<button type="button" data-schedule-country="인도네시아" class="text-left text-sm py-1.5 px-2 rounded-md text-gray-500 hover:text-[#6369D1]">🇮🇩 인도네시아</button>
 				</div>
 			</div>
 			
@@ -108,13 +109,13 @@ request.setAttribute("activePage", "travel");
 				</button>
 				<!-- 유럽 국가별 버튼 -->
 				<div class="continent-panel ml-2 mb-1 flex-col gap-0.5 border-l-2 pl-3 pt-1" style="border-color: var(--brand-light)">
-					<button type="button" data-schedule-country="프랑스" class="text-left text-sm py-1.5 px-2 rounded-md text-gray-500 hover:text-[#6369D1]">프랑스</button>
-					<button type="button" data-schedule-country="영국" class="text-left text-sm py-1.5 px-2 rounded-md text-gray-500 hover:text-[#6369D1]">영국</button>
-					<button type="button" data-schedule-country="이탈리아" class="text-left text-sm py-1.5 px-2 rounded-md text-gray-500 hover:text-[#6369D1]">이탈리아</button>
-					<button type="button" data-schedule-country="스페인" class="text-left text-sm py-1.5 px-2 rounded-md text-gray-500 hover:text-[#6369D1]">스페인</button>
-					<button type="button" data-schedule-country="독일" class="text-left text-sm py-1.5 px-2 rounded-md text-gray-500 hover:text-[#6369D1]">독일</button>
-					<button type="button" data-schedule-country="포르투갈" class="text-left text-sm py-1.5 px-2 rounded-md text-gray-500 hover:text-[#6369D1]">포르투갈</button>
-					<button type="button" data-schedule-country="그리스" class="text-left text-sm py-1.5 px-2 rounded-md text-gray-500 hover:text-[#6369D1]">그리스</button>
+					<button type="button" data-schedule-country="독일" class="text-left text-sm py-1.5 px-2 rounded-md text-gray-500 hover:text-[#6369D1]">🇩🇪 독일</button>
+					<button type="button" data-schedule-country="포르투갈" class="text-left text-sm py-1.5 px-2 rounded-md text-gray-500 hover:text-[#6369D1]">🇵🇹 포르투갈</button>
+					<button type="button" data-schedule-country="프랑스" class="text-left text-sm py-1.5 px-2 rounded-md text-gray-500 hover:text-[#6369D1]">🇫🇷 프랑스</button>
+					<button type="button" data-schedule-country="그리스" class="text-left text-sm py-1.5 px-2 rounded-md text-gray-500 hover:text-[#6369D1]">🇬🇷 그리스</button>
+					<button type="button" data-schedule-country="스페인" class="text-left text-sm py-1.5 px-2 rounded-md text-gray-500 hover:text-[#6369D1]">🇪🇸 스페인</button>
+					<button type="button" data-schedule-country="영국" class="text-left text-sm py-1.5 px-2 rounded-md text-gray-500 hover:text-[#6369D1]">🇬🇧 영국</button>
+					<button type="button" data-schedule-country="이탈리아" class="text-left text-sm py-1.5 px-2 rounded-md text-gray-500 hover:text-[#6369D1]">🇮🇹 이탈리아</button>
 				</div>
 			</div>
 			
@@ -133,9 +134,9 @@ request.setAttribute("activePage", "travel");
 				</button>
 				<!-- 북아메리카 국가별 버튼 -->
 				<div class="continent-panel ml-2 mb-1 flex-col gap-0.5 border-l-2 pl-3 pt-1" style="border-color: var(--brand-light)">
-					<button type="button" data-schedule-country="미국" class="text-left text-sm py-1.5 px-2 rounded-md text-gray-500 hover:text-[#6369D1]">미국</button>
-					<button type="button" data-schedule-country="캐나다" class="text-left text-sm py-1.5 px-2 rounded-md text-gray-500 hover:text-[#6369D1]">캐나다</button>
-					<button type="button" data-schedule-country="멕시코" class="text-left text-sm py-1.5 px-2 rounded-md text-gray-500 hover:text-[#6369D1]">멕시코</button>
+					<button type="button" data-schedule-country="멕시코" class="text-left text-sm py-1.5 px-2 rounded-md text-gray-500 hover:text-[#6369D1]">🇲🇽 멕시코</button>
+					<button type="button" data-schedule-country="미국" class="text-left text-sm py-1.5 px-2 rounded-md text-gray-500 hover:text-[#6369D1]">🇺🇸 미국</button>
+					<button type="button" data-schedule-country="캐나다" class="text-left text-sm py-1.5 px-2 rounded-md text-gray-500 hover:text-[#6369D1]">🇨🇦 캐나다</button>
 				</div>
 			</div>
 			
@@ -154,10 +155,10 @@ request.setAttribute("activePage", "travel");
 				</button>
 				<!-- 남아메리카 국가별 버튼 -->
 				<div class="continent-panel ml-2 mb-1 flex-col gap-0.5 border-l-2 pl-3 pt-1" style="border-color: var(--brand-light)">
-					<button type="button" data-schedule-country="브라질" class="text-left text-sm py-1.5 px-2 rounded-md text-gray-500 hover:text-[#6369D1]">브라질</button>
-					<button type="button" data-schedule-country="페루" class="text-left text-sm py-1.5 px-2 rounded-md text-gray-500 hover:text-[#6369D1]">페루</button>
-					<button type="button" data-schedule-country="아르헨티나" class="text-left text-sm py-1.5 px-2 rounded-md text-gray-500 hover:text-[#6369D1]">아르헨티나</button>
-					<button type="button" data-schedule-country="칠레" class="text-left text-sm py-1.5 px-2 rounded-md text-gray-500 hover:text-[#6369D1]">칠레</button>
+					<button type="button" data-schedule-country="브라질" class="text-left text-sm py-1.5 px-2 rounded-md text-gray-500 hover:text-[#6369D1]">🇧🇷 브라질</button>
+					<button type="button" data-schedule-country="아르헨티나" class="text-left text-sm py-1.5 px-2 rounded-md text-gray-500 hover:text-[#6369D1]">🇦🇷 아르헨티나</button>
+					<button type="button" data-schedule-country="칠레" class="text-left text-sm py-1.5 px-2 rounded-md text-gray-500 hover:text-[#6369D1]">🇨🇱 칠레</button>
+					<button type="button" data-schedule-country="페루" class="text-left text-sm py-1.5 px-2 rounded-md text-gray-500 hover:text-[#6369D1]">🇵🇪 페루</button>
 				</div>
 			</div>
 			
@@ -176,10 +177,10 @@ request.setAttribute("activePage", "travel");
 				</button>
 				<!-- 아프리카 국가별 버튼 -->
 				<div class="continent-panel ml-2 mb-1 flex-col gap-0.5 border-l-2 pl-3 pt-1" style="border-color: var(--brand-light)">
-					<button type="button" data-schedule-country="이집트" class="text-left text-sm py-1.5 px-2 rounded-md text-gray-500 hover:text-[#6369D1]">이집트</button>
-					<button type="button" data-schedule-country="모로코" class="text-left text-sm py-1.5 px-2 rounded-md text-gray-500 hover:text-[#6369D1]">모로코</button>
-					<button type="button" data-schedule-country="남아프리카" class="text-left text-sm py-1.5 px-2 rounded-md text-gray-500 hover:text-[#6369D1]">남아프리카</button>
-					<button type="button" data-schedule-country="케냐" class="text-left text-sm py-1.5 px-2 rounded-md text-gray-500 hover:text-[#6369D1]">케냐</button>
+					<button type="button" data-schedule-country="남아프리카" class="text-left text-sm py-1.5 px-2 rounded-md text-gray-500 hover:text-[#6369D1]">🇿🇦 남아프리카</button>
+					<button type="button" data-schedule-country="모로코" class="text-left text-sm py-1.5 px-2 rounded-md text-gray-500 hover:text-[#6369D1]">🇲🇦 모로코</button>
+					<button type="button" data-schedule-country="이집트" class="text-left text-sm py-1.5 px-2 rounded-md text-gray-500 hover:text-[#6369D1]">🇪🇬 이집트</button>
+					<button type="button" data-schedule-country="케냐" class="text-left text-sm py-1.5 px-2 rounded-md text-gray-500 hover:text-[#6369D1]">🇰🇪 케냐</button>
 				</div>
 			</div>
 			
@@ -198,9 +199,9 @@ request.setAttribute("activePage", "travel");
 				</button>
 				<!-- 오세아니아 국가별 버튼 -->
 				<div class="continent-panel ml-2 mb-1 flex-col gap-0.5 border-l-2 pl-3 pt-1" style="border-color: var(--brand-light)">
-					<button type="button" data-schedule-country="호주" class="text-left text-sm py-1.5 px-2 rounded-md text-gray-500 hover:text-[#6369D1]">호주</button>
-					<button type="button" data-schedule-country="뉴질랜드" class="text-left text-sm py-1.5 px-2 rounded-md text-gray-500 hover:text-[#6369D1]">뉴질랜드</button>
-					<button type="button" data-schedule-country="피지" class="text-left text-sm py-1.5 px-2 rounded-md text-gray-500 hover:text-[#6369D1]">피지</button>
+					<button type="button" data-schedule-country="뉴질랜드" class="text-left text-sm py-1.5 px-2 rounded-md text-gray-500 hover:text-[#6369D1]">🇳🇿 뉴질랜드</button>
+					<button type="button" data-schedule-country="피지" class="text-left text-sm py-1.5 px-2 rounded-md text-gray-500 hover:text-[#6369D1]">🇫🇯 피지</button>
+					<button type="button" data-schedule-country="호주" class="text-left text-sm py-1.5 px-2 rounded-md text-gray-500 hover:text-[#6369D1]">🇦🇺 호주</button>
 				</div>
 			</div>
 			
@@ -219,9 +220,9 @@ request.setAttribute("activePage", "travel");
 				</button>
 				<!-- 중동 국가별 버튼 -->
 				<div class="continent-panel ml-2 mb-1 flex-col gap-0.5 border-l-2 pl-3 pt-1" style="border-color: var(--brand-light)">
-					<button type="button" data-schedule-country="UAE" class="text-left text-sm py-1.5 px-2 rounded-md text-gray-500 hover:text-[#6369D1]">UAE</button>
-					<button type="button" data-schedule-country="터키" class="text-left text-sm py-1.5 px-2 rounded-md text-gray-500 hover:text-[#6369D1]">터키</button>
-					<button type="button" data-schedule-country="이스라엘" class="text-left text-sm py-1.5 px-2 rounded-md text-gray-500 hover:text-[#6369D1]">이스라엘</button>
+					<button type="button" data-schedule-country="UAE" class="text-left text-sm py-1.5 px-2 rounded-md text-gray-500 hover:text-[#6369D1]">🇦🇪 UAE</button>
+					<button type="button" data-schedule-country="이스라엘" class="text-left text-sm py-1.5 px-2 rounded-md text-gray-500 hover:text-[#6369D1]">🇮🇱 이스라엘</button>
+					<button type="button" data-schedule-country="터키" class="text-left text-sm py-1.5 px-2 rounded-md text-gray-500 hover:text-[#6369D1]">🇹🇷 터키</button>
 				</div>
 			</div>
 		</aside>

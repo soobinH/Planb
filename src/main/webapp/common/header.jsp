@@ -161,30 +161,30 @@ if (user != null && user.getProfileImg() != null && !user.getProfileImg().trim()
 		if (!homeHeader) {
 		%>
 
-		<form
-			action="${pageContext.request.contextPath}/search"
+		<form 
+			action="${pageContext.request.contextPath}/search" 
 			method="get"
 			class="header-search-form">
-		
-			<input
-				type="text"
-				name="q"
+
+			<input 
+				type="text" 
+				name="q" 
 				value="${param.q}"
-				placeholder="여행지, 일정, 키워드로 검색해보세요."
+				placeholder="여행지, 일정, 키워드로 검색해보세요." 
 				autocomplete="off">
-		
-			<button
-				type="submit"
-				class="header-search-button"
+
+			<button 
+				type="submit" 
+				class="header-search-button" 
 				aria-label="검색">
-		
-				<svg
-					width="17"
-					height="17"
-					viewBox="0 0 24 24"
+
+				<svg 
+					width="17" 
+					height="17" 
+					viewBox="0 0 24 24" 
 					fill="none"
-					stroke="white"
-					stroke-width="2"
+					stroke="white" 
+					stroke-width="2" 
 					aria-hidden="true">
 		
 					<circle cx="11" cy="11" r="8" />
@@ -299,12 +299,12 @@ if (user != null && user.getProfileImg() != null && !user.getProfileImg().trim()
                  알림
             ========================== -->
 
-			<div
-    			class="site-badge-wrap site-notification-wrap"
-    			data-notification-header
-    			data-context-path="<%=ctx%>"
-    			data-header-url="<%=ctx%>/notifications/header"
-    			data-read-url="<%=ctx%>/notifications/read">
+			<div 
+				class="site-badge-wrap site-notification-wrap"
+				data-notification-header 
+				data-context-path="<%=ctx%>"
+				data-header-url="<%=ctx%>/notifications/header"
+				data-read-url="<%=ctx%>/notifications/read">
 
 				<button type="button" class="site-icon-btn" data-notification-toggle
 					title="알림" aria-label="알림" aria-expanded="false">
@@ -333,6 +333,11 @@ if (user != null && user.getProfileImg() != null && !user.getProfileImg().trim()
 
 					<div data-notification-items>
 						<p class="site-notification-empty">알림을 불러오는 중입니다.</p>
+					</div>
+					<div style="padding: 10px 14px; border-top: 1px solid #eee;">
+						<button type="button" data-firebase-enable
+							style="font-size: 12px; color: #6369D1; font-weight: 600;">
+							실시간 알림 켜기</button>
 					</div>
 				</div>
 				<%
@@ -434,9 +439,8 @@ if (user != null && user.getProfileImg() != null && !user.getProfileImg().trim()
 
 
 <script src="<%=ctx%>/view/assets/js/common/headerCart.js?v=3" defer></script>
-<script
-    src="<%=ctx%>/view/assets/js/common/headerNotifications.js?v=1"
-    defer>
+<script src="<%=ctx%>/view/assets/js/common/headerNotifications.js?v=1"
+	defer>
 </script>
 <%
 if (isAdminHeader) {
@@ -604,3 +608,15 @@ document.addEventListener(
 <script src="<%=ctx%>/view/assets/js/googlePlaceThumbnail.js?v=2"
 	data-google-place-thumbnail-loader
 	data-google-maps-key="AIzaSyB7ioaQS08aAzCl7gZPk6SyE1w7EeIrYhI" defer></script>
+
+<%
+if (loggedIn) {
+%>
+<script src="<%=ctx%>/view/assets/js/firebase/firebase-config.js?v=1"></script>
+
+<script type="module"
+	src="<%=ctx%>/view/assets/js/firebase/firebaseNotifications.js?v=1">
+    </script>
+<%
+}
+%>

@@ -57,6 +57,7 @@
 		
 		<!-- 알림 -->
 		<typeAlias type="dto.notification.NotificationDto" alias="notification"/>
+		<typeAlias type="dto.notification.NotificationDeviceDto" alias="notificationDevice" />
 		
 		<!-- 장소 -->
 		<typeAlias type="dto.place.PlaceDto" alias="place"/>
@@ -132,6 +133,7 @@
 		
 	    <!-- 알림 -->
 	    <mapper resource="mapper/notification/notification.xml"/>
+	    <mapper resource="mapper/notification/notificationDevice.xml" />
 	
 	    <!-- 장소 -->
 	    <mapper resource="mapper/place/place.xml"/>

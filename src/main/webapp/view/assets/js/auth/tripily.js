@@ -375,7 +375,7 @@
 // 반응형 헤더 모바일 메뉴
 // ================================
 
-const mobileMenuToggle =
+/*const mobileMenuToggle =
 	document.querySelector("[data-mobile-menu-toggle]");
 
 const mobileNav =
@@ -467,5 +467,5 @@ if (mobileMenuToggle && mobileNav) {
 			"메뉴 열기"
 		);
 	}
-}
+}*/
 
