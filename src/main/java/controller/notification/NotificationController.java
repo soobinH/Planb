@@ -20,7 +20,7 @@ import util.JsonResponse;
 /**
  * Servlet implementation class NotificationController
  */
-@WebServlet(urlPatterns = { "/notifications", "/notifications/header", "/notifications/read",
+@WebServlet(urlPatterns = { "/notifications", "/notifications/header", "/notifications/more", "/notifications/read",
 		"/notifications/read-all" })
 public class NotificationController extends HttpServlet {
 	private static final long serialVersionUID = 1L;
@@ -39,6 +39,7 @@ public class NotificationController extends HttpServlet {
 	 */
 	protected void doGet(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
+		response.setHeader("Cache-Control", "no-store");
 		String path = request.getServletPath();
 		UserDto loginUser = getLoginUser(request);
 
@@ -52,16 +53,52 @@ public class NotificationController extends HttpServlet {
 			try {
 				NotificationService service = new NotificationServiceImpl();
 
-				List<Map<String, Object>> notifications = service
-						.getUnreadNotifications(Long.valueOf(loginUser.getUserId()));
+				Map<String, Object> page = service.getUnreadNotificationPage(Long.valueOf(loginUser.getUserId()), null);
 
-				request.setAttribute("notifications", notifications);
-				request.setAttribute("unreadCount", notifications.size());
+				request.setAttribute("notifications", page.get("notifications"));
+				request.setAttribute("unreadCount", page.get("unreadCount"));
+				request.setAttribute("hasMore", page.get("hasMore"));
+				request.setAttribute("nextCursor", page.get("nextCursor"));
 
 				request.getRequestDispatcher("/view/notification/notifications.jsp").forward(request, response);
 
 			} catch (Exception e) {
 				getServletContext().log("알림 목록 조회 중 오류 발생", e);
+				if ("/notifications/more".equals(path)) {
+					if (loginUser == null) {
+						JsonResponse.writeFailure(response, HttpServletResponse.SC_UNAUTHORIZED, "로그인이 필요합니다.");
+						return;
+					}
+
+					Long beforeNotificationId = parsePositiveLong(request.getParameter("beforeNotificationId"));
+
+					if (beforeNotificationId == null) {
+						JsonResponse.writeFailure(response, HttpServletResponse.SC_BAD_REQUEST,
+								"더보기 기준 알림 번호가 올바르지 않습니다.");
+						return;
+					}
+
+					try {
+						NotificationService service = new NotificationServiceImpl();
+
+						Map<String, Object> result = service
+								.getUnreadNotificationPage(Long.valueOf(loginUser.getUserId()), beforeNotificationId);
+
+						result.put("success", true);
+						JsonResponse.writeJson(response, result);
+
+					} catch (IllegalArgumentException e1) {
+						JsonResponse.writeFailure(response, HttpServletResponse.SC_BAD_REQUEST, e1.getMessage());
+
+					} catch (Exception e1) {
+						getServletContext().log("추가 알림 조회 중 오류 발생", e1);
+
+						JsonResponse.writeFailure(response, HttpServletResponse.SC_INTERNAL_SERVER_ERROR,
+								"추가 알림을 불러오지 못했습니다.");
+					}
+
+					return;
+				}
 				response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
 			}
 
@@ -132,7 +169,9 @@ public class NotificationController extends HttpServlet {
 					return;
 				}
 
-				Map<String, Object> result = new HashMap<>();
+				// 읽음 처리 후 다음 미읽음 알림까지 다시 조회
+				Map<String, Object> result = service.getHeaderNotifications(loginUserId);
+
 				result.put("success", true);
 				JsonResponse.writeJson(response, result);
 				return;
@@ -142,9 +181,11 @@ public class NotificationController extends HttpServlet {
 			if ("/notifications/read-all".equals(path)) {
 				int updatedCount = service.markAllAsRead(loginUserId);
 
-				Map<String, Object> result = new HashMap<>();
+				Map<String, Object> result = service.getUnreadNotificationPage(loginUserId, null);
+
 				result.put("success", true);
 				result.put("updatedCount", updatedCount);
+
 				JsonResponse.writeJson(response, result);
 				return;
 			}

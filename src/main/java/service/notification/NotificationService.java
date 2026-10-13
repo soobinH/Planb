@@ -1,6 +1,5 @@
 package service.notification;
 
-import java.util.List;
 import java.util.Map;
 
 public interface NotificationService {
@@ -9,7 +8,7 @@ public interface NotificationService {
 	Map<String, Object> getHeaderNotifications(Long recipientUserId) throws Exception;
 
 	// 알림 전체보기: 읽지 않은 알림만 조회
-	List<Map<String, Object>> getUnreadNotifications(Long recipientUserId) throws Exception;
+	Map<String, Object> getUnreadNotificationPage(Long recipientUserId, Long beforeNotificationId) throws Exception;
 
 	// 알림 하나 읽음 처리
 	boolean markAsRead(Long notificationId, Long recipientUserId) throws Exception;

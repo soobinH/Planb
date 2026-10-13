@@ -14,8 +14,7 @@ public interface NotificationDao {
 
 	long countUnreadNotifications(SqlSession sqlSession, Long recipientUserId) throws Exception;
 
-	NotificationDto selectNotification(SqlSession sqlSession, Long notificationId, Long recipientUserId)
-			throws Exception;
+	NotificationDto selectNotification(SqlSession sqlSession, Long notificationId, Long recipientUserId) throws Exception;
 
 	int markNotificationRead(SqlSession sqlSession, Long notificationId, Long recipientUserId) throws Exception;
 
@@ -26,4 +25,6 @@ public interface NotificationDao {
 	int insertLikeNotification(SqlSession sqlSession, NotificationDto notification) throws Exception;
 
 	int insertReportNotificationsForAdmins(SqlSession sqlSession, Long reportId, Long reporterUserId) throws Exception;
+
+	List<NotificationDto> selectUnreadNotificationPage(SqlSession sqlSession, Long recipientUserId, NotificationDto cursor, int limit) throws Exception;
 }

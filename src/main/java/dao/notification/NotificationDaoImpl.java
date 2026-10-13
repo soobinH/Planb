@@ -85,4 +85,18 @@ public class NotificationDaoImpl implements NotificationDao {
 
 		return params;
 	}
+
+	@Override
+	public List<NotificationDto> selectUnreadNotificationPage(SqlSession sqlSession, Long recipientUserId,
+			NotificationDto cursor, int limit) throws Exception {
+
+		Map<String, Object> params = new HashMap<>();
+
+		params.put("recipientUserId", recipientUserId);
+		params.put("cursorId", cursor == null ? null : cursor.getNotificationId());
+		params.put("cursorCreatedAt", cursor == null ? null : cursor.getCreatedAt());
+		params.put("limit", limit);
+
+		return sqlSession.selectList(NAMESPACE + "selectUnreadNotificationPage", params);
+	}
 }

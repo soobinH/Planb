@@ -36,29 +36,6 @@
 
 })();
 
-/* =========================================================
-   FIGMA 통합본 공통 헤더 상호작용
-========================================================= */
-(function () {
-  const toggle = document.querySelector('[data-notification-toggle]');
-  const popover = document.querySelector('[data-notification-popover]');
-  if (toggle && popover) {
-    toggle.addEventListener('click', function (e) {
-      e.stopPropagation();
-      const willOpen = popover.hasAttribute('hidden');
-      if (willOpen) popover.removeAttribute('hidden'); else popover.setAttribute('hidden', '');
-      toggle.setAttribute('aria-expanded', willOpen ? 'true' : 'false');
-      toggle.classList.toggle('active', willOpen);
-    });
-    popover.addEventListener('click', function (e) { e.stopPropagation(); });
-    document.addEventListener('click', function () {
-      popover.setAttribute('hidden', '');
-      toggle.setAttribute('aria-expanded', 'false');
-      toggle.classList.remove('active');
-    });
-  }
-})();
-
 /* ========================================
    HOME - 인기 여행일정 자동 슬라이드
 ======================================== */

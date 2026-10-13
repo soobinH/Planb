@@ -42,9 +42,13 @@ request.setAttribute("activePage", "notifications");
         </div>
 
         <div
-            class="border border-gray-200 rounded-2xl overflow-hidden bg-white"
-            data-notification-list
-            data-read-url="${pageContext.request.contextPath}/notifications/read">
+    		class="border border-gray-200 rounded-2xl overflow-hidden bg-white"
+    		data-notification-list
+    		data-context-path="${pageContext.request.contextPath}"
+    		data-read-url="${pageContext.request.contextPath}/notifications/read"
+    		data-more-url="${pageContext.request.contextPath}/notifications/more"
+    		data-next-cursor="${nextCursor}"
+    		data-has-more="${hasMore}">
 
             <div class="px-5 py-3 border-b bg-gray-50 text-xs font-bold text-gray-500">
                 읽지 않은 알림
@@ -55,9 +59,10 @@ request.setAttribute("activePage", "notifications");
 
             <c:choose>
                 <c:when test="${empty notifications}">
-                    <p class="px-5 py-10 text-center text-sm text-gray-500">
-                        읽지 않은 알림이 없습니다.
-                    </p>
+                    <p data-notification-empty
+    					class="px-5 py-10 text-center text-sm text-gray-500">
+    					읽지 않은 알림이 없습니다.
+					</p>
                 </c:when>
 
                 <c:otherwise>
@@ -107,12 +112,21 @@ request.setAttribute("activePage", "notifications");
                 </c:otherwise>
             </c:choose>
         </div>
+        <div class="flex justify-center mt-6">
+    		<button
+        		type="button"
+        		data-notification-more
+        		class="px-6 py-2.5 rounded-xl border border-gray-200 text-sm font-bold text-gray-600"
+        		style="${hasMore ? '' : 'display:none;'}">
+        		더보기
+    		</button>
+		</div>
     </main>
 
     <jsp:include page="/common/footer.jsp" />
 
     <script
-        src="${pageContext.request.contextPath}/view/assets/js/common/notifications.js?v=1"
+        src="${pageContext.request.contextPath}/view/assets/js/common/notifications.js?v=2"
         defer>
     </script>
 </body>

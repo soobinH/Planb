@@ -419,7 +419,7 @@ if (user != null && user.getProfileImg() != null && !user.getProfileImg().trim()
 </header>
 
 
-<script src="<%=ctx%>/view/assets/js/common/headerCart.js?v=2" defer></script>
+<script src="<%=ctx%>/view/assets/js/common/headerCart.js?v=3" defer></script>
 <script
     src="<%=ctx%>/view/assets/js/common/headerNotifications.js?v=1"
     defer>

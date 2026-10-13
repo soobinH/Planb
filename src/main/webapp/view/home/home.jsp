@@ -17,7 +17,7 @@ request.setAttribute("activePage", "home");
 <link rel="stylesheet"
 	href="${pageContext.request.contextPath}/view/assets/css/auth/home.css">
 <script defer
-	src="${pageContext.request.contextPath}/view/assets/js/auth/home.js"></script>
+	src="${pageContext.request.contextPath}/view/assets/js/auth/home.js?v=2"></script>
 </head>
 <!-- ========================================
      HOME - 커스텀 스크롤바
