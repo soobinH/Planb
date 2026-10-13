@@ -396,7 +396,7 @@ request.setAttribute("activePage", "travel");
                data-write-url="${pageContext.request.contextPath}/itinerary/comment/write"
                data-update-url="${pageContext.request.contextPath}/itinerary/comment/update"
                data-delete-url="${pageContext.request.contextPath}/itinerary/comment/delete">
-               >
+               
 
                <!-- 댓글 입력 -->
                <div class="rounded-2xl border p-4 mb-5"
