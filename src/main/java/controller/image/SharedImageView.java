@@ -15,32 +15,27 @@ import util.image.SharedImageStorage;
 import util.image.SharedImageStorage.Category;
 
 /**
- * DB의 /uploads/{category}/{fileName} 웹 경로를
- * 공용 공유폴더의 실제 이미지 파일로 연결한다.
+ * DB의 /uploads/{category}/{fileName} 경로를 공용 공유폴더 이미지로 연결한다.
  */
 @WebServlet(urlPatterns = {
         "/uploads/itinerary/*",
         "/uploads/profile/*",
         "/uploads/tip/*",
-        "/uploads/mate/*"
+        "/uploads/mate/*",
+        "/uploads/ads/*"
 })
 public class SharedImageView extends HttpServlet {
 
     private static final long serialVersionUID = 1L;
 
     @Override
-    protected void doGet(
-            HttpServletRequest request,
-            HttpServletResponse response)
+    protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
 
         Category category = resolveCategory(request.getServletPath());
         String pathInfo = request.getPathInfo();
 
-        if (category == null
-                || pathInfo == null
-                || pathInfo.length() <= 1) {
-
+        if (category == null || pathInfo == null || pathInfo.length() <= 1) {
             response.sendError(HttpServletResponse.SC_NOT_FOUND);
             return;
         }
@@ -55,16 +50,13 @@ public class SharedImageView extends HttpServlet {
             return;
         }
 
-        if (!Files.exists(imagePath)
-                || !Files.isRegularFile(imagePath)) {
-
+        if (!Files.exists(imagePath) || !Files.isRegularFile(imagePath)) {
             response.sendError(HttpServletResponse.SC_NOT_FOUND);
             return;
         }
 
         String contentType = getServletContext().getMimeType(
-                imagePath.getFileName().toString()
-        );
+                imagePath.getFileName().toString());
 
         if (contentType == null) {
             contentType = Files.probeContentType(imagePath);
@@ -78,6 +70,7 @@ public class SharedImageView extends HttpServlet {
         response.setContentType(contentType);
         response.setContentLengthLong(Files.size(imagePath));
         response.setHeader("Cache-Control", "public, max-age=604800");
+        response.setHeader("X-Content-Type-Options", "nosniff");
 
         try (OutputStream output = response.getOutputStream()) {
             Files.copy(imagePath, output);
@@ -90,7 +83,6 @@ public class SharedImageView extends HttpServlet {
         }
 
         String prefix = SharedImageStorage.WEB_URL_ROOT + "/";
-
         if (!servletPath.startsWith(prefix)) {
             return null;
         }

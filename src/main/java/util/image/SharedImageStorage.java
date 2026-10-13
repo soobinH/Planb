@@ -24,7 +24,8 @@ public final class SharedImageStorage {
         ITINERARY("itinerary"),
         PROFILE("profile"),
         TIP("tip"),
-        MATE("mate");
+        MATE("mate"),
+        ADS("ads");
 
         private final String folderName;
 
