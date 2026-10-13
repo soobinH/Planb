@@ -1,3 +1,4 @@
+
 package controller.profile;
 
 import java.io.IOException;
@@ -29,7 +30,6 @@ public class userProfile extends HttpServlet {
 	private final ProfileFeedService profileFeedService = new ProfileFeedServiceImpl();
 
 	public userProfile() {
-
 		super();
 	}
 
@@ -44,7 +44,6 @@ public class userProfile extends HttpServlet {
 			if (userIdParam == null || userIdParam.trim().isEmpty()) {
 
 				response.sendError(HttpServletResponse.SC_BAD_REQUEST, "회원 번호가 없습니다.");
-
 				return;
 			}
 
@@ -52,22 +51,33 @@ public class userProfile extends HttpServlet {
 
 			UserDto targetUser = userService.getUserById(targetUserId);
 
+			// 존재하지 않는 회원
 			if (targetUser == null) {
 
 				response.sendError(HttpServletResponse.SC_NOT_FOUND, "존재하지 않는 회원입니다.");
+				return;
+			}
+
+			/*
+			 * [추가] 탈퇴회원 확인
+			 *
+			 * 탈퇴회원이면 프로필 정보, 게시글, 좋아요, 북마크 데이터를 조회하지 않고 탈퇴회원 전용 화면으로 이동한다.
+			 */
+			if ("WITHDRAWN".equalsIgnoreCase(targetUser.getStatus())) {
+
+				request.getRequestDispatcher("/view/profile/withdrawnProfile.jsp").forward(request, response);
 
 				return;
 			}
 
+			/*
+			 * 기존 비공개 프로필 처리
+			 */
 			boolean privateProfile = "PRIVATE".equalsIgnoreCase(targetUser.getProfileVisibility());
 
 			request.setAttribute("targetUser", targetUser);
-
 			request.setAttribute("privateProfile", privateProfile);
 
-			/*
-			 * 비공개 프로필은 피드 데이터를 조회하지 않는다.
-			 */
 			if (privateProfile) {
 
 				request.setAttribute("itineraries", new ArrayList<ProfileFeedDto>());
@@ -77,19 +87,14 @@ public class userProfile extends HttpServlet {
 				request.setAttribute("bookmarkedItineraries", new ArrayList<ProfileFeedDto>());
 
 				request.setAttribute("showLikedItinerary", false);
-
 				request.setAttribute("showBookmarkedItinerary", false);
 
 				request.setAttribute("postCount", 0);
-
 				request.setAttribute("likeCount", 0);
-
 				request.setAttribute("bookmarkCount", 0);
 
 				request.setAttribute("userPostsHasMore", false);
-
 				request.setAttribute("userSavedHasMore", false);
-
 				request.setAttribute("userLikedHasMore", false);
 
 				request.getRequestDispatcher("/view/profile/userProfile.jsp").forward(request, response);
@@ -98,7 +103,7 @@ public class userProfile extends HttpServlet {
 			}
 
 			/*
-			 * PUBLIC 프로필의 작성 일정. 다음 페이지 존재 여부를 확인하기 위해 10개 조회.
+			 * PUBLIC 프로필 작성 일정
 			 */
 			List<ProfileFeedDto> itineraryPage = profileFeedService.getPublicItinerariesPage(targetUserId, 0,
 					PAGE_SIZE + 1);
@@ -116,7 +121,6 @@ public class userProfile extends HttpServlet {
 			List<ProfileFeedDto> bookmarkedItineraries = new ArrayList<ProfileFeedDto>();
 
 			boolean userLikedHasMore = false;
-
 			boolean userSavedHasMore = false;
 
 			if (showLikedItinerary) {
@@ -125,7 +129,6 @@ public class userProfile extends HttpServlet {
 						PAGE_SIZE + 1);
 
 				userLikedHasMore = hasMore(likedPage);
-
 				likedItineraries = firstPage(likedPage);
 			}
 
@@ -135,14 +138,13 @@ public class userProfile extends HttpServlet {
 						PAGE_SIZE + 1);
 
 				userSavedHasMore = hasMore(savedPage);
-
 				bookmarkedItineraries = firstPage(savedPage);
 			}
 
 			/*
-			 * 상단 통계는 현재 화면에 로딩된 9개가 아니라 전체 공개 일정 기준으로 계산한다.
+			 * 상단 통계는 전체 공개 일정 기준
 			 *
-			 * 본인이 본인 글에 누른 좋아요/북마크는 제외한다.
+			 * 본인이 본인 글에 누른 좋아요/북마크 제외
 			 */
 			int postCount = profileFeedService.countPublicItineraries(targetUserId);
 
@@ -151,25 +153,18 @@ public class userProfile extends HttpServlet {
 			int bookmarkCount = profileFeedService.getPublicReceivedBookmarkCount(targetUserId);
 
 			request.setAttribute("itineraries", itineraries);
-
 			request.setAttribute("likedItineraries", likedItineraries);
-
 			request.setAttribute("bookmarkedItineraries", bookmarkedItineraries);
 
 			request.setAttribute("showLikedItinerary", showLikedItinerary);
-
 			request.setAttribute("showBookmarkedItinerary", showBookmarkedItinerary);
 
 			request.setAttribute("postCount", postCount);
-
 			request.setAttribute("likeCount", likeCount);
-
 			request.setAttribute("bookmarkCount", bookmarkCount);
 
 			request.setAttribute("userPostsHasMore", userPostsHasMore);
-
 			request.setAttribute("userSavedHasMore", userSavedHasMore);
-
 			request.setAttribute("userLikedHasMore", userLikedHasMore);
 
 			request.getRequestDispatcher("/view/profile/userProfile.jsp").forward(request, response);
@@ -187,14 +182,12 @@ public class userProfile extends HttpServlet {
 	}
 
 	private boolean hasMore(List<ProfileFeedDto> items) {
-
 		return items != null && items.size() > PAGE_SIZE;
 	}
 
 	private List<ProfileFeedDto> firstPage(List<ProfileFeedDto> items) {
 
 		if (items == null || items.isEmpty()) {
-
 			return new ArrayList<ProfileFeedDto>();
 		}
 

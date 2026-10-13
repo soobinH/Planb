@@ -7,7 +7,8 @@
 	<insert id="insertUser" parameterType="user"
 		useGeneratedKeys="true" keyProperty="userId" keyColumn="user_id">
 
-		INSERT INTO TB_USER
+		INSERT INTO
+		TB_USER
 		(
 		login_id,
 		password,
@@ -49,11 +50,13 @@
 		login_id AS loginId,
 		password,
 		name,
-		nickname AS nickname,
+		nickname AS
+		nickname,
 		email,
 		phone,
 		birth_date AS birthDate,
-		profile_img AS profileImg,
+		profile_img AS
+		profileImg,
 		region,
 		postcode,
 		address,
@@ -63,17 +66,21 @@
 		role,
 		status,
 		last_login_at AS lastLoginAt,
-		created_at AS createdAt,
+		created_at AS
+		createdAt,
 		updated_at AS updatedAt,
-		profile_visibility AS profileVisibility,
+		profile_visibility AS
+		profileVisibility,
 		show_liked_itinerary AS showLikedItinerary,
 		show_bookmarked_itinerary AS showBookmarkedItinerary,
-		notify_like AS notifyLike,
+		notify_like AS
+		notifyLike,
 		notify_comment AS notifyComment
 
 		FROM TB_USER
 
-		WHERE login_id = #{loginId}
+		WHERE login_id =
+		#{loginId}
 		AND status = 'ACTIVE'
 
 	</select>
@@ -83,10 +90,12 @@
 		resultType="Long">
 		SELECT user_id FROM TB_USER
 		WHERE login_id = #{loginId}
-		AND name = #{name}
+		AND
+		name = #{name}
 		AND email = #{email}
 		AND phone = #{phone}
-		AND status = 'ACTIVE'
+		AND status =
+		'ACTIVE'
 	</select>
 
 	<!-- 비밀번호 변경 -->
@@ -97,7 +106,8 @@
 		updated_at = NOW()
 
 		WHERE user_id = #{userId}
-		AND status = 'ACTIVE'
+		AND
+		status = 'ACTIVE'
 	</update>
 
 	<!-- user id를 가져와서 입력된 password와 똑같은지 체크하기 위한 함수(현재 회원 탈퇴 시 이용됨) -->
@@ -107,7 +117,8 @@
 		SELECT password
 		FROM TB_USER
 		WHERE user_id = #{value}
-		AND status='ACTIVE'
+		AND
+		status='ACTIVE'
 
 	</select>
 
@@ -117,7 +128,8 @@
 		UPDATE TB_USER
 
 		SET
-		status = 'WITHDRAWN',
+		status
+		= 'WITHDRAWN',
 
 		login_id =
 		CONCAT(
@@ -143,19 +155,21 @@
 		DATE_FORMAT(NOW(), '%Y%m%d%H%i%s'),
 		'@deleted.local'
 		),
-		
+
 		provider_user_id =
 		CONCAT(
 		'withdrawn_',
 		user_id,
 		'_',
-		DATE_FORMAT(NOW(), '%Y%m%d%H%i%s'),
+		DATE_FORMAT(NOW(),
+		'%Y%m%d%H%i%s'),
 		'@deleted.local'
 		),
 
 		updated_at = NOW()
 
-		WHERE user_id = #{value}
+		WHERE user_id =
+		#{value}
 		AND status = 'ACTIVE'
 
 	</update>
@@ -215,7 +229,8 @@
 		AS birthDate,
 
 		profile_img
-		AS profileImg,
+		AS
+		profileImg,
 
 		region,
 
@@ -245,7 +260,8 @@
 		AND provider_user_id =
 		#{providerUserId}
 
-		AND status =
+		AND
+		status =
 		'ACTIVE'
 
 	</select>
@@ -295,36 +311,42 @@
 		UPDATE TB_USER
 
 		SET
-		name = #{name},
+		name =
+		#{name},
 
 		nickname = #{nickName},
 
 		phone = #{phone},
 
-		birth_date = #{birthDate},
+		birth_date =
+		#{birthDate},
 
 		region = #{region},
 
 		postcode = #{postcode},
 
-		address = #{address},
+		address =
+		#{address},
 
 		address_detail = #{addressDetail},
 
 		bio = #{bio},
 
-		profile_img = #{profileImg},
+		profile_img
+		= #{profileImg},
 
 		updated_at = CURRENT_TIMESTAMP
 
-		WHERE user_id = #{userId}
+		WHERE user_id =
+		#{userId}
 
 		AND status = 'ACTIVE'
 
 	</update>
-	
+
+
 	<select id="selectUserById" parameterType="long"
-	resultType="dto.member.UserDto">
+		resultType="dto.member.UserDto">
 
 		SELECT
 		user_id AS userId,
@@ -335,58 +357,52 @@
 		bio,
 		profile_visibility AS profileVisibility,
 		show_liked_itinerary AS showLikedItinerary,
-		show_bookmarked_itinerary AS showBookmarkedItinerary
-	
+		show_bookmarked_itinerary AS showBookmarkedItinerary,
+		status AS status
+
 		FROM TB_USER
-	
+
 		WHERE user_id = #{value}
-		AND status = 'ACTIVE'
-	
+
 	</select>
-	
-	<!-- =========================================
-     프로필 공개 범위
-	========================================== -->
-	<update id="updateProfileVisibility" parameterType = "map">
-		update TB_USER
+
+
+	<!-- ========================================= 프로필 공개 범위 ========================================== -->
+	<update id="updateProfileVisibility" parameterType="map">
+		update
+		TB_USER
 		set profile_visibility = #{profileVisibility},
-			updated_at = CURRENT_TIMESTAMP
+		updated_at = CURRENT_TIMESTAMP
 		where user_id=#{userId}
-	
+
 	</update>
-	
-	<!-- =========================================
-	     좋아요한 일정 공개 여부
-	========================================== -->
-	
-	<update id="updateShowLikedItinerary"
-	        parameterType="map">
-	
-	    UPDATE TB_USER
-	
-	    SET show_liked_itinerary = #{show},
-	        updated_at = CURRENT_TIMESTAMP
-	
-	    WHERE user_id = #{userId}
-	
+
+	<!-- ========================================= 좋아요한 일정 공개 여부 ========================================== -->
+
+	<update id="updateShowLikedItinerary" parameterType="map">
+
+		UPDATE TB_USER
+
+		SET show_liked_itinerary = #{show},
+		updated_at = CURRENT_TIMESTAMP
+
+		WHERE user_id = #{userId}
+
 	</update>
-	
-	
-	<!-- =========================================
-	     북마크한 일정 공개 여부
-	========================================== -->
-	
-	<update id="updateShowBookmarkedItinerary"
-	        parameterType="map">
-	
-	    UPDATE TB_USER
-	
-	    SET show_bookmarked_itinerary = #{show},
-	        updated_at = CURRENT_TIMESTAMP
-	
-	    WHERE user_id = #{userId}
-	
+
+
+	<!-- ========================================= 북마크한 일정 공개 여부 ========================================== -->
+
+	<update id="updateShowBookmarkedItinerary" parameterType="map">
+
+		UPDATE TB_USER
+
+		SET show_bookmarked_itinerary = #{show},
+		updated_at = CURRENT_TIMESTAMP
+
+		WHERE user_id = #{userId}
+
 	</update>
-	
+
 
 </mapper>
