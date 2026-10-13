@@ -285,77 +285,45 @@ if (user != null && user.getProfileImg() != null && !user.getProfileImg().trim()
                  알림
             ========================== -->
 
-			<div class="site-badge-wrap site-notification-wrap">
-
+			<div
+    			class="site-badge-wrap site-notification-wrap"
+    			data-notification-header
+    			data-context-path="<%=ctx%>"
+    			data-header-url="<%=ctx%>/notifications/header"
+    			data-read-url="<%=ctx%>/notifications/read">
 
 				<button type="button" class="site-icon-btn" data-notification-toggle
 					title="알림" aria-label="알림" aria-expanded="false">
 
+					<!-- 기존 알림 SVG는 그대로 둬 -->
 					<svg width="18" height="18" viewBox="0 0 24 24" fill="none"
 						stroke="currentColor" stroke-width="2">
-
-                        <path stroke-linecap="round"
-							stroke-linejoin="round"
+            			<path stroke-linecap="round" stroke-linejoin="round"
 							d="M18 8a6 6 0 10-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9" />
-
-                        <path stroke-linecap="round"
-							stroke-linejoin="round" d="M10 21h4" />
-
-                    </svg>
-
+            			<path stroke-linecap="round" stroke-linejoin="round"
+							d="M10 21h4" />
+        			</svg>
 				</button>
 
-
 				<%
 				if (loggedIn) {
 				%>
-
-				<span class="site-count-badge"> 2 </span>
-
-				<%
-				}
-				%>
-
-
-				<%
-				if (loggedIn) {
-				%>
+				<span class="site-count-badge" data-notification-count hidden></span>
 
 				<div class="site-notification-popover" data-notification-popover
 					hidden>
 
-
 					<div class="site-notification-head">
-
-						<strong> 알림 </strong> <a
-							href="<%=ctx%>/view/notification/notifications.jsp"> 전체 보기 </a>
-
+						<strong>알림</strong> <a href="<%=ctx%>/notifications">전체 보기</a>
 					</div>
 
-
-					<a class="site-notification-item unread"
-						href="<%=ctx%>/view/notification/notifications.jsp"> <span
-						class="site-notification-symbol comment"> 💬 </span> <span>
-
-							<strong> 새 댓글 </strong> <small> 민지님이 내 게시글에 댓글을 남겼어요. </small>
-
-					</span>
-
-					</a> <a class="site-notification-item unread"
-						href="<%=ctx%>/view/notification/notifications.jsp"> <span
-						class="site-notification-symbol like"> ♥ </span> <span> <strong>
-								새 좋아요 </strong> <small> 도윤님이 내 여행 일정에 좋아요를 눌렀어요. </small>
-
-					</span>
-
-					</a>
-
+					<div data-notification-items>
+						<p class="site-notification-empty">알림을 불러오는 중입니다.</p>
+					</div>
 				</div>
-
 				<%
 				}
 				%>
-
 			</div>
 
 
@@ -399,13 +367,11 @@ if (user != null && user.getProfileImg() != null && !user.getProfileImg().trim()
 
 				<span class="site-profile-avatar site-profile-avatar--img"> <%
  if (!profileImg.isEmpty()) {
- %> <img
-					src="<%=ctx%>/uploads/profile/<%=profileImg%>" alt="<%=nickname%>">
-
-					<%
-					} else {
-					%> <!-- 프로필 이미지 없는 경우 --> <svg width="16"
-						height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+ %> <img src="<%=ctx%>/uploads/profile/<%=profileImg%>"
+					alt="<%=nickname%>"> <%
+ } else {
+ %> <!-- 프로필 이미지 없는 경우 --> <svg width="16" height="16"
+						viewBox="0 0 24 24" fill="none" stroke="currentColor"
 						stroke-width="2">
 
                         <circle cx="12" cy="8" r="4" />
@@ -454,6 +420,10 @@ if (user != null && user.getProfileImg() != null && !user.getProfileImg().trim()
 
 
 <script src="<%=ctx%>/view/assets/js/common/headerCart.js?v=2" defer></script>
+<script
+    src="<%=ctx%>/view/assets/js/common/headerNotifications.js?v=1"
+    defer>
+</script>
 <%
 if (isAdminHeader) {
 %>
@@ -495,7 +465,8 @@ document.addEventListener(
 
                 const response =
                     await fetch(
-                        "<%=ctx%>/admin/header-badges", {
+                        "<%=ctx%>
+	/admin/header-badges", {
 									method : "GET",
 
 									headers : {

@@ -28,9 +28,11 @@
 		<include refid="notificationColumns" />
 		FROM tb_notification n
 		LEFT JOIN tb_user u
-		ON u.user_id = n.sender_user_id
+		ON u.user_id =
+		n.sender_user_id
 		WHERE n.recipient_user_id = #{value}
-		ORDER BY n.created_at DESC, n.notification_id DESC
+		ORDER BY
+		n.created_at DESC, n.notification_id DESC
 		LIMIT 3
 
 	</select>
@@ -43,7 +45,8 @@
 		<include refid="notificationColumns" />
 		FROM tb_notification n
 		LEFT JOIN tb_user u
-		ON u.user_id = n.sender_user_id
+		ON u.user_id =
+		n.sender_user_id
 		WHERE n.recipient_user_id = #{value}
 		AND n.is_read = 0
 		ORDER BY n.created_at DESC, n.notification_id DESC
@@ -55,7 +58,8 @@
 		parameterType="java.lang.Long" resultType="long">
 
 		SELECT COUNT(*)
-		FROM tb_notification
+		FROM
+		tb_notification
 		WHERE recipient_user_id = #{value}
 		AND is_read = 0
 
@@ -69,20 +73,25 @@
 		<include refid="notificationColumns" />
 		FROM tb_notification n
 		LEFT JOIN tb_user u
-		ON u.user_id = n.sender_user_id
+		ON u.user_id =
+		n.sender_user_id
 		WHERE n.notification_id = #{notificationId}
-		AND n.recipient_user_id = #{recipientUserId}
+		AND
+		n.recipient_user_id = #{recipientUserId}
 
 	</select>
 
 	<!-- 알림 한 건 읽음 처리 -->
 	<update id="markNotificationRead" parameterType="map">
 
-		UPDATE tb_notification
+		UPDATE
+		tb_notification
 		SET is_read = 1,
 		read_at = CURRENT_TIMESTAMP
-		WHERE notification_id = #{notificationId}
-		AND recipient_user_id = #{recipientUserId}
+		WHERE
+		notification_id = #{notificationId}
+		AND recipient_user_id =
+		#{recipientUserId}
 		AND is_read = 0
 
 	</update>
@@ -93,10 +102,91 @@
 
 		UPDATE tb_notification
 		SET is_read = 1,
-		read_at = CURRENT_TIMESTAMP
+		read_at =
+		CURRENT_TIMESTAMP
 		WHERE recipient_user_id = #{value}
 		AND is_read = 0
 
 	</update>
+
+	<insert id="insertCommentNotification"
+		parameterType="notification">
+		INSERT IGNORE INTO TB_NOTIFICATION (
+		recipient_user_id,
+		sender_user_id,
+		notification_type,
+		target_type,
+		target_id,
+		source_comment_id
+		)
+		SELECT
+		recipient.user_id,
+		#{senderUserId},
+		#{notificationType},
+		#{targetType},
+		#{targetId},
+		#{sourceCommentId}
+		FROM TB_USER recipient
+		WHERE recipient.user_id = #{recipientUserId}
+		AND recipient.notify_comment = 1
+		AND recipient.user_id != #{senderUserId}
+	</insert>
+
+	<insert id="insertLikeNotification" parameterType="notification">
+		INSERT INTO TB_NOTIFICATION (
+		recipient_user_id,
+		sender_user_id,
+		notification_type,
+		target_type,
+		target_id
+		)
+		SELECT
+		recipient.user_id,
+		#{senderUserId},
+		#{notificationType},
+		#{targetType},
+		#{targetId}
+		FROM TB_USER recipient
+		WHERE recipient.user_id = #{recipientUserId}
+		AND recipient.notify_like = 1
+		AND recipient.user_id != #{senderUserId}
+		AND NOT EXISTS (
+		SELECT 1
+		FROM TB_NOTIFICATION existing
+		WHERE existing.recipient_user_id = recipient.user_id
+		AND existing.sender_user_id = #{senderUserId}
+		AND existing.notification_type = #{notificationType}
+		AND existing.target_type = #{targetType}
+		AND existing.target_id = #{targetId}
+		)
+	</insert>
+
+	<insert id="insertReportNotificationsForAdmins"
+		parameterType="map">
+		INSERT INTO TB_NOTIFICATION (
+		recipient_user_id,
+		sender_user_id,
+		notification_type,
+		target_type,
+		target_id
+		)
+		SELECT
+		admin.user_id,
+		#{reporterUserId},
+		'REPORT_RECEIVED',
+		'REPORT',
+		#{reportId}
+		FROM TB_USER admin
+		WHERE admin.role = 'ADMIN'
+		AND admin.status = 'ACTIVE'
+		AND NOT EXISTS (
+		SELECT 1
+		FROM TB_NOTIFICATION existing
+		WHERE existing.recipient_user_id = admin.user_id
+		AND existing.notification_type = 'REPORT_RECEIVED'
+		AND existing.target_type = 'REPORT'
+		AND existing.target_id = #{reportId}
+		)
+	</insert>
 
 </mapper>

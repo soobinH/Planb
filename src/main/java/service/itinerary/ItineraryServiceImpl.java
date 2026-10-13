@@ -1,62 +1,39 @@
 package service.itinerary;
 
 import java.math.BigDecimal;
-
 import java.util.HashMap;
-
 import java.util.HashSet;
-
 import java.util.List;
-
 import java.util.Map;
-
 import java.util.Set;
 
 import org.apache.ibatis.session.SqlSession;
 
 import config.MybatisSqlSessionFactory;
-
 import dao.itinerary.ItineraryBlockDao;
-
 import dao.itinerary.ItineraryBlockDaoImpl;
-
 import dao.itinerary.ItineraryBlockImageDao;
-
 import dao.itinerary.ItineraryBlockImageDaoImpl;
-
 import dao.itinerary.ItineraryBookmarkDao;
-
 import dao.itinerary.ItineraryBookmarkDaoImpl;
-
 import dao.itinerary.ItineraryCommentDao;
-
 import dao.itinerary.ItineraryCommentDaoImpl;
-
 import dao.itinerary.ItineraryDao;
-
 import dao.itinerary.ItineraryDaoImpl;
-
 import dao.itinerary.ItineraryDayDao;
-
 import dao.itinerary.ItineraryDayDaoImpl;
-
 import dao.itinerary.ItineraryLikeDao;
-
 import dao.itinerary.ItineraryLikeDaoImpl;
-
+import dao.notification.NotificationDao;
+import dao.notification.NotificationDaoImpl;
 import dto.itinerary.ItineraryBlockDto;
-
 import dto.itinerary.ItineraryBlockImageDto;
-
 import dto.itinerary.ItineraryBookmarkDto;
-
 import dto.itinerary.ItineraryCommentDto;
-
 import dto.itinerary.ItineraryDayDto;
-
 import dto.itinerary.ItineraryDto;
-
 import dto.itinerary.ItineraryLikeDto;
+import dto.notification.NotificationDto;
 
 public class ItineraryServiceImpl implements ItineraryService {
 
@@ -74,6 +51,8 @@ public class ItineraryServiceImpl implements ItineraryService {
 
 	private ItineraryCommentDao itineraryCommentDao;
 
+	private NotificationDao notificationDao;
+
 	public ItineraryServiceImpl() {
 
 		itineraryDao = new ItineraryDaoImpl();
@@ -90,6 +69,7 @@ public class ItineraryServiceImpl implements ItineraryService {
 
 		itineraryCommentDao = new ItineraryCommentDaoImpl();
 
+		notificationDao = new NotificationDaoImpl();
 	}
 
 	@Override
@@ -233,7 +213,7 @@ public class ItineraryServiceImpl implements ItineraryService {
 		return itineraryDao.countScheduleList(params);
 
 	}
-	
+
 	// 통합검색용
 	@Override
 	public List<ItineraryDto> getSearchScheduleList(Long loginUserId, String keyword, int limit) throws Exception {
@@ -426,6 +406,18 @@ public class ItineraryServiceImpl implements ItineraryService {
 
 				}
 
+				if (!alreadyLiked) {
+					NotificationDto notification = new NotificationDto();
+
+					notification.setRecipientUserId(itinerary.getUserId());
+					notification.setSenderUserId(loginUserId);
+					notification.setNotificationType("ITINERARY_LIKE");
+					notification.setTargetType("ITINERARY");
+					notification.setTargetId(itineraryId);
+
+					notificationDao.insertLikeNotification(sqlSession, notification);
+				}
+
 				int likeCount = itineraryLikeDao.countItineraryLikes(sqlSession, itineraryId);
 
 				Map<String, Object> result = new HashMap<>();
@@ -553,6 +545,23 @@ public class ItineraryServiceImpl implements ItineraryService {
 					throw new IllegalStateException("댓글 등록에 실패했습니다.");
 
 				}
+				
+				Long commentId = comment.getCommentId();
+
+				if (commentId == null) {
+				    throw new IllegalStateException("댓글 번호를 가져오지 못했습니다.");
+				}
+
+				NotificationDto notification = new NotificationDto();
+
+				notification.setRecipientUserId(itinerary.getUserId());
+				notification.setSenderUserId(loginUserId);
+				notification.setNotificationType("COMMENT");
+				notification.setTargetType("ITINERARY");
+				notification.setTargetId(itineraryId);
+				notification.setSourceCommentId(commentId);
+
+				notificationDao.insertCommentNotification(sqlSession, notification);
 
 				// 등록 후 최신 댓글 목록과 개수 조회
 
@@ -661,73 +670,75 @@ public class ItineraryServiceImpl implements ItineraryService {
 		}
 
 	}
-	
+
 	@Override
-	public Map<String, Object> updateItineraryComment(Long itineraryId, Long commentId, Long loginUserId, String content) throws Exception {
+	public Map<String, Object> updateItineraryComment(Long itineraryId, Long commentId, Long loginUserId,
+			String content) throws Exception {
 
-	    if (loginUserId == null || loginUserId <= 0) {
-	        throw new SecurityException("로그인 후 이용할 수 있습니다.");
-	    }
+		if (loginUserId == null || loginUserId <= 0) {
+			throw new SecurityException("로그인 후 이용할 수 있습니다.");
+		}
 
-	    if (itineraryId == null || itineraryId <= 0) {
-	        throw new IllegalArgumentException("올바른 일정 번호가 아닙니다.");
-	    }
+		if (itineraryId == null || itineraryId <= 0) {
+			throw new IllegalArgumentException("올바른 일정 번호가 아닙니다.");
+		}
 
-	    if (commentId == null || commentId <= 0) {
-	        throw new IllegalArgumentException("올바른 댓글 번호가 아닙니다.");
-	    }
+		if (commentId == null || commentId <= 0) {
+			throw new IllegalArgumentException("올바른 댓글 번호가 아닙니다.");
+		}
 
-	    if (content == null || content.strip().isEmpty()) {
-	        throw new IllegalArgumentException("댓글 내용을 입력해주세요.");
-	    }
+		if (content == null || content.strip().isEmpty()) {
+			throw new IllegalArgumentException("댓글 내용을 입력해주세요.");
+		}
 
-	    content = content.strip();
+		content = content.strip();
 
-	    if (content.codePointCount(0, content.length()) > 1000) {
-	        throw new IllegalArgumentException("댓글은 1,000자까지 입력할 수 있습니다.");
-	    }
+		if (content.codePointCount(0, content.length()) > 1000) {
+			throw new IllegalArgumentException("댓글은 1,000자까지 입력할 수 있습니다.");
+		}
 
-	    try (SqlSession sqlSession = MybatisSqlSessionFactory.getSqlSessionFactory().openSession(false)) {
+		try (SqlSession sqlSession = MybatisSqlSessionFactory.getSqlSessionFactory().openSession(false)) {
 
-	        try {
-	        	ItineraryDto itinerary = itineraryBookmarkDao.selectBookmarkTargetForUpdate(sqlSession,itineraryId);
+			try {
+				ItineraryDto itinerary = itineraryBookmarkDao.selectBookmarkTargetForUpdate(sqlSession, itineraryId);
 
-	            // 일정 상태와 공개 여부·작성자 접근 검사
-	            checkCommentAccess(itinerary, loginUserId);
+				// 일정 상태와 공개 여부·작성자 접근 검사
+				checkCommentAccess(itinerary, loginUserId);
 
-	            ItineraryCommentDto comment = new ItineraryCommentDto();
+				ItineraryCommentDto comment = new ItineraryCommentDto();
 
-	            comment.setItineraryId(itineraryId);
-	            comment.setCommentId(commentId);
-	            comment.setUserId(loginUserId);
-	            comment.setContent(content);
+				comment.setItineraryId(itineraryId);
+				comment.setCommentId(commentId);
+				comment.setUserId(loginUserId);
+				comment.setContent(content);
 
-	            // SQL의 user_id 조건으로 본인 댓글만 수정
-	            int updatedRows = itineraryCommentDao.updateItineraryComment(sqlSession, comment);
+				// SQL의 user_id 조건으로 본인 댓글만 수정
+				int updatedRows = itineraryCommentDao.updateItineraryComment(sqlSession, comment);
 
-	            if (updatedRows != 1) {
-	                throw new IllegalArgumentException("수정할 수 있는 댓글이 없습니다.");
-	            }
+				if (updatedRows != 1) {
+					throw new IllegalArgumentException("수정할 수 있는 댓글이 없습니다.");
+				}
 
-	            // 기존 등록·삭제 응답과 동일한 구조
-	            List<ItineraryCommentDto> comments = itineraryCommentDao.selectItineraryComments(sqlSession, itineraryId);
+				// 기존 등록·삭제 응답과 동일한 구조
+				List<ItineraryCommentDto> comments = itineraryCommentDao.selectItineraryComments(sqlSession,
+						itineraryId);
 
-	            int commentCount = itineraryCommentDao.countItineraryComments(sqlSession, itineraryId);
+				int commentCount = itineraryCommentDao.countItineraryComments(sqlSession, itineraryId);
 
-	            Map<String, Object> result = new HashMap<>();
+				Map<String, Object> result = new HashMap<>();
 
-	            result.put("comments", comments);
-	            result.put("commentCount", commentCount);
+				result.put("comments", comments);
+				result.put("commentCount", commentCount);
 
-	            sqlSession.commit();
+				sqlSession.commit();
 
-	            return result;
+				return result;
 
-	        } catch (Exception e) {
-	            sqlSession.rollback();
-	            throw e;
-	        }
-	    }
+			} catch (Exception e) {
+				sqlSession.rollback();
+				throw e;
+			}
+		}
 	}
 
 	///////////////////////////////////////////////////////////////////////////////////////////////
