@@ -186,15 +186,6 @@ if (user != null && user.getProfileImg() != null && !user.getProfileImg().trim()
 					stroke="white" 
 					stroke-width="2" 
 					aria-hidden="true">
-=======
-			<input type="text" name="q" value="${param.q}"
-				placeholder="여행지, 일정, 키워드로 검색해보세요." autocomplete="off">
-
-			<button type="submit" class="header-search-button" aria-label="검색">
-
-				<svg width="17" height="17" viewBox="0 0 24 24" fill="none"
-					stroke="white" stroke-width="2" aria-hidden="true">
->>>>>>> branch 'origin' of https://github.com/yoooong96/Planb.git
 		
 					<circle cx="11" cy="11" r="8" />
 					<path d="m21 21-4.35-4.35" />
