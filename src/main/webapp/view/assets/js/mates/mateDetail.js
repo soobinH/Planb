@@ -722,3 +722,240 @@ if (mateRecruitStatusButton) {
 	});
 
 }
+
+/* =========================================================
+ * 여행 메이트 신고
+ * ========================================================= */
+(function () {
+
+	const reportButton = document.getElementById("mateReportButton");
+	const reportModal = document.getElementById("mateReportModal");
+	const reportForm = document.getElementById("mateReportForm");
+	const reportFormView = document.getElementById("mateReportFormView");
+	const reportSuccessView = document.getElementById("mateReportSuccessView");
+	const reportSubmit = document.getElementById("mateReportSubmit");
+	const reportDetail = document.getElementById("mateReportDetail");
+	const reportDetailCount = document.getElementById("mateReportDetailCount");
+	const reportError = document.getElementById("mateReportError");
+	const reportToast = document.getElementById("mateReportToast");
+	const closeButtons = document.querySelectorAll("[data-mate-report-close]");
+
+	if (!reportButton || !reportModal || !reportForm) {
+		return;
+	}
+
+	let toastTimer = null;
+
+	/* ================================
+	 * 신고 버튼
+	 * ================================ */
+	reportButton.addEventListener("click", function () {
+
+		const loggedIn = reportButton.dataset.loggedIn === "true";
+		const isOwner = reportButton.dataset.isOwner === "true";
+		const loginUrl = reportButton.dataset.loginUrl;
+
+		if (!loggedIn) {
+			window.location.href = loginUrl;
+			return;
+		}
+
+		if (isOwner) {
+			showReportToast();
+			return;
+		}
+
+		resetReportModal();
+
+		reportModal.showModal();
+		document.body.style.overflow = "hidden";
+	});
+
+	/* ================================
+	 * 신고 사유 선택
+	 * ================================ */
+	reportForm.addEventListener("change", function (event) {
+
+		if (event.target.name !== "reasonId") {
+			return;
+		}
+
+		reportSubmit.disabled = false;
+		hideReportError();
+	});
+
+	/* ================================
+	 * 상세 내용 글자 수
+	 * ================================ */
+	if (reportDetail) {
+		reportDetail.addEventListener("input", function () {
+
+			if (reportDetail.value.length > 300) {
+				reportDetail.value = reportDetail.value.substring(0, 300);
+			}
+
+			reportDetailCount.textContent = reportDetail.value.length + " / 300";
+		});
+	}
+
+	/* ================================
+	 * 신고 전송
+	 * ================================ */
+	reportForm.addEventListener("submit", function (event) {
+		event.preventDefault();
+
+		const selectedReason = reportForm.querySelector('input[name="reasonId"]:checked');
+
+		if (!selectedReason) {
+			showReportError("신고 사유를 선택해주세요.");
+			return;
+		}
+
+		reportSubmit.disabled = true;
+
+		const originalText = reportSubmit.textContent;
+		reportSubmit.textContent = "접수 중...";
+
+		const formData = new URLSearchParams(new FormData(reportForm));
+
+		fetch(reportForm.action, {
+			method: "POST",
+			headers: {
+				"Content-Type": "application/x-www-form-urlencoded;charset=UTF-8"
+			},
+			body: formData.toString()
+		})
+			.then(function (response) {
+				return response.json().then(function (data) {
+					return {
+						ok: response.ok,
+						status: response.status,
+						data: data
+					};
+				});
+			})
+			.then(function (result) {
+
+				if (!result.ok || !result.data.success) {
+					throw new Error(result.data.message || "신고 접수에 실패했습니다.");
+				}
+
+				reportFormView.hidden = true;
+				reportSuccessView.hidden = false;
+
+			})
+			.catch(function (error) {
+				showReportError(error.message || "신고 접수 중 오류가 발생했습니다.");
+			})
+			.finally(function () {
+				reportSubmit.textContent = originalText;
+
+				const selectedReasonAfterRequest = reportForm.querySelector('input[name="reasonId"]:checked');
+				reportSubmit.disabled = !selectedReasonAfterRequest;
+			});
+	});
+
+	/* ================================
+	 * 닫기 버튼
+	 * ================================ */
+	closeButtons.forEach(function (button) {
+		button.addEventListener("click", function () {
+			closeReportModal();
+		});
+	});
+
+	/* ================================
+	 * ESC로 닫기
+	 * ================================ */
+	reportModal.addEventListener("cancel", function (event) {
+		event.preventDefault();
+		closeReportModal();
+	});
+
+	/* ================================
+	 * 바깥 영역 클릭
+	 * ================================ */
+	reportModal.addEventListener("click", function (event) {
+
+		if (event.target === reportModal) {
+			closeReportModal();
+		}
+	});
+
+	/* ================================
+	 * 신고 모달 초기화
+	 * ================================ */
+	function resetReportModal() {
+
+		reportForm.reset();
+
+		reportFormView.hidden = false;
+		reportSuccessView.hidden = true;
+
+		reportSubmit.disabled = true;
+
+		if (reportDetailCount) {
+			reportDetailCount.textContent = "0 / 300";
+		}
+
+		hideReportError();
+	}
+
+	/* ================================
+	 * 신고 모달 닫기
+	 * ================================ */
+	function closeReportModal() {
+
+		if (reportModal.open) {
+			reportModal.close();
+		}
+
+		document.body.style.overflow = "";
+
+		resetReportModal();
+	}
+
+	/* ================================
+	 * 에러 표시
+	 * ================================ */
+	function showReportError(message) {
+
+		if (!reportError) {
+			return;
+		}
+
+		reportError.textContent = message;
+		reportError.hidden = false;
+	}
+
+	function hideReportError() {
+
+		if (!reportError) {
+			return;
+		}
+
+		reportError.textContent = "";
+		reportError.hidden = true;
+	}
+
+	/* ================================
+	 * 본인 게시글 신고 토스트
+	 * ================================ */
+	function showReportToast() {
+
+		if (!reportToast) {
+			return;
+		}
+
+		if (toastTimer) {
+			clearTimeout(toastTimer);
+		}
+
+		reportToast.classList.add("show");
+
+		toastTimer = setTimeout(function () {
+			reportToast.classList.remove("show");
+		}, 2500);
+	}
+
+})();

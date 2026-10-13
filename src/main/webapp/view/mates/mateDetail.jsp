@@ -344,6 +344,32 @@
 							
 								</div>
 							
+								<!-- 신고 -->
+								<button
+									type="button"
+									id="mateReportButton"
+									class="mate-report-btn"
+									data-logged-in="${not empty sessionScope.user}"
+									data-is-owner="${not empty sessionScope.user && sessionScope.user.userId eq mate.userId}"
+									data-login-url="${pageContext.request.contextPath}/auth/login"
+									aria-haspopup="dialog"
+									aria-controls="mateReportModal">
+	
+									<svg
+										viewBox="0 0 24 24"
+										fill="none"
+										stroke="currentColor"
+										stroke-width="2"
+										aria-hidden="true">
+	
+										<path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z" />
+										<path d="M4 22v-7" />
+	
+									</svg>
+	
+									<span>신고</span>
+	
+								</button>
 							
 								<!-- 작성자만 수정 / 삭제 -->
 								<c:if test="${not empty sessionScope.user && sessionScope.user.userId eq mate.userId}">
@@ -578,6 +604,183 @@
 			</div>
 		</div>
 	</div>
+		<!-- ================================
+	     여행 메이트 신고 팝업
+	================================ -->
+	<dialog
+		id="mateReportModal"
+		class="mate-report-modal"
+		aria-labelledby="mateReportTitle">
+
+		<!-- 신고 입력 화면 -->
+		<div id="mateReportFormView">
+
+			<div class="mate-report-header">
+
+				<div>
+					<h2 id="mateReportTitle">
+						신고하기
+					</h2>
+
+					<p>
+						허위신고 시 불이익이 발생할 수 있습니다.
+					</p>
+				</div>
+
+				<button
+					type="button"
+					class="mate-report-close"
+					data-mate-report-close
+					aria-label="신고 창 닫기">
+					&times;
+				</button>
+
+			</div>
+
+			<form
+				id="mateReportForm"
+				class="mate-report-form"
+				action="${pageContext.request.contextPath}/mate/report"
+				method="post">
+
+				<input
+					type="hidden"
+					name="mateId"
+					value="${mate.mateId}">
+
+				<fieldset class="mate-report-reasons">
+
+					<legend>
+						신고 사유
+						<span class="mate-report-required">*</span>
+					</legend>
+
+					<c:choose>
+
+						<c:when test="${not empty reportReasons}">
+
+							<c:forEach var="reason" items="${reportReasons}">
+
+								<label class="mate-report-reason">
+
+									<input
+										type="radio"
+										name="reasonId"
+										value="${reason.reasonId}">
+
+									<span>
+										<c:out value="${reason.reasonName}" />
+									</span>
+
+								</label>
+
+							</c:forEach>
+
+						</c:when>
+
+						<c:otherwise>
+
+							<p class="mate-report-empty">
+								현재 선택할 수 있는 신고 사유가 없습니다.
+							</p>
+
+						</c:otherwise>
+
+					</c:choose>
+
+				</fieldset>
+
+				<div class="mate-report-detail">
+
+					<label for="mateReportDetail">
+						상세 내용
+						<span>(선택)</span>
+					</label>
+
+					<textarea
+						id="mateReportDetail"
+						name="detail"
+						maxlength="300"
+						placeholder="신고 내용을 입력해주세요."></textarea>
+
+					<p class="mate-report-counter">
+						<span id="mateReportDetailCount">0 / 300</span>
+					</p>
+
+				</div>
+
+				<p
+					id="mateReportError"
+					class="mate-report-error"
+					role="alert"
+					hidden>
+				</p>
+
+				<div class="mate-report-actions">
+
+					<button
+						type="button"
+						class="mate-report-cancel"
+						data-mate-report-close>
+						취소
+					</button>
+
+					<button
+						type="submit"
+						id="mateReportSubmit"
+						class="mate-report-submit"
+						disabled>
+						신고하기
+					</button>
+
+				</div>
+
+			</form>
+
+		</div>
+
+		<!-- 신고 접수 성공 화면 -->
+		<div
+			id="mateReportSuccessView"
+			class="mate-report-success"
+			hidden>
+
+			<div class="mate-report-success-icon">
+				✓
+			</div>
+
+			<h3>
+				신고가 접수되었습니다
+			</h3>
+
+			<p>
+				검토 후 적절한 조치를 취하겠습니다.
+				<br>
+				신고해 주셔서 감사합니다.
+			</p>
+
+			<button
+				type="button"
+				class="mate-report-confirm"
+				data-mate-report-close>
+				확인
+			</button>
+
+		</div>
+
+	</dialog>
+
+	<!-- 본인 게시글 신고 Toast -->
+	<div
+		id="mateReportToast"
+		class="mate-report-toast"
+		role="status"
+		aria-live="polite">
+		본인이 작성한 게시글은 신고할 수 없습니다.
+	</div>
+
+	<jsp:include page="/common/footer.jsp" />
+
 	<jsp:include page="/common/footer.jsp" />
 </body>
 </html>

@@ -24,6 +24,9 @@ import service.community.MateMediaServiceImpl;
 import service.community.MateService;
 import service.community.MateServiceImpl;
 
+import service.report.ReportService;
+import service.report.ReportServiceImpl;
+
 @WebServlet("/mateDetail")
 public class MateDetail extends HttpServlet {
 	private static final long serialVersionUID = 1L;
@@ -31,6 +34,7 @@ public class MateDetail extends HttpServlet {
 	private MateMediaService mateMediaService = new MateMediaServiceImpl();
 	private MateLikeService mateLikeService = new MateLikeServiceImpl();
 	private MateCommentService mateCommentService = new MateCommentServiceImpl();
+	private ReportService reportService = new ReportServiceImpl();
 
 	public MateDetail() {
 		super();
@@ -81,12 +85,20 @@ public class MateDetail extends HttpServlet {
 			request.setAttribute("liked", liked);
 			request.setAttribute("mateCommentList", mateCommentList);
 			request.setAttribute("mateCommentCount", mateCommentCount);
+			
+			// 신고 팝업에 표시할 활성 신고 사유 조회
+			ReportService reportService = new ReportServiceImpl();
+
+			request.setAttribute("reportReasons", reportService.getContentReportReasons());
 
 			RequestDispatcher dispatcher = request.getRequestDispatcher("/view/mates/mateDetail.jsp");
 			dispatcher.forward(request, response);
 
 		} catch (NumberFormatException e) {
 			response.sendRedirect(request.getContextPath() + "/mates");
+		} catch (Exception e) {
+			e.printStackTrace();
+			response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
 		}
 	}
 }
