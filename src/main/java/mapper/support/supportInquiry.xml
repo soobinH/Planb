@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE mapper PUBLIC "-//mybatix.org//DTD mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
 <mapper namespace="mapper.support.inquiry">
 	<insert id="insertInquiry" parameterType="dto.support.SupportInquiryDto"
@@ -27,4 +27,63 @@
 	</insert>
 
 	
+    <!-- 실제 TB_SUPPORT_INQUIRY DDL 기준 -->
+    <resultMap id="inquiryResult" type="dto.support.SupportInquiryDto">
+        <id property="inquiryId" column="inquiry_id"/>
+        <result property="userId" column="user_id"/>
+        <result property="category" column="category"/>
+        <result property="title" column="title"/>
+        <result property="content" column="content"/>
+        <result property="contactEmail" column="contact_email"/>
+        <result property="status" column="status"/>
+        <result property="answer" column="answer"/>
+        <result property="answeredByUserId" column="answered_by_user_id"/>
+        <result property="answeredAt" column="answered_at"/>
+        <result property="createdAt" column="created_at"/>
+        <result property="updatedAt" column="updated_at"/>
+    </resultMap>
+
+    <sql id="columns">
+        inquiry_id, user_id, category, title, content, contact_email,
+        status, answer, answered_by_user_id, answered_at, created_at, updated_at
+    </sql>
+
+    <select id="selectAll" parameterType="map" resultMap="inquiryResult">
+        SELECT <include refid="columns"/>
+        FROM TB_SUPPORT_INQUIRY
+        <if test="status != null and status != ''">
+            WHERE status = #{status}
+        </if>
+        ORDER BY created_at DESC, inquiry_id DESC
+    </select>
+
+    <select id="selectOne" parameterType="long" resultMap="inquiryResult">
+        SELECT <include refid="columns"/>
+        FROM TB_SUPPORT_INQUIRY
+        WHERE inquiry_id = #{value}
+    </select>
+
+    <update id="answerInquiry" parameterType="dto.support.SupportInquiryDto">
+        UPDATE TB_SUPPORT_INQUIRY
+        SET answer = #{answer},
+            answered_by_user_id = #{answeredByUserId},
+            answered_at = NOW(),
+            status = 'DONE',
+            updated_at = NOW()
+        WHERE inquiry_id = #{inquiryId}
+          AND status IN ('RECEIVED', 'ANSWERING')
+    </update>
+    <!-- 조회 시 로그인 사용자의 user_id 조건을 SQL 자체에서 적용 -->
+    <select id="selectByUser" parameterType="long" resultMap="inquiryResult">
+        SELECT <include refid="columns"/>
+        FROM TB_SUPPORT_INQUIRY
+        WHERE user_id = #{value}
+        ORDER BY created_at DESC, inquiry_id DESC
+    </select>
+
+    <select id="selectOneByUser" parameterType="map" resultMap="inquiryResult">
+        SELECT <include refid="columns"/>
+        FROM TB_SUPPORT_INQUIRY
+        WHERE user_id = #{userId} AND inquiry_id = #{inquiryId}
+    </select>
 </mapper>

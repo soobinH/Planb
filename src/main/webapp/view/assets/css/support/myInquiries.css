@@ -1,0 +1,91 @@
+/* Planb 내 문의 내역: settings.css / support.css 기반, 화면 전용 컴포넌트 */
+.my-inquiry-page{min-width:0}
+.my-inquiry-page *{box-sizing:border-box}
+.my-inquiry-page svg{fill:none;stroke:currentColor;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}
+.my-inquiry-page a{text-decoration:none}
+.my-inquiry-page .settings-title{margin-bottom:30px}
+.my-inquiry-overview{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));border:1px solid #e9e9ee;background:#fff;border-radius:10px;margin-bottom:34px;overflow:hidden}
+.my-inquiry-overview-item{display:flex;flex-direction:column;gap:10px;padding:21px 25px;border-right:1px solid #ededf1}
+.my-inquiry-overview-item:last-child{border-right:0}
+.my-inquiry-overview-item>span{color:#898c98;font-size:12px;font-weight:600}
+.my-inquiry-overview-item strong{color:#2b2e3d;font-size:27px;line-height:1;letter-spacing:-.035em;font-weight:750}
+.my-inquiry-overview-item strong small{font-size:13px;margin-left:4px;color:#9c9daa;font-weight:500}
+.my-inquiry-list-section{margin-bottom:30px}
+.my-inquiry-list-head{display:flex;align-items:center;justify-content:space-between;gap:20px;margin-bottom:16px}
+.my-inquiry-list-head h2{margin:0;display:flex;align-items:center;gap:9px;color:#2e303c;font-size:17px;font-weight:750;letter-spacing:-.025em}
+.my-inquiry-list-head h2 span{display:inline-flex;align-items:center;justify-content:center;background:#f0f1ff;color:#646bd0;padding:4px 8px;border-radius:6px;font-size:11px;min-width:25px}
+.my-inquiry-list-head p{font-size:12px;color:#989ba6;margin:8px 0 0}
+.my-inquiry-new-btn{display:inline-flex;align-items:center;justify-content:center;gap:7px;min-height:40px;padding:0 16px;background:#6369d1;color:#fff!important;border:1px solid #6369d1;border-radius:7px;font-size:12px;font-weight:700;white-space:nowrap}
+.my-inquiry-new-btn:hover{background:#555cc6}
+.my-inquiry-new-btn svg{width:15px;height:15px}
+.my-inquiry-table{background:#fff;border:1px solid #e9e9ef;border-radius:10px;overflow:hidden}
+.my-inquiry-table-head,.my-inquiry-table-row{display:grid;grid-template-columns:100px minmax(0,1fr) 128px 90px 18px;align-items:center;gap:12px;padding:0 22px}
+.my-inquiry-table-head{height:45px;color:#9597a5;font-size:11px;font-weight:650;background:#f9f9fb;border-bottom:1px solid #ebebf0}
+.my-inquiry-table-row{min-height:78px;border-bottom:1px solid #f0f0f3;color:#313343;transition:background .15s}
+.my-inquiry-table-row:last-child{border-bottom:0}
+.my-inquiry-table-row:hover{background:#fafaff}
+.my-inquiry-table-row.is-selected{background:#f7f7ff;box-shadow:inset 3px 0 0 #6369d1}
+.my-inquiry-category{font-size:12px;color:#797d8e;white-space:nowrap}
+.my-inquiry-row-title{font-size:13px;color:#303241;line-height:1.5;font-weight:700;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;min-width:0}
+.my-inquiry-row-date{font-size:11px;color:#9294a0;white-space:nowrap}
+.my-inquiry-state{display:inline-flex;align-items:center;justify-content:center;justify-self:start;padding:6px 9px;border-radius:5px;background:#f0efff;color:#666ac0;font-weight:700;font-size:11px;white-space:nowrap;line-height:1.2}
+.my-inquiry-state.is-answering{background:#fff6e6;color:#b68738}
+.my-inquiry-state.is-done{background:#edf8f0;color:#349067}
+.my-inquiry-row-chevron{color:#a5a7b2;width:16px;height:16px}
+.my-inquiry-table-row.is-selected .my-inquiry-row-chevron{color:#6369d1}
+.my-inquiry-detail{scroll-margin-top:24px;background:#fff;border:1px solid #e9e9ef;border-radius:10px;padding:30px;margin-top:26px}
+.my-inquiry-detail-topline{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:12px}
+.my-inquiry-detail-eyebrow{color:#7278c8;font-size:10px;letter-spacing:.1em;font-weight:750}
+.my-inquiry-detail h2{margin:0;color:#282a37;font-size:21px;font-weight:750;letter-spacing:-.035em;line-height:1.5;overflow-wrap:anywhere}
+.my-inquiry-detail-meta{display:flex;align-items:center;gap:8px;margin-top:10px;padding-bottom:24px;border-bottom:1px solid #efeff3;color:#9497a3;font-size:12px}
+.my-inquiry-dot{color:#c5c6d0}
+.my-inquiry-message{padding:25px 0 22px}
+.my-inquiry-message-label{display:flex;align-items:center;gap:9px;color:#414352}
+.my-inquiry-message-label strong{font-size:13px;font-weight:750}
+.my-inquiry-message-icon{display:inline-flex;align-items:center;justify-content:center;width:29px;height:29px;border-radius:8px;background:#f3f3f8;color:#777c99}
+.my-inquiry-message-icon svg{width:15px;height:15px}
+.my-inquiry-message-body{font-size:13px;line-height:1.95;white-space:pre-wrap;overflow-wrap:anywhere;color:#494c59;padding:14px 0 0}
+.my-inquiry-reply{border-radius:9px;padding:22px 24px;background:#f8f8fb;border:1px solid #eeeeF3}
+.my-inquiry-reply.is-answered{background:#f8f8ff;border-color:#e8e8fa}
+.my-inquiry-reply.is-answered .my-inquiry-message-icon{background:#eceeff;color:#656bcd}
+.my-inquiry-reply-date{margin-left:auto;font-size:11px;color:#9496a5;white-space:nowrap}
+.my-inquiry-awaiting{margin:13px 0 0;padding:8px 0 5px}
+.my-inquiry-awaiting strong{font-size:13px;color:#666a79;font-weight:650}
+.my-inquiry-awaiting p{font-size:12px;line-height:1.8;color:#999ba8;margin:6px 0 0}
+.my-inquiry-detail-bottom{display:flex;justify-content:flex-end;padding-top:22px}
+.my-inquiry-bottom-link{font-size:12px;font-weight:700;color:#6067c4;display:inline-flex;align-items:center;gap:5px}
+.my-inquiry-bottom-link svg{width:15px;height:15px}
+.my-inquiry-empty{padding:62px 20px;text-align:center;border:1px solid #e9e9ef;border-radius:10px;background:#fff}
+.my-inquiry-empty-icon{width:60px;height:60px;display:grid;place-items:center;border-radius:17px;background:#f1f1ff;color:#6369d1;margin:0 auto 20px}
+.my-inquiry-empty-icon svg{width:28px;height:28px}
+.my-inquiry-empty strong{display:block;font-size:15px;font-weight:750;color:#383947}
+.my-inquiry-empty p{font-size:12px;color:#9597a3;margin:10px 0 20px}
+.my-inquiry-empty a{display:inline-flex;align-items:center;justify-content:center;min-height:38px;padding:0 18px;border:1px solid #6369d1;background:#6369d1;color:#fff;border-radius:7px;font-size:12px;font-weight:700}
+@media(max-width:1040px){
+ .my-inquiry-table-head,.my-inquiry-table-row{grid-template-columns:76px minmax(0,1fr) 92px 79px 16px;gap:8px;padding-left:15px;padding-right:15px}
+ .my-inquiry-table-head{font-size:10px}
+ .my-inquiry-row-date{font-size:10px}
+}
+@media(max-width:740px){
+ .my-inquiry-overview-item{padding:17px 15px}
+ .my-inquiry-overview-item strong{font-size:23px}
+ .my-inquiry-list-head{align-items:flex-start;gap:10px}
+ .my-inquiry-new-btn{padding:0 11px;font-size:11px;min-height:36px}
+ .my-inquiry-table-head{display:none}
+ .my-inquiry-table-row{position:relative;display:grid;grid-template-columns:1fr auto;gap:6px 10px;min-height:92px;padding:16px 42px 16px 17px}
+ .my-inquiry-category{grid-column:1;grid-row:1;font-size:11px}
+ .my-inquiry-row-title{grid-column:1/-1;grid-row:2;white-space:normal;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+ .my-inquiry-row-date{grid-column:1;grid-row:3}
+ .my-inquiry-state{grid-column:2;grid-row:1}
+ .my-inquiry-row-chevron{position:absolute;right:15px;top:50%;transform:translateY(-50%)}
+ .my-inquiry-detail{padding:22px 18px}
+ .my-inquiry-detail h2{font-size:18px}
+ .my-inquiry-reply{padding:18px}
+}
+@media(max-width:420px){
+ .my-inquiry-overview-item{padding:16px 12px}
+ .my-inquiry-overview-item>span{font-size:11px}
+ .my-inquiry-overview-item strong{font-size:21px}
+ .my-inquiry-list-head h2{font-size:15px}
+ .my-inquiry-list-head p{font-size:11px}
+}

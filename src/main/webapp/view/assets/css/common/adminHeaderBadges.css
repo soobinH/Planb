@@ -1,0 +1,25 @@
+/* 관리자 헤더의 신고/광고/문의 알림점만 스타일링. adminInquiries.css 영향 없음. */
+.site-header .site-badge-wrap {
+    position: relative;
+}
+.site-header .site-badge-wrap .planb-admin-badge-dot {
+    position: absolute;
+    top: 0;
+    right: 0;
+    display: block;
+    width: 8px;
+    height: 8px;
+    min-width: 8px;
+    min-height: 8px;
+    padding: 0;
+    margin: 0;
+    box-sizing: content-box;
+    border: 2px solid #fff;
+    border-radius: 50%;
+    background-color: #ef4444;
+    pointer-events: none;
+    z-index: 10;
+}
+.site-header .site-badge-wrap .planb-admin-badge-dot[hidden] {
+    display: none !important;
+}
