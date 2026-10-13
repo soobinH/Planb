@@ -2,7 +2,7 @@
 	pageEncoding="UTF-8"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%
-request.setAttribute("activePage", "mate");
+request.setAttribute("activePage", "mates");
 %>
 <!DOCTYPE html>
 <html lang="ko">

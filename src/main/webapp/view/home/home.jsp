@@ -106,7 +106,7 @@ request.setAttribute("activePage", "home");
 			<div class="home-popular-carousel flex items-stretch gap-6 px-12" data-home-carousel data-loop-width="2120">
 				<c:forEach var="itinerary" items="${itineraryList}" varStatus="status">
 					<a
-						href="${pageContext.request.contextPath}/scheduleDetail?id=${itinerary.itineraryId}"
+						href="${pageContext.request.contextPath}/schedules/detail?id=${itinerary.itineraryId}"
 						class="jsp-home-schedule-card home-popular-card shrink-0 bg-white rounded-2xl overflow-hidden cursor-pointer border">
 				
 						<div class="home-popular-card-image relative overflow-hidden">
