@@ -64,11 +64,16 @@
     text-shadow: 0 1px 8px rgba(0, 0, 0, 0.4);
 }
 
-/* 메인 배너 검색창 반투명 배경과 블러 효과 설정 */
 .home-hero-search {
-    background-color: rgba(255, 255, 255, 0.18);
-    backdrop-filter: blur(16px);
-    -webkit-backdrop-filter: blur(16px);
+	border: 1px solid #FFD447;
+	transition:
+		border-color 0.2s ease,
+		box-shadow 0.2s ease;
+}
+
+.home-hero-search:focus-within {
+	border-color: #FFD447;
+	box-shadow: 0 0 0 3px rgba(255, 212, 71, 0.15);
 }
 
 /* 메인 배너 검색 버튼 사이트 메인 브랜드 색상을 배경색으로 사용 */
