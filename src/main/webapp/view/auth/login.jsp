@@ -17,7 +17,7 @@ request.setAttribute("activePage", "auth");
 
 <meta name="viewport" content="width=device-width, initial-scale=1">
 
-<title>로그인 · Planb</title>
+<title>로그인</title>
 
 
 <jsp:include page="/common/headStyles.jsp" />

@@ -168,7 +168,7 @@ boolean myLikedHasMore =
 
 <meta name="viewport" content="width=device-width, initial-scale=1">
 
-<title>내 프로필 · Planb</title>
+<title>내 프로필</title>
 
 <!-- 공통 CSS -->
 

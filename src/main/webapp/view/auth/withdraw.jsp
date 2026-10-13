@@ -34,7 +34,7 @@ String errorMessage = (String) request.getAttribute("errorMessage");
 
 <meta name="viewport" content="width=device-width, initial-scale=1">
 
-<title>회원 탈퇴 · Tripily</title>
+<title>회원 탈퇴</title>
 
 <jsp:include page="/common/headStyles.jsp" />
 

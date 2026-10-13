@@ -32,7 +32,7 @@ String phone = request.getParameter("phone") == null ? "" : request.getParameter
 
 <meta name="viewport" content="width=device-width, initial-scale=1">
 
-<title>비밀번호 재설정 · Tripily</title>
+<title>비밀번호 재설정</title>
 
 
 <!-- 공통 스타일 -->

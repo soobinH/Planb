@@ -28,7 +28,7 @@ String ctx =
 
 <meta name="viewport" content="width=device-width, initial-scale=1">
 
-<title>이용약관 · Planb</title>
+<title>이용약관</title>
 
 
 <jsp:include page="/common/headStyles.jsp" />

@@ -40,7 +40,7 @@ String errorMessage = (String) request.getAttribute("errorMessage");
 
 <meta name="viewport" content="width=device-width, initial-scale=1">
 
-<title>회원정보 입력 · Planb</title>
+<title>회원정보 입력</title>
 
 
 <!-- 공통 스타일 -->

@@ -33,7 +33,7 @@ String loginId =
 <meta name="viewport"
       content="width=device-width, initial-scale=1">
 
-<title>보안 및 로그인 활동 · Planb</title>
+<title>보안 및 로그인 활동</title>
 
 <jsp:include page="/common/headStyles.jsp" />
 

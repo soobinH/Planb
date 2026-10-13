@@ -55,7 +55,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>문의 관리 | Planb</title>
+    <title>문의 관리</title>
     <jsp:include page="/common/headStyles.jsp" />
     <link rel="stylesheet" href="<%=ctx%>/view/assets/css/admin/adminInquiries.css?v=5">
 </head>

@@ -31,7 +31,7 @@ String ctx =
 <meta name="viewport" content="width=device-width, initial-scale=1">
 
 
-<title>개인정보처리방침 · Planb</title>
+<title>개인정보처리방침</title>
 
 
 <jsp:include page="/common/headStyles.jsp" />

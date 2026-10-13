@@ -15,7 +15,7 @@ String errorMessage =
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>회원가입 · Planb</title>
+<title>회원가입</title>
 
 <jsp:include page="/common/headStyles.jsp" />
 <link rel="stylesheet" href="<%=ctx%>/view/assets/css/auth/signup.css">

@@ -41,7 +41,7 @@ String errorMessage = (String) request.getAttribute("errorMessage");
 
 <meta name="viewport" content="width=device-width, initial-scale=1">
 
-<title>새 비밀번호 설정 · Planb</title>
+<title>새 비밀번호 설정</title>
 
 
 <!-- 공통 CSS -->

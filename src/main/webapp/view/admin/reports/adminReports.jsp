@@ -87,7 +87,7 @@ String result =
     name="viewport"
     content="width=device-width, initial-scale=1">
 
-<title>신고 관리 | Tripily</title>
+<title>신고 관리</title>
 
 <jsp:include
     page="/common/headStyles.jsp" />

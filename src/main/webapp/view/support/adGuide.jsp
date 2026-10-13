@@ -16,7 +16,7 @@ String ctx = request.getContextPath();
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 
-<title>광고 안내 · Planb</title>
+<title>광고 안내</title>
 
 <jsp:include page="/common/headStyles.jsp" />
 

@@ -49,7 +49,7 @@ boolean socialUser = user.getProvider() != null && !"LOCAL".equalsIgnoreCase(use
 <meta name="viewport" content="width=device-width, initial-scale=1">
 
 
-<title>비밀번호 변경 · Planb</title>
+<title>비밀번호 변경</title>
 
 
 <jsp:include page="/common/headStyles.jsp" />

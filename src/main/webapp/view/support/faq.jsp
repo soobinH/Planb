@@ -29,7 +29,7 @@ String ctx =
 <meta name="viewport" content="width=device-width, initial-scale=1">
 
 
-<title>자주 묻는 질문 · Planb</title>
+<title>자주 묻는 질문</title>
 
 
 <jsp:include page="/common/headStyles.jsp" />

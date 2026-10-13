@@ -8,7 +8,7 @@ request.setAttribute("settingsPage", "support");
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>고객지원 · Planb</title>
+<title>고객지원</title>
 <jsp:include page="/common/headStyles.jsp" />
 <link rel="stylesheet" href="${pageContext.request.contextPath}/view/assets/css/support/support.css">
 <link rel="stylesheet" href="${pageContext.request.contextPath}/view/assets/css/setting/settings.css">

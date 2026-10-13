@@ -41,7 +41,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>내 문의 내역 · Planb</title>
+    <title>내 문의 내역</title>
     <jsp:include page="/common/headStyles.jsp" />
     <link rel="stylesheet" href="<%=ctx%>/view/assets/css/support/support.css">
     <link rel="stylesheet" href="<%=ctx%>/view/assets/css/setting/settings.css">

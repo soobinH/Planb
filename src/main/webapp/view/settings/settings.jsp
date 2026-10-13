@@ -74,7 +74,7 @@ if (profilePath == null || profilePath.trim().isEmpty()) {
 
 <meta name="viewport" content="width=device-width, initial-scale=1">
 
-<title>프로필 설정 · Planb</title>
+<title>프로필 설정</title>
 
 
 <!-- 공통 CSS -->

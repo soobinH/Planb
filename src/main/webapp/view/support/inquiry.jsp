@@ -112,7 +112,7 @@ boolean success =
 
 <meta name="viewport" content="width=device-width, initial-scale=1">
 
-<title>문의하기 · Planb</title>
+<title>문의하기</title>
 
 
 <jsp:include page="/common/headStyles.jsp" />

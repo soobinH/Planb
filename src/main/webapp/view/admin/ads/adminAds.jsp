@@ -421,7 +421,7 @@ for (Map<String, Object> ad : allAds) {
     name="viewport"
     content="width=device-width, initial-scale=1">
 
-<title>광고 관리 | Tripily</title>
+<title>광고 관리</title>
 
 
 <jsp:include

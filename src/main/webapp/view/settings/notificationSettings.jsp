@@ -77,7 +77,7 @@ boolean notifyComment =
 <meta name="viewport" content="width=device-width, initial-scale=1">
 
 
-<title>알림 설정 · Planb</title>
+<title>알림 설정</title>
 
 
 <jsp:include page="/common/headStyles.jsp" />

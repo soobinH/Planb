@@ -73,7 +73,7 @@ boolean showLikedItinerary =Boolean.TRUE.equals(user.getShowLikedItinerary());
 <meta name="viewport" content="width=device-width, initial-scale=1">
 
 
-<title>개인정보 및 공개범위 · Planb</title>
+<title>개인정보 및 공개범위</title>
 
 
 <jsp:include page="/common/headStyles.jsp" />
