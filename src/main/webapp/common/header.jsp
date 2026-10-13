@@ -161,22 +161,36 @@ if (user != null && user.getProfileImg() != null && !user.getProfileImg().trim()
 		if (!homeHeader) {
 		%>
 
-		<form class="site-header-search-bar"
-			action="<%=ctx%>/view/search/searchResult.jsp" method="get">
-
-			<svg width="14" height="14" viewBox="0 0 24 24" fill="none"
-				stroke="currentColor" stroke-width="2.2">
-
-                <circle cx="11" cy="11" r="7" />
-
-                <path d="m20 20-3.4-3.4" />
-
-            </svg>
-
-
-			<input name="q" placeholder="여행지, 일정, 키워드로 검색해보세요."
-				aria-label="전체 검색">
-
+		<form
+			action="${pageContext.request.contextPath}/search"
+			method="get"
+			class="header-search-form">
+		
+			<input
+				type="text"
+				name="q"
+				value="${param.q}"
+				placeholder="여행지, 일정, 키워드로 검색해보세요."
+				autocomplete="off">
+		
+			<button
+				type="submit"
+				class="header-search-button"
+				aria-label="검색">
+		
+				<svg
+					width="17"
+					height="17"
+					viewBox="0 0 24 24"
+					fill="none"
+					stroke="white"
+					stroke-width="2"
+					aria-hidden="true">
+		
+					<circle cx="11" cy="11" r="8" />
+					<path d="m21 21-4.35-4.35" />
+				</svg>
+			</button>
 		</form>
 
 		<%
