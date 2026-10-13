@@ -1281,15 +1281,271 @@ request.setAttribute("activePage", "planner");
         flex: 1 1 auto;
     }
 
+
+    /* ===== 일정 작성 화면 반응형 보정 =====
+       고정 폭 때문에 노트북/FHD/QHD에서 잘리거나 과도하게 늘어나는 현상을 방지한다. */
+    :root {
+        --planner-left-width: clamp(280px, 17.7vw, 340px);
+        --planner-map-width: clamp(380px, 24vw, 460px);
+    }
+
+    .planner-page-shell {
+        height: calc(100vh - 64px) !important;
+        height: calc(100dvh - 64px) !important;
+        min-height: 560px;
+        overflow: hidden;
+    }
+
+    .planner-top-grid {
+        grid-template-columns: minmax(0, 1fr) var(--planner-map-width) !important;
+    }
+
+    .planner-top-fields {
+        min-width: 0;
+        padding-left: clamp(14px, 1.25vw, 24px) !important;
+        padding-right: clamp(14px, 1.25vw, 24px) !important;
+    }
+
+    .planner-meta-grid {
+        grid-template-columns:
+            minmax(150px, .9fr)
+            minmax(150px, .9fr)
+            minmax(105px, .48fr)
+            minmax(300px, 1.6fr) !important;
+    }
+
+    .planner-top-actions {
+        min-width: 0;
+        padding-left: clamp(12px, 1.25vw, 24px) !important;
+        padding-right: clamp(12px, 1.25vw, 24px) !important;
+    }
+
+    .planner-top-actions #plannerSaveBtn,
+    .planner-top-actions #plannerVisibility {
+        width: clamp(150px, 12vw, 200px) !important;
+        max-width: 100%;
+    }
+
+    .planner-workspace {
+        min-width: 0;
+        min-height: 0;
+        overflow: hidden;
+    }
+
+    .planner-left-shell {
+        flex: 0 0 auto;
+        min-width: 0;
+    }
+
+    #plannerLeftPanel,
+    #plannerLeftPanel > div {
+        width: var(--planner-left-width) !important;
+        max-width: var(--planner-left-width) !important;
+    }
+
+    /* 기존 접기 버튼이 inline width:0px를 쓰므로 반응형 폭보다 우선한다. */
+    #plannerLeftPanel[style*="width: 0px"] {
+        width: 0 !important;
+        max-width: 0 !important;
+        border-right-width: 0 !important;
+    }
+
+    #plannerCenterPanel {
+        flex: 1 1 auto;
+        min-width: 440px;
+        min-height: 0;
+    }
+
+    .planner-map-panel {
+        width: var(--planner-map-width) !important;
+        flex: 0 0 var(--planner-map-width) !important;
+        min-width: 320px;
+        min-height: 0;
+    }
+
+    /* 국가 상태문구는 입력칸 폭을 먹지 않도록 우측 상단에 띄운다. */
+    #plannerCountryField {
+        position: relative;
+    }
+
+    #plannerCountryStatus {
+        position: absolute;
+        top: 6px;
+        right: 9px;
+        z-index: 2;
+        max-width: calc(100% - 78px);
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        line-height: 1;
+        pointer-events: none;
+    }
+
+    #plannerCountryCombo {
+        width: 100%;
+        min-width: 0;
+    }
+
+    @media (max-width: 1600px) {
+        :root {
+            --planner-left-width: 300px;
+            --planner-map-width: 400px;
+        }
+
+        .planner-meta-grid {
+            grid-template-columns:
+                minmax(140px, .9fr)
+                minmax(140px, .9fr)
+                minmax(100px, .48fr)
+                minmax(280px, 1.55fr) !important;
+        }
+    }
+
+    @media (max-width: 1440px) {
+        :root {
+            --planner-left-width: 280px;
+            --planner-map-width: 370px;
+        }
+
+        .planner-meta-grid {
+            gap: 8px !important;
+            grid-template-columns:
+                minmax(132px, .9fr)
+                minmax(132px, .9fr)
+                minmax(96px, .45fr)
+                minmax(260px, 1.5fr) !important;
+        }
+
+        #plannerCenterPanel {
+            min-width: 420px;
+        }
+
+        /* 좁은 화면에서는 긴 오류문구 대신 경고표시만 보여 입력값을 가리지 않는다. */
+        #plannerCountryStatus[data-country-status="invalid"] {
+            width: 18px;
+            height: 18px;
+            max-width: 18px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 999px;
+            background: #FEF2F2;
+            font-size: 0;
+        }
+
+        #plannerCountryStatus[data-country-status="invalid"]::after {
+            content: '!';
+            color: #EF4444;
+            font-size: 11px;
+            font-weight: 900;
+            line-height: 1;
+        }
+    }
+
+    @media (max-width: 1280px) {
+        :root {
+            --planner-left-width: 250px;
+            --planner-map-width: 340px;
+        }
+
+        .planner-top-fields {
+            padding-left: 12px !important;
+            padding-right: 12px !important;
+            gap: 8px !important;
+        }
+
+        .planner-top-actions {
+            padding-left: 10px !important;
+            padding-right: 10px !important;
+        }
+
+        .planner-meta-grid {
+            grid-template-columns:
+                minmax(125px, .95fr)
+                minmax(125px, .95fr)
+                minmax(92px, .5fr)
+                minmax(245px, 1.55fr) !important;
+        }
+
+        #plannerCenterPanel {
+            min-width: 400px;
+        }
+
+        #plannerDays {
+            padding-left: 14px !important;
+            padding-right: 14px !important;
+        }
+    }
+
+    @media (max-width: 1120px) {
+        :root {
+            --planner-left-width: 230px;
+            --planner-map-width: 310px;
+        }
+
+        .planner-meta-grid {
+            grid-template-columns:
+                minmax(118px, 1fr)
+                minmax(118px, 1fr)
+                minmax(88px, .5fr)
+                minmax(225px, 1.55fr) !important;
+        }
+
+        #plannerCenterPanel {
+            min-width: 380px;
+        }
+
+        .planner-map-panel {
+            min-width: 300px;
+        }
+    }
+
+    @media (max-width: 1024px) {
+        :root {
+            --planner-left-width: 220px;
+            --planner-map-width: 290px;
+        }
+
+        #plannerCenterPanel {
+            min-width: 360px;
+        }
+
+        .planner-map-panel {
+            min-width: 280px;
+        }
+    }
+
+    @media (max-height: 800px) {
+        .planner-top-fields,
+        .planner-top-actions {
+            padding-top: 8px !important;
+            padding-bottom: 8px !important;
+        }
+
+        #plannerGoogleMap {
+            min-height: 260px !important;
+        }
+    }
+
+    @media (max-height: 680px) {
+        .planner-page-shell {
+            min-height: 500px;
+        }
+
+        #plannerGoogleMap {
+            min-height: 220px !important;
+        }
+    }
+
 </style>
 </head>
 <body class="site-shell">
     <jsp:include page="/common/header.jsp" />
 
-    <main class="flex flex-col" style="height: calc(100vh - 64px)">
+    <main class="planner-page-shell flex flex-col">
         <div class="shrink-0 border-b border-gray-100" style="background: #F8F8FF">
-            <div class="grid min-w-0" style="grid-template-columns: minmax(0, 1fr) 460px">
-                <div class="min-w-0 px-6 py-3 flex flex-col gap-3">
+            <div class="planner-top-grid grid min-w-0">
+                <div class="planner-top-fields min-w-0 px-6 py-3 flex flex-col gap-3">
                     <div class="flex items-center gap-3 min-w-0">
                         <div class="h-[46px] flex-1 min-w-0 rounded-xl border bg-white flex items-center gap-3 px-4"
                             style="border-color: #E2E5EF">
@@ -1308,12 +1564,11 @@ request.setAttribute("activePage", "planner");
                                 <rect width="18" height="18" x="3" y="4" rx="2" />
                                 <path d="M16 2v4M8 2v4M3 10h18" />
                             </svg>
-                            <span>3일 · 13개 일정</span>
+                            <span id="plannerScheduleStats" aria-live="polite">1일 · 0개 일정</span>
                         </div>
                     </div>
 
-                    <div class="grid gap-3 min-w-0"
-                        style="grid-template-columns: minmax(0, .72fr) minmax(0, .72fr) minmax(0, .42fr) minmax(380px, 1.55fr)">
+                    <div class="planner-meta-grid grid gap-3 min-w-0">
                         <div id="plannerCountryField" class="relative overflow-visible min-w-0 h-[50px] rounded-xl border bg-white flex items-center gap-3 px-3.5"
                             style="border-color: #FCA5A5">
                             <div class="w-8 h-8 rounded-lg shrink-0 flex items-center justify-center"
@@ -1439,7 +1694,7 @@ request.setAttribute("activePage", "planner");
                     </div>
                 </div>
 
-                <div class="border-l border-gray-100 px-6 py-3 flex flex-col items-end justify-center gap-3"
+                <div class="planner-top-actions border-l border-gray-100 px-6 py-3 flex flex-col items-end justify-center gap-3"
                     style="border-color: #E8E9F2">
                     <div class="flex items-center justify-end gap-2">
                         <button id="plannerSaveBtn" type="button" class="h-10 w-[200px] text-xs font-bold text-white rounded-xl hover:opacity-90 transition-all flex items-center justify-center gap-1.5 shadow-sm"
@@ -1475,8 +1730,8 @@ request.setAttribute("activePage", "planner");
             </div>
         </div>
 
-        <div class="flex flex-1 min-h-0">
-            <div class="relative flex shrink-0">
+        <div class="planner-workspace flex flex-1 min-h-0">
+            <div class="planner-left-shell relative flex shrink-0">
                 <div id="plannerLeftPanel"
                     class="flex flex-col bg-gray-50 border-r border-gray-100 overflow-hidden transition-all duration-300 ease-in-out"
                     style="width: 340px">
@@ -1749,7 +2004,7 @@ request.setAttribute("activePage", "planner");
                 </div>
             </div>
 
-            <div class="w-[460px] shrink-0 border-l border-gray-100 flex flex-col bg-white">
+            <div class="planner-map-panel w-[460px] shrink-0 border-l border-gray-100 flex flex-col bg-white">
                 <div class="px-4 py-3 border-b border-gray-100 shrink-0">
                     <div class="flex items-center justify-between">
                         <div class="flex items-center gap-2">
@@ -2103,6 +2358,7 @@ request.setAttribute("activePage", "planner");
                 body.insertBefore(card,beforeNode && beforeNode.parentNode===body ? beforeNode : (addBtn||null));
                 ensureDayControls(day);
                 updateDayDeleteButtons();
+                updatePlannerScheduleStats();
                 syncBudget();
                 syncCountryEditLock();
                 return card;
@@ -3684,6 +3940,7 @@ request.setAttribute("activePage", "planner");
                 body.insertBefore(card,addBtn||null);
                 if(body.classList.contains('is-collapsed')) body.classList.remove('is-collapsed');
                 updateDayDeleteButtons();
+                updatePlannerScheduleStats();
                 syncBudget();
                 syncCountryEditLock();
                 markDirty();
@@ -4937,6 +5194,7 @@ request.setAttribute("activePage", "planner");
                     },function(){
                         card.remove();
                         updateDayDeleteButtons();
+                        updatePlannerScheduleStats();
                         syncBudget();
                         markDirty();
                     });
@@ -5048,6 +5306,15 @@ request.setAttribute("activePage", "planner");
                 });
             }
 
+            /* 제목 오른쪽의 "N일 · N개 일정"을 현재 작성 중인 DAY/블록 수와 항상 동기화한다. */
+            function updatePlannerScheduleStats(){
+                var stats=$('#plannerScheduleStats');
+                if(!stats) return;
+                var dayCount=$$('.planner-day').length;
+                var scheduleCount=$$('.planner-day .planner-block-card, .planner-day .planner-block-summary').length;
+                stats.textContent=dayCount+'일 · '+scheduleCount+'개 일정';
+            }
+
             function renumberDays(){
                 $$('.planner-day').forEach(function(day,i){
                     var oldNo=Number(day.dataset.dayNumber||i+1);
@@ -5082,7 +5349,7 @@ request.setAttribute("activePage", "planner");
                         }
                     }
                 });
-                updateAddDayButton(); rebuildMapFilter(); updateDayDeleteButtons();
+                updateAddDayButton(); rebuildMapFilter(); updateDayDeleteButtons(); updatePlannerScheduleStats();
             }
 
             function enableDayTitleEdit(day){
@@ -5360,12 +5627,18 @@ request.setAttribute("activePage", "planner");
 
                 if(!value){
                     status.textContent='필수';
+                    status.dataset.countryStatus='required';
+                    status.title='국가를 선택해 주세요.';
                     field.style.borderColor='#FCA5A5';
                 }else if(!matched){
                     status.textContent='일치하는 국가가 없습니다';
+                    status.dataset.countryStatus='invalid';
+                    status.title='일치하는 국가가 없습니다';
                     field.style.borderColor='#FCA5A5';
                 }else{
                     status.textContent='';
+                    status.dataset.countryStatus='valid';
+                    status.removeAttribute('title');
                     field.style.borderColor='#E2E5EF';
                 }
                 return !!matched;
