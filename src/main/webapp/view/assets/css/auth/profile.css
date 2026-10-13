@@ -1372,3 +1372,25 @@ body.profile-modal-open {
         transform: rotate(360deg);
     }
 }
+
+html {
+	scrollbar-width: thin;
+	scrollbar-color: #c7c9e8 transparent;
+}
+
+html::-webkit-scrollbar {
+	width: 7px;
+}
+
+html::-webkit-scrollbar-track {
+	background: transparent;
+}
+
+html::-webkit-scrollbar-thumb {
+	background: #c7c9e8;
+	border-radius: 9999px;
+}
+
+html::-webkit-scrollbar-thumb:hover {
+	background: #a8abe0;
+}

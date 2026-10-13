@@ -10,6 +10,7 @@ request.setAttribute("activePage", "tips");
     <meta name="viewport" content="width=device-width, initial-scale=1">
 	<title>여행꿀팁 작성 · Tripily</title>
 	<jsp:include page="/common/headStyles.jsp" />
+	<link rel="stylesheet" href="${pageContext.request.contextPath}/view/assets/css/tips/tipWrite.css">
 	<script defer src="${pageContext.request.contextPath}/view/assets/js/tips/tipWrite.js"></script>
 </head>
 <body class="site-shell"><jsp:include page="/common/header.jsp" />
