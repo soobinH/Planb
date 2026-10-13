@@ -53,4 +53,19 @@ public class TipLikeDaoImpl implements TipLikeDao {
             throw e;
         }
     }
+    
+    @Override
+    public int insertTipLike(SqlSession sqlSession, TipLikeDto tipLikeDto) {
+        return sqlSession.insert("mapper.community.tipLike.insertTipLike", tipLikeDto);
+    }
+
+    @Override
+    public TipLikeDto selectTipLike(SqlSession sqlSession, TipLikeDto tipLikeDto) {
+        return sqlSession.selectOne("mapper.community.tipLike.selectTipLike", tipLikeDto);
+    }
+
+    @Override
+    public int deleteTipLike(SqlSession sqlSession, TipLikeDto tipLikeDto) {
+        return sqlSession.delete("mapper.community.tipLike.deleteTipLike", tipLikeDto);
+    }
 }

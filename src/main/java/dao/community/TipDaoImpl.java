@@ -190,4 +190,8 @@ public class TipDaoImpl implements TipDao {
 		}
 	}
 	
+	@Override
+	public TipDto selectTipForUpdate(SqlSession sqlSession, Long tipId) {
+	    return sqlSession.selectOne("mapper.community.tip.selectTipForUpdate",tipId);
+	}
 }

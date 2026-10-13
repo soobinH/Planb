@@ -280,4 +280,16 @@
 		OFFSET #{offset}
 	</select>
 
+	<!-- 알림관련 추가 -->
+	<select id="selectTipForUpdate" parameterType="long" resultType="tip">
+    	SELECT
+        	tip_id AS tipId,
+        	user_id AS userId,
+        	visibility,
+        	status
+    	FROM TB_TIP
+    	WHERE tip_id = #{value}
+    	FOR UPDATE
+	</select>
+
 </mapper>

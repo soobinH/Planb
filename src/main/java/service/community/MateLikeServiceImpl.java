@@ -1,30 +1,107 @@
 package service.community;
 
+import org.apache.ibatis.session.SqlSession;
+
+import config.MybatisSqlSessionFactory;
+import dao.community.MateDao;
+import dao.community.MateDaoImpl;
 import dao.community.MateLikeDao;
 import dao.community.MateLikeDaoImpl;
+import dao.notification.NotificationDao;
+import dao.notification.NotificationDaoImpl;
+import dto.community.MateDto;
 import dto.community.MateLikeDto;
+import dto.notification.NotificationDto;
 
 public class MateLikeServiceImpl implements MateLikeService {
 
 	private MateLikeDao mateLikeDao = new MateLikeDaoImpl();
+	private MateDao mateDao = new MateDaoImpl();
+	private NotificationDao notificationDao = new NotificationDaoImpl();
 
 	@Override
 	public boolean toggleMateLike(Long mateId, Long userId) {
-		MateLikeDto mateLike = mateLikeDao.selectMateLike(mateId, userId);
+	    if (userId == null || userId <= 0) {
+	        throw new SecurityException("로그인이 필요합니다.");
+	    }
 
-		if (mateLike == null) {
-			MateLikeDto mateLikeDto = new MateLikeDto();
-			mateLikeDto.setMateId(mateId);
-			mateLikeDto.setUserId(userId);
+	    if (mateId == null || mateId <= 0) {
+	        throw new IllegalArgumentException("올바른 메이트 번호가 아닙니다.");
+	    }
 
-			mateLikeDao.insertMateLike(mateLikeDto);
+	    try (SqlSession sqlSession =
+	            MybatisSqlSessionFactory.getSqlSessionFactory()
+	                    .openSession(false)) {
 
-			return true;
-		}
+	        try {
+	            MateDto mate =
+	                    mateDao.selectMateForUpdate(sqlSession, mateId);
 
-		mateLikeDao.deleteMateLike(mateId, userId);
+	            if (mate == null || !"ACTIVE".equals(mate.getStatus())) {
+	                throw new IllegalArgumentException("게시글을 찾을 수 없습니다.");
+	            }
 
-		return false;
+	            boolean isOwner = userId.equals(mate.getUserId());
+
+	            if (!"PUBLIC".equals(mate.getVisibility()) && !isOwner) {
+	                throw new SecurityException("접근할 수 없는 게시글입니다.");
+	            }
+
+	            MateLikeDto existing =
+	                    mateLikeDao.selectMateLike(
+	                            sqlSession, mateId, userId);
+
+	            boolean alreadyLiked = existing != null;
+	            int affectedRows;
+
+	            if (alreadyLiked) {
+	                affectedRows = mateLikeDao.deleteMateLike(
+	                        sqlSession, mateId, userId);
+
+	            } else {
+	                MateLikeDto like = new MateLikeDto();
+
+	                like.setMateId(mateId);
+	                like.setUserId(userId);
+
+	                affectedRows =
+	                        mateLikeDao.insertMateLike(sqlSession, like);
+	            }
+
+	            if (affectedRows != 1) {
+	                throw new IllegalStateException("좋아요 처리에 실패했습니다.");
+	            }
+
+	            // 좋아요가 추가된 경우에만 알림 생성
+	            if (!alreadyLiked) {
+	                NotificationDto notification = new NotificationDto();
+
+	                notification.setRecipientUserId(mate.getUserId());
+	                notification.setSenderUserId(userId);
+	                notification.setNotificationType("MATE_LIKE");
+	                notification.setTargetType("MATE");
+	                notification.setTargetId(mateId);
+
+	                notificationDao.insertLikeNotification(
+	                        sqlSession, notification);
+	            }
+
+	            sqlSession.commit();
+
+	            // 처리 후 좋아요 상태
+	            return !alreadyLiked;
+
+	        } catch (Exception e) {
+	            sqlSession.rollback();
+
+	            if (e instanceof RuntimeException) {
+	                throw (RuntimeException) e;
+	            }
+
+	            throw new IllegalStateException(
+	                    "좋아요 처리 중 오류가 발생했습니다.", e);
+	        }
+	    }
 	}
 
 	@Override

@@ -2,6 +2,8 @@ package dao.community;
 
 import java.util.List;
 
+import org.apache.ibatis.session.SqlSession;
+
 import dto.community.TipCommentDto;
 
 public interface TipCommentDao {
@@ -20,4 +22,6 @@ public interface TipCommentDao {
 
     // 본인 댓글 삭제
     int deleteTipComment(TipCommentDto tipCommentDto);
+    
+    int insertTipComment(SqlSession sqlSession, TipCommentDto tipCommentDto);
 }

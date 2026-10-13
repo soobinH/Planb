@@ -70,4 +70,29 @@ public class MateLikeDaoImpl implements MateLikeDao {
 			sqlSession.close();
 		}
 	}
+	
+	@Override
+	public int insertMateLike(SqlSession sqlSession, MateLikeDto mateLikeDto) {
+	    return sqlSession.insert("mapper.community.mateLike.insertMateLike", mateLikeDto);
+	}
+
+	@Override
+	public MateLikeDto selectMateLike(SqlSession sqlSession, Long mateId, Long userId) {
+	    MateLikeDto mateLikeDto = new MateLikeDto();
+	    
+	    mateLikeDto.setMateId(mateId);
+	    mateLikeDto.setUserId(userId);
+	    
+	    return sqlSession.selectOne("mapper.community.mateLike.selectMateLike",mateLikeDto);
+	}
+
+	@Override
+	public int deleteMateLike(SqlSession sqlSession, Long mateId, Long userId) {
+	    MateLikeDto mateLikeDto = new MateLikeDto();
+	    
+	    mateLikeDto.setMateId(mateId);
+	    mateLikeDto.setUserId(userId);
+
+	    return sqlSession.delete("mapper.community.mateLike.deleteMateLike", mateLikeDto);
+	}
 }

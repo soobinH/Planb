@@ -2,6 +2,8 @@ package dao.community;
 
 import java.util.List;
 
+import org.apache.ibatis.session.SqlSession;
+
 import dto.community.MateDto;
 
 public interface MateDao {
@@ -32,4 +34,7 @@ public interface MateDao {
 	int updateMateViewCount(Long mateId);
 	
 	int updateRecruitStatus(MateDto mateDto);
+	
+	// 같은 세션에 담기위해.
+	MateDto selectMateForUpdate(SqlSession sqlSession, Long mateId);
 }

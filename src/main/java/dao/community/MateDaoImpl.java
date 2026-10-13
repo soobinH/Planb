@@ -192,4 +192,9 @@ public class MateDaoImpl implements MateDao {
 			sqlSession.close();
 		}
 	}
+	
+	@Override
+	public MateDto selectMateForUpdate(SqlSession sqlSession, Long mateId) {
+	    return sqlSession.selectOne("mapper.community.mate.selectMateForUpdate", mateId);
+	}
 }

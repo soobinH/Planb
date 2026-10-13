@@ -69,4 +69,9 @@ public class TipCommentDaoImpl implements TipCommentDao {
             throw e;
         }
     }
+    
+    @Override
+    public int insertTipComment(SqlSession sqlSession, TipCommentDto tipCommentDto) {
+        return sqlSession.insert("mapper.community.tipComment.insertTipComment", tipCommentDto);
+    }
 }

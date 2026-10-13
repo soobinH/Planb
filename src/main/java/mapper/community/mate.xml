@@ -283,5 +283,17 @@
 			AND user_id = #{userId}
 			AND status = 'ACTIVE'
 	</update>
+	
+	<!-- 알림 업데이트 -->
+	<select id="selectMateForUpdate" parameterType="long" resultType="mate">
+    	SELECT
+        	mate_id AS mateId,
+        	user_id AS userId,
+        	visibility,
+        	status
+    	FROM TB_MATE
+    	WHERE mate_id = #{value}
+    	FOR UPDATE
+	</select>
 
 </mapper>

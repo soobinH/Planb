@@ -2,6 +2,8 @@ package dao.community;
 
 import java.util.List;
 
+import org.apache.ibatis.session.SqlSession;
+
 import dto.community.TipDto;
 
 public interface TipDao {
@@ -41,4 +43,7 @@ public interface TipDao {
 	int updateTipThumbnail(TipDto tipDto);
 	
 	int updateTipViewCount(Long tipId);
+	
+	// 알림 관련 추가 
+	TipDto selectTipForUpdate(SqlSession sqlSession, Long tipId);
 }

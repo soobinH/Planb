@@ -2,6 +2,8 @@ package dao.community;
 
 import java.util.List;
 
+import org.apache.ibatis.session.SqlSession;
+
 import dto.community.MateCommentDto;
 
 public interface MateCommentDao {
@@ -17,4 +19,6 @@ public interface MateCommentDao {
 	int updateMateComment(MateCommentDto mateCommentDto);
 
 	int deleteMateComment(MateCommentDto mateCommentDto);
+	
+	int insertMateComment(SqlSession sqlSession, MateCommentDto mateCommentDto);
 }

@@ -93,4 +93,9 @@ public class MateCommentDaoImpl implements MateCommentDao {
 			sqlSession.close();
 		}
 	}
+	
+	@Override
+	public int insertMateComment(SqlSession sqlSession, MateCommentDto mateCommentDto) {
+	    return sqlSession.insert("mapper.community.mateComment.insertMateComment", mateCommentDto);
+	}
 }
