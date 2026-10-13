@@ -171,8 +171,7 @@ String errorMessage = (String) request.getAttribute("errorMessage");
 
         </svg>
 
-				</span> <span class="site-brand-copy"> <strong> Planb </strong> <small>
-							Travel Plan Share </small>
+				</span> <span class="site-brand-copy"> <strong> Planb </strong>
 
 				</span>
 
