@@ -36,7 +36,7 @@ request.setAttribute("activePage", "auth");
 	align-items: center;
 	justify-content: center;
 	gap: 10px;
-	margin-bottom:20px;
+	margin-bottom: 20px;
 	box-sizing: border-box;
 	padding: 0 16px;
 	border: 1px solid #dadce0;
@@ -94,25 +94,24 @@ request.setAttribute("activePage", "auth");
 			<div class="login-header">
 
 
-				<a href="${pageContext.request.contextPath}/home"
-					class="login-logo"> <span class="tripily-mark"
-					aria-hidden="true"> <svg width="22" height="22"
-							viewBox="0 0 24 24" fill="none">
+				<a class="site-brand auth-page-brand"
+					href="${pageContext.request.contextPath}/home" aria-label="Planb 홈">
 
+					<span class="tripily-mark" aria-hidden="true"> <svg
+							width="17" height="17" viewBox="0 0 24 24" fill="none">
 
-                        <path
+            <path
 								d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7Z"
-								fill="var(--brand)" />
+								fill="currentColor" />
 
+            <circle cx="12" cy="9" r="2.6" fill="white" />
 
-                        <circle cx="12" cy="9" r="2.6" fill="white" />
+        </svg>
 
+				</span> <span class="site-brand-copy"> <strong> Planb </strong> <small>
+							Travel Plan Share </small>
 
-                    </svg>
-
-
-				</span> <span class="login-logo-text"> Planb </span>
-
+				</span>
 
 				</a>
 
@@ -203,8 +202,7 @@ request.setAttribute("activePage", "auth");
 								아이디 저장 </span>
 
 
-						</label> <a
-							href="${pageContext.request.contextPath}/auth/findPassword"
+						</label> <a href="${pageContext.request.contextPath}/auth/findPassword"
 							class="find-password"> 비밀번호 찾기 </a>
 
 
@@ -293,9 +291,7 @@ request.setAttribute("activePage", "auth");
 
 
 					아직 회원이 아니신가요? <a
-						href="${pageContext.request.contextPath}/auth/signup">
-
-						회원가입 </a>
+						href="${pageContext.request.contextPath}/auth/signup"> 회원가입 </a>
 
 
 				</p>

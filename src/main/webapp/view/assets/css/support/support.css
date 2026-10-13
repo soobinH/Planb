@@ -183,6 +183,37 @@
     color: var(--support-danger);
 }
 
+.settings-nav-icon {
+    width: 20px;
+    height: 20px;
+
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    flex: 0 0 20px;
+
+    color: currentColor;
+}
+
+.settings-nav-icon svg {
+    width: 18px;
+    height: 18px;
+
+    display: block;
+}
+
+.settings-back {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.settings-back svg {
+    width: 18px;
+    height: 18px;
+}
+
 /* ============================================================
    3. MAIN / CONTENT
    ============================================================ */

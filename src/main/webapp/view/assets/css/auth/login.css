@@ -48,25 +48,19 @@
 }
 
 
-.login-logo {
+/* =========================
+   로그인 페이지 브랜드 로고
+   헤더 로고 디자인 재사용
+========================= */
+
+.login-header .auth-page-brand {
     display: inline-flex;
     align-items: center;
-
-    gap: 8px;
+    justify-content: center;
 
     margin-bottom: 22px;
 
     text-decoration: none;
-}
-
-
-.login-logo-text {
-    color: var(--brand);
-
-    font-size: 25px;
-    font-weight: 800;
-
-    letter-spacing: -0.5px;
 }
 
 

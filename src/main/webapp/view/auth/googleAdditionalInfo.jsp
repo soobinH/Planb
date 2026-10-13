@@ -158,24 +158,23 @@ String errorMessage = (String) request.getAttribute("errorMessage");
 			<div class="signup-header">
 
 
-				<a href="<%=ctx%>/view/home/home.jsp" class="signup-logo"> <span
-					class="tripily-mark" aria-hidden="true"> <svg width="22"
-							height="22" viewBox="0 0 24 24" fill="none">
+				<a class="site-brand auth-page-brand" href="<%=ctx%>/home"
+					aria-label="Planb 홈"> <span class="tripily-mark"
+					aria-hidden="true"> <svg width="17" height="17"
+							viewBox="0 0 24 24" fill="none">
 
-
-                        <path
+            <path
 								d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7Z"
-								fill="var(--brand)" />
+								fill="currentColor" />
 
+            <circle cx="12" cy="9" r="2.6" fill="white" />
 
-                        <circle cx="12" cy="9" r="2.6" fill="white" />
+        </svg>
 
+				</span> <span class="site-brand-copy"> <strong> Planb </strong> <small>
+							Travel Plan Share </small>
 
-                    </svg>
-
-
-				</span> <span class="signup-logo-text"> Planb </span>
-
+				</span>
 
 				</a>
 
@@ -584,7 +583,7 @@ String errorMessage = (String) request.getAttribute("errorMessage");
 		src="https://t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js">
 </script>
 
-<script>
+	<script>
 
 document.addEventListener("DOMContentLoaded", function () {
 
@@ -1147,7 +1146,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
 </script>
 
-	
+
 
 </body>
 
