@@ -13,7 +13,7 @@ request.setAttribute("activePage", "mate");
 	<title>여행 메이트 작성 · Tripily</title>
 
 	<jsp:include page="/common/headStyles.jsp" />
-
+	<link rel="stylesheet" href="${pageContext.request.contextPath}/view/assets/css/mates/mateWrite.css">
 	<script defer src="${pageContext.request.contextPath}/view/assets/js/mates/mateWrite.js"></script>
 </head>
 

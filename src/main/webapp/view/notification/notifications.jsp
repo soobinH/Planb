@@ -14,6 +14,7 @@ request.setAttribute("activePage", "notifications");
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>알림 · Planb</title>
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/view/assets/css/notification/notification.css">
     <jsp:include page="/common/headStyles.jsp" />
 </head>
 <body class="site-shell">
