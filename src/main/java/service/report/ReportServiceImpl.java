@@ -5,18 +5,16 @@ import java.util.List;
 import org.apache.ibatis.session.SqlSession;
 
 import config.MybatisSqlSessionFactory;
-
 import dao.itinerary.ItineraryBookmarkDao;
 import dao.itinerary.ItineraryBookmarkDaoImpl;
-
 import dao.report.ReportDao;
 import dao.report.ReportDaoImpl;
-
 import dao.report.ReportReasonDao;
 import dao.report.ReportReasonDaoImpl;
-
+import dao.community.TipDao;
+import dao.community.TipDaoImpl;
+import dto.community.TipDto;
 import dto.itinerary.ItineraryDto;
-
 import dto.report.ReportDto;
 import dto.report.ReportReasonDto;
 
@@ -25,6 +23,7 @@ public class ReportServiceImpl implements ReportService {
 	private final ReportDao reportDao = new ReportDaoImpl();
 	private final ReportReasonDao reportReasonDao = new ReportReasonDaoImpl();
 	private final ItineraryBookmarkDao itineraryBookmarkDao = new ItineraryBookmarkDaoImpl();
+	private final TipDao tipDao = new TipDaoImpl();
 
 	/*
 	 * ========================================================= 일정 / 게시물용 신고 사유 목록
@@ -183,6 +182,149 @@ public class ReportServiceImpl implements ReportService {
 			}
 		}
 	}
+	
+	@Override
+	public long submitTipReport(Long tipId, Long loginUserId, Integer reasonId, String detail) throws Exception {
+
+		/*
+		 * =====================================
+		 * 로그인 검사
+		 * ======================================
+		 */
+		if (loginUserId == null || loginUserId <= 0) {
+			throw new SecurityException("로그인 후 이용할 수 있습니다.");
+		}
+
+		/*
+		 * =====================================
+		 * 여행꿀팁 번호 검사
+		 * ======================================
+		 */
+		if (tipId == null || tipId <= 0) {
+			throw new IllegalArgumentException("올바른 여행꿀팁 번호가 아닙니다.");
+		}
+
+		/*
+		 * =====================================
+		 * 신고 사유 검사
+		 * ======================================
+		 */
+		if (reasonId == null || reasonId <= 0) {
+			throw new IllegalArgumentException("신고 사유를 선택해주세요.");
+		}
+
+		/*
+		 * =====================================
+		 * 상세 내용 정리
+		 * ======================================
+		 */
+		String normalizedDetail = detail == null ? "" : detail.strip();
+
+		if (normalizedDetail.codePointCount(0, normalizedDetail.length()) > 300) {
+			throw new IllegalArgumentException("상세 내용은 최대 300자까지 입력할 수 있습니다.");
+		}
+
+		try (SqlSession sqlSession = MybatisSqlSessionFactory.getSqlSessionFactory().openSession(false)) {
+			try {
+
+				/*
+				 * =====================================
+				 * 여행꿀팁 조회
+				 * ======================================
+				 */
+				TipDto tip = tipDao.selectTipForUpdate(sqlSession, tipId);
+
+				if (tip == null || !"ACTIVE".equals(tip.getStatus())) {
+					throw new IllegalArgumentException("여행꿀팁을 찾을 수 없습니다.");
+				}
+
+				/*
+				 * =====================================
+				 * 자기 게시글 신고 방지
+				 * ======================================
+				 */
+				if (loginUserId.equals(tip.getUserId())) {
+					throw new SecurityException("본인이 작성한 게시글은 신고할 수 없습니다.");
+				}
+
+				/*
+				 * =====================================
+				 * 공개 게시글만 신고 가능
+				 * ======================================
+				 */
+				if (!"PUBLIC".equals(tip.getVisibility())) {
+					throw new SecurityException("공개된 게시글만 신고할 수 있습니다.");
+				}
+
+				/*
+				 * =====================================
+				 * CONTENT 신고 사유 확인
+				 * ======================================
+				 */
+				ReportReasonDto reason = reportReasonDao.selectContentReportReason(sqlSession, reasonId);
+
+				if (reason == null) {
+					throw new IllegalArgumentException("사용할 수 없는 신고 사유입니다.");
+				}
+
+				/*
+				 * =====================================
+				 * 신고 DTO
+				 * ======================================
+				 */
+				ReportDto report = new ReportDto();
+
+				report.setReporterUserId(loginUserId);
+
+				/*
+				 * 여행꿀팁 신고이므로 TIP
+				 */
+				report.setTargetType("TIP");
+
+				/*
+				 * 신고 대상 ID
+				 * 여기서는 tip_id
+				 */
+				report.setTargetId(tipId);
+
+				/*
+				 * 신고 당한 사용자
+				 * 여행꿀팁 작성자 ID
+				 */
+				report.setTargetUserId(tip.getUserId());
+
+				/*
+				 * 게시글 신고이므로 특정 프로필 필드 없음
+				 */
+				report.setTargetField(null);
+
+				report.setReasonId(reasonId);
+				report.setDetail(normalizedDetail.isEmpty() ? null : normalizedDetail);
+				report.setStatus("PENDING");
+				report.setActionType("NONE");
+
+				/*
+				 * =====================================
+				 * INSERT
+				 * ======================================
+				 */
+				int insertedRows = reportDao.insertReport(sqlSession, report);
+
+				if (insertedRows != 1 || report.getReportId() <= 0) {
+					throw new IllegalStateException("신고 접수에 실패했습니다.");
+				}
+
+				sqlSession.commit();
+
+				return report.getReportId();
+
+			} catch (Exception e) {
+				sqlSession.rollback();
+				throw e;
+			}
+		}
+	}
+
 
 	/*
 	 * ========================================================= 사용자 프로필 신고

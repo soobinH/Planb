@@ -14,4 +14,5 @@ public interface ReportService {
 	void rejectReport(long reportId, long adminUserId) throws Exception;
 	void deleteReportedContent(long reportId, long adminUserId) throws Exception;
 	void suspendReportedUser(long reportId, long adminUserId) throws Exception;
+	long submitTipReport(Long tipId, Long loginUserId, Integer reasonId, String detail) throws Exception;
 }

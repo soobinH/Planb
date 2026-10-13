@@ -186,6 +186,15 @@ if (user != null && user.getProfileImg() != null && !user.getProfileImg().trim()
 					stroke="white" 
 					stroke-width="2" 
 					aria-hidden="true">
+=======
+			<input type="text" name="q" value="${param.q}"
+				placeholder="여행지, 일정, 키워드로 검색해보세요." autocomplete="off">
+
+			<button type="submit" class="header-search-button" aria-label="검색">
+
+				<svg width="17" height="17" viewBox="0 0 24 24" fill="none"
+					stroke="white" stroke-width="2" aria-hidden="true">
+>>>>>>> branch 'origin' of https://github.com/yoooong96/Planb.git
 		
 					<circle cx="11" cy="11" r="8" />
 					<path d="m21 21-4.35-4.35" />
@@ -286,8 +295,23 @@ if (user != null && user.getProfileImg() != null && !user.getProfileImg().trim()
     --> <span id="adminAdDot" class="site-admin-alert-dot"
 				aria-label="새 광고 문의 있음" hidden> </span>
 
+			</span> 
+			<!-- 문의 관리 -->
+			
+			<span class="site-badge-wrap"> <a
+				id="adminInquiryHeaderButton"
+				class="site-icon-btn site-admin-direct-btn <%= "inquiries".equals(activePage) ? "active" : "" %>"
+				href="<%=ctx%>/admin/support/inquiries" title="문의 관리"
+				aria-label="문의 관리"> <svg width="19" height="19"
+						viewBox="0 0 24 24" fill="none" stroke="currentColor"
+						stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"
+						aria-hidden="true">
+            <path
+							d="M4 5h16a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2H9l-5 3v-3a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2z" />
+            <path d="M7 10h10M7 14h7" />
+        </svg>
+			</a>
 			</span>
-
 
 			<%
 			}
@@ -295,10 +319,11 @@ if (user != null && user.getProfileImg() != null && !user.getProfileImg().trim()
 
 
 
+
 			<!-- =========================
                  알림
             ========================== -->
-
+            
 			<div 
 				class="site-badge-wrap site-notification-wrap"
 				data-notification-header 
@@ -605,6 +630,13 @@ document.addEventListener(
 <%
 }
 %>
+
+<% if (isAdminHeader) { %>
+<link rel="stylesheet" href="<%=ctx%>/view/assets/css/common/adminHeaderBadges.css?v=20261013">
+<script src="<%=ctx%>/view/assets/js/common/adminHeaderBadges.js?v=20261013"
+        data-badges-url="<%=ctx%>/admin/header-badges" defer></script>
+<% } %>
+
 <script src="<%=ctx%>/view/assets/js/googlePlaceThumbnail.js?v=2"
 	data-google-place-thumbnail-loader
 	data-google-maps-key="AIzaSyB7ioaQS08aAzCl7gZPk6SyE1w7EeIrYhI" defer></script>

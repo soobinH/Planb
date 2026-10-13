@@ -1,6 +1,9 @@
 package service.support;
 
 import java.util.Arrays;
+import java.util.Map;
+import java.util.HashMap;
+import java.util.List;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -151,4 +154,67 @@ public class SupportInquiryServiceImpl implements SupportInquiryService {
 			}
 		}
 	}
+    @Override
+    public List<SupportInquiryDto> getInquiries(String status) throws Exception {
+        if (status != null && !status.isEmpty()
+                && !"RECEIVED".equals(status) && !"ANSWERING".equals(status) && !"DONE".equals(status)) {
+            throw new IllegalArgumentException("잘못된 상태값입니다.");
+        }
+        Map<String,Object> params = new HashMap<>();
+        params.put("status", status);
+        try (SqlSession session = MybatisSqlSessionFactory.getSqlSessionFactory().openSession()) {
+            return inquiryDao.selectAll(session, params);
+        }
+    }
+
+    @Override
+    public SupportInquiryDto getInquiry(long inquiryId) throws Exception {
+        if (inquiryId <= 0) throw new IllegalArgumentException("잘못된 문의 번호입니다.");
+        try (SqlSession session = MybatisSqlSessionFactory.getSqlSessionFactory().openSession()) {
+            return inquiryDao.selectOne(session, inquiryId);
+        }
+    }
+
+    @Override
+    public boolean answerInquiry(long inquiryId, long adminUserId, String answer) throws Exception {
+        if (inquiryId <= 0 || adminUserId <= 0) throw new IllegalArgumentException("잘못된 요청입니다.");
+        answer = answer == null ? "" : answer.trim();
+        if (answer.isEmpty() || answer.length() > 3000) {
+            throw new IllegalArgumentException("답변은 1~3000자로 입력해주세요.");
+        }
+        SupportInquiryDto data = new SupportInquiryDto();
+        data.setInquiryId(inquiryId);
+        data.setAnsweredByUserId(adminUserId);
+        data.setAnswer(answer);
+        try (SqlSession session = MybatisSqlSessionFactory.getSqlSessionFactory().openSession(false)) {
+            try {
+                int changed = inquiryDao.answerInquiry(session, data);
+                if (changed == 1) session.commit();
+                else session.rollback();
+                return changed == 1;
+            } catch (Exception e) {
+                session.rollback();
+                throw e;
+            }
+        }
+    }
+    @Override
+    public List<SupportInquiryDto> getMyInquiries(long userId) throws Exception {
+        if (userId <= 0) throw new SecurityException("로그인이 필요합니다.");
+        try (SqlSession session = MybatisSqlSessionFactory.getSqlSessionFactory().openSession()) {
+            return inquiryDao.selectByUser(session, userId);
+        }
+    }
+
+    @Override
+    public SupportInquiryDto getMyInquiry(long userId, long inquiryId) throws Exception {
+        if (userId <= 0) throw new SecurityException("로그인이 필요합니다.");
+        if (inquiryId <= 0) throw new IllegalArgumentException("잘못된 문의 번호입니다.");
+        Map<String,Object> params = new HashMap<>();
+        params.put("userId", userId);
+        params.put("inquiryId", inquiryId);
+        try (SqlSession session = MybatisSqlSessionFactory.getSqlSessionFactory().openSession()) {
+            return inquiryDao.selectOneByUser(session, params);
+        }
+    }
 }
