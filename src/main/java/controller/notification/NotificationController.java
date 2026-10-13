@@ -1,8 +1,6 @@
 package controller.notification;
 
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import javax.servlet.ServletException;
@@ -64,41 +62,6 @@ public class NotificationController extends HttpServlet {
 
 			} catch (Exception e) {
 				getServletContext().log("알림 목록 조회 중 오류 발생", e);
-				if ("/notifications/more".equals(path)) {
-					if (loginUser == null) {
-						JsonResponse.writeFailure(response, HttpServletResponse.SC_UNAUTHORIZED, "로그인이 필요합니다.");
-						return;
-					}
-
-					Long beforeNotificationId = parsePositiveLong(request.getParameter("beforeNotificationId"));
-
-					if (beforeNotificationId == null) {
-						JsonResponse.writeFailure(response, HttpServletResponse.SC_BAD_REQUEST,
-								"더보기 기준 알림 번호가 올바르지 않습니다.");
-						return;
-					}
-
-					try {
-						NotificationService service = new NotificationServiceImpl();
-
-						Map<String, Object> result = service
-								.getUnreadNotificationPage(Long.valueOf(loginUser.getUserId()), beforeNotificationId);
-
-						result.put("success", true);
-						JsonResponse.writeJson(response, result);
-
-					} catch (IllegalArgumentException e1) {
-						JsonResponse.writeFailure(response, HttpServletResponse.SC_BAD_REQUEST, e1.getMessage());
-
-					} catch (Exception e1) {
-						getServletContext().log("추가 알림 조회 중 오류 발생", e1);
-
-						JsonResponse.writeFailure(response, HttpServletResponse.SC_INTERNAL_SERVER_ERROR,
-								"추가 알림을 불러오지 못했습니다.");
-					}
-
-					return;
-				}
 				response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
 			}
 
@@ -123,6 +86,42 @@ public class NotificationController extends HttpServlet {
 			} catch (Exception e) {
 				getServletContext().log("헤더 알림 조회 중 오류 발생", e);
 				JsonResponse.writeFailure(response, HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "알림을 불러오지 못했습니다.");
+			}
+
+			return;
+		}
+		
+		if ("/notifications/more".equals(path)) {
+			if (loginUser == null) {
+				JsonResponse.writeFailure(response, HttpServletResponse.SC_UNAUTHORIZED, "로그인이 필요합니다.");
+				return;
+			}
+
+			Long beforeNotificationId = parsePositiveLong(request.getParameter("beforeNotificationId"));
+
+			if (beforeNotificationId == null) {
+				JsonResponse.writeFailure(response, HttpServletResponse.SC_BAD_REQUEST,
+						"더보기 기준 알림 번호가 올바르지 않습니다.");
+				return;
+			}
+
+			try {
+				NotificationService service = new NotificationServiceImpl();
+
+				Map<String, Object> result = service
+						.getUnreadNotificationPage(Long.valueOf(loginUser.getUserId()), beforeNotificationId);
+
+				result.put("success", true);
+				JsonResponse.writeJson(response, result);
+
+			} catch (IllegalArgumentException e1) {
+				JsonResponse.writeFailure(response, HttpServletResponse.SC_BAD_REQUEST, e1.getMessage());
+
+			} catch (Exception e1) {
+				getServletContext().log("추가 알림 조회 중 오류 발생", e1);
+
+				JsonResponse.writeFailure(response, HttpServletResponse.SC_INTERNAL_SERVER_ERROR,
+						"추가 알림을 불러오지 못했습니다.");
 			}
 
 			return;
