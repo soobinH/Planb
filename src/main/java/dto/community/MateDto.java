@@ -22,6 +22,7 @@ public class MateDto {
 	private String nickname;
 	private int likeCount;
 	private int commentCount;
+	private String profileImg; // 작성자 프로필 이미지
 	
 	public MateDto() {
 		super();
@@ -29,7 +30,8 @@ public class MateDto {
 	}
 	public MateDto(Long mateId, Long userId, String title, String content, String img, String visibility, int viewCount,
 			String status, Long deletedByUserId, LocalDateTime deletedAt, LocalDateTime createdAt,
-			LocalDateTime updatedAt, String country, int recruitCount, String recruitStatus, String nickname, int likeCount, int commentCount) {
+			LocalDateTime updatedAt, String country, int recruitCount, String recruitStatus, String nickname, 
+			int likeCount, int commentCount, String profileImg) {
 		super();
 		this.mateId = mateId;
 		this.userId = userId;
@@ -49,6 +51,7 @@ public class MateDto {
 		this.nickname = nickname;
 		this.likeCount = likeCount;
 		this.commentCount = commentCount;
+		this.profileImg = profileImg;
 	}
 	
 	public String getTimeAgo() {
@@ -193,6 +196,14 @@ public class MateDto {
 	public void setCommentCount(int commentCount) {
 		this.commentCount = commentCount;
 	}
+	
+	public String getProfileImg() {
+	    return profileImg;
+	}
+
+	public void setProfileImg(String profileImg) {
+	    this.profileImg = profileImg;
+	}
 	@Override
 	public String toString() {
 		return "MateDto [mateId=" + mateId + ", userId=" + userId + ", title=" + title + ", content=" + content
@@ -200,7 +211,7 @@ public class MateDto {
 				+ ", deletedByUserId=" + deletedByUserId + ", deletedAt=" + deletedAt + ", createdAt=" + createdAt
 				+ ", updatedAt=" + updatedAt + ", country=" + country + ", recruitCount=" + recruitCount
 				+ ", recruitStatus=" + recruitStatus + ", nickname=" + nickname + ", likeCount=" + likeCount
-				+ ", commentCount=" + commentCount + "]";
+				+ ", commentCount=" + commentCount + ", profileImg=" + profileImg + "]";
 	}
 	
 }

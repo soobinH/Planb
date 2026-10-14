@@ -89,7 +89,7 @@
 	</delete>
 	
 	<select id="selectTipListByFilter" parameterType="map" resultType="tip">
-		SELECT t.*, u.nickname AS nickname,
+		SELECT t.*, u.nickname AS nickname, u.profile_img AS profileImg,
 			(
 				SELECT COUNT(*) FROM TB_TIP_LIKE tl WHERE tl.tip_id = t.tip_id
 			) AS like_count,
@@ -174,7 +174,7 @@
 	
 		SELECT
 			t.*,
-			u.nickname AS nickname,
+			u.nickname AS nickname, u.profile_img AS profileImg,
 	
 			(
 				SELECT COUNT(*)
@@ -226,7 +226,8 @@
 			t.created_at AS createdAt,
 			t.updated_at AS updatedAt,
 			t.hashtag,
-			u.nickname AS nickname
+			u.nickname AS nickname,
+			u.profile_img AS profileImg
 	
 		FROM TB_TIP t
 	

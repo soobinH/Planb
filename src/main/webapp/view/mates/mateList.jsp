@@ -44,11 +44,10 @@ request.setAttribute("activePage", "mates");
 						전체보기
 					</span>
 				</a>
-				<div class="text-xs font-bold text-gray-400 uppercase tracking-widest px-3 mb-1 mt-1">여행 지역</div>
 				
 				<div class="border-t border-gray-100 mb-3"></div>
 				
-				<div class="text-xs font-bold text-gray-400 uppercase tracking-widest px-3 mb-1">대륙별 보기</div>
+				<div class="text-xs font-bold text-gray-400 uppercase tracking-widest px-3 mb-1">국가별 보기</div>
 				
 				<div>
 					<button type="button" class="continent-toggle w-full flex items-center justify-between px-3 py-2.5 rounded-xl transition-all"
