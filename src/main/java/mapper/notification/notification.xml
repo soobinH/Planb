@@ -21,9 +21,9 @@
 	</sql>
 
 	<!-- 헤더: 읽음 여부와 관계없이 최신 3건 -->
-	<!-- 헤더: 최신 미읽음 알림 3건 -->
 	<select id="selectRecentNotifications"
 		parameterType="java.lang.Long" resultType="notification">
+
 		SELECT
 		<include refid="notificationColumns" />
 		FROM tb_notification n
@@ -31,9 +31,10 @@
 		ON u.user_id =
 		n.sender_user_id
 		WHERE n.recipient_user_id = #{value}
-		AND n.is_read = 0
-		ORDER BY n.created_at DESC, n.notification_id DESC
+		ORDER BY
+		n.created_at DESC, n.notification_id DESC
 		LIMIT 3
+
 	</select>
 
 	<!-- 전체보기: 로그인 회원의 미읽음 알림 -->
@@ -50,6 +51,16 @@
 		AND n.is_read = 0
 		ORDER BY n.created_at DESC, n.notification_id DESC
 
+	</select>
+
+	<!-- 전체보기: 읽음 여부와 관계없이 최신 100건 (DB 기록은 삭제하지 않음) -->
+	<select id="selectNotificationPage" parameterType="java.lang.Long" resultType="notification">
+		SELECT <include refid="notificationColumns" />
+		FROM tb_notification n
+		LEFT JOIN tb_user u ON u.user_id = n.sender_user_id
+		WHERE n.recipient_user_id = #{value}
+		ORDER BY n.created_at DESC, n.notification_id DESC
+		LIMIT 100
 	</select>
 
 	<!-- 헤더 배지 및 전체보기 미읽음 개수 -->
@@ -125,17 +136,14 @@
 		#{targetType},
 		#{targetId},
 		#{sourceCommentId}
-		FROM
-		TB_USER recipient
+		FROM TB_USER recipient
 		WHERE recipient.user_id = #{recipientUserId}
-		AND
-		recipient.notify_comment = 1
+		AND recipient.notify_comment = 1
 		AND recipient.user_id != #{senderUserId}
 	</insert>
 
 	<insert id="insertLikeNotification" parameterType="notification">
-		INSERT INTO
-		TB_NOTIFICATION (
+		INSERT INTO TB_NOTIFICATION (
 		recipient_user_id,
 		sender_user_id,
 		notification_type,
@@ -150,21 +158,16 @@
 		#{targetId}
 		FROM TB_USER recipient
 		WHERE recipient.user_id = #{recipientUserId}
-		AND recipient.notify_like
-		= 1
+		AND recipient.notify_like = 1
 		AND recipient.user_id != #{senderUserId}
 		AND NOT EXISTS (
 		SELECT 1
 		FROM TB_NOTIFICATION existing
-		WHERE existing.recipient_user_id =
-		recipient.user_id
+		WHERE existing.recipient_user_id = recipient.user_id
 		AND existing.sender_user_id = #{senderUserId}
-		AND
-		existing.notification_type = #{notificationType}
-		AND
-		existing.target_type = #{targetType}
-		AND existing.target_id =
-		#{targetId}
+		AND existing.notification_type = #{notificationType}
+		AND existing.target_type = #{targetType}
+		AND existing.target_id = #{targetId}
 		)
 	</insert>
 
@@ -185,44 +188,15 @@
 		#{reportId}
 		FROM TB_USER admin
 		WHERE admin.role = 'ADMIN'
-		AND
-		admin.status = 'ACTIVE'
+		AND admin.status = 'ACTIVE'
 		AND NOT EXISTS (
 		SELECT 1
-		FROM TB_NOTIFICATION
-		existing
+		FROM TB_NOTIFICATION existing
 		WHERE existing.recipient_user_id = admin.user_id
-		AND
-		existing.notification_type = 'REPORT_RECEIVED'
-		AND existing.target_type
-		= 'REPORT'
+		AND existing.notification_type = 'REPORT_RECEIVED'
+		AND existing.target_type = 'REPORT'
 		AND existing.target_id = #{reportId}
 		)
 	</insert>
-
-	<!-- 마지막으로 표시한 알림 다음부터 조회 -->
-	<select id="selectUnreadNotificationPage" parameterType="map" resultType="notification">
-		SELECT
-		<include refid="notificationColumns" />
-		FROM tb_notification n
-		LEFT JOIN tb_user u
-		ON u.user_id = n.sender_user_id
-		WHERE n.recipient_user_id = #{recipientUserId}
-		AND n.is_read = 0
-
-		<if test="cursorId != null">
-			AND (
-			n.created_at &lt; #{cursorCreatedAt}
-			OR (
-			n.created_at = #{cursorCreatedAt}
-			AND n.notification_id &lt; #{cursorId}
-			)
-			)
-		</if>
-
-		ORDER BY n.created_at DESC, n.notification_id DESC
-		LIMIT #{limit}
-
-	</select>
 
 </mapper>
