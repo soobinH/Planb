@@ -187,12 +187,7 @@ String settingsPage =
 				<!-- 헤드셋 --> <svg viewBox="0 0 24 24" fill="none"
 					stroke="currentColor" stroke-width="1.7" stroke-linecap="round"
 					stroke-linejoin="round">
-
-                    <path d="M4 13a8 8 0 0 1 16 0" />
-
-                    <path d="M4 13v5a2 2 0 0 0 2 2h2v-7H4z" />
-
-                    <path d="M20 13v5a2 2 0 0 1-2 2h-2v-7h4z" />
+                    <path d="M3 14h3a2 2 0 0 1 2 2v3a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-7a9 9 0 0 1 18 0v7a2 2 0 0 1-2 2h-1a2 2 0 0 1-2-2v-3a2 2 0 0 1 2-2h3" />
 
                 </svg>
 

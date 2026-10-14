@@ -1753,3 +1753,23 @@ html::-webkit-scrollbar-thumb {
 html::-webkit-scrollbar-thumb:hover {
 	background: #a8abe0;
 }
+/* =========================================================
+   소개글 글자 수 (최대 50자)
+========================================================= */
+.settings-page .settings-field textarea[data-bio-input] {
+  min-height: 72px;
+  resize: none;
+}
+
+.settings-page .bio-counter {
+  align-self: flex-end;
+  margin-top: 6px;
+  color: #9a9aa6;
+  font-size: 12px;
+  font-variant-numeric: tabular-nums;
+}
+
+.settings-page .bio-counter.is-over {
+  color: #e5484d;
+  font-weight: 700;
+}

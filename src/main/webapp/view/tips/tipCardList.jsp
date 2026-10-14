@@ -41,6 +41,7 @@
 						</c:forEach>
 					</div>
 				</c:if>
+				<hr class="line">
 				<div class="pt-2 mt-auto border-t border-gray-50">
 					<div class="flex items-center gap-1.5 mb-1.5">
 						<div class="w-5 h-5 rounded-full flex items-center justify-center text-white text-[9px] font-bold shrink-0"

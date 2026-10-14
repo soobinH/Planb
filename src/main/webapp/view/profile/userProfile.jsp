@@ -205,6 +205,7 @@ boolean userLikedHasMore =
 <link rel="stylesheet"
 
 	href="<%=ctx%>/view/assets/css/auth/userProfile.css">
+<link rel="stylesheet" href="<%=ctx%>/view/assets/css/auth/profileFeed.css?v=2">
 
 
 <style>
@@ -391,6 +392,10 @@ boolean userLikedHasMore =
 									<%=displayName%>
 
 								</h1>
+
+								<% if (privateProfile) { %>
+								<span class="profile-private-badge"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="5" y="10" width="14" height="10" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></svg> 비공개 계정</span>
+								<% } %>
 
 							</div>
 
@@ -580,34 +585,19 @@ boolean userLikedHasMore =
 
 		%>
 
-		<section class="private-profile-state">
+		<!-- ==========================================
+		     비공개 계정: 피드 대신 잠금 영역
+		=========================================== -->
+		<div class="profile-tabs profile-tabs--locked" aria-hidden="true">
+			<span class="active"><svg class="profile-tab-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3.5" y="3.5" width="7" height="7" rx="1.5"/><rect x="13.5" y="3.5" width="7" height="7" rx="1.5"/><rect x="3.5" y="13.5" width="7" height="7" rx="1.5"/><rect x="13.5" y="13.5" width="7" height="7" rx="1.5"/></svg> <span> 게시물 </span></span>
+		</div>
 
-			<div class="private-profile-icon">
-
-				<svg width="28" height="28" viewBox="0 0 24 24" fill="none"
-
-					stroke="currentColor" stroke-width="1.6" stroke-linecap="round"
-
-					stroke-linejoin="round">
-
-	            <rect x="5" y="10" width="14" height="10" rx="2">
-
-	            </rect>
-
-	            <path d="M8 10V7a4 4 0 0 1 8 0v3">
-
-	            </path>
-
-	        </svg>
-
+		<section class="profile-locked">
+			<div class="profile-locked-card">
+				<div class="profile-locked-icon"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="5" y="10" width="14" height="10" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></svg></div>
+				<h2>비공개 계정입니다</h2>
+				<p>이 사용자는 피드를 비공개로 설정했어요.<br>여행 일정과 활동 내역은 볼 수 없습니다.</p>
 			</div>
-
-			<h2>비공개 프로필입니다.</h2>
-
-			<p>이 사용자는 프로필을 비공개로 설정했습니다.</p>
-
-			<span> 여행 일정 및 활동 정보를 확인할 수 없습니다. </span>
-
 		</section>
 
 		<%
@@ -628,7 +618,7 @@ boolean userLikedHasMore =
 
 			<button type="button" class="active" data-profile-tab="posts">
 
-				▦ <span> 게시물 </span>
+				<svg class="profile-tab-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3.5" y="3.5" width="7" height="7" rx="1.5"/><rect x="13.5" y="3.5" width="7" height="7" rx="1.5"/><rect x="3.5" y="13.5" width="7" height="7" rx="1.5"/><rect x="13.5" y="13.5" width="7" height="7" rx="1.5"/></svg> <span> 게시물 </span>
 
 			</button>
 
@@ -642,7 +632,7 @@ boolean userLikedHasMore =
 
 			<button type="button" data-profile-tab="saved">
 
-				🔖 <span> 북마크한 게시글 </span>
+				<svg class="profile-tab-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 4.5h12v16l-6-4-6 4z"/></svg> <span> 북마크한 게시글 </span>
 
 			</button>
 
@@ -662,7 +652,7 @@ boolean userLikedHasMore =
 
 			<button type="button" data-profile-tab="liked">
 
-				♡ <span> 좋아요한 게시글 </span>
+				<svg class="profile-tab-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/></svg> <span> 좋아요한 게시글 </span>
 
 			</button>
 
@@ -758,11 +748,11 @@ boolean userLikedHasMore =
 
  %>
 
-							</span> <span class="feed-hover-stats"> <span> ♥ <%=item.getLikeCount()%>
+							</span> <span class="feed-hover-stats"> <span> <svg class="feed-stat-icon" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/></svg> <%=item.getLikeCount()%>
 
-								</span> <span> 🔖 <%=item.getBookmarkCount()%>
+								</span> <span> <svg class="feed-stat-icon" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 4.5h12v16l-6-4-6 4z"/></svg> <%=item.getBookmarkCount()%>
 
-								</span> <span> 💬 <%=item.getCommentCount()%>
+								</span> <span> <svg class="feed-stat-icon" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7.9 20A9 9 0 1 0 4 16.1L2 22Z"/></svg> <%=item.getCommentCount()%>
 
 								</span>
 
@@ -891,11 +881,11 @@ boolean userLikedHasMore =
 
  %>
 
-							</span> <span class="feed-hover-stats"> <span> ♥ <%=item.getLikeCount()%>
+							</span> <span class="feed-hover-stats"> <span> <svg class="feed-stat-icon" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/></svg> <%=item.getLikeCount()%>
 
-								</span> <span> 🔖 <%=item.getBookmarkCount()%>
+								</span> <span> <svg class="feed-stat-icon" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 4.5h12v16l-6-4-6 4z"/></svg> <%=item.getBookmarkCount()%>
 
-								</span> <span> 💬 <%=item.getCommentCount()%>
+								</span> <span> <svg class="feed-stat-icon" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7.9 20A9 9 0 1 0 4 16.1L2 22Z"/></svg> <%=item.getCommentCount()%>
 
 								</span>
 
@@ -1030,11 +1020,11 @@ boolean userLikedHasMore =
 
  %>
 
-							</span> <span class="feed-hover-stats"> <span> ♥ <%=item.getLikeCount()%>
+							</span> <span class="feed-hover-stats"> <span> <svg class="feed-stat-icon" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/></svg> <%=item.getLikeCount()%>
 
-								</span> <span> 🔖 <%=item.getBookmarkCount()%>
+								</span> <span> <svg class="feed-stat-icon" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 4.5h12v16l-6-4-6 4z"/></svg> <%=item.getBookmarkCount()%>
 
-								</span> <span> 💬 <%=item.getCommentCount()%>
+								</span> <span> <svg class="feed-stat-icon" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7.9 20A9 9 0 1 0 4 16.1L2 22Z"/></svg> <%=item.getCommentCount()%>
 
 								</span>
 

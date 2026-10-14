@@ -53,13 +53,10 @@ request.setAttribute("activePage", "tips");
 						전체보기
 					</span>
 				</a>
-				<div
-					class="text-xs font-bold text-gray-400 uppercase tracking-widest px-3 mb-1 mt-1">여행 지역
-				</div>
 				
 				<div class="border-t border-gray-100 mb-3"></div>
 				
-				<div class="text-xs font-bold text-gray-400 uppercase tracking-widest px-3 mb-1">대륙별 보기</div>
+				<div class="text-xs font-bold text-gray-400 uppercase tracking-widest px-3 mb-1">국가별 보기</div>
 				
 				<div>
 					<button type="button" class="continent-toggle w-full flex items-center justify-between px-3 py-2.5 rounded-xl transition-all"
@@ -493,16 +490,50 @@ request.setAttribute("activePage", "tips");
 								</c:if>
 								<div class="pt-2 mt-auto border-t border-gray-50">
 									<div class="flex items-center gap-1.5 mb-1.5">
-										<div class="w-5 h-5 rounded-full flex items-center justify-center text-white text-[9px] font-bold shrink-0"
-											style="background: #8B5CF6">
-											<c:choose>
-												<c:when test="${not empty tip.nickname}">
-													${tip.nickname.substring(0, 1)}
-												</c:when>
-												<c:otherwise>
-													?
-												</c:otherwise>
-											</c:choose>
+										<!-- 작성자 프로필 이미지 -->
+										<div class="w-5 h-5 rounded-full overflow-hidden flex items-center justify-center text-white font-bold shrink-0"
+										     style="background: linear-gradient(135deg, #6369D1, #8B5CF6);">
+										
+										    <c:choose>
+										
+										        <%-- 프로필 이미지가 있는 경우 --%>
+										        <c:when test="${not empty tip.profileImg}">
+										
+										            <img
+										                src="${pageContext.request.contextPath}/uploads/profile/${tip.profileImg}"
+										                alt="작성자 프로필"
+										                class="w-full h-full object-cover rounded-full"
+										                loading="lazy"
+										                onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';"
+										            />
+										
+										            <%-- 이미지 로딩 실패 시 닉네임 첫 글자 --%>
+										            <span class="w-full h-full items-center justify-center"
+										                  style="display: none;">
+										                <c:choose>
+										                    <c:when test="${not empty tip.nickname}">
+										                        <c:out value="${tip.nickname.substring(0, 1)}"/>
+										                    </c:when>
+										                    <c:otherwise>U</c:otherwise>
+										                </c:choose>
+										            </span>
+										
+										        </c:when>
+										
+										        <%-- 프로필 이미지가 없는 경우 --%>
+										        <c:otherwise>
+										            <span>
+										                <c:choose>
+										                    <c:when test="${not empty tip.nickname}">
+										                        <c:out value="${tip.nickname.substring(0, 1)}"/>
+										                    </c:when>
+										                    <c:otherwise>U</c:otherwise>
+										                </c:choose>
+										            </span>
+										        </c:otherwise>
+										
+										    </c:choose>
+										
 										</div>
 										<span class="text-[10px] text-gray-500">
 											<c:out value="${tip.nickname}" default="알 수 없음" />
@@ -513,42 +544,62 @@ request.setAttribute("activePage", "tips");
 										</span>
 									</div>
 									<!-- 카드 하단 정보 -->
-									<div class="flex items-center justify-between mt-2">
+									<div class="flex items-center justify-start gap-4 mt-2 text-[11px] text-gray-400">
 									
-										<!-- 좋아요 / 댓글 -->
-										<div class="flex items-center gap-3 text-[11px] text-gray-400">
+									    <!-- 좋아요 -->
+									    <span class="flex items-center gap-1">
+									        <svg
+									            width="15"
+									            height="15"
+									            viewBox="0 0 24 24"
+									            fill="none"
+									            stroke="currentColor"
+									            stroke-width="2"
+									            stroke-linecap="round"
+									            stroke-linejoin="round">
 									
-											<!-- 좋아요 -->
-											<span class="flex items-center gap-1">
-												♡ ${tip.likeCount}
-											</span>
+									            <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" />
 									
-											<!-- 댓글 -->
-											<span class="flex items-center gap-1">
-												▢ ${tip.commentCount}
-											</span>
+									        </svg>
+									        <span>${tip.likeCount}</span>
+									    </span>
 									
-										</div>
+									    <!-- 댓글 -->
+									    <span class="flex items-center gap-1">
+									        <svg
+									            width="15"
+									            height="15"
+									            viewBox="0 0 24 24"
+									            fill="none"
+									            stroke="currentColor"
+									            stroke-width="2"
+									            stroke-linecap="round"
+									            stroke-linejoin="round">
 									
-										<!-- 조회수 -->
-										<span class="flex items-center gap-1 text-[11px] text-gray-400">
+									            <path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z" />
 									
-											<svg
-												width="13"
-												height="13"
-												viewBox="0 0 24 24"
-												fill="none"
-												stroke="currentColor"
-												stroke-width="2">
+									        </svg>
+									        <span>${tip.commentCount}</span>
+									    </span>
 									
-												<path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12Z" />
-												<circle cx="12" cy="12" r="3" />
+									    <!-- 조회수 -->
+									    <span class="flex items-center gap-1">
+									        <svg
+									            width="15"
+									            height="15"
+									            viewBox="0 0 24 24"
+									            fill="none"
+									            stroke="currentColor"
+									            stroke-width="2"
+									            stroke-linecap="round"
+									            stroke-linejoin="round">
 									
-											</svg>
+									            <path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12Z" />
+									            <circle cx="12" cy="12" r="3" />
 									
-											${tip.viewCount}
-									
-										</span>
+									        </svg>
+									        <span>${tip.viewCount}</span>
+									    </span>
 									
 									</div>
 								</div>

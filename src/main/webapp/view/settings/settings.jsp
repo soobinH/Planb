@@ -84,6 +84,7 @@ if (profilePath == null || profilePath.trim().isEmpty()) {
 <!-- 설정 CSS -->
 <link rel="stylesheet"
 	href="<%=ctx%>/view/assets/css/setting/settings.css">
+<script defer src="<%=ctx%>/view/assets/js/common/bioCounter.js"></script>
 
 </head>
 
@@ -373,7 +374,8 @@ if (profilePath == null || profilePath.trim().isEmpty()) {
 
 								<label class="settings-field full"> <span
 									class="settings-field-label"> 소개 </span> <textarea name="bio"
-										rows="4" maxlength="300"><%=bio%></textarea>
+										rows="2" maxlength="50" data-bio-input><%=bio%></textarea>
+									<small class="bio-counter" data-bio-counter><%=bio.length()%> / 50</small>
 
 								</label>
 

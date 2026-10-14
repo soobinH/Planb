@@ -39,54 +39,28 @@ public class NotificationServiceImpl implements NotificationService {
 	}
 
 	@Override
-	public Map<String, Object> getUnreadNotificationPage(Long recipientUserId, Long beforeNotificationId)
-			throws Exception {
+	public List<Map<String, Object>> getUnreadNotifications(Long recipientUserId) throws Exception {
 
 		validateUserId(recipientUserId);
 
-		if (beforeNotificationId != null && beforeNotificationId <= 0) {
-			throw new IllegalArgumentException("올바른 알림 번호가 아닙니다.");
-		}
-
 		try (SqlSession sqlSession = MybatisSqlSessionFactory.getSqlSessionFactory().openSession()) {
 
-			NotificationDto cursor = null;
+			List<NotificationDto> notifications = notificationDao.selectUnreadNotifications(sqlSession,
+					recipientUserId);
 
-			if (beforeNotificationId != null) {
-				cursor = notificationDao.selectNotification(sqlSession, beforeNotificationId, recipientUserId);
+			return toResponseList(notifications);
+		}
+	}
 
-				if (cursor == null) {
-					throw new IllegalArgumentException("더보기 기준 알림을 찾을 수 없습니다.");
-				}
-			}
-
-			// 6번째 알림이 있는지 확인하고 화면에는 5개만 전달
-			List<NotificationDto> notifications = notificationDao.selectUnreadNotificationPage(sqlSession,
-					recipientUserId, cursor, 6);
-
-			boolean hasMore = notifications.size() > 5;
-
-			if (hasMore) {
-				notifications = new ArrayList<>(notifications.subList(0, 5));
-			}
-
-			String nextCursor = null;
-
-			if (!notifications.isEmpty()) {
-				NotificationDto last = notifications.get(notifications.size() - 1);
-
-				nextCursor = String.valueOf(last.getNotificationId());
-			}
-
-			long unreadCount = notificationDao.countUnreadNotifications(sqlSession, recipientUserId);
-
+	@Override
+	public Map<String, Object> getNotificationPage(Long recipientUserId) throws Exception {
+		validateUserId(recipientUserId);
+		try (SqlSession sqlSession = MybatisSqlSessionFactory.getSqlSessionFactory().openSession()) {
+			List<NotificationDto> notifications =
+					notificationDao.selectNotificationPage(sqlSession, recipientUserId);
 			Map<String, Object> result = new HashMap<>();
-
 			result.put("notifications", toResponseList(notifications));
-			result.put("unreadCount", unreadCount);
-			result.put("hasMore", hasMore);
-			result.put("nextCursor", nextCursor);
-
+			result.put("unreadCount", notificationDao.countUnreadNotifications(sqlSession, recipientUserId));
 			return result;
 		}
 	}
@@ -157,7 +131,7 @@ public class NotificationServiceImpl implements NotificationService {
 		for (NotificationDto notification : notifications) {
 			Map<String, Object> item = new HashMap<>();
 
-			item.put("notificationId", String.valueOf(notification.getNotificationId()));
+			item.put("notificationId", notification.getNotificationId());
 			item.put("notificationType", notification.getNotificationType());
 			item.put("targetType", notification.getTargetType());
 			item.put("targetId", notification.getTargetId());
@@ -165,7 +139,6 @@ public class NotificationServiceImpl implements NotificationService {
 			item.put("label", notification.getLabel());
 			item.put("read", notification.isRead());
 			item.put("createdAt", notification.getCreatedAt());
-			item.put("createdAtText", notification.getCreatedAt() == null ? "" : new java.text.SimpleDateFormat("yyyy.MM.dd HH:mm").format(notification.getCreatedAt()));
 			item.put("targetUrl", makeTargetUrl(notification));
 
 			result.add(item);

@@ -98,18 +98,51 @@ request.setAttribute("activePage", "tips");
 							<div
 								class="flex items-center justify-between mb-7 pb-6 border-b border-gray-100">
 								<div class="flex items-center gap-3">
-									<!-- 프로필 원형 -->
-								    <div class="w-10 h-10 rounded-full flex items-center justify-center text-white font-bold"
-								         style="background: linear-gradient(135deg, #6369D1, #8B5CF6);">
-								        <c:choose>
-								            <c:when test="${not empty tip.nickname}">
-								                <c:out value="${tip.nickname.substring(0, 1)}" />
-								            </c:when>
-								            <c:otherwise>
-								                U
-								            </c:otherwise>
-								        </c:choose>
-								    </div>
+									<!-- 작성자 프로필 이미지 -->
+									<div class="w-10 h-10 rounded-full overflow-hidden flex items-center justify-center text-white font-bold shrink-0"
+									     style="background: linear-gradient(135deg, #6369D1, #8B5CF6);">
+									
+									    <c:choose>
+									
+									        <%-- 프로필 이미지가 있는 경우 --%>
+									        <c:when test="${not empty tip.profileImg}">
+									
+									            <img
+									                src="${pageContext.request.contextPath}/uploads/profile/${tip.profileImg}"
+									                alt="작성자 프로필"
+									                class="w-full h-full object-cover rounded-full"
+									                loading="lazy"
+									                onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';"
+									            />
+									
+									            <%-- 이미지 로딩 실패 시 닉네임 첫 글자 --%>
+									            <span class="w-full h-full items-center justify-center"
+									                  style="display: none;">
+									                <c:choose>
+									                    <c:when test="${not empty tip.nickname}">
+									                        <c:out value="${tip.nickname.substring(0, 1)}"/>
+									                    </c:when>
+									                    <c:otherwise>U</c:otherwise>
+									                </c:choose>
+									            </span>
+									
+									        </c:when>
+									
+									        <%-- 프로필 이미지가 없는 경우 --%>
+									        <c:otherwise>
+									            <span>
+									                <c:choose>
+									                    <c:when test="${not empty tip.nickname}">
+									                        <c:out value="${tip.nickname.substring(0, 1)}"/>
+									                    </c:when>
+									                    <c:otherwise>U</c:otherwise>
+									                </c:choose>
+									            </span>
+									        </c:otherwise>
+									
+									    </c:choose>
+									
+									</div>
 									<!-- 작성자 정보 -->
 								    <div>
 								        <p class="text-sm font-semibold text-gray-800">

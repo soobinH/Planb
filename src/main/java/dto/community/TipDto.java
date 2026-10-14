@@ -24,6 +24,7 @@ public class TipDto {
 	private String nickname;		// 작성자 닉네임
 	private int likeCount;			// 좋아요 수
 	private int commentCount;		// 댓글 수
+	private String profileImg; 		// 작성자 프로필 이미지
 
 	public TipDto() {
 		super();
@@ -32,7 +33,7 @@ public class TipDto {
 	public TipDto(Long tipId, Long userId, String title, String content, String country, String city,
 			String thumbnailImg, String visibility, int viewCount, String status, Long deletedByUserId,
 			LocalDateTime deletedAt, LocalDateTime createdAt, LocalDateTime updatedAt, String hashtag,
-			String nickname, int likeCount, int commentCount) {
+			String nickname, int likeCount, int commentCount, String profileImg) {
 
 		super();
 		this.tipId = tipId;
@@ -53,6 +54,7 @@ public class TipDto {
 		this.nickname = nickname;
 		this.likeCount = likeCount;
 		this.commentCount = commentCount;
+		this.profileImg = profileImg;
 	}
 
 	public String getTimeAgo() {
@@ -244,27 +246,24 @@ public class TipDto {
 	public void setCommentCount(int commentCount) {
 		this.commentCount = commentCount;
 	}
+	
+
+	public String getProfileImg() {
+		return profileImg;
+	}
+
+	public void setProfileImg(String profileImg) {
+		this.profileImg = profileImg;
+	}
 
 	@Override
 	public String toString() {
-		return "TipDto [tipId=" + tipId
-				+ ", userId=" + userId
-				+ ", title=" + title
-				+ ", content=" + content
-				+ ", country=" + country
-				+ ", city=" + city
-				+ ", thumbnailImg=" + thumbnailImg
-				+ ", visibility=" + visibility
-				+ ", viewCount=" + viewCount
-				+ ", status=" + status
-				+ ", deletedByUserId=" + deletedByUserId
-				+ ", deletedAt=" + deletedAt
-				+ ", createdAt=" + createdAt
-				+ ", updatedAt=" + updatedAt
-				+ ", hashtag=" + hashtag
-				+ ", nickname=" + nickname
-				+ ", likeCount=" + likeCount
-				+ ", commentCount=" + commentCount
-				+ "]";
+		return "TipDto [tipId=" + tipId + ", userId=" + userId + ", title=" + title + ", content=" + content
+				+ ", country=" + country + ", city=" + city + ", thumbnailImg=" + thumbnailImg + ", visibility="
+				+ visibility + ", viewCount=" + viewCount + ", status=" + status + ", deletedByUserId="
+				+ deletedByUserId + ", deletedAt=" + deletedAt + ", createdAt=" + createdAt + ", updatedAt=" + updatedAt
+				+ ", hashtag=" + hashtag + ", nickname=" + nickname + ", likeCount=" + likeCount + ", commentCount="
+				+ commentCount + ", profileImg=" + profileImg + "]";
 	}
+
 }

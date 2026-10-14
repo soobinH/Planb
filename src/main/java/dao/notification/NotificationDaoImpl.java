@@ -27,6 +27,12 @@ public class NotificationDaoImpl implements NotificationDao {
 	}
 
 	@Override
+	public List<NotificationDto> selectNotificationPage(SqlSession sqlSession, Long recipientUserId)
+			throws Exception {
+		return sqlSession.selectList(NAMESPACE + "selectNotificationPage", recipientUserId);
+	}
+
+	@Override
 	public long countUnreadNotifications(SqlSession sqlSession, Long recipientUserId) throws Exception {
 
 		return sqlSession.selectOne(NAMESPACE + "countUnreadNotifications", recipientUserId);
@@ -84,19 +90,5 @@ public class NotificationDaoImpl implements NotificationDao {
 		params.put("recipientUserId", recipientUserId);
 
 		return params;
-	}
-
-	@Override
-	public List<NotificationDto> selectUnreadNotificationPage(SqlSession sqlSession, Long recipientUserId,
-			NotificationDto cursor, int limit) throws Exception {
-
-		Map<String, Object> params = new HashMap<>();
-
-		params.put("recipientUserId", recipientUserId);
-		params.put("cursorId", cursor == null ? null : cursor.getNotificationId());
-		params.put("cursorCreatedAt", cursor == null ? null : cursor.getCreatedAt());
-		params.put("limit", limit);
-
-		return sqlSession.selectList(NAMESPACE + "selectUnreadNotificationPage", params);
 	}
 }

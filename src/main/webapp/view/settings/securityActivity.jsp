@@ -146,13 +146,7 @@ String loginId =
                 </section>
 
 
-                <p class="settings-footnote">
-
-                    현재 DB 명세에는 기기별 로그인 이력 테이블이 없으므로
-                    임의의 Mac/iPhone 샘플 목록은 제거했습니다.
-                    추후 로그인 이력 테이블을 추가하면 실제 데이터로 연결할 수 있습니다.
-
-                </p>
+            
 
 
             </div>

@@ -28,7 +28,8 @@
 			m.country,
 			m.recruit_count AS recruitCount,
 			m.recruit_status AS recruitStatus,
-			u.nickname AS nickname
+			u.nickname AS nickname,
+			u.profile_img AS profileImg
 		FROM TB_MATE m
 		JOIN TB_USER u ON m.user_id = u.user_id
 		WHERE m.mate_id = #{mateId} AND m.status = 'ACTIVE'
@@ -101,6 +102,7 @@
 			m.recruit_count AS recruitCount,
 			m.recruit_status AS recruitStatus,
 			u.nickname AS nickname,
+			u.profile_img AS profileImg,
 	
 			(
 				SELECT COUNT(*)

@@ -358,11 +358,11 @@ String errorMessage =
 							<label for="bio"> 소개글 <span class="optional">선택</span>
 							</label>
 
-							<textarea id="bio" name="bio" maxlength="300" rows="4"
+							<textarea id="bio" name="bio" maxlength="50" rows="2"
 								placeholder="간단한 자기소개를 입력해주세요."></textarea>
 
 							<div class="textarea-bottom">
-								<span></span> <span id="bioCounter"> 0 / 300 </span>
+								<span></span> <span id="bioCounter"> 0 / 50 </span>
 							</div>
 
 						</div>

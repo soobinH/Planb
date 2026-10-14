@@ -27,13 +27,13 @@ request.setAttribute("settingsPage", "support");
         </header>
         <section class="support-entry-grid">
           <a class="support-entry-card" href="${pageContext.request.contextPath}/support/faq">
-            <span class="support-entry-icon">▧</span><span><strong>자주 묻는 질문</strong><small>계정, 프로필, 게시글 관련 안내를 확인합니다.</small></span><span>›</span>
+            <span class="support-entry-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><path d="M12 17h.01"/></svg></span><span><strong>자주 묻는 질문</strong><small>계정, 프로필, 게시글 관련 안내를 확인합니다.</small></span><span>›</span>
           </a>
           <a class="support-entry-card" href="${pageContext.request.contextPath}/support/inquiry">
-            <span class="support-entry-icon">◯</span><span><strong>문의하기</strong><small>문의 유형과 내용을 작성해 접수하는 화면입니다.</small></span><span>›</span>
+            <span class="support-entry-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7.9 20A9 9 0 1 0 4 16.1L2 22Z"/><path d="M8 12h.01"/><path d="M12 12h.01"/><path d="M16 12h.01"/></svg></span><span><strong>문의하기</strong><small>문의 유형과 내용을 작성해 접수하는 화면입니다.</small></span><span>›</span>
           </a>
           <a class="support-entry-card" href="${pageContext.request.contextPath}/support/myInquiries">
-            <span class="support-entry-icon">▤</span><span><strong>내 문의 내역</strong><small>접수한 문의의 진행 상태와 관리자 답변을 확인합니다.</small></span><span>›</span>
+            <span class="support-entry-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="8" y="2" width="8" height="4" rx="1"/><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><path d="M12 11h4"/><path d="M12 16h4"/><path d="M8 11h.01"/><path d="M8 16h.01"/></svg></span><span><strong>내 문의 내역</strong><small>접수한 문의의 진행 상태와 관리자 답변을 확인합니다.</small></span><span>›</span>
           </a>
         </section>
         <section class="settings-panel support-links support-legal-links">
