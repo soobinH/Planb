@@ -238,6 +238,62 @@
     }
 }
 
+/* ================================
+   최상단 이동 버튼
+================================ */
+
+.mate-scroll-top-btn {
+	position: fixed;
+
+	right: clamp(16px, 2.5vw, 36px);
+	bottom: clamp(20px, 3vw, 40px);
+
+	width: clamp(44px, 4vw, 52px);
+	height: clamp(44px, 4vw, 52px);
+
+	display: flex;
+	align-items: center;
+	justify-content: center;
+
+	border: 1px solid #e0e1ff;
+	border-radius: 50%;
+
+	background: #ffffff;
+	color: #6369D1;
+
+	box-shadow: 0 6px 20px rgba(99, 105, 209, 0.18);
+
+	cursor: pointer;
+	z-index: 100;
+
+	opacity: 0;
+	visibility: hidden;
+	transform: translateY(10px);
+
+	transition:
+		opacity 0.25s ease,
+		transform 0.25s ease,
+		visibility 0.25s ease,
+		background 0.2s ease;
+}
+
+.mate-scroll-top-btn svg {
+	width: 22px;
+	height: 22px;
+}
+
+.mate-scroll-top-btn.show {
+	opacity: 1;
+	visibility: visible;
+	transform: translateY(0);
+}
+
+.mate-scroll-top-btn:hover {
+	background: #f0f1ff;
+	transform: translateY(-2px);
+}
+
+
 /* 매우 좁은 화면 */
 @media (max-width: 360px) {
 

@@ -509,7 +509,9 @@ request.setAttribute("activePage", "mates");
 				stroke-width="2.2"
 				d="M12 19V5M5 12l7-7 7 7" />
 		</svg>
-	</button>
+	</button> 
+	
+	
 	<jsp:include page="/common/footer.jsp" />
 </body>
 </html>
