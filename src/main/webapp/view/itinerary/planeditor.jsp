@@ -8,7 +8,7 @@ request.setAttribute("activePage", "planner");
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>일정 만들기 | Tripily</title>
+<title>일정 수정</title>
 <jsp:include page="/common/headStyles.jsp" />
 <link rel="stylesheet" href="${pageContext.request.contextPath}/view/assets/css/itinerary/planner.css?v=1">
 </head>

@@ -1597,3 +1597,85 @@
             min-height: 220px !important;
         }
     }
+
+/* ========================================
+   페이지/내부 스크롤바 - 여행꿀팁과 동일
+======================================== */
+html {
+    scrollbar-width: thin;
+    scrollbar-color: #c7c9e8 transparent;
+}
+
+html::-webkit-scrollbar {
+    width: 7px;
+}
+
+html::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+html::-webkit-scrollbar-thumb {
+    background: #c7c9e8;
+    border-radius: 9999px;
+}
+
+html::-webkit-scrollbar-thumb:hover {
+    background: #a8abe0;
+}
+
+#plannerDays,
+#plannerSavedPlansList,
+#plannerCountryDropdown,
+#plannerRegionDropdown,
+.planner-time-picker-column,
+.planner-publish-body,
+.planner-confirm-list,
+.planner-place-results {
+    scrollbar-width: thin;
+    scrollbar-color: #c7c9e8 transparent;
+}
+
+#plannerDays::-webkit-scrollbar,
+#plannerSavedPlansList::-webkit-scrollbar,
+#plannerCountryDropdown::-webkit-scrollbar,
+#plannerRegionDropdown::-webkit-scrollbar,
+.planner-time-picker-column::-webkit-scrollbar,
+.planner-publish-body::-webkit-scrollbar,
+.planner-confirm-list::-webkit-scrollbar,
+.planner-place-results::-webkit-scrollbar {
+    width: 7px;
+}
+
+#plannerDays::-webkit-scrollbar-track,
+#plannerSavedPlansList::-webkit-scrollbar-track,
+#plannerCountryDropdown::-webkit-scrollbar-track,
+#plannerRegionDropdown::-webkit-scrollbar-track,
+.planner-time-picker-column::-webkit-scrollbar-track,
+.planner-publish-body::-webkit-scrollbar-track,
+.planner-confirm-list::-webkit-scrollbar-track,
+.planner-place-results::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+#plannerDays::-webkit-scrollbar-thumb,
+#plannerSavedPlansList::-webkit-scrollbar-thumb,
+#plannerCountryDropdown::-webkit-scrollbar-thumb,
+#plannerRegionDropdown::-webkit-scrollbar-thumb,
+.planner-time-picker-column::-webkit-scrollbar-thumb,
+.planner-publish-body::-webkit-scrollbar-thumb,
+.planner-confirm-list::-webkit-scrollbar-thumb,
+.planner-place-results::-webkit-scrollbar-thumb {
+    background: #c7c9e8;
+    border-radius: 9999px;
+}
+
+#plannerDays::-webkit-scrollbar-thumb:hover,
+#plannerSavedPlansList::-webkit-scrollbar-thumb:hover,
+#plannerCountryDropdown::-webkit-scrollbar-thumb:hover,
+#plannerRegionDropdown::-webkit-scrollbar-thumb:hover,
+.planner-time-picker-column::-webkit-scrollbar-thumb:hover,
+.planner-publish-body::-webkit-scrollbar-thumb:hover,
+.planner-confirm-list::-webkit-scrollbar-thumb:hover,
+.planner-place-results::-webkit-scrollbar-thumb:hover {
+    background: #a8abe0;
+}
