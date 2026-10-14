@@ -109,7 +109,6 @@
 /* ========================================
    HOME - 인기 여행일정 자동 슬라이드
    - 카드 묶음을 복제해서 끊김 없이 무한 반복
-   - 마우스를 올리면 잠시 멈춤
 ======================================== */
 (function () {
 
@@ -153,14 +152,10 @@
         carousel.children[firstSet.length].offsetLeft - firstSet[0].offsetLeft;
 
     let position = 0;
-    let paused = false;
     let lastTime = null;
 
-    carousel.addEventListener('mouseenter', function () { paused = true; });
-    carousel.addEventListener('mouseleave', function () { paused = false; });
-
     function tick(time) {
-        if (lastTime !== null && !paused) {
+        if (lastTime !== null) {
             // 탭 전환 등으로 시간이 크게 벌어져도 한 번에 튀지 않도록 제한
             const delta = Math.min(time - lastTime, 50);
 

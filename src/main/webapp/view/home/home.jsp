@@ -16,7 +16,7 @@ request.setAttribute("activePage", "home");
 <title>Planb</title>
 <jsp:include page="/common/headStyles.jsp" />
 <link rel="stylesheet" href="${ctx}/view/assets/css/auth/home.css?v=3">
-<script defer src="${ctx}/view/assets/js/auth/home.js?v=3"></script>
+<script defer src="${ctx}/view/assets/js/auth/home.js?v=4"></script>
 </head>
 <body class="site-shell ph-page">
 	<jsp:include page="/common/header.jsp" />
