@@ -1,0 +1,1599 @@
+.planner-photo-layout {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) 96px;
+        gap: 12px;
+        height: 310px;
+        min-height: 310px;
+    }
+
+    .planner-photo-preview {
+        position: relative;
+        border: 2px solid #D7E600;
+        border-radius: 12px;
+        overflow: hidden;
+        background: #E5E7EB;
+        min-height: 310px;
+    }
+
+    .planner-photo-preview img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        display: block;
+    }
+
+    .planner-photo-empty {
+        position: absolute;
+        inset: 0;
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+        align-items: center;
+        justify-content: center;
+        color: #9CA3AF;
+        font-size: 12px;
+        font-weight: 600;
+        letter-spacing: -0.02em;
+    }
+
+
+    .planner-photo-thumbs {
+        display: grid;
+        grid-template-rows: repeat(3, 1fr);
+        gap: 12px;
+        min-height: 270px;
+    }
+
+    .planner-photo-thumb {
+        position: relative;
+        border: 2px solid #D1D5DB;
+        border-radius: 12px;
+        overflow: hidden;
+        background: #E5E7EB;
+        min-height: 82px;
+        cursor: pointer;
+        transition: transform .18s ease, box-shadow .18s ease, border-color .18s ease, background .18s ease;
+    }
+
+    .planner-photo-thumb:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 8px 18px rgba(99, 105, 209, 0.14);
+    }
+
+    .planner-photo-thumb::after {
+        content: "";
+        position: absolute;
+        inset: 0;
+        background: rgba(17, 24, 39, 0.42);
+        opacity: 0;
+        transition: opacity .16s ease;
+        z-index: 2;
+        pointer-events: none;
+    }
+
+    .planner-photo-thumb:hover::after {
+        opacity: 1;
+    }
+
+    .planner-photo-plus {
+        position: absolute;
+        left: 50%;
+        top: 50%;
+        transform: translate(-50%, -50%);
+        color: #9CA3AF;
+        font-size: 30px;
+        font-weight: 300;
+        line-height: 1;
+        z-index: 1;
+        pointer-events: none;
+    }
+
+    .planner-photo-thumb.has-image .planner-photo-plus {
+        display: none;
+    }
+
+    .planner-photo-hover-label {
+        position: absolute;
+        left: 50%;
+        top: 50%;
+        transform: translate(-50%, -50%);
+        color: #FFFFFF;
+        font-size: 11px;
+        font-weight: 700;
+        white-space: nowrap;
+        opacity: 0;
+        transition: opacity .16s ease;
+        z-index: 3;
+        pointer-events: none;
+    }
+
+    .planner-photo-thumb:hover .planner-photo-hover-label {
+        opacity: 1;
+    }
+
+    .planner-photo-delete {
+        position: absolute;
+        right: 6px;
+        bottom: 6px;
+        width: 24px;
+        height: 24px;
+        border-radius: 999px;
+        background: rgba(255, 255, 255, 0.96);
+        color: #6B7280;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        opacity: 0;
+        visibility: hidden;
+        transform: translateY(2px);
+        transition: opacity .16s ease, transform .16s ease, background .16s ease, color .16s ease;
+        z-index: 10;
+        cursor: pointer;
+        padding: 0;
+        box-shadow: 0 1px 4px rgba(0,0,0,.18);
+    }
+
+    .planner-photo-thumb.has-image:hover .planner-photo-delete {
+        opacity: 1;
+        visibility: visible;
+        transform: translateY(0);
+    }
+
+    .planner-photo-delete:hover {
+        background: #FFFFFF;
+        color: #DC2626;
+    }
+
+    .planner-photo-delete svg {
+        width: 13px;
+        height: 13px;
+        pointer-events: none;
+    }
+
+    .planner-photo-thumb.dragging {
+        opacity: 0.5;
+        cursor: grabbing;
+    }
+
+    .planner-photo-thumb.drag-over {
+        border-color: #6369D1;
+        box-shadow: 0 0 0 3px rgba(99, 105, 209, 0.12);
+    }
+
+    .planner-photo-thumb.active {
+        border-color: #6369D1;
+        box-shadow: 0 0 0 3px rgba(99, 105, 209, 0.12);
+    }
+
+    .planner-photo-thumb img {
+        position: absolute;
+        inset: 0;
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        display: block;
+        z-index: 1;
+    }
+
+    .planner-photo-badge {
+        position: absolute;
+        right: 8px;
+        top: 8px;
+        padding: 2px 7px;
+        border-radius: 999px;
+        background: #EF4444;
+        color: #fff;
+        font-size: 10px;
+        font-weight: 700;
+        line-height: 1.2;
+        z-index: 4;
+    }
+
+    .planner-photo-guide {
+        margin-top: 10px;
+        font-size: 11px;
+        color: #6B7280;
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        column-gap: 16px;
+        row-gap: 4px;
+        align-items: center;
+    }
+
+    .planner-photo-guide span {
+        display: block;
+        white-space: nowrap;
+    }
+
+    .planner-time-grid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 10px;
+    }
+
+    .planner-time-box {
+        height: 42px;
+        border: 1px solid #E5E7EB;
+        border-radius: 10px;
+        background: #fff;
+        display: flex;
+        align-items: center;
+        padding: 0 12px;
+        gap: 8px;
+    }
+
+    .planner-time-box label {
+        font-size: 11px;
+        font-weight: 700;
+        color: #6B7280;
+        white-space: nowrap;
+    }
+
+    .planner-time-box input {
+        flex: 1;
+        min-width: 0;
+        border: none;
+        outline: none;
+        background: transparent;
+        font-size: 13px;
+        color: #111827;
+        cursor: pointer;
+    }
+
+    .planner-time-box input[type="time"]::-webkit-calendar-picker-indicator {
+        display: none;
+        -webkit-appearance: none;
+    }
+
+    .planner-time-trigger {
+        width: 24px;
+        height: 24px;
+        flex: 0 0 24px;
+        border: 0;
+        background: transparent;
+        color: #6B7280;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 6px;
+        cursor: pointer;
+        padding: 0;
+    }
+
+    .planner-time-trigger:hover {
+        background: #F3F4F6;
+        color: #374151;
+    }
+
+    .planner-time-picker {
+        position: fixed;
+        z-index: 9999;
+        width: 236px;
+        padding: 10px;
+        border: 1px solid #E5E7EB;
+        border-radius: 12px;
+        background: #fff;
+        box-shadow: 0 16px 40px rgba(17, 24, 39, 0.18);
+        display: none;
+    }
+
+    .planner-time-picker.is-open {
+        display: block;
+    }
+
+    .planner-time-picker-head,
+    .planner-time-picker-columns {
+        display: grid;
+        grid-template-columns: 68px 1fr 1fr;
+        gap: 6px;
+    }
+
+    .planner-time-picker-head {
+        padding: 0 2px 6px;
+        color: #9CA3AF;
+        font-size: 10px;
+        font-weight: 800;
+        text-align: center;
+    }
+
+    .planner-time-picker-column {
+        max-height: 184px;
+        overflow-y: auto;
+        overscroll-behavior: contain;
+        scrollbar-width: thin;
+        border-radius: 8px;
+        background: #F9FAFB;
+        padding: 4px;
+    }
+
+    .planner-time-picker-column[data-time-column="period"] {
+        align-self: start;
+    }
+
+    .planner-time-option {
+        width: 100%;
+        min-height: 30px;
+        border: 0;
+        border-radius: 7px;
+        background: transparent;
+        color: #4B5563;
+        font-size: 12px;
+        font-weight: 700;
+        cursor: pointer;
+    }
+
+    .planner-time-option:hover {
+        background: #EEF2FF;
+        color: #4F46E5;
+    }
+
+    .planner-time-option.is-selected {
+        background: #6366F1;
+        color: #fff;
+    }
+
+    .planner-block-type-row {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        margin-top: 12px;
+        margin-bottom: 10px;
+    }
+
+    .planner-form-column {
+        height: 310px;
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    .planner-field {
+        height: 42px;
+        min-height: 42px;
+    }
+
+
+    .planner-cost-field {
+        width: min(100%, 340px);
+        margin-right: auto;
+        justify-content: flex-start;
+        gap: 10px;
+        position: relative;
+        overflow: visible;
+    }
+
+    .planner-cost-mode-btn {
+        flex: 0 0 auto;
+        min-width: 88px;
+        height: 30px;
+        padding: 0 12px;
+        border: none;
+        border-radius: 10px;
+        background: #6369D1;
+        color: #FFFFFF;
+        font-size: 12px;
+        font-weight: 700;
+        line-height: 1;
+        cursor: pointer;
+    }
+
+    .planner-cost-mode-btn {
+        transition: background-color .15s ease, box-shadow .15s ease, transform .15s ease;
+    }
+
+    .planner-cost-mode-btn:hover {
+        background: #555AC4;
+        box-shadow: 0 2px 8px rgba(99, 105, 209, .22);
+    }
+
+    .planner-day-header {
+        transition: filter .15s ease, box-shadow .15s ease;
+    }
+
+    .planner-day-header:hover {
+        filter: brightness(.92);
+        box-shadow: 0 3px 10px rgba(79, 70, 229, .12);
+    }
+
+    .planner-item-cost {
+        text-align: right;
+    }
+
+    .planner-cost-unit {
+        color: #111827;
+    }
+
+    .planner-foreign-cost {
+        color: #9CA3AF;
+        white-space: nowrap;
+    }
+
+    .planner-memo-field {
+        flex: 1 1 auto;
+        min-height: 72px;
+        display: flex;
+        padding: 10px 12px;
+    }
+
+    .planner-memo-field textarea {
+        width: 100%;
+        height: 100%;
+        min-height: 0;
+        resize: vertical;
+    }
+
+    .planner-block-body.is-collapsed {
+        display: none;
+    }
+
+    .planner-block-toggle {
+        width: 26px;
+        height: 26px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 7px;
+    }
+
+    .planner-block-grid {
+        display: grid;
+        grid-template-columns: minmax(0, 1.05fr) minmax(340px, .95fr);
+        gap: 16px;
+    }
+
+    .planner-block-card {
+        border: 2px solid #E5E7EB;
+        border-radius: 16px;
+        background: #fff;
+        box-shadow: 0 8px 24px rgba(99, 105, 209, 0.08);
+    }
+
+    .planner-block-summary {
+        border: 1px solid #E5E7EB;
+        border-radius: 14px;
+        background: #fff;
+        padding: 14px 16px;
+    }
+
+
+    .planner-day-body.is-collapsed, .planner-block-body.is-collapsed { display:none; }
+    .planner-type-btn { border:1px solid transparent; opacity:.62; transition:.15s ease; }
+    .planner-type-btn.is-selected { opacity:1; box-shadow:0 0 0 2px rgba(99,105,209,.08); }
+    .planner-saved-plan.is-hidden { display:none; }
+    /* 일정 가져오기 목록이 많아져도 카드 높이를 줄이지 않고 목록 영역만 스크롤 */
+    #plannerSavedPlansList { min-height:0; overflow-y:auto; overflow-x:hidden; overscroll-behavior:contain; }
+    #plannerSavedPlansList > .planner-saved-plan { flex:0 0 auto; flex-shrink:0; }
+    .planner-save-message { position:fixed; right:24px; bottom:24px; z-index:9999; background:#111827; color:#fff; padding:10px 14px; border-radius:10px; font-size:12px; font-weight:700; box-shadow:0 10px 30px rgba(0,0,0,.18); }
+
+    @media (max-width: 1400px) {
+        .planner-block-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .planner-photo-layout {
+            grid-template-columns: minmax(0, 1fr) 88px;
+        }
+    }
+
+    .planner-day-body {
+        padding: 12px;
+        border: 1px solid #E5E7EB;
+        border-radius: 12px;
+        background: #FFFFFF;
+        overflow: hidden;
+    }
+
+    .planner-add-block-btn {
+        width: calc(100% + 24px);
+        min-height: 42px;
+        margin: 0 -12px -12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 6px;
+        padding: 10px 12px;
+        border: 0;
+        border-top: 1px solid #E5E7EB;
+        border-radius: 0 0 11px 11px;
+        background: #FAFAFC;
+        color: #6369D1;
+        font-size: 12px;
+        font-weight: 700;
+        transition: background .16s ease, color .16s ease;
+    }
+    .planner-add-block-btn:hover { color:#555CD6; background:#F3F3FB; }
+    .planner-day-body.is-drop-target { border-radius: 14px; outline: 2px dashed #8B91FF; outline-offset: 4px; background: #F8F8FF; }
+    .planner-saved-plan-head[draggable="true"] { cursor: grab; }
+    .planner-saved-plan-head[draggable="true"]:active { cursor: grabbing; }
+    .planner-saved-day { border: 1px solid #E5E7EB; border-radius: 10px; margin: 6px 8px; background: #fff; }
+    .planner-saved-item { border-color: #E5E7EB !important; background: #fff; }
+    .planner-day-title { cursor: text; border-radius: 7px; padding: 2px 5px; margin-left: -5px; display:inline-flex; width:fit-content; max-width:100%; }
+    .planner-day-title:hover { background: rgba(255,255,255,.14); }
+    .planner-day-edit-icon { display:inline-flex; align-items:center; justify-content:center; width:18px; height:18px; margin-left:2px; transform:translateY(3px); border:0; border-radius:5px; background:transparent; color:rgba(255,255,255,.42); cursor:pointer; transition:color .15s ease, background .15s ease; vertical-align:middle; }
+    .planner-day-edit-icon:hover { color:rgba(255,255,255,.9); background:rgba(255,255,255,.12); }
+    .planner-day-edit-icon svg { width:11px; height:11px; pointer-events:none; }
+    .planner-day-title-input { width: 120px; min-width: 72px; max-width: 420px; height: 28px; padding: 0 8px; border: 1px solid rgba(255,255,255,.55); border-radius: 7px; outline: none; background: rgba(255,255,255,.16); color: #fff; font-size: 14px; font-weight: 700; }
+    .planner-block-card { transition: background .16s ease, border-color .16s ease, box-shadow .16s ease; }
+    .planner-block-card:hover { background:#FAFAFD; }
+    .planner-block-header { cursor:pointer; border-bottom:0 !important; transition: background .16s ease; border-radius:10px; }
+    .planner-block-header:hover { background:rgba(99,105,209,.035); }
+    .planner-block-header button { cursor:pointer; }
+    .planner-date-row { width:100%; display:flex; align-items:center; justify-content:center; gap:10px; }
+    .planner-date-row input[type="date"] { flex:1 1 0; width:auto !important; min-width:0; text-align:center; }
+    .planner-date-row svg { flex:0 0 auto; }
+    .planner-date-row input[type="date"]::-webkit-datetime-edit { text-align:center; width:100%; }
+    #plannerCenterPanel { transition: opacity .18s ease, filter .18s ease; }
+    #plannerCenterPanel.is-country-locked { opacity:.46; filter:grayscale(1) blur(.25px); pointer-events:none; user-select:none; }
+
+    .planner-confirm-backdrop { position:fixed; inset:0; z-index:10000; display:none; align-items:center; justify-content:center; background:rgba(0,0,0,.40); padding:20px; }
+    .planner-confirm-backdrop.is-open { display:flex; }
+    .planner-confirm-modal { width:min(360px,100%); border:0; border-radius:16px; background:#fff; box-shadow:0 25px 50px -12px rgba(0,0,0,.28); padding:24px; display:flex; flex-direction:column; gap:16px; }
+    .planner-confirm-content { display:flex; flex-direction:column; gap:8px; }
+    .planner-confirm-head { display:flex; align-items:center; gap:8px; }
+    .planner-confirm-icon { width:32px; height:32px; border-radius:999px; display:flex; align-items:center; justify-content:center; flex:0 0 auto; background:#FEE2E2; color:#EF4444; }
+    .planner-confirm-icon svg { width:15px; height:15px; }
+    .planner-confirm-title { margin:0; color:#1F2937; font-size:16px; font-weight:700; line-height:1.35; }
+    .planner-confirm-body { display:flex; flex-direction:column; gap:8px; margin-top:4px; }
+    .planner-confirm-message { margin:0; color:#4B5563; font-size:14px; line-height:1.55; }
+    .planner-confirm-message strong { color:#1F2937; font-weight:600; }
+    .planner-confirm-list { display:none; flex-direction:column; gap:4px; max-height:128px; overflow-y:auto; padding:10px 12px; border:1px solid #FEE2E2; border-radius:12px; background:#FEF2F2; }
+    .planner-confirm-list.is-visible { display:flex; }
+    .planner-confirm-list-item { display:flex; align-items:center; gap:8px; min-width:0; color:#374151; font-size:12px; line-height:1.4; }
+    .planner-confirm-list-dot { width:7px; height:7px; border-radius:999px; flex:0 0 auto; background:#8B5CF6; }
+    .planner-confirm-list-name { overflow:hidden; white-space:nowrap; text-overflow:ellipsis; }
+    .planner-confirm-list-time { margin-left:auto; color:#9CA3AF; flex:0 0 auto; }
+    .planner-confirm-warning { margin:0; color:#EF4444; font-size:12px; font-weight:600; }
+    .planner-confirm-actions { display:flex; gap:8px; padding:0; }
+    .planner-confirm-btn { flex:1 1 0; height:40px; border-radius:12px; font-size:14px; font-weight:600; border:1px solid #E5E7EB; transition:background .15s ease,border-color .15s ease; }
+    .planner-confirm-cancel { background:#fff; color:#4B5563; }
+    .planner-confirm-delete { border-color:#EF4444; background:#EF4444; color:#fff; font-weight:700; }
+    .planner-confirm-cancel:hover { background:#F9FAFB; }
+    .planner-confirm-delete:hover { background:#DC2626; border-color:#DC2626; }
+
+    .planner-required-backdrop { position:fixed; inset:0; z-index:10020; display:none; align-items:center; justify-content:center; background:rgba(0,0,0,.40); padding:20px; }
+    .planner-required-backdrop.is-open { display:flex; }
+    .planner-required-modal { width:min(380px,100%); border-radius:16px; background:#fff; padding:24px; box-shadow:0 25px 50px -12px rgba(0,0,0,.28); }
+    .planner-required-icon { width:34px; height:34px; border-radius:999px; display:flex; align-items:center; justify-content:center; background:#FEF2F2; color:#EF4444; font-weight:800; }
+    .planner-required-list { margin:12px 0 0; padding-left:20px; color:#4B5563; font-size:13px; line-height:1.75; list-style:disc; }
+
+    #plannerCountryDropdown button,
+    #plannerRegionDropdown button { width:100%; min-height:40px; text-align:left; transition:background .15s ease; }
+    #plannerCountryDropdown button:hover,
+    #plannerRegionDropdown button:hover { background:#FAF5FF; }
+    #plannerCountryDropdown::-webkit-scrollbar,
+    #plannerRegionDropdown::-webkit-scrollbar { width:8px; }
+    #plannerCountryDropdown::-webkit-scrollbar-track,
+    #plannerRegionDropdown::-webkit-scrollbar-track { background:#F9FAFB; }
+    #plannerCountryDropdown::-webkit-scrollbar-thumb,
+    #plannerRegionDropdown::-webkit-scrollbar-thumb { background:#C7CBD4; border-radius:999px; }
+    #plannerCountryDropdown,
+    #plannerRegionDropdown { scrollbar-width:thin; scrollbar-color:#C7CBD4 #F9FAFB; }
+
+    .planner-day-header[draggable="true"] { cursor:grab; }
+    .planner-day-header[draggable="true"]:active { cursor:grabbing; }
+    .planner-structure-grip {
+        flex:0 0 auto;
+        display:inline-flex;
+        align-items:center;
+        justify-content:center;
+        width:16px;
+        height:24px;
+        font-size:15px;
+        line-height:1;
+        letter-spacing:-2px;
+        opacity:.58;
+        user-select:none;
+        pointer-events:none;
+    }
+    .planner-day-header .planner-structure-grip { color:rgba(255,255,255,.92); }
+    .planner-block-header .planner-structure-grip { color:#9CA3AF; }
+    .planner-day-header:hover .planner-structure-grip,
+    .planner-block-header:hover .planner-structure-grip { opacity:.95; }
+    .planner-block-header[draggable="true"] { cursor:grab; }
+    .planner-block-header[draggable="true"]:active { cursor:grabbing; }
+    .planner-day.is-day-dragging { opacity:.48; }
+    .planner-day.is-day-drag-over { outline:2px solid rgba(99,105,209,.35); outline-offset:3px; border-radius:14px; }
+
+
+    /* 드래그 중에만 나타나는 구조 편집 모드 */
+    #plannerDays.planner-structure-drag-mode {
+        position: relative;
+        padding-top: 12px;
+        padding-bottom: 20px;
+    }
+    #plannerDays.planner-structure-drag-mode .planner-add-day-btn,
+    #plannerDays.planner-structure-drag-mode #plannerAddDay { opacity:.28; pointer-events:none; }
+    #plannerDays.planner-structure-drag-mode .planner-day {
+        margin-bottom: 8px !important;
+        transition: opacity .15s ease, transform .15s ease;
+    }
+    #plannerDays.planner-drag-day-mode .planner-day-body { display:none !important; }
+    #plannerDays.planner-drag-day-mode .planner-day-header {
+        min-height: 52px;
+        box-shadow: 0 1px 0 rgba(17,24,39,.02);
+    }
+    /*
+     * BLOCK 드래그 중에는 모든 DAY를 한꺼번에 펼치지 않는다.
+     * 현재 마우스가 올라간 DAY만 본문을 열어 드롭 위치를 보여준다.
+     * 기존 is-collapsed 상태 자체는 건드리지 않으므로 드래그 종료 후 원래 상태로 돌아간다.
+     */
+    #plannerDays.planner-drag-block-mode .planner-day-body,
+    #plannerDays.planner-drag-block-mode .planner-day-body.is-collapsed {
+        display:none !important;
+    }
+    #plannerDays.planner-drag-block-mode .planner-day.planner-block-drag-hover > .planner-day-body,
+    #plannerDays.planner-drag-block-mode .planner-day.planner-block-drag-hover > .planner-day-body.is-collapsed {
+        display:flex !important;
+        gap:7px !important;
+        min-height:58px;
+        padding:10px;
+        background:#FCFCFF;
+    }
+    #plannerDays.planner-drag-block-mode .planner-day.planner-block-drag-hover > .planner-day-header {
+        box-shadow:0 0 0 2px rgba(99,105,209,.18);
+    }
+    #plannerDays.planner-drag-block-mode .planner-block-body { display:none !important; }
+    #plannerDays.planner-drag-block-mode .planner-block-card {
+        padding:7px 9px !important;
+        margin:0 !important;
+        border-color:#E6E7F2 !important;
+        background:#fff;
+        box-shadow:none !important;
+    }
+    #plannerDays.planner-drag-block-mode .planner-block-header {
+        min-height:34px;
+        padding:0 2px !important;
+        border-radius:8px;
+    }
+    #plannerDays.planner-drag-block-mode .planner-add-block-btn,
+    #plannerDays.planner-drag-block-mode .planner-empty-day-hint { display:none !important; }
+    .planner-structure-source { opacity:.38 !important; }
+    /* 가져온 DAY/일정이 기본 빈 D1을 대체하는 경우 드래그 미리보기에서도 D1을 숨긴다. */
+    .planner-day.planner-import-replaced-starter { display:none !important; }
+
+    .planner-drop-slot {
+        position:relative;
+        display:flex;
+        align-items:center;
+        justify-content:center;
+        width:100%;
+        min-height:18px;
+        margin:4px 0;
+        border:1px dashed transparent;
+        border-radius:12px;
+        color:#777CCF;
+        transition:min-height .14s ease, background .14s ease, border-color .14s ease, margin .14s ease;
+        overflow:hidden;
+    }
+    .planner-drop-slot::before {
+        content:'';
+        width:calc(100% - 24px);
+        height:2px;
+        border-radius:999px;
+        background:#D8DAF7;
+        transition:height .14s ease, background .14s ease;
+    }
+    .planner-drop-slot.is-active {
+        min-height:72px;
+        margin:8px 0;
+        border-color:#8B91FF;
+        background:rgba(99,105,209,.055);
+        box-shadow:inset 0 0 0 1px rgba(99,105,209,.04);
+    }
+    .planner-drop-slot.is-active::before { display:none; }
+    .planner-drop-slot.is-block-slot.is-active { min-height:56px; }
+    .planner-drop-preview {
+        display:none;
+        width:calc(100% - 18px);
+        padding:8px 10px;
+        border:1px solid rgba(99,105,209,.34);
+        border-radius:10px;
+        background:rgba(255,255,255,.78);
+        color:#4F56BE;
+        box-shadow:0 8px 22px rgba(79,86,190,.10);
+        pointer-events:none;
+    }
+    .planner-drop-slot.is-active .planner-drop-preview { display:block; }
+    .planner-drop-preview-title {
+        display:flex;
+        align-items:center;
+        gap:7px;
+        min-width:0;
+        font-size:12px;
+        font-weight:800;
+    }
+    .planner-drop-preview-title span:last-child {
+        overflow:hidden;
+        text-overflow:ellipsis;
+        white-space:nowrap;
+    }
+    .planner-drop-preview-days { display:flex; flex-direction:column; gap:5px; margin-top:6px; }
+    .planner-drop-preview-day {
+        display:flex;
+        align-items:center;
+        gap:7px;
+        min-height:30px;
+        padding:5px 8px;
+        border:1px solid rgba(99,105,209,.22);
+        border-radius:8px;
+        background:rgba(248,248,255,.92);
+        font-size:11px;
+        font-weight:700;
+    }
+    .planner-drop-preview-day-badge {
+        flex:0 0 auto;
+        min-width:26px;
+        padding:2px 5px;
+        border-radius:6px;
+        background:#6369D1;
+        color:#fff;
+        text-align:center;
+        font-size:9px;
+        font-weight:900;
+    }
+    .planner-drop-preview-block {
+        display:flex;
+        align-items:center;
+        gap:8px;
+        min-width:0;
+    }
+    .planner-drop-preview-type {
+        flex:0 0 auto;
+        padding:3px 7px;
+        border-radius:999px;
+        font-size:9px;
+        font-weight:800;
+    }
+    .planner-drop-preview-name {
+        min-width:0;
+        overflow:hidden;
+        text-overflow:ellipsis;
+        white-space:nowrap;
+        color:#374151;
+        font-size:11px;
+        font-weight:700;
+    }
+    .planner-drag-help {
+        position:sticky;
+        top:4px;
+        z-index:12;
+        display:flex;
+        align-items:center;
+        justify-content:center;
+        gap:7px;
+        width:max-content;
+        max-width:calc(100% - 20px);
+        margin:0 auto 10px;
+        padding:7px 11px;
+        border:1px solid #E0E1FA;
+        border-radius:999px;
+        background:rgba(255,255,255,.96);
+        color:#6369D1;
+        font-size:11px;
+        font-weight:800;
+        box-shadow:0 6px 18px rgba(99,105,209,.10);
+        pointer-events:none;
+    }
+
+
+
+
+    /* 구조 드래그 v2: 원본은 자리에서 빠지고, 삽입 위치에 작성 폼 헤더와 동일한 미리보기만 표시 */
+    .planner-structure-source {
+        opacity:0 !important;
+        height:0 !important;
+        min-height:0 !important;
+        max-height:0 !important;
+        margin:0 !important;
+        padding:0 !important;
+        border-width:0 !important;
+        overflow:hidden !important;
+        pointer-events:none !important;
+    }
+    .planner-drop-slot { overflow:visible; }
+    .planner-drop-preview {
+        display:none;
+        width:calc(100% - 10px);
+        padding:0;
+        border:0;
+        border-radius:0;
+        background:transparent;
+        color:inherit;
+        box-shadow:none;
+        pointer-events:none;
+    }
+    .planner-drop-slot.is-active .planner-drop-preview { display:block; }
+    .planner-drop-preview-stack { display:flex; flex-direction:column; gap:8px; width:100%; }
+    .planner-drop-form-day { width:100%; opacity:.72; }
+    .planner-drop-form-day .planner-day-header {
+        width:100%;
+        min-height:52px;
+        box-shadow:0 8px 22px rgba(79,86,190,.12);
+        pointer-events:none;
+    }
+    .planner-drop-form-block-card {
+        width:100%;
+        padding:10px 12px;
+        border:1px solid #E6E7F2;
+        border-radius:12px;
+        background:rgba(255,255,255,.84);
+        box-shadow:0 8px 22px rgba(17,24,39,.08);
+        opacity:.74;
+        pointer-events:none;
+    }
+    .planner-drop-form-block-card .planner-block-header {
+        min-height:34px;
+        padding:0 2px !important;
+    }
+    .planner-native-drag-ghost {
+        position:fixed;
+        left:-10000px;
+        top:-10000px;
+        z-index:-1;
+        width:320px;
+        max-width:320px;
+        padding:4px;
+        pointer-events:none;
+    }
+
+    .planner-publish-backdrop {
+        position: fixed;
+        inset: 0;
+        z-index: 10050;
+        display: none;
+        align-items: center;
+        justify-content: center;
+        padding: 20px;
+        background: rgba(17, 24, 39, .52);
+        backdrop-filter: blur(3px);
+    }
+    .planner-publish-backdrop.is-open { display: flex; }
+
+    .planner-publish-modal {
+        width: min(1080px, calc(100vw - 32px));
+        height: auto;
+        max-height: calc(100vh - 40px);
+        display: flex;
+        flex-direction: column;
+        overflow: hidden;
+        border-radius: 22px;
+        background: #fff;
+        box-shadow: 0 24px 70px rgba(0,0,0,.24);
+    }
+
+    .planner-publish-head,
+    .planner-publish-footer {
+        flex: 0 0 auto;
+        background: #fff;
+    }
+
+    .planner-publish-body {
+        flex: 0 1 auto;
+        min-height: 0;
+        max-height: calc(100vh - 180px);
+        overflow-y: auto;
+        overflow-x: hidden;
+        padding: 22px 24px;
+    }
+
+    .planner-publish-grid {
+        width: 100%;
+        min-width: 0;
+        display: grid;
+        grid-template-columns: minmax(420px, 460px) minmax(360px, 1fr);
+        gap: 30px;
+        align-items: start;
+    }
+
+    .planner-publish-column {
+        min-width: 0;
+        display: block;
+        visibility: visible;
+        opacity: 1;
+    }
+
+    .planner-publish-controls {
+        display: block !important;
+        min-width: 0;
+        padding: 16px;
+        border: 1px solid #ECEEF5;
+        border-radius: 16px;
+        background: #FAFBFF;
+        transition: box-shadow .18s ease, border-color .18s ease;
+    }
+
+    .planner-publish-controls.is-emphasis {
+        border-color: #6369D1;
+        box-shadow: 0 0 0 4px rgba(99,105,209,.10);
+    }
+
+    /*
+     * scheduleList.jsp의 실제 여행일정 카드 구조에 맞춘 미리보기 카드
+     */
+    .planner-publish-card {
+        width: 100%;
+        min-height: 520px;
+        overflow: hidden;
+        border: 1px solid #D1D2F9;
+        border-radius: 16px;
+        background: #fff;
+        box-shadow: 0 2px 8px rgba(0,0,0,.07);
+    }
+
+    .planner-publish-cover {
+        position: relative;
+        width: 100%;
+        aspect-ratio: 16 / 11;
+        overflow: hidden;
+        background: #F0F0FF;
+        cursor: pointer;
+    }
+
+    .planner-publish-cover img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        display: none;
+        transition: transform .3s ease;
+    }
+
+    .planner-publish-cover.has-image img {
+        display: block;
+    }
+
+    .planner-publish-cover.has-image:hover img {
+        transform: scale(1.035);
+    }
+
+    .planner-publish-cover-empty {
+        position: absolute;
+        inset: 0;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        color: #6369D1;
+        font-size: 12px;
+        font-weight: 800;
+    }
+
+    .planner-publish-cover.has-image .planner-publish-cover-empty {
+        display: none;
+    }
+
+    .planner-publish-cover-change {
+        position: absolute;
+        inset: 0;
+        display: none;
+        align-items: center;
+        justify-content: center;
+        background: rgba(17,24,39,.42);
+        color: #fff;
+        font-size: 12px;
+        font-weight: 800;
+    }
+
+    .planner-publish-cover.has-image:hover .planner-publish-cover-change {
+        display: flex;
+    }
+
+    .planner-publish-bookmark {
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        z-index: 3;
+        width: 28px;
+        height: 28px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 999px;
+        background: rgba(255,255,255,.92);
+        box-shadow: 0 1px 5px rgba(0,0,0,.10);
+        pointer-events: none;
+    }
+
+    .planner-publish-card-body {
+        padding: 14px;
+    }
+
+    .planner-publish-card-title {
+        margin: 0 0 4px;
+        color: #18181B;
+        font-size: 14px;
+        font-weight: 700;
+        line-height: 1.45;
+        display: -webkit-box;
+        -webkit-box-orient: vertical;
+        -webkit-line-clamp: 2;
+        overflow: hidden;
+    }
+
+    .planner-publish-card-summary {
+        margin: 0 0 10px;
+        color: #6B7280;
+        font-size: 12px;
+        line-height: 1.6;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    .planner-publish-card-dates {
+        margin: 0 0 8px;
+        color: #9CA3AF;
+        font-size: 11px;
+    }
+
+    .planner-publish-card-stats {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        margin-bottom: 12px;
+        color: #9CA3AF;
+        font-size: 11px;
+    }
+
+    .planner-publish-card-footer {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        padding-top: 10px;
+        border-top: 1px solid #D1D2F9;
+    }
+
+    .planner-publish-card-author {
+        min-width: 0;
+        color: #6B7280;
+        font-size: 11px;
+        font-weight: 600;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+
+    .planner-publish-card-created {
+        flex: 0 0 auto;
+        color: #9CA3AF;
+        font-size: 10px;
+    }
+
+    .planner-publish-photo-list {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 10px;
+        max-height: 250px;
+        overflow-y: auto;
+        overflow-x: hidden;
+        padding: 2px 4px 2px 2px;
+    }
+
+    .planner-publish-photo-option {
+        position: relative;
+        width: 100%;
+        aspect-ratio: 4 / 3;
+        padding: 0;
+        overflow: hidden;
+        border: 2px solid transparent;
+        border-radius: 12px;
+        background: #F3F4F6;
+        cursor: pointer;
+        box-sizing: border-box;
+    }
+
+    .planner-publish-photo-option img {
+        width:100%;
+        height:100%;
+        object-fit:cover;
+        display:block;
+    }
+
+    .planner-publish-photo-option.is-selected {
+        border-color:#6369D1;
+        box-shadow:0 0 0 2px rgba(99,105,209,.12);
+    }
+
+    .planner-publish-photo-option.is-selected::after {
+        content: '선택';
+        position: absolute;
+        right: 6px;
+        bottom: 6px;
+        padding: 3px 7px;
+        border-radius: 999px;
+        background: #6369D1;
+        color: #fff;
+        font-size: 10px;
+        font-weight: 800;
+    }
+
+    .planner-publish-summary {
+        display: block !important;
+        visibility: visible !important;
+        opacity: 1 !important;
+        width: 100%;
+        max-width: 100%;
+        min-width: 0;
+        min-height: 140px;
+        max-height: 230px;
+        resize: vertical;
+        box-sizing: border-box;
+        border: 1px solid #D1D5DB;
+        border-radius: 12px;
+        padding: 12px 13px;
+        outline: none;
+        color: #374151;
+        background: #fff;
+        font-size: 13px;
+        line-height: 1.6;
+    }
+
+    .planner-publish-summary:focus {
+        border-color:#6369D1;
+        box-shadow:0 0 0 3px rgba(99,105,209,.10);
+    }
+
+    .planner-publish-error {
+        display: none;
+        margin-top: 8px;
+        color: #DC2626;
+        font-size: 11px;
+        font-weight: 700;
+    }
+
+    .planner-publish-error.is-visible {
+        display:block;
+    }
+
+    @media (max-width: 800px) {
+        .planner-publish-modal {
+            height: auto;
+            max-height: calc(100vh - 24px);
+        }
+
+        .planner-publish-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .planner-publish-card {
+            max-width: 390px;
+            margin: 0 auto;
+        }
+    }
+
+    .planner-place-field {
+        position: relative;
+        overflow: visible;
+    }
+
+    .planner-place-search {
+        width: 100%;
+    }
+
+    .planner-place-results {
+        position: absolute;
+        left: 0;
+        right: 0;
+        top: calc(100% + 6px);
+        z-index: 120;
+        display: none;
+        max-height: 240px;
+        overflow-y: auto;
+        border: 1px solid #D1D5DB;
+        border-radius: 12px;
+        background: #fff;
+        box-shadow: 0 12px 28px rgba(15, 23, 42, .14);
+    }
+
+    .planner-place-results.is-open {
+        display: block;
+    }
+
+    .planner-place-result {
+        width: 100%;
+        display: block;
+        padding: 10px 12px;
+        border: 0;
+        border-bottom: 1px solid #F1F5F9;
+        background: #fff;
+        text-align: left;
+        cursor: pointer;
+        color: #374151;
+        font-size: 12px;
+        line-height: 1.45;
+    }
+
+    .planner-place-result:last-child {
+        border-bottom: 0;
+    }
+
+    .planner-place-result:hover,
+    .planner-place-result:focus {
+        outline: none;
+        background: #F5F3FF;
+        color: #4F46E5;
+    }
+
+    .planner-place-loading,
+    .planner-place-empty,
+    .planner-place-error {
+        padding: 11px 12px;
+        color: #9CA3AF;
+        font-size: 11px;
+    }
+
+    .planner-place-error {
+        color: #DC2626;
+    }
+
+
+    .planner-place-loading-text {
+        color: #9CA3AF;
+        font-size: 12px;
+        white-space: nowrap;
+    }
+
+
+    .planner-place-pin-icon,
+    .planner-place-pin-body,
+    .planner-place-pin-dot {
+        transition: fill .15s ease, stroke .15s ease;
+    }
+
+
+    .planner-place-search-wrap {
+        position: relative;
+        flex: 1 1 auto;
+        min-width: 0;
+    }
+
+    .planner-place-search {
+        width: 100%;
+        min-width: 0;
+        border: 0;
+        outline: 0;
+        background: transparent;
+        color: #1F2937;
+        font-size: 14px;
+    }
+
+    .planner-place-results {
+        position: fixed;
+        z-index: 20000;
+        display: none;
+        max-height: 300px;
+        overflow-y: auto;
+        border: 1px solid #D1D5DB;
+        border-radius: 12px;
+        background: #fff;
+        box-shadow: 0 14px 32px rgba(15,23,42,.18);
+    }
+
+    .planner-place-results.is-open {
+        display: block;
+    }
+
+    .planner-place-result {
+        width: 100%;
+        padding: 10px 12px;
+        border: 0;
+        border-bottom: 1px solid #F1F5F9;
+        background: #fff;
+        text-align: left;
+        cursor: pointer;
+    }
+
+    .planner-place-result:last-child {
+        border-bottom: 0;
+    }
+
+    .planner-place-result:hover,
+    .planner-place-result:focus {
+        outline: none;
+        background: #F5F3FF;
+    }
+
+    .planner-place-result-name {
+        display: block;
+        color: #111827;
+        font-size: 12px;
+        font-weight: 700;
+    }
+
+    .planner-place-result-address {
+        display: block;
+        margin-top: 3px;
+        color: #9CA3AF;
+        font-size: 10px;
+        line-height: 1.35;
+    }
+
+    .planner-place-result-message {
+        padding: 11px 12px;
+        color: #9CA3AF;
+        font-size: 11px;
+    }
+
+
+    .planner-place-result-row {
+        display: flex;
+        align-items: flex-start;
+        gap: 9px;
+    }
+
+    .planner-place-result-badge {
+        flex: 0 0 auto;
+        width: 22px;
+        height: 22px;
+        margin-top: 1px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 999px;
+        background: #F59E0B;
+        color: #fff;
+        font-size: 10px;
+        font-weight: 800;
+    }
+
+    .planner-place-result-copy {
+        min-width: 0;
+        flex: 1 1 auto;
+    }
+
+
+    /* ===== 일정 작성 화면 반응형 보정 =====
+       고정 폭 때문에 노트북/FHD/QHD에서 잘리거나 과도하게 늘어나는 현상을 방지한다. */
+    :root {
+        --planner-left-width: clamp(280px, 17.7vw, 340px);
+        --planner-map-width: clamp(380px, 24vw, 460px);
+    }
+
+    .planner-page-shell {
+        height: calc(100vh - 64px) !important;
+        height: calc(100dvh - 64px) !important;
+        min-height: 560px;
+        overflow: hidden;
+    }
+
+    .planner-top-grid {
+        grid-template-columns: minmax(0, 1fr) var(--planner-map-width) !important;
+    }
+
+    .planner-top-fields {
+        min-width: 0;
+        padding-left: clamp(14px, 1.25vw, 24px) !important;
+        padding-right: clamp(14px, 1.25vw, 24px) !important;
+    }
+
+    .planner-meta-grid {
+        grid-template-columns:
+            minmax(150px, .9fr)
+            minmax(150px, .9fr)
+            minmax(105px, .48fr)
+            minmax(300px, 1.6fr) !important;
+    }
+
+    .planner-top-actions {
+        min-width: 0;
+        padding-left: clamp(12px, 1.25vw, 24px) !important;
+        padding-right: clamp(12px, 1.25vw, 24px) !important;
+    }
+
+    .planner-top-actions #plannerSaveBtn,
+    .planner-top-actions #plannerVisibility {
+        width: clamp(150px, 12vw, 200px) !important;
+        max-width: 100%;
+    }
+
+    .planner-workspace {
+        min-width: 0;
+        min-height: 0;
+        overflow: hidden;
+    }
+
+    .planner-left-shell {
+        flex: 0 0 auto;
+        min-width: 0;
+    }
+
+    #plannerLeftPanel,
+    #plannerLeftPanel > div {
+        width: var(--planner-left-width) !important;
+        max-width: var(--planner-left-width) !important;
+    }
+
+    /* 기존 접기 버튼이 inline width:0px를 쓰므로 반응형 폭보다 우선한다. */
+    #plannerLeftPanel[style*="width: 0px"] {
+        width: 0 !important;
+        max-width: 0 !important;
+        border-right-width: 0 !important;
+    }
+
+    #plannerCenterPanel {
+        flex: 1 1 auto;
+        min-width: 440px;
+        min-height: 0;
+    }
+
+    .planner-map-panel {
+        width: var(--planner-map-width) !important;
+        flex: 0 0 var(--planner-map-width) !important;
+        min-width: 320px;
+        min-height: 0;
+    }
+
+    /* 국가 상태문구는 입력칸 폭을 먹지 않도록 우측 상단에 띄운다. */
+    #plannerCountryField {
+        position: relative;
+    }
+
+    #plannerCountryStatus {
+        position: absolute;
+        top: 6px;
+        right: 9px;
+        z-index: 2;
+        max-width: calc(100% - 78px);
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        line-height: 1;
+        pointer-events: none;
+    }
+
+    #plannerCountryCombo {
+        width: 100%;
+        min-width: 0;
+    }
+
+    @media (max-width: 1600px) {
+        :root {
+            --planner-left-width: 300px;
+            --planner-map-width: 400px;
+        }
+
+        .planner-meta-grid {
+            grid-template-columns:
+                minmax(140px, .9fr)
+                minmax(140px, .9fr)
+                minmax(100px, .48fr)
+                minmax(280px, 1.55fr) !important;
+        }
+    }
+
+    @media (max-width: 1440px) {
+        :root {
+            --planner-left-width: 280px;
+            --planner-map-width: 370px;
+        }
+
+        .planner-meta-grid {
+            gap: 8px !important;
+            grid-template-columns:
+                minmax(132px, .9fr)
+                minmax(132px, .9fr)
+                minmax(96px, .45fr)
+                minmax(260px, 1.5fr) !important;
+        }
+
+        #plannerCenterPanel {
+            min-width: 420px;
+        }
+
+        /* 좁은 화면에서는 긴 오류문구 대신 경고표시만 보여 입력값을 가리지 않는다. */
+        #plannerCountryStatus[data-country-status="invalid"] {
+            width: 18px;
+            height: 18px;
+            max-width: 18px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 999px;
+            background: #FEF2F2;
+            font-size: 0;
+        }
+
+        #plannerCountryStatus[data-country-status="invalid"]::after {
+            content: '!';
+            color: #EF4444;
+            font-size: 11px;
+            font-weight: 900;
+            line-height: 1;
+        }
+    }
+
+    @media (max-width: 1280px) {
+        :root {
+            --planner-left-width: 250px;
+            --planner-map-width: 340px;
+        }
+
+        .planner-top-fields {
+            padding-left: 12px !important;
+            padding-right: 12px !important;
+            gap: 8px !important;
+        }
+
+        .planner-top-actions {
+            padding-left: 10px !important;
+            padding-right: 10px !important;
+        }
+
+        .planner-meta-grid {
+            grid-template-columns:
+                minmax(125px, .95fr)
+                minmax(125px, .95fr)
+                minmax(92px, .5fr)
+                minmax(245px, 1.55fr) !important;
+        }
+
+        #plannerCenterPanel {
+            min-width: 400px;
+        }
+
+        #plannerDays {
+            padding-left: 14px !important;
+            padding-right: 14px !important;
+        }
+    }
+
+    @media (max-width: 1120px) {
+        :root {
+            --planner-left-width: 230px;
+            --planner-map-width: 310px;
+        }
+
+        .planner-meta-grid {
+            grid-template-columns:
+                minmax(118px, 1fr)
+                minmax(118px, 1fr)
+                minmax(88px, .5fr)
+                minmax(225px, 1.55fr) !important;
+        }
+
+        #plannerCenterPanel {
+            min-width: 380px;
+        }
+
+        .planner-map-panel {
+            min-width: 300px;
+        }
+    }
+
+    @media (max-width: 1024px) {
+        :root {
+            --planner-left-width: 220px;
+            --planner-map-width: 290px;
+        }
+
+        #plannerCenterPanel {
+            min-width: 360px;
+        }
+
+        .planner-map-panel {
+            min-width: 280px;
+        }
+    }
+
+    @media (max-height: 800px) {
+        .planner-top-fields,
+        .planner-top-actions {
+            padding-top: 8px !important;
+            padding-bottom: 8px !important;
+        }
+
+        #plannerGoogleMap {
+            min-height: 260px !important;
+        }
+    }
+
+    @media (max-height: 680px) {
+        .planner-page-shell {
+            min-height: 500px;
+        }
+
+        #plannerGoogleMap {
+            min-height: 220px !important;
+        }
+    }
