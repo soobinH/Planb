@@ -409,6 +409,7 @@
     }
 
     .planner-memo-field {
+        position: relative;
         flex: 1 1 auto;
         min-height: 72px;
         display: flex;
@@ -419,7 +420,24 @@
         width: 100%;
         height: 100%;
         min-height: 0;
+        padding-bottom: 18px;
+        box-sizing: border-box;
         resize: vertical;
+    }
+
+    .planner-memo-count {
+        position: absolute;
+        /* Leave room for the native textarea resize handle on the lower right. */
+        right: 38px;
+        bottom: 8px;
+        color: #9CA3AF;
+        font-size: 10px;
+        line-height: 1;
+        pointer-events: none;
+    }
+
+    .planner-memo-count.is-over-limit {
+        color: #EF4444;
     }
 
     .planner-block-body.is-collapsed {

@@ -3385,6 +3385,18 @@
 
             function setupBlock(card){
                 var body=$('[data-block-body]',card), toggle=$('[data-block-toggle]',card), del=$('.planner-block-delete',card), header=$('.planner-block-header',card), title=$('.planner-item-title',card), label=$('.planner-block-title-label',card), badge=$('.planner-block-type-badge',card);
+                var memoInput=$('.planner-item-note',card);
+                var memoCounter=$('.planner-memo-count',card);
+                if(memoInput && memoCounter){
+                    var updateMemoCount=function(){
+                        var length=memoInput.value.length;
+                        memoCounter.textContent=length+'/200';
+                        memoCounter.classList.toggle('is-over-limit',length>200);
+                    };
+                    memoInput.maxLength=200;
+                    memoInput.addEventListener('input',updateMemoCount);
+                    updateMemoCount();
+                }
                 if(toggle&&body) toggle.addEventListener('click',function(){var c=body.classList.toggle('is-collapsed');toggle.textContent=c?'⌄':'˄';toggle.title=c?'블록 펼치기':'블록 접기';toggle.setAttribute('aria-expanded',c?'false':'true')});
                 if(header&&body) header.addEventListener('click',function(e){ if(e.target.closest('button')) return; var c=body.classList.toggle('is-collapsed'); if(toggle){toggle.textContent=c?'⌄':'˄';toggle.title=c?'블록 펼치기':'블록 접기';toggle.setAttribute('aria-expanded',c?'false':'true');} });
                 if(del) del.addEventListener('click',function(e){
