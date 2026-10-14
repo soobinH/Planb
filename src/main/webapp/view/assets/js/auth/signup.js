@@ -1780,7 +1780,7 @@ document.addEventListener("DOMContentLoaded", function() {
 
 					this.value.length
 
-					+ " / 300";
+					+ " / 50";
 
 
 			}

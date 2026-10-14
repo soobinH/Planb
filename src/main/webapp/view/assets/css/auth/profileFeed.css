@@ -1,0 +1,201 @@
+@charset "UTF-8";
+
+/* ============================================================
+   Planb - 프로필 피드 보정 (내 피드 / 상대 피드)
+   - 기존 profile.css / userProfile.css 디자인은 그대로 두고
+     간격과 어색한 부분만 조정
+   ============================================================ */
+
+/* ========================= HERO 간격 ========================= */
+body .profile-page .profile-hero {
+  padding: 36px 0 32px;
+}
+
+/* 이름 줄과 통계, 소개 사이 간격 */
+body .profile-page .profile-stats {
+  margin-top: 16px;
+}
+
+/* ========================= 소개글 ========================= */
+/* 길게 써도 피드 끝까지 늘어나지 않도록 폭 제한 + 줄바꿈 */
+body .profile-page .profile-bio-block {
+  max-width: 460px;
+  margin-top: 14px;
+}
+
+body .profile-page .profile-bio-block > p {
+  margin: 0;
+  line-height: 1.6;
+  overflow-wrap: anywhere;
+  word-break: keep-all;
+}
+
+/* ========================= 신고 버튼 (작게) ========================= */
+body .profile-page .profile-report-btn {
+  height: 28px;
+  min-height: 28px;
+  gap: 4px;
+  padding: 0 10px;
+  border-radius: 8px;
+  font-size: 11px;
+  box-shadow: none;
+}
+
+body .profile-page .profile-report-btn svg {
+  width: 12px;
+  height: 12px;
+}
+
+/* ========================= 탭 / 피드 간격 ========================= */
+body .profile-page .profile-tabs .profile-tab-icon,
+body .profile-page .profile-tabs .profile-bookmark-outline {
+  width: 15px;
+  height: 15px;
+  flex: 0 0 auto;
+}
+
+body .profile-page .profile-content {
+  padding-top: 16px;
+}
+
+body .profile-page .feed-grid {
+  gap: 4px;
+}
+
+/* 썸네일이 없는 게시물이 흰 배경에 묻히지 않도록 */
+body .profile-page .feed-fallback {
+  background: #F3F3F6;
+}
+
+/* 게시물 위 통계 아이콘 정렬 */
+body .profile-page .feed-hover-stats svg {
+  width: 14px;
+  height: 14px;
+  margin: 0 !important;
+  vertical-align: 0 !important;
+  flex: 0 0 auto;
+}
+
+/* ========================= 비공개 계정 ========================= */
+body .profile-page .profile-private-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 3px 9px;
+  border-radius: 999px;
+  background: #F1F1F5;
+  color: #6B6C76;
+  font-size: 11px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+/* 프로필 영역과 피드 영역을 탭 줄로 구분 */
+body .profile-page .profile-tabs--locked > span {
+  position: relative;
+  flex: 1 1 0;
+  max-width: 160px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  color: #A0A1AA;
+  font-size: 11px;
+  font-weight: 680;
+  letter-spacing: .04em;
+}
+
+body .profile-page .profile-tabs--locked > span::after {
+  content: "";
+  position: absolute;
+  left: 20%;
+  right: 20%;
+  bottom: 0;
+  height: 2px;
+  border-radius: 2px 2px 0 0;
+  background: #D4D5DC;
+}
+
+body .profile-page .profile-locked {
+  padding: 72px 20px 40px;
+  text-align: center;
+}
+
+body .profile-page .profile-locked-icon {
+  width: 52px;
+  height: 52px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 14px;
+  border: 1px solid #E3E4E8;
+  border-radius: 50%;
+  color: var(--profile-primary);
+}
+
+body .profile-page .profile-locked-icon svg {
+  width: 22px;
+  height: 22px;
+}
+
+body .profile-page .profile-locked-card h2 {
+  margin: 0 0 6px;
+  color: var(--profile-ink);
+  font-size: 16px;
+  font-weight: 700;
+}
+
+body .profile-page .profile-locked-card p {
+  margin: 0;
+  color: var(--profile-muted);
+  font-size: 13px;
+  line-height: 1.6;
+  word-break: keep-all;
+}
+
+/* ========================= 프로필 편집 모달 : 소개 글자 수 ========================= */
+.profile-edit-field .bio-counter-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.profile-edit-field .bio-counter {
+  flex: 0 0 auto;
+  color: #9A9BA5;
+  font-variant-numeric: tabular-nums;
+}
+
+.profile-edit-field .bio-counter.is-over {
+  color: #E5484D;
+  font-weight: 700;
+}
+
+#profileEditModal .profile-edit-field textarea[data-bio-input] {
+  min-height: 64px;
+  height: 64px;
+}
+
+/* ========================= RESPONSIVE ========================= */
+@media (max-width: 680px) {
+  body .profile-page .profile-hero {
+    padding: 16px 14px 20px;
+  }
+
+  body .profile-page .profile-content {
+    padding-top: 10px;
+  }
+
+  body .profile-page .feed-grid {
+    gap: 3px;
+  }
+
+  body .profile-page .profile-tabs--locked > span > span {
+    display: none;
+  }
+
+  body .profile-page .profile-locked {
+    padding: 48px 16px 32px;
+  }
+}

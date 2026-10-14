@@ -173,6 +173,8 @@ boolean myLikedHasMore =
 \-->
 
 <link rel="stylesheet" href="<%=ctx%>/view/assets/css/auth/profile.css">
+<link rel="stylesheet" href="<%=ctx%>/view/assets/css/auth/profileFeed.css?v=2">
+<script defer src="<%=ctx%>/view/assets/js/common/bioCounter.js"></script>
 
 
 <style>
@@ -576,7 +578,7 @@ html.profile-modal-open, body.profile-modal-open {
 								프로필 편집</button>
 
 							<a class="icon-action" href="<%=ctx%>/profile/edit"
-								aria-label="설정" title="설정"> ⚙ </a>
+								aria-label="설정" title="설정"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/><circle cx="12" cy="12" r="3"/></svg></a>
 
 						</div>
 
@@ -696,7 +698,7 @@ html.profile-modal-open, body.profile-modal-open {
 
 			<button type="button" class="active" data-profile-tab="posts">
 
-				▦ <span> 게시물 </span>
+				<svg class="profile-tab-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3.5" y="3.5" width="7" height="7" rx="1.5"/><rect x="13.5" y="3.5" width="7" height="7" rx="1.5"/><rect x="3.5" y="13.5" width="7" height="7" rx="1.5"/><rect x="13.5" y="13.5" width="7" height="7" rx="1.5"/></svg> <span> 게시물 </span>
 
 			</button>
 
@@ -714,7 +716,7 @@ html.profile-modal-open, body.profile-modal-open {
 
 			<button type="button" data-profile-tab="liked">
 
-				♡ <span> 좋아요한 게시글 </span>
+				<svg class="profile-tab-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/></svg> <span> 좋아요한 게시글 </span>
 
 			</button>
 
@@ -805,7 +807,7 @@ html.profile-modal-open, body.profile-modal-open {
 
  %>
 
-							</span> <span class="feed-hover-stats"> <span> ♥ <%=item.getLikeCount()%>
+							</span> <span class="feed-hover-stats"> <span> <svg class="feed-stat-icon" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/></svg> <%=item.getLikeCount()%>
 
 								</span> <span> <svg class="profile-bookmark-outline" width="17"
 											height="17" viewBox="0 0 24 24" fill="none"
@@ -815,7 +817,7 @@ html.profile-modal-open, body.profile-modal-open {
                     <path d="M6 4.5h12v16l-6-4-6 4z" />
                 </svg> <%=item.getBookmarkCount()%>
 
-								</span> <span> 💬 <%=item.getCommentCount()%>
+								</span> <span> <svg class="feed-stat-icon" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7.9 20A9 9 0 1 0 4 16.1L2 22Z"/></svg> <%=item.getCommentCount()%>
 
 								</span>
 
@@ -952,7 +954,7 @@ html.profile-modal-open, body.profile-modal-open {
 
  %>
 
-							</span> <span class="feed-hover-stats"> <span> ♥ <%=item.getLikeCount()%>
+							</span> <span class="feed-hover-stats"> <span> <svg class="feed-stat-icon" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/></svg> <%=item.getLikeCount()%>
 
 								</span> <span> <svg class="profile-bookmark-outline" width="17"
 											height="17" viewBox="0 0 24 24" fill="none"
@@ -962,7 +964,7 @@ html.profile-modal-open, body.profile-modal-open {
                     <path d="M6 4.5h12v16l-6-4-6 4z" />
                 </svg> <%=item.getBookmarkCount()%>
 
-								</span> <span> 💬 <%=item.getCommentCount()%>
+								</span> <span> <svg class="feed-stat-icon" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7.9 20A9 9 0 1 0 4 16.1L2 22Z"/></svg> <%=item.getCommentCount()%>
 
 								</span>
 
@@ -1078,7 +1080,7 @@ html.profile-modal-open, body.profile-modal-open {
 
  %>
 
-							</span> <span class="feed-hover-stats"> <span> ♥ <%=item.getLikeCount()%>
+							</span> <span class="feed-hover-stats"> <span> <svg class="feed-stat-icon" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/></svg> <%=item.getLikeCount()%>
 
 								</span> <span> <svg class="profile-bookmark-outline" width="17"
 											height="17" viewBox="0 0 24 24" fill="none"
@@ -1088,7 +1090,7 @@ html.profile-modal-open, body.profile-modal-open {
                     <path d="M6 4.5h12v16l-6-4-6 4z" />
                 </svg> <%=item.getBookmarkCount()%>
 
-								</span> <span> 💬 <%=item.getCommentCount()%>
+								</span> <span> <svg class="feed-stat-icon" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7.9 20A9 9 0 1 0 4 16.1L2 22Z"/></svg> <%=item.getCommentCount()%>
 
 								</span>
 
@@ -1243,9 +1245,8 @@ html.profile-modal-open, body.profile-modal-open {
 					<!-- 소개 -->
 
 					<label class="profile-edit-field"> <span>소개</span> <textarea
-							name="bio" rows="4" maxlength="300"><%=bio%></textarea> <small>프로필에
-
-							공개되는 소개글입니다.</small>
+							name="bio" rows="2" maxlength="50" data-bio-input><%=bio%></textarea>
+						<small class="bio-counter-row"><span>프로필에 공개되는 소개글입니다.</span> <span class="bio-counter" data-bio-counter><%=bio.length()%> / 50</span></small>
 
 					</label>
 

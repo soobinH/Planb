@@ -35,6 +35,9 @@ public class ProfileEdit extends HttpServlet {
 
 	private static final long serialVersionUID = 1L;
 
+	/* 소개글 최대 글자 수 */
+	private static final int BIO_MAX_LENGTH = 50;
+
 	private UserService service = new UserServiceImpl();
 
 	public ProfileEdit() {
@@ -140,6 +143,11 @@ public class ProfileEdit extends HttpServlet {
 			if (postcode == null || postcode.trim().isEmpty() || address == null || address.trim().isEmpty()) {
 
 				throw new Exception("주소를 입력해주세요.");
+			}
+
+			if (bio != null && bio.trim().length() > BIO_MAX_LENGTH) {
+
+				throw new Exception("소개는 " + BIO_MAX_LENGTH + "자 이내로 입력해주세요.");
 			}
 
 			/*

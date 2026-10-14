@@ -24,6 +24,9 @@ public class signup extends HttpServlet {
 
 	private static final long serialVersionUID = 1L;
 
+	/* 소개글 최대 글자 수 */
+	private static final int BIO_MAX_LENGTH = 50;
+
 	private final UserService service = new UserServiceImpl();
 
 	public signup() {
@@ -122,6 +125,17 @@ public class signup extends HttpServlet {
 					|| !verifiedEmail.equalsIgnoreCase(email.trim())) {
 
 				request.setAttribute("errorMessage", "이메일 인증을 완료해주세요.");
+
+				request.getRequestDispatcher("/view/auth/signup.jsp").forward(request, response);
+
+				return;
+			}
+
+			String bio = userDto.getBio();
+
+			if (bio != null && bio.trim().length() > BIO_MAX_LENGTH) {
+
+				request.setAttribute("errorMessage", "소개글은 " + BIO_MAX_LENGTH + "자 이내로 입력해주세요.");
 
 				request.getRequestDispatcher("/view/auth/signup.jsp").forward(request, response);
 
