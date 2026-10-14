@@ -29,6 +29,19 @@ boolean successResult = "true".equals(success);
 
 boolean showResultModal = errorMessage != null || successResult;
 
+String errorTitle = (String) request.getAttribute("errorTitle");
+
+if (errorTitle == null) {
+	errorTitle = "비밀번호 변경 실패";
+}
+
+/* =========================================================
+   단계 (verify : 현재 비밀번호 확인 / change : 새 비밀번호 설정)
+   Servlet을 거치지 않고 JSP로 직접 들어오면 항상 1단계
+========================================================= */
+
+boolean changeStep = "change".equals(request.getAttribute("passwordStep"));
+
 /* =========================================================
    Google / 소셜 로그인 여부
 ========================================================= */
@@ -180,6 +193,74 @@ boolean socialUser = user.getProvider() != null && !"LOCAL".equalsIgnoreCase(use
 	font-size: 11px;
 	font-weight: 700;
 }
+
+/* =========================================================
+   단계 표시 (1 현재 비밀번호 확인 → 2 새 비밀번호 설정)
+========================================================= */
+.password-steps {
+	display: flex;
+	gap: 8px;
+	margin: 0 0 16px;
+	padding: 0;
+	list-style: none;
+}
+
+.password-steps li {
+	display: inline-flex;
+	align-items: center;
+	gap: 7px;
+	padding: 7px 13px 7px 8px;
+	border: 1px solid #ececf2;
+	border-radius: 999px;
+	background: #ffffff;
+	color: #9a9ba5;
+	font-size: 12px;
+	font-weight: 600;
+}
+
+.password-steps li b {
+	width: 20px;
+	height: 20px;
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	border-radius: 50%;
+	background: #f1f1f5;
+	font-size: 11px;
+}
+
+.password-steps li.active {
+	border-color: #d1d2f9;
+	background: #f5f5ff;
+	color: #6369D1;
+}
+
+.password-steps li.active b {
+	background: #6369D1;
+	color: #ffffff;
+}
+
+.password-steps li.done b {
+	background: #d1d2f9;
+	color: #6369D1;
+}
+
+/* 2단계 : 처음부터 다시 */
+.password-restart-link {
+	display: inline-flex;
+	align-items: center;
+	padding: 0 14px;
+	border: 1px solid #e3e4e8;
+	border-radius: 10px;
+	color: #6b6c76;
+	font-size: 13px;
+	font-weight: 600;
+	text-decoration: none;
+}
+
+.password-restart-link:hover {
+	background: #f6f6f8;
+}
 </style>
 
 </head>
@@ -219,7 +300,7 @@ boolean socialUser = user.getProvider() != null && !"LOCAL".equalsIgnoreCase(use
 						<h1>비밀번호 변경</h1>
 
 
-						<p>안전한 계정 사용을 위해 새로운 비밀번호를 설정하세요.</p>
+						<p><%=changeStep ? "확인이 완료되었습니다. 새로 사용할 비밀번호를 입력하세요." : "안전한 계정 사용을 위해 먼저 현재 비밀번호를 확인합니다."%></p>
 
 					</header>
 
@@ -267,38 +348,78 @@ boolean socialUser = user.getProvider() != null && !"LOCAL".equalsIgnoreCase(use
 
 
 					<!-- =====================================
-                         일반 회원 비밀번호 변경 Form
+                         단계 표시
+                    ====================================== -->
+
+					<ol class="password-steps">
+						<li class="<%=changeStep ? "done" : "active"%>"><b>1</b> 현재 비밀번호 확인</li>
+						<li class="<%=changeStep ? "active" : ""%>"><b>2</b> 새 비밀번호 설정</li>
+					</ol>
+
+					<%
+					if (!changeStep) {
+					%>
+
+					<!-- =====================================
+                         1단계 : 현재 비밀번호 확인 Form
                     ====================================== -->
 
 					<form id="passwordChangeForm"
 						action="<%=ctx%>/settings/passwordChange" method="post">
 
+						<input type="hidden" name="step" value="verify">
 
 						<section class="settings-panel settings-form-panel">
 
-
 							<div class="settings-form">
-
-
 
 								<!-- 현재 비밀번호 -->
 
 								<label class="settings-field"> <span
 									class="settings-field-label"> 현재 비밀번호 </span> <input
 									type="password" id="currentPassword" name="currentPassword"
-									autocomplete="current-password" placeholder="현재 비밀번호" required>
+									autocomplete="current-password" placeholder="현재 비밀번호" required autofocus>
 
+									<small> 본인 확인을 위해 지금 사용 중인 비밀번호를 입력해주세요. </small>
 
 								</label>
 
+							</div>
 
+						</section>
+
+						<div class="settings-actions">
+
+							<button class="settings-primary-btn" id="passwordChangeButton"
+								type="submit" data-loading-text="확인 중...">다음</button>
+
+						</div>
+
+					</form>
+
+					<%
+					} else {
+					%>
+
+					<!-- =====================================
+                         2단계 : 새 비밀번호 설정 Form
+                    ====================================== -->
+
+					<form id="passwordChangeForm"
+						action="<%=ctx%>/settings/passwordChange" method="post">
+
+						<input type="hidden" name="step" value="change">
+
+						<section class="settings-panel settings-form-panel">
+
+							<div class="settings-form">
 
 								<!-- 새 비밀번호 -->
 
 								<label class="settings-field"> <span
 									class="settings-field-label"> 새 비밀번호 </span> <input
 									type="password" id="newPassword" name="newPassword"
-									autocomplete="new-password" placeholder="새 비밀번호" required>
+									autocomplete="new-password" placeholder="새 비밀번호" required autofocus>
 
 
 									<small> 영문, 숫자, 특수문자를 포함해 8자 이상 입력해주세요. </small>
@@ -329,14 +450,21 @@ boolean socialUser = user.getProvider() != null && !"LOCAL".equalsIgnoreCase(use
 						<div class="settings-actions">
 
 
+							<a class="password-restart-link"
+								href="<%=ctx%>/settings/passwordChange">처음부터 다시</a>
+
 							<button class="settings-primary-btn" id="passwordChangeButton"
-								type="submit">비밀번호 변경</button>
+								type="submit" data-loading-text="변경 중...">비밀번호 변경</button>
 
 
 						</div>
 
 
 					</form>
+
+					<%
+					}
+					%>
 
 
 					<%
@@ -380,7 +508,7 @@ boolean socialUser = user.getProvider() != null && !"LOCAL".equalsIgnoreCase(use
 			<div class="password-result-icon error">!</div>
 
 
-			<h2>비밀번호 변경 실패</h2>
+			<h2><%=errorTitle%></h2>
 
 
 			<p>
@@ -495,7 +623,7 @@ boolean socialUser = user.getProvider() != null && !"LOCAL".equalsIgnoreCase(use
 
 						submitButton.disabled = true;
 
-						submitButton.textContent = "변경 중...";
+						submitButton.textContent = submitButton.getAttribute("data-loading-text") || "처리 중...";
 
 					}
 

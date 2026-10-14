@@ -45,7 +45,7 @@
     <jsp:include page="/common/headStyles.jsp" />
     <link rel="stylesheet" href="<%=ctx%>/view/assets/css/support/support.css">
     <link rel="stylesheet" href="<%=ctx%>/view/assets/css/setting/settings.css">
-    <link rel="stylesheet" href="<%=ctx%>/view/assets/css/support/myInquiries.css?v=2">
+    <link rel="stylesheet" href="<%=ctx%>/view/assets/css/support/myInquiries.css?v=3">
 </head>
 <body class="site-shell">
 <jsp:include page="/common/header.jsp" />
@@ -59,6 +59,14 @@
                     <h1>내 문의 내역</h1>
                     <p>접수한 문의의 처리 상태와 관리자 답변을 확인할 수 있어요.</p>
                 </header>
+
+                <% if ("1".equals(request.getParameter("submitted"))) { %>
+                <!-- 문의하기 완료 후 이동했을 때 안내 -->
+                <div class="my-inquiry-submitted" role="status">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg>
+                    문의가 정상적으로 접수되었습니다. 담당자가 확인 후 답변해 드릴게요.
+                </div>
+                <% } %>
 
                 <section class="my-inquiry-overview" aria-label="문의 요약">
                     <div class="my-inquiry-overview-item">

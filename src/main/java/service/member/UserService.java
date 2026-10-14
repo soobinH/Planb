@@ -13,6 +13,12 @@ public interface UserService {
 	Long findPasswordUser(String loginId, String name, String email, String phone) throws Exception;
 	void resetPassword(long userId, String password) throws Exception;
 	void changePassword(long userId, String currentPassword, String newPassword) throws Exception;
+
+	/* 비밀번호 변경 1단계 : 현재 비밀번호 확인 */
+	boolean checkPassword(long userId, String password) throws Exception;
+
+	/* 비밀번호 변경 2단계 : 현재 비밀번호 확인을 마친 뒤 새 비밀번호로 변경 */
+	void updatePassword(long userId, String newPassword) throws Exception;
 	boolean isLoginIdAvailable(String loginId);
 	boolean isNicknameAvailable(String nickname);
 	boolean isEmailAvailable(String email);

@@ -13,10 +13,27 @@ import dto.member.UserDto;
 import service.member.UserService;
 import service.member.UserServiceImpl;
 
+/*
+ * 비밀번호 변경 (2단계)
+ *
+ * 1단계 (step=verify) : 현재 비밀번호 확인
+ *   - 확인되면 세션에 확인 시각을 저장하고 2단계 화면으로 이동
+ *
+ * 2단계 (step=change) : 새 비밀번호 설정
+ *   - 1단계 확인 후 VERIFY_VALID_MILLIS 이내에만 변경 가능
+ */
 @WebServlet("/settings/passwordChange")
 public class PasswordChange extends HttpServlet {
 
 	private static final long serialVersionUID = 1L;
+
+	/* 현재 비밀번호 확인 결과를 저장하는 세션 키 */
+	private static final String VERIFIED_AT = "passwordVerifiedAt";
+
+	/* 현재 비밀번호 확인 후 변경 가능한 시간 (10분) */
+	private static final long VERIFY_VALID_MILLIS = 10 * 60 * 1000L;
+
+	private static final String VIEW = "/view/settings/passwordChange.jsp";
 
 	private UserService service = new UserServiceImpl();
 
@@ -25,9 +42,31 @@ public class PasswordChange extends HttpServlet {
 		super();
 
 	}
-	
-	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		request.getRequestDispatcher("/view/settings/passwordChange.jsp").forward(request, response);
+
+	@Override
+	protected void doGet(HttpServletRequest request, HttpServletResponse response)
+			throws ServletException, IOException {
+
+		HttpSession session = request.getSession(false);
+
+		/*
+		 * 2단계 화면은 현재 비밀번호 확인을 마친 경우에만 보여줌
+		 * 그 외(처음 진입, 시간 만료, 변경 완료 후)는 항상 1단계부터
+		 */
+		if ("change".equals(request.getParameter("step")) && isVerified(session)) {
+
+			request.setAttribute("passwordStep", "change");
+
+		} else {
+
+			if (session != null) {
+				session.removeAttribute(VERIFIED_AT);
+			}
+
+			request.setAttribute("passwordStep", "verify");
+		}
+
+		request.getRequestDispatcher(VIEW).forward(request, response);
 	}
 
 	@Override
@@ -40,7 +79,6 @@ public class PasswordChange extends HttpServlet {
 		 * ===================================================== 로그인 확인
 		 * ======================================================
 		 */
-
 		HttpSession session = request.getSession(false);
 
 		if (session == null) {
@@ -48,7 +86,6 @@ public class PasswordChange extends HttpServlet {
 			response.sendRedirect(request.getContextPath() + "/auth/login");
 
 			return;
-
 		}
 
 		UserDto user = (UserDto) session.getAttribute("user");
@@ -58,8 +95,9 @@ public class PasswordChange extends HttpServlet {
 			response.sendRedirect(request.getContextPath() + "/auth/login");
 
 			return;
-
 		}
+
+		boolean changeStep = "change".equals(request.getParameter("step"));
 
 		try {
 
@@ -67,97 +105,26 @@ public class PasswordChange extends HttpServlet {
 			 * ================================================= Google / Social 로그인 회원 차단
 			 * ==================================================
 			 */
-
 			if (user.getProvider() != null && !"LOCAL".equalsIgnoreCase(user.getProvider())) {
 
 				throw new Exception("소셜 로그인 계정은 비밀번호를 변경할 수 없습니다.");
-
 			}
 
-			/*
-			 * ================================================= 입력값
-			 * ==================================================
-			 */
+			if (changeStep) {
 
-			String currentPassword = request.getParameter("currentPassword");
+				changePassword(request, session, user);
 
-			String newPassword = request.getParameter("newPassword");
+				/* 변경 완료 → 확인 기록 삭제 후 1단계 화면에서 완료 안내 */
+				session.removeAttribute(VERIFIED_AT);
 
-			String confirmPassword = request.getParameter("confirmPassword");
+				response.sendRedirect(request.getContextPath() + "/settings/passwordChange?success=true");
 
-			/*
-			 * ================================================= 빈 값 확인
-			 * ==================================================
-			 */
+			} else {
 
-			if (currentPassword == null || currentPassword.isEmpty()) {
+				verifyCurrentPassword(request, session, user);
 
-				throw new Exception("현재 비밀번호를 입력해주세요.");
-
+				response.sendRedirect(request.getContextPath() + "/settings/passwordChange?step=change");
 			}
-
-			if (newPassword == null || newPassword.isEmpty()) {
-
-				throw new Exception("새 비밀번호를 입력해주세요.");
-
-			}
-
-			if (confirmPassword == null || confirmPassword.isEmpty()) {
-
-				throw new Exception("새 비밀번호 확인을 입력해주세요.");
-
-			}
-
-			/*
-			 * ================================================= 새 비밀번호 / 확인
-			 * ==================================================
-			 */
-
-			if (!newPassword.equals(confirmPassword)) {
-
-				throw new Exception("새 비밀번호와 비밀번호 확인이 일치하지 않습니다.");
-
-			}
-
-			/*
-			 * ================================================= 비밀번호 규칙
-			 * 
-			 * 영문 숫자 특수문자 8자 이상 ==================================================
-			 */
-
-			String passwordPattern = "^(?=.*[A-Za-z])" + "(?=.*\\d)" + "(?=.*[^A-Za-z0-9\\s])" + ".{8,}$";
-
-			if (!newPassword.matches(passwordPattern)) {
-
-				throw new Exception("비밀번호는 영문, 숫자, 특수문자를 포함하여 8자 이상 입력해주세요.");
-
-			}
-
-			/*
-			 * ================================================= 현재 비밀번호와 새 비밀번호 동일 여부
-			 * ==================================================
-			 */
-
-			if (currentPassword.equals(newPassword)) {
-
-				throw new Exception("새 비밀번호는 현재 비밀번호와 다르게 설정해주세요.");
-
-			}
-
-			/*
-			 * ================================================= Service
-			 * 
-			 * 여기서 DB 현재 비밀번호 검사 ==================================================
-			 */
-
-			service.changePassword(user.getUserId(), currentPassword, newPassword);
-
-			/*
-			 * ================================================= 성공
-			 * ==================================================
-			 */
-
-			response.sendRedirect(request.getContextPath() + "/view/settings/passwordChange.jsp" + "?success=true");
 
 		} catch (Exception e) {
 
@@ -165,17 +132,99 @@ public class PasswordChange extends HttpServlet {
 
 			/*
 			 * ================================================= 실패 메시지
-			 * 
+			 *
 			 * JSP에서 이 값이 있으면 자동으로 실패 모달이 열림
 			 * ==================================================
 			 */
-
 			request.setAttribute("errorMessage", e.getMessage());
 
-			request.getRequestDispatcher("/view/settings/passwordChange.jsp").forward(request, response);
+			request.setAttribute("errorTitle", changeStep ? "비밀번호 변경 실패" : "비밀번호 확인 실패");
 
+			/* 2단계에서 실패했더라도 확인 시간이 남아 있으면 2단계 화면 유지 */
+			request.setAttribute("passwordStep", changeStep && isVerified(session) ? "change" : "verify");
+
+			request.getRequestDispatcher(VIEW).forward(request, response);
 		}
-
 	}
 
+	/*
+	 * ===================================================== 1단계 : 현재 비밀번호 확인
+	 * ======================================================
+	 */
+	private void verifyCurrentPassword(HttpServletRequest request, HttpSession session, UserDto user)
+			throws Exception {
+
+		session.removeAttribute(VERIFIED_AT);
+
+		String currentPassword = request.getParameter("currentPassword");
+
+		if (currentPassword == null || currentPassword.isEmpty()) {
+
+			throw new Exception("현재 비밀번호를 입력해주세요.");
+		}
+
+		if (!service.checkPassword(user.getUserId(), currentPassword)) {
+
+			throw new Exception("현재 비밀번호가 올바르지 않습니다.");
+		}
+
+		session.setAttribute(VERIFIED_AT, System.currentTimeMillis());
+	}
+
+	/*
+	 * ===================================================== 2단계 : 새 비밀번호 변경
+	 * ======================================================
+	 */
+	private void changePassword(HttpServletRequest request, HttpSession session, UserDto user) throws Exception {
+
+		if (!isVerified(session)) {
+
+			throw new Exception("현재 비밀번호 확인 시간이 만료되었습니다. 다시 확인해주세요.");
+		}
+
+		String newPassword = request.getParameter("newPassword");
+
+		String confirmPassword = request.getParameter("confirmPassword");
+
+		if (newPassword == null || newPassword.isEmpty()) {
+
+			throw new Exception("새 비밀번호를 입력해주세요.");
+		}
+
+		if (confirmPassword == null || confirmPassword.isEmpty()) {
+
+			throw new Exception("새 비밀번호 확인을 입력해주세요.");
+		}
+
+		if (!newPassword.equals(confirmPassword)) {
+
+			throw new Exception("새 비밀번호와 비밀번호 확인이 일치하지 않습니다.");
+		}
+
+		/*
+		 * 비밀번호 규칙 : 영문 숫자 특수문자 8자 이상
+		 */
+		String passwordPattern = "^(?=.*[A-Za-z])" + "(?=.*\\d)" + "(?=.*[^A-Za-z0-9\\s])" + ".{8,}$";
+
+		if (!newPassword.matches(passwordPattern)) {
+
+			throw new Exception("비밀번호는 영문, 숫자, 특수문자를 포함하여 8자 이상 입력해주세요.");
+		}
+
+		/* 현재 비밀번호와 같은지 확인 후 변경 */
+		service.updatePassword(user.getUserId(), newPassword);
+	}
+
+	/* 현재 비밀번호 확인 후 유효 시간이 남아 있는지 */
+	private boolean isVerified(HttpSession session) {
+
+		if (session == null) {
+			return false;
+		}
+
+		Object verifiedAt = session.getAttribute(VERIFIED_AT);
+
+		return verifiedAt instanceof Long
+				&& System.currentTimeMillis() - (Long) verifiedAt < VERIFY_VALID_MILLIS;
+	}
 }

@@ -309,6 +309,35 @@ public class UserServiceImpl implements UserService {
 	}
 
 	@Override
+	public boolean checkPassword(long userId, String password) throws Exception {
+
+		String savedPassword = userDao.selectPasswordByUserId(userId);
+
+		if (savedPassword == null) {
+
+			throw new Exception("비밀번호 정보를 찾을 수 없습니다.");
+		}
+
+		return savedPassword.equals(password);
+	}
+
+	@Override
+	public void updatePassword(long userId, String newPassword) throws Exception {
+
+		if (checkPassword(userId, newPassword)) {
+
+			throw new Exception("새 비밀번호는 현재 비밀번호와 다르게 설정해주세요.");
+		}
+
+		int result = userDao.resetPassword(userId, newPassword);
+
+		if (result <= 0) {
+
+			throw new Exception("비밀번호 변경에 실패했습니다.");
+		}
+	}
+
+	@Override
 	public void withdraw(long userId) throws Exception {
 		int result = userDao.withdrawUser(userId);
 

@@ -89,3 +89,24 @@
  .my-inquiry-list-head h2{font-size:15px}
  .my-inquiry-list-head p{font-size:11px}
 }
+
+/* =========================================================
+   문의 접수 완료 안내 (문의하기 → 내 문의 내역 이동 시)
+========================================================= */
+.my-inquiry-submitted {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 18px;
+    padding: 14px 16px;
+    border-radius: 10px;
+    background: #f1f8f4;
+    color: #2f7a4c;
+    font-size: 13px;
+    font-weight: 600;
+    line-height: 1.6;
+}
+
+.my-inquiry-submitted svg {
+    flex: 0 0 auto;
+}

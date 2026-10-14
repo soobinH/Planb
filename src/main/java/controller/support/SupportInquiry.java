@@ -73,7 +73,7 @@ public class SupportInquiry extends HttpServlet {
 			 * 새로고침 시 중복 제출 방지 ==================================
 			 */
 
-			response.sendRedirect(request.getContextPath() + "/view/support/inquiry.jsp" + "?success=1");
+			response.sendRedirect(request.getContextPath() + "/support/myInquiries?submitted=1");
 
 		} catch (IllegalArgumentException e) {
 
