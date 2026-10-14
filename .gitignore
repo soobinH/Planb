@@ -44,4 +44,5 @@ Servers/
 # ===============================
 .DS_Store
 Thumbs.db
-desktop.ini
+desktop.inifirebase-service-account.json
+*-firebase-adminsdk-*.json

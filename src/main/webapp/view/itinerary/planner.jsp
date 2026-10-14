@@ -8,7 +8,7 @@ request.setAttribute("activePage", "planner");
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>일정 만들기 | Planb</title>
+<title>일정 만들기 | Tripily</title>
 <jsp:include page="/common/headStyles.jsp" />
 <style>
     .planner-photo-layout {
@@ -206,9 +206,16 @@ request.setAttribute("activePage", "planner");
         margin-top: 10px;
         font-size: 11px;
         color: #6B7280;
-        display: flex;
-        gap: 10px;
-        flex-wrap: wrap;
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        column-gap: 16px;
+        row-gap: 4px;
+        align-items: center;
+    }
+
+    .planner-photo-guide span {
+        display: block;
+        white-space: nowrap;
     }
 
     .planner-time-grid {
@@ -273,32 +280,6 @@ request.setAttribute("activePage", "planner");
         gap: 10px;
         position: relative;
         overflow: visible;
-    }
-
-    .planner-cost-field::after {
-        content: '요금 기준은 버튼을 눌러 변경 가능.';
-        position: absolute;
-        left: calc(100% + 12px);
-        top: 50%;
-        transform: translateY(-50%);
-        color: #9CA3AF;
-        font-size: 11px;
-        font-weight: 500;
-        line-height: 1.3;
-        white-space: nowrap;
-        pointer-events: none;
-    }
-
-    @media (max-width: 1650px) {
-        .planner-cost-field::after {
-            content: '눌러서 요금 기준 변경';
-        }
-    }
-
-    @media (max-width: 1400px) {
-        .planner-cost-field::after {
-            display: none;
-        }
     }
 
     .planner-cost-mode-btn {
@@ -1556,7 +1537,8 @@ request.setAttribute("activePage", "planner");
                             </svg>
                             <input
                                 class="flex-1 min-w-0 font-semibold text-sm text-gray-800 outline-none bg-transparent placeholder-gray-400 border-none"
-                                id="tripTitle" placeholder="여행 제목을 입력하세요" style="font-size: 14px">
+                                id="tripTitle" maxlength="30" placeholder="여행 제목을 입력하세요" style="font-size: 14px">
+                            <span id="plannerTitleCount" class="shrink-0 text-[10px] font-semibold text-gray-400" aria-live="polite">0/30</span>
                         </div>
                         <div class="flex items-center gap-1.5 shrink-0 text-gray-500 text-sm px-2">
                             <svg class="text-gray-400" width="14" height="14" viewBox="0 0 24 24" fill="none"
@@ -1792,217 +1774,178 @@ request.setAttribute("activePage", "planner");
                     <button id="plannerToggleAllDays" type="button" title="모두 닫기" class="ml-auto flex items-center justify-center text-gray-500 hover:text-gray-700 w-8 h-8 rounded-lg border border-gray-200 hover:border-gray-300 transition-all">⇅</button>
                 </div>
 
+
+                <!--
+                    DAY 0개로 시작하더라도 새 블록을 생성할 수 있도록 DOM과 분리된 원본 템플릿을 유지한다.
+                    화면에는 렌더링되지 않으며 일정 가져오기/직접 블록 추가가 이 템플릿을 복제한다.
+                -->
+                <template id="plannerBlockTemplate">
+                    <div class="planner-block-card p-3" data-item-type="sightseeing">
+                                                    <div class="planner-block-header flex items-center justify-between px-2 pb-3" draggable="true">
+                                                        <div class="flex items-center gap-2">
+                                                            <span class="planner-block-type-badge text-[10px] font-bold rounded-full px-2 py-1"
+                                                                style="background: #FFF1E8; color: #F97316">관광</span>
+                                                            <span class="planner-block-title-label font-bold text-sm text-gray-800">새 일정</span>
+                                                        </div>
+                                                        <div class="flex items-center gap-2 text-gray-400 text-xs">
+                                                            <button type="button" class="planner-block-toggle hover:text-gray-600" data-block-toggle aria-expanded="true" title="블록 접기">˄</button>
+                                                            <button type="button" class="planner-block-delete hover:text-red-500" title="일정 삭제" aria-label="일정 삭제">
+                                                                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                                                    <polyline points="3 6 5 6 21 6" />
+                                                                    <path d="M19 6l-1 14H6L5 6m3 0V4h8v2M10 11v6M14 11v6" />
+                                                                </svg>
+                                                            </button>
+                                                        </div>
+                                                    </div>
+
+                                                    <div class="planner-block-body" data-block-body>
+                                                        <div class="planner-block-type-row">
+                                                            <button type="button" data-item-type="sightseeing" class="planner-type-btn px-3 py-1 rounded-lg text-xs font-semibold" style="background:#EEF2FF;color:#6369D1">관광</button>
+                                                            <button type="button" data-item-type="meal" class="planner-type-btn px-3 py-1 rounded-lg text-xs font-semibold" style="background:#FFF7ED;color:#F97316">식사</button>
+                                                            <button type="button" data-item-type="accommodation" class="planner-type-btn px-3 py-1 rounded-lg text-xs font-semibold" style="background:#ECFDF5;color:#10B981">숙소</button>
+                                                            <button type="button" data-item-type="transport" class="planner-type-btn px-3 py-1 rounded-lg text-xs font-semibold" style="background:#EFF6FF;color:#3B82F6">교통</button>
+                                                            <button type="button" data-item-type="activity" class="planner-type-btn px-3 py-1 rounded-lg text-xs font-semibold" style="background:#FDF2F8;color:#EC4899">활동</button>
+                                                        </div>
+
+                                                        <div class="planner-block-grid">
+                                                            <div class="planner-form-column">
+                                                                <input class="planner-item-title planner-field rounded-lg border border-gray-200 px-3 text-sm font-semibold text-gray-800 outline-none" value="" placeholder="장소 / 일정 이름 *">
+
+                                                                <div class="planner-time-grid planner-field">
+                                                                    <div class="planner-time-box">
+                                                                        <label>시작</label>
+                                                                        <input class="planner-start-time" type="time" value="">
+                                                                    </div>
+                                                                    <div class="planner-time-box">
+                                                                        <label>종료</label>
+                                                                        <input class="planner-end-time" type="time" value="">
+                                                                    </div>
+                                                                </div>
+
+                                                                <div class="planner-field planner-cost-field rounded-lg border border-gray-200 flex items-center px-3 bg-white">
+                                                                    <button type="button" class="planner-cost-mode-btn" data-cost-type="PER_PERSON">1인당 요금</button>
+                                                                    <input class="planner-item-cost w-24 min-w-0 outline-none bg-transparent text-sm font-semibold text-gray-800" value="" inputmode="numeric">
+                                                                    <span class="planner-cost-unit text-xs font-semibold">원</span>
+                                                                    <span class="planner-foreign-cost ml-auto text-xs font-semibold">—</span>
+                                                                </div>
+
+                                                                <div class="planner-field planner-place-field rounded-lg border border-gray-200 flex items-center gap-2 px-3 bg-white">
+                                                                    <svg class="planner-place-pin-icon"
+                                                                        width="14" height="14" viewBox="0 0 24 24"
+                                                                        fill="none" stroke="#9CA3AF" stroke-width="2"
+                                                                        stroke-linecap="round" stroke-linejoin="round">
+                                                                        <path class="planner-place-pin-body"
+                                                                            d="M20 10c0 5-8 12-8 12S4 15 4 10a8 8 0 1 1 16 0Z" />
+                                                                        <circle class="planner-place-pin-dot"
+                                                                            cx="12" cy="10" r="2.5" />
+                                                                    </svg>
+
+                                                                    <div class="planner-place-search-wrap">
+                                                                        <input type="text"
+                                                                            class="planner-place-search"
+                                                                            value=""
+                                                                            placeholder="구글 지도에서 장소 검색"
+                                                                            autocomplete="off"
+                                                                            data-google-place-id=""
+                                                                            data-place-name=""
+                                                                            data-place-address=""
+                                                                            data-lat=""
+                                                                            data-lng="">
+                                                                        <div class="planner-place-results" role="listbox"></div>
+                                                                    </div>
+                                                                </div>
+
+                                                                <div class="planner-memo-field rounded-lg border border-gray-200 bg-white">
+                                                                    <textarea class="planner-item-note outline-none text-sm text-gray-700 placeholder-gray-400 bg-transparent" placeholder="메모 (선택)"></textarea>
+                                                                </div>
+                                                            </div>
+
+                                                            <div>
+                                                                <div class="planner-photo-layout" data-photo-gallery>
+                                                                <div class="planner-photo-preview">
+                                                                    <img class="planner-photo-preview-img" alt="" style="display:none;">
+                                                                    <div class="planner-photo-empty">
+                                                                        <span>미리보기</span>
+                                                                    </div>
+                                                                </div>
+
+                                                                <div class="planner-photo-thumbs">
+                                                                    <button type="button" class="planner-photo-thumb is-empty" draggable="true"
+                                                                        data-src="" data-index="0">
+                                                                        <span class="planner-photo-plus">+</span>
+                                                                        <span class="planner-photo-hover-label">이미지 등록하기</span>
+                                                                        <span class="planner-photo-delete" role="button" tabindex="0" aria-label="이미지 삭제">
+                                                                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                                                                stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                                                                <polyline points="3 6 5 6 21 6"></polyline>
+                                                                                <path d="M19 6l-1 14H6L5 6"></path>
+                                                                                <path d="M10 11v6"></path>
+                                                                                <path d="M14 11v6"></path>
+                                                                                <path d="M9 6V4h6v2"></path>
+                                                                            </svg>
+                                                                        </span>
+                                                                    </button>
+
+                                                                    <button type="button" class="planner-photo-thumb is-empty" draggable="true"
+                                                                        data-src="" data-index="1">
+                                                                        <span class="planner-photo-plus">+</span>
+                                                                        <span class="planner-photo-hover-label">이미지 등록하기</span>
+                                                                        <span class="planner-photo-delete" role="button" tabindex="0" aria-label="이미지 삭제">
+                                                                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                                                                stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                                                                <polyline points="3 6 5 6 21 6"></polyline>
+                                                                                <path d="M19 6l-1 14H6L5 6"></path>
+                                                                                <path d="M10 11v6"></path>
+                                                                                <path d="M14 11v6"></path>
+                                                                                <path d="M9 6V4h6v2"></path>
+                                                                            </svg>
+                                                                        </span>
+                                                                    </button>
+
+                                                                    <button type="button" class="planner-photo-thumb is-empty" draggable="true"
+                                                                        data-src="" data-index="2">
+                                                                        <span class="planner-photo-plus">+</span>
+                                                                        <span class="planner-photo-hover-label">이미지 등록하기</span>
+                                                                        <span class="planner-photo-delete" role="button" tabindex="0" aria-label="이미지 삭제">
+                                                                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                                                                stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                                                                <polyline points="3 6 5 6 21 6"></polyline>
+                                                                                <path d="M19 6l-1 14H6L5 6"></path>
+                                                                                <path d="M10 11v6"></path>
+                                                                                <path d="M14 11v6"></path>
+                                                                                <path d="M9 6V4h6v2"></path>
+                                                                            </svg>
+                                                                        </span>
+                                                                    </button>
+                                                                </div>
+
+                                                                <input type="file" class="planner-photo-file-input hidden" accept="image/*">
+                                                            </div>
+                                                                                                        <div class="planner-photo-guide">
+                                                                <span>• 썸네일 3장까지 등록 가능</span>
+                                                                <span>• 클릭해서 이미지 등록 / 변경</span>
+                                                                <span>• 등록 후 왼쪽에서 크게 보기</span>
+                                                                <span>• 드래그로 순서 변경</span>
+                                                                <span>• 1번 사진이 대표 이미지</span>
+                                                            </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+
+                                                </div>
+                </template>
+
                 <div id="plannerDays" class="flex-1 overflow-y-auto px-5 py-4">
-                    <div class="planner-day mb-4" data-day-number="1">
-                        <div class="planner-day-header flex items-center gap-3 rounded-xl px-4 py-3 cursor-pointer select-none transition-all group/hdr hover:brightness-[0.93]" draggable="true"
-                            style="background: linear-gradient(135deg, #6369D1, #8B5CF6)">
-                            <div class="planner-day-number-badge w-7 h-7 rounded-full flex items-center justify-center font-black text-[11px] text-white shrink-0"
-                                style="background: rgba(255, 255, 255, .22)">D1</div>
-                            <div class="flex-1 min-w-0">
-                                <p class="planner-day-title font-bold text-sm truncate" style="color: #fff" title="클릭하여 제목 수정">Day 1</p>
-                                <button type="button" class="planner-day-edit-icon" title="DAY 제목 수정" aria-label="DAY 제목 수정">
-                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                        <path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z"/>
-                                    </svg>
-                                </button>
-                            </div>
-                            <button type="button" class="planner-day-delete p-1 rounded transition-all hover:bg-white/20"
-                                style="color: rgba(255,255,255,.6)" title="이 날 삭제">
-                                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                                    stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                    <polyline points="3 6 5 6 21 6" />
-                                    <path d="M19 6l-1 14H6L5 6m3 0V4h8v2M10 11v6M14 11v6" />
-                                </svg>
-                            </button>
-                        </div>
-
-                        <div class="planner-day-body mt-3 flex flex-col gap-3">
-                            <div class="planner-block-card p-3" data-item-type="meal">
-                                <div class="planner-block-header flex items-center justify-between px-2 pb-3" draggable="true">
-                                    <div class="flex items-center gap-2">
-                                        <span class="planner-block-type-badge text-[10px] font-bold rounded-full px-2 py-1"
-                                            style="background: #FFF1E8; color: #F97316">식사</span>
-                                        <span class="planner-block-title-label font-bold text-sm text-gray-800">츠키지 시장</span>
-                                    </div>
-                                    <div class="flex items-center gap-2 text-gray-400 text-xs">
-                                        <button type="button" class="planner-block-toggle hover:text-gray-600" data-block-toggle aria-expanded="true" title="블록 접기">˄</button>
-                                        <button type="button" class="planner-block-delete hover:text-red-500" title="일정 삭제" aria-label="일정 삭제">
-                                            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                                <polyline points="3 6 5 6 21 6" />
-                                                <path d="M19 6l-1 14H6L5 6m3 0V4h8v2M10 11v6M14 11v6" />
-                                            </svg>
-                                        </button>
-                                    </div>
-                                </div>
-
-                                <div class="planner-block-body" data-block-body>
-                                    <div class="planner-block-type-row">
-                                        <button type="button" data-item-type="sightseeing" class="planner-type-btn px-3 py-1 rounded-lg text-xs font-semibold" style="background:#EEF2FF;color:#6369D1">관광</button>
-                                        <button type="button" data-item-type="meal" class="planner-type-btn px-3 py-1 rounded-lg text-xs font-semibold border" style="background:#FFF7ED;color:#F97316;border-color:#FDBA74">식사</button>
-                                        <button type="button" data-item-type="accommodation" class="planner-type-btn px-3 py-1 rounded-lg text-xs font-semibold" style="background:#ECFDF5;color:#10B981">숙소</button>
-                                        <button type="button" data-item-type="transport" class="planner-type-btn px-3 py-1 rounded-lg text-xs font-semibold" style="background:#EFF6FF;color:#3B82F6">교통</button>
-                                        <button type="button" data-item-type="activity" class="planner-type-btn px-3 py-1 rounded-lg text-xs font-semibold" style="background:#FDF2F8;color:#EC4899">활동</button>
-                                    </div>
-
-                                    <div class="planner-block-grid">
-                                        <div class="planner-form-column">
-                                            <input class="planner-item-title planner-field rounded-lg border border-gray-200 px-3 text-sm font-semibold text-gray-800 outline-none" value="츠키지 시장" placeholder="장소 / 일정 이름 *">
-
-                                            <div class="planner-time-grid planner-field">
-                                                <div class="planner-time-box">
-                                                    <label for="startTime1">시작</label>
-                                                    <input id="startTime1" class="planner-start-time" type="time" value="07:30">
-                                                </div>
-                                                <div class="planner-time-box">
-                                                    <label for="endTime1">종료</label>
-                                                    <input id="endTime1" class="planner-end-time" type="time" value="09:00">
-                                                </div>
-                                            </div>
-
-                                            <div class="planner-field planner-cost-field rounded-lg border border-gray-200 flex items-center px-3 bg-white">
-                                                <button type="button" class="planner-cost-mode-btn" data-cost-type="PER_PERSON">1인당 요금</button>
-                                                <input class="planner-item-cost w-24 min-w-0 outline-none bg-transparent text-sm font-semibold text-gray-800" value="15000" inputmode="numeric">
-                                                <span class="planner-cost-unit text-xs font-semibold">원</span>
-                                                <span class="planner-foreign-cost ml-auto text-xs font-semibold">—</span>
-                                            </div>
-
-                                            <div class="planner-field planner-place-field rounded-lg border border-gray-200 flex items-center gap-2 px-3 bg-white">
-                                                <svg class="planner-place-pin-icon"
-                                                    width="14" height="14" viewBox="0 0 24 24"
-                                                    fill="none" stroke="#9CA3AF" stroke-width="2"
-                                                    stroke-linecap="round" stroke-linejoin="round">
-                                                    <path class="planner-place-pin-body"
-                                                        d="M20 10c0 5-8 12-8 12S4 15 4 10a8 8 0 1 1 16 0Z" />
-                                                    <circle class="planner-place-pin-dot"
-                                                        cx="12" cy="10" r="2.5" />
-                                                </svg>
-
-                                                <div class="planner-place-search-wrap">
-                                                    <input type="text"
-                                                        class="planner-place-search"
-                                                        value=""
-                                                        placeholder="구글 지도에서 장소 검색"
-                                                        autocomplete="off"
-                                                        data-google-place-id=""
-                                                        data-place-name=""
-                                                        data-place-address=""
-                                                        data-lat=""
-                                                        data-lng="">
-                                                    <div class="planner-place-results" role="listbox"></div>
-                                                </div>
-                                            </div>
-
-                                            <div class="planner-memo-field rounded-lg border border-gray-200 bg-white">
-                                                <textarea class="planner-item-note outline-none text-sm text-gray-700 placeholder-gray-400 bg-transparent" placeholder="메모 (선택)">신선한 스시와 계란말이 추천</textarea>
-                                            </div>
-                                        </div>
-
-                                        <div>
-                                            <div class="planner-photo-layout" data-photo-gallery>
-                                            <div class="planner-photo-preview">
-                                                <img class="planner-photo-preview-img" alt="" style="display:none;">
-                                                <div class="planner-photo-empty">
-                                                    <span>미리보기</span>
-                                                </div>
-                                            </div>
-
-                                            <div class="planner-photo-thumbs">
-                                                <button type="button" class="planner-photo-thumb is-empty" draggable="true"
-                                                    data-src="" data-index="0">
-                                                    <span class="planner-photo-plus">+</span>
-                                                    <span class="planner-photo-hover-label">이미지 등록하기</span>
-                                                    <span class="planner-photo-delete" role="button" tabindex="0" aria-label="이미지 삭제">
-                                                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                                                            stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                                            <polyline points="3 6 5 6 21 6"></polyline>
-                                                            <path d="M19 6l-1 14H6L5 6"></path>
-                                                            <path d="M10 11v6"></path>
-                                                            <path d="M14 11v6"></path>
-                                                            <path d="M9 6V4h6v2"></path>
-                                                        </svg>
-                                                    </span>
-                                                </button>
-
-                                                <button type="button" class="planner-photo-thumb is-empty" draggable="true"
-                                                    data-src="" data-index="1">
-                                                    <span class="planner-photo-plus">+</span>
-                                                    <span class="planner-photo-hover-label">이미지 등록하기</span>
-                                                    <span class="planner-photo-delete" role="button" tabindex="0" aria-label="이미지 삭제">
-                                                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                                                            stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                                            <polyline points="3 6 5 6 21 6"></polyline>
-                                                            <path d="M19 6l-1 14H6L5 6"></path>
-                                                            <path d="M10 11v6"></path>
-                                                            <path d="M14 11v6"></path>
-                                                            <path d="M9 6V4h6v2"></path>
-                                                        </svg>
-                                                    </span>
-                                                </button>
-
-                                                <button type="button" class="planner-photo-thumb is-empty" draggable="true"
-                                                    data-src="" data-index="2">
-                                                    <span class="planner-photo-plus">+</span>
-                                                    <span class="planner-photo-hover-label">이미지 등록하기</span>
-                                                    <span class="planner-photo-delete" role="button" tabindex="0" aria-label="이미지 삭제">
-                                                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                                                            stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                                            <polyline points="3 6 5 6 21 6"></polyline>
-                                                            <path d="M19 6l-1 14H6L5 6"></path>
-                                                            <path d="M10 11v6"></path>
-                                                            <path d="M14 11v6"></path>
-                                                            <path d="M9 6V4h6v2"></path>
-                                                        </svg>
-                                                    </span>
-                                                </button>
-                                            </div>
-
-                                            <input type="file" class="planner-photo-file-input hidden" accept="image/*">
-                                        </div>
-                                                                                    <div class="planner-photo-guide">
-                                            <span>• 썸네일 3장까지 등록 가능</span>
-                                            <span>• 클릭해서 이미지 등록 / 변경</span>
-                                            <span>• 등록 후 왼쪽에서 크게 보기</span>
-                                            <span>• 드래그로 순서 변경</span>
-                                            <span>• 1번 사진이 대표 이미지</span>
-                                        </div>
-                                        </div>
-                                    </div>
-                                </div>
-
-                            </div>
-
-                            <div class="planner-block-summary flex items-center gap-3" data-item-type="sightseeing" draggable="true">
-                                <div class="w-8 h-8 rounded-lg flex items-center justify-center text-xs font-bold"
-                                    style="background:#EEF2FF;color:#6369D1">관광</div>
-                                <div class="flex-1 min-w-0">
-                                    <p class="text-sm font-bold text-gray-800">센소지</p>
-                                    <p class="text-xs text-gray-400">09:30 · 아사쿠사</p>
-                                </div>
-                                <div class="text-xs font-semibold text-indigo-400">관광</div>
-                            </div>
-
-                            <div class="planner-block-summary flex items-center gap-3" data-item-type="meal" draggable="true">
-                                <div class="w-8 h-8 rounded-lg flex items-center justify-center text-xs font-bold"
-                                    style="background:#FFF7ED;color:#F97316">식사</div>
-                                <div class="flex-1 min-w-0">
-                                    <p class="text-sm font-bold text-gray-800">아이사카 라멘 아사쿠사</p>
-                                    <p class="text-xs text-gray-400">12:00 · 아사쿠사 · 15,000원</p>
-                                </div>
-                                <div class="text-xs font-semibold text-orange-400">식사</div>
-                            </div>
-                        </div>
-
                         <button id="plannerAddDay" type="button"
                             class="w-full mt-4 flex items-center justify-center gap-2 py-2.5 rounded-xl border-2 border-dashed border-gray-200 text-xs font-semibold text-gray-400 hover:border-purple-300 hover:text-purple-400 transition-all">
                             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"
                                 stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                                 <path d="M12 5v14M5 12h14" />
                             </svg>
-                            Day 2 추가
+                            Day 1 추가
                         </button>
                     </div>
                 </div>
-            </div>
 
             <div class="planner-map-panel w-[460px] shrink-0 border-l border-gray-100 flex flex-col bg-white">
                 <div class="px-4 py-3 border-b border-gray-100 shrink-0">
@@ -2035,19 +1978,8 @@ request.setAttribute("activePage", "planner");
 
                 <div class="flex-1 flex flex-col min-h-0 relative">
                     <div id="plannerGoogleMap" class="flex-1 w-full" style="min-height: 360px; position:relative"></div>
-                    <div id="plannerMapAllLegendOverlay" class="hidden absolute right-3 top-3 z-20 rounded-2xl px-3 py-2 text-xs text-white shadow-xl pointer-events-none"
+                    <div id="plannerMapAllLegendOverlay" class="hidden absolute left-3 top-3 z-20 rounded-2xl px-3 py-2 text-xs text-white shadow-xl pointer-events-none"
                         style="background:rgba(17,24,39,.68); backdrop-filter:blur(6px); min-width:120px"></div>
-                </div>
-
-                <div class="px-4 py-3 border-t border-gray-100 shrink-0">
-                    <p class="text-[10px] text-gray-400 mb-2 font-medium">핀 범례</p>
-                    <div class="flex flex-wrap gap-2">
-                        <div class="flex items-center gap-1"><div class="w-4 h-4 rounded flex items-center justify-center" style="background:#6369D118"><span style="color:#6369D1;font-size:9px">●</span></div><span class="text-[10px] font-medium" style="color:#6369D1">관광</span></div>
-                        <div class="flex items-center gap-1"><div class="w-4 h-4 rounded flex items-center justify-center" style="background:#F9731618"><span style="color:#F97316;font-size:9px">●</span></div><span class="text-[10px] font-medium" style="color:#F97316">식사</span></div>
-                        <div class="flex items-center gap-1"><div class="w-4 h-4 rounded flex items-center justify-center" style="background:#10B98118"><span style="color:#10B981;font-size:9px">●</span></div><span class="text-[10px] font-medium" style="color:#10B981">숙박</span></div>
-                        <div class="flex items-center gap-1"><div class="w-4 h-4 rounded flex items-center justify-center" style="background:#3B82F618"><span style="color:#3B82F6;font-size:9px">●</span></div><span class="text-[10px] font-medium" style="color:#3B82F6">교통</span></div>
-                        <div class="flex items-center gap-1"><div class="w-4 h-4 rounded flex items-center justify-center" style="background:#EC489918"><span style="color:#EC4899;font-size:9px">●</span></div><span class="text-[10px] font-medium" style="color:#EC4899">활동</span></div>
-                    </div>
                 </div>
             </div>
         </div>
@@ -2075,8 +2007,8 @@ request.setAttribute("activePage", "planner");
             var plannerPlaceDetailsCache={};
             var plannerMapInfoSeq=0;
             var plannerActiveMapDay='all';
-            // DAY 동선 색상은 장소 유형(관광/식사/숙박/교통/활동) 핀 색상과 겹치지 않도록 별도 팔레트를 사용한다.
-            var plannerDayLinePalette=['#111827','#92400E','#0E7490','#A16207','#991B1B','#475569','#4D7C0F','#713F12'];
+            // DAY별 색상은 해당 DAY의 일정 핀과 이동 동선에 공통으로 사용한다.
+            var plannerDayLinePalette=['#7C3AED','#2563EB','#F97316','#10B981','#EC4899','#06B6D4','#EF4444','#6366F1','#14B8A6','#D97706','#8B5CF6','#0EA5E9'];
             function getPlannerDayLineColor(dayNumber){
                 var dayIndex=parseInt(dayNumber,10);
                 if(!dayIndex||dayIndex<1){
@@ -2085,8 +2017,8 @@ request.setAttribute("activePage", "planner");
                 return plannerDayLinePalette[(dayIndex-1)%plannerDayLinePalette.length];
             }
             var plannerPlacesLibraryPromise=null;
-            // 국가 선택 후 지역/도시는 Google Places Autocomplete (New)로 검색한다.
-            // API가 아직 로드되지 않았거나 요청이 실패하면 기존 PLANNER_REGION_MAP을 fallback으로 사용한다.
+            // 국가 선택 후 지역/도시는 Google Places Autocomplete (New) 검색 결과만 사용한다.
+            // 로컬 하드코딩 지역 목록이나 fallback은 사용하지 않는다.
             var plannerRegionSearchTimer=null;
             var plannerRegionSearchSeq=0;
             var plannerRegionSessionToken=null;
@@ -2094,7 +2026,12 @@ request.setAttribute("activePage", "planner");
 
             function $(sel, root){ return (root||document).querySelector(sel); }
             function $$(sel, root){ return Array.prototype.slice.call((root||document).querySelectorAll(sel)); }
-            var blockTemplate = $('.planner-block-card') ? $('.planner-block-card').cloneNode(true) : null;
+            var plannerBlockTemplateEl = $('#plannerBlockTemplate');
+            var blockTemplate = plannerBlockTemplateEl
+                && plannerBlockTemplateEl.content
+                && plannerBlockTemplateEl.content.firstElementChild
+                    ? plannerBlockTemplateEl.content.firstElementChild.cloneNode(true)
+                    : ($('.planner-block-card') ? $('.planner-block-card').cloneNode(true) : null);
             /*
              * WritePlanServlet에서 전달한 카트 조회 결과.
              *
@@ -2124,6 +2061,8 @@ request.setAttribute("activePage", "planner");
             }
 
             function calculateTripDays(startDate,endDate,fallback){
+                startDate=normalizePlannerDateValue(startDate);
+                endDate=normalizePlannerDateValue(endDate);
                 if(startDate && endDate){
                     var s=new Date(startDate+'T00:00:00');
                     var e=new Date(endDate+'T00:00:00');
@@ -2577,25 +2516,9 @@ request.setAttribute("activePage", "planner");
                 root.insertBefore(help,root.firstChild);
 
                 if(mode==='day'){
-                    /*
-                     * 새 일정의 기본 빈 D1만 있는 상태에서 왼쪽 DAY/일정 전체를 가져오면
-                     * 실제 DROP 시 D1이 삭제되는 동작과 미리보기도 동일해야 한다.
-                     * 따라서 드래그 중에도 기본 D1을 화면/슬롯 계산에서 제외한다.
-                     */
-                    var replacedStarterDay=null;
-                    if(plannerStructureDrag.source==='import'
-                            && (plannerStructureDrag.kind==='day' || plannerStructureDrag.kind==='plan')){
-                        replacedStarterDay=getPlannerEmptyStarterDay();
-                        if(replacedStarterDay){
-                            replacedStarterDay.classList.add('planner-import-replaced-starter');
-                        }
-                    }
-
-                    /* 이동 중인 DAY와 가져오기로 대체될 기본 빈 D1은 원래 자리에서 빠진 것으로 계산한다. */
+                    /* 이동 중인 DAY만 원래 자리에서 빠진 것으로 계산한다. */
                     var days=$$('.planner-day').filter(function(day){
-                        if(plannerStructureDrag.kind==='internal-day' && day===plannerStructureDrag.element) return false;
-                        if(replacedStarterDay && day===replacedStarterDay) return false;
-                        return true;
+                        return !(plannerStructureDrag.kind==='internal-day' && day===plannerStructureDrag.element);
                     });
                     var addDayBtn=$('#plannerAddDay');
                     for(var i=0;i<=days.length;i++){
@@ -2862,8 +2785,6 @@ request.setAttribute("activePage", "planner");
                     }else if(state.kind==='day'){
                         applyImportHeaderDefaults(state.payload);
 
-                        /* 기본으로 생성된 빈 D1뿐이면 가져온 DAY가 그 자리를 대신한다. */
-                        before=removePlannerEmptyStarterDayBeforeImport(before);
                         insertImportedDayAt(before,state.payload.day||{});
 
                         toast('DAY 일정을 가져왔습니다.');
@@ -2872,10 +2793,6 @@ request.setAttribute("activePage", "planner");
                         applyImportHeaderDefaults(state.payload);
                         var schedules=(state.payload.plan && state.payload.plan.daySchedules)||[];
 
-                        /* 일정 전체를 빈 새 일정에 가져오는 경우도 불필요한 기본 D1을 남기지 않는다. */
-                        if(schedules.length>0){
-                            before=removePlannerEmptyStarterDayBeforeImport(before);
-                        }
                         schedules.forEach(function(dayData){ insertImportedDayAt(before,dayData); });
                         toast('일정 '+schedules.length+'개 DAY를 가져왔습니다.');
                         changed=schedules.length>0;
@@ -3246,7 +3163,7 @@ request.setAttribute("activePage", "planner");
                 visibility.innerHTML=
                     isPublic
                     ? '<span class="w-1.5 h-1.5 rounded-full bg-emerald-400 shrink-0"></span>공개 중<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg>'
-                    : '<span class="w-1.5 h-1.5 rounded-full bg-gray-400 shrink-0"></span>비공개<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg>';
+                    : '<span class="w-1.5 h-1.5 rounded-full bg-red-500 shrink-0"></span>비공개<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg>';
 
                 if(dirty!==false){
                     markDirty();
@@ -3267,10 +3184,7 @@ request.setAttribute("activePage", "planner");
                 );
             }
 
-            // 새 일정 작성 화면은 Day 1만 비어 있는 상태로 시작한다.
-            $$('.planner-day').forEach(function(day){
-                $$('.planner-block-card,.planner-block-summary',day).forEach(function(x){x.remove();});
-            });
+            // 새 일정 작성 화면은 DAY 없이 시작한다. 사용자가 Day 추가 버튼을 눌러 직접 시작한다.
 
             function setupPhotoGallery(galleryEl) {
                 if(!galleryEl || galleryEl.dataset.photoReady==='1') return;
@@ -5182,16 +5096,13 @@ request.setAttribute("activePage", "planner");
             }
 
             function updateDayDeleteButtons(){
-                var days=$$('.planner-day');
-                days.forEach(function(day){
+                $$('.planner-day').forEach(function(day){
                     var del=$('.planner-day-delete',day);
                     if(!del) return;
-                    var blockCount=$$('.planner-block-card,.planner-block-summary',day).length;
-                    var hidden=(days.length===1 && blockCount===0);
-                    del.style.display=hidden?'none':'';
-                    del.disabled=hidden;
-                    del.style.pointerEvents=hidden?'none':'';
-                    del.setAttribute('aria-hidden',hidden?'true':'false');
+                    del.style.display='';
+                    del.disabled=false;
+                    del.style.pointerEvents='';
+                    del.setAttribute('aria-hidden','false');
                 });
             }
 
@@ -5302,9 +5213,6 @@ request.setAttribute("activePage", "planner");
                 enableDayTitleEdit(day);
                 if(del) del.addEventListener('click',function(e){
                     e.stopPropagation();
-                    var days=$$('.planner-day');
-                    var currentBlockCount=$$('.planner-block-card,.planner-block-summary',day).length;
-                    if(days.length===1 && currentBlockCount===0) return;
                     var dayNo=day.dataset.dayNumber||'';
                     var childItems=$$('.planner-block-card',day).map(function(card){
                         var nameEl=$('.planner-block-title-label',card);
@@ -5318,12 +5226,15 @@ request.setAttribute("activePage", "planner");
                         title:'Day '+dayNo+' 삭제',
                         message:childItems.length>0
                             ? '하위 일정 '+childItems.length+'개도 함께 삭제됩니다.'
-                            : (days.length<=1 ? '마지막 DAY의 일정 블록을 모두 삭제할까요?' : '이 날 블록을 삭제할까요?'),
+                            : '이 DAY를 삭제할까요?',
                         items:childItems
                     }, function(){
-                        if(days.length<=1){ $$('.planner-block-card,.planner-block-summary',day).forEach(function(x){x.remove()}); ensureDayControls(day); }
-                        else day.remove();
-                        renumberDays(); syncBudget(); markDirty();
+                        day.remove();
+                        renumberDays();
+                        syncBudget();
+                        syncCountryEditLock();
+                        refreshMap(plannerActiveMapDay);
+                        markDirty();
                     });
                 });
                 ensureDayControls(day);
@@ -5491,9 +5402,36 @@ request.setAttribute("activePage", "planner");
             }
 
             var PLANNER_COUNTRIES=[{"code":"GH","name":"가나","currency":"GHS"},{"code":"GA","name":"가봉","currency":"XAF"},{"code":"GY","name":"가이아나","currency":"GYD"},{"code":"GM","name":"감비아","currency":"GMD"},{"code":"GG","name":"건지","currency":"GBP"},{"code":"GP","name":"과들루프","currency":"EUR"},{"code":"GT","name":"과테말라","currency":"GTQ"},{"code":"GU","name":"괌","currency":"USD"},{"code":"GD","name":"그레나다","currency":"XCD"},{"code":"GR","name":"그리스","currency":"EUR"},{"code":"GL","name":"그린란드","currency":"DKK"},{"code":"GN","name":"기니","currency":"GNF"},{"code":"GW","name":"기니비사우","currency":"XOF"},{"code":"NA","name":"나미비아","currency":"ZAR"},{"code":"NR","name":"나우루","currency":"AUD"},{"code":"NG","name":"나이지리아","currency":"NGN"},{"code":"AQ","name":"남극 대륙","currency":"USD"},{"code":"SS","name":"남수단","currency":"SSP"},{"code":"ZA","name":"남아프리카","currency":"ZAR"},{"code":"NL","name":"네덜란드","currency":"EUR"},{"code":"BQ","name":"네덜란드령 카리브","currency":"USD"},{"code":"NP","name":"네팔","currency":"NPR"},{"code":"NO","name":"노르웨이","currency":"NOK"},{"code":"NF","name":"노퍽섬","currency":"AUD"},{"code":"NZ","name":"뉴질랜드","currency":"NZD"},{"code":"NC","name":"뉴칼레도니아","currency":"XPF"},{"code":"NU","name":"니우에","currency":"NZD"},{"code":"NE","name":"니제르","currency":"XOF"},{"code":"NI","name":"니카라과","currency":"NIO"},{"code":"TW","name":"대만","currency":"TWD"},{"code":"KR","name":"대한민국","currency":"KRW"},{"code":"DK","name":"덴마크","currency":"DKK"},{"code":"DM","name":"도미니카","currency":"XCD"},{"code":"DO","name":"도미니카 공화국","currency":"DOP"},{"code":"DE","name":"독일","currency":"EUR"},{"code":"TL","name":"동티모르","currency":"USD"},{"code":"LA","name":"라오스","currency":"LAK"},{"code":"LR","name":"라이베리아","currency":"LRD"},{"code":"LV","name":"라트비아","currency":"EUR"},{"code":"RU","name":"러시아","currency":"RUB"},{"code":"LB","name":"레바논","currency":"LBP"},{"code":"LS","name":"레소토","currency":"ZAR"},{"code":"RE","name":"레위니옹","currency":"EUR"},{"code":"RO","name":"루마니아","currency":"RON"},{"code":"LU","name":"룩셈부르크","currency":"EUR"},{"code":"RW","name":"르완다","currency":"RWF"},{"code":"LY","name":"리비아","currency":"LYD"},{"code":"LT","name":"리투아니아","currency":"EUR"},{"code":"LI","name":"리히텐슈타인","currency":"CHF"},{"code":"MG","name":"마다가스카르","currency":"MGA"},{"code":"MQ","name":"마르티니크","currency":"EUR"},{"code":"MH","name":"마셜 제도","currency":"USD"},{"code":"YT","name":"마요트","currency":"EUR"},{"code":"MO","name":"마카오(중국 특별행정구)","currency":"MOP"},{"code":"MW","name":"말라위","currency":"MWK"},{"code":"MY","name":"말레이시아","currency":"MYR"},{"code":"ML","name":"말리","currency":"XOF"},{"code":"IM","name":"맨섬","currency":"GBP"},{"code":"MX","name":"멕시코","currency":"MXN"},{"code":"MC","name":"모나코","currency":"EUR"},{"code":"MA","name":"모로코","currency":"MAD"},{"code":"MU","name":"모리셔스","currency":"MUR"},{"code":"MR","name":"모리타니","currency":"MRU"},{"code":"MZ","name":"모잠비크","currency":"MZN"},{"code":"ME","name":"몬테네그로","currency":"EUR"},{"code":"MS","name":"몬트세라트","currency":"XCD"},{"code":"MD","name":"몰도바","currency":"MDL"},{"code":"MV","name":"몰디브","currency":"MVR"},{"code":"MT","name":"몰타","currency":"EUR"},{"code":"MN","name":"몽골","currency":"MNT"},{"code":"US","name":"미국","currency":"USD"},{"code":"VI","name":"미국령 버진아일랜드","currency":"USD"},{"code":"UM","name":"미국령 해외 제도","currency":"USD"},{"code":"MM","name":"미얀마","currency":"MMK"},{"code":"FM","name":"미크로네시아","currency":"USD"},{"code":"VU","name":"바누아투","currency":"VUV"},{"code":"BH","name":"바레인","currency":"BHD"},{"code":"BB","name":"바베이도스","currency":"BBD"},{"code":"VA","name":"바티칸 시국","currency":"EUR"},{"code":"BS","name":"바하마","currency":"BSD"},{"code":"BD","name":"방글라데시","currency":"BDT"},{"code":"BM","name":"버뮤다","currency":"BMD"},{"code":"BJ","name":"베냉","currency":"XOF"},{"code":"VE","name":"베네수엘라","currency":"VES"},{"code":"VN","name":"베트남","currency":"VND"},{"code":"BE","name":"벨기에","currency":"EUR"},{"code":"BY","name":"벨라루스","currency":"BYN"},{"code":"BZ","name":"벨리즈","currency":"BZD"},{"code":"BA","name":"보스니아 헤르체고비나","currency":"BAM"},{"code":"BW","name":"보츠와나","currency":"BWP"},{"code":"BO","name":"볼리비아","currency":"BOB"},{"code":"BI","name":"부룬디","currency":"BIF"},{"code":"BF","name":"부르키나파소","currency":"XOF"},{"code":"BV","name":"부베섬","currency":"NOK"},{"code":"BT","name":"부탄","currency":"INR"},{"code":"MP","name":"북마리아나제도","currency":"USD"},{"code":"MK","name":"북마케도니아","currency":"MKD"},{"code":"KP","name":"북한","currency":"KPW"},{"code":"BG","name":"불가리아","currency":"BGN"},{"code":"BR","name":"브라질","currency":"BRL"},{"code":"BN","name":"브루나이","currency":"BND"},{"code":"WS","name":"사모아","currency":"WST"},{"code":"SA","name":"사우디아라비아","currency":"SAR"},{"code":"GS","name":"사우스조지아 사우스샌드위치 제도","currency":"GBP"},{"code":"SM","name":"산마리노","currency":"EUR"},{"code":"ST","name":"상투메 프린시페","currency":"STN"},{"code":"MF","name":"생마르탱","currency":"EUR"},{"code":"BL","name":"생바르텔레미","currency":"EUR"},{"code":"PM","name":"생피에르 미클롱","currency":"EUR"},{"code":"EH","name":"서사하라","currency":"MAD"},{"code":"SN","name":"세네갈","currency":"XOF"},{"code":"RS","name":"세르비아","currency":"RSD"},{"code":"SC","name":"세이셸","currency":"SCR"},{"code":"LC","name":"세인트루시아","currency":"XCD"},{"code":"VC","name":"세인트빈센트그레나딘","currency":"XCD"},{"code":"KN","name":"세인트키츠 네비스","currency":"XCD"},{"code":"SH","name":"세인트헬레나","currency":"SHP"},{"code":"SO","name":"소말리아","currency":"SOS"},{"code":"SB","name":"솔로몬 제도","currency":"SBD"},{"code":"SD","name":"수단","currency":"SDG"},{"code":"SR","name":"수리남","currency":"SRD"},{"code":"LK","name":"스리랑카","currency":"LKR"},{"code":"SJ","name":"스발바르제도-얀마웬섬","currency":"NOK"},{"code":"SE","name":"스웨덴","currency":"SEK"},{"code":"CH","name":"스위스","currency":"CHF"},{"code":"ES","name":"스페인","currency":"EUR"},{"code":"SK","name":"슬로바키아","currency":"EUR"},{"code":"SI","name":"슬로베니아","currency":"EUR"},{"code":"SY","name":"시리아","currency":"SYP"},{"code":"SL","name":"시에라리온","currency":"SLE"},{"code":"SX","name":"신트마르턴","currency":"XCG"},{"code":"SG","name":"싱가포르","currency":"SGD"},{"code":"AE","name":"아랍에미리트","currency":"AED"},{"code":"AW","name":"아루바","currency":"AWG"},{"code":"AM","name":"아르메니아","currency":"AMD"},{"code":"AR","name":"아르헨티나","currency":"ARS"},{"code":"AS","name":"아메리칸 사모아","currency":"USD"},{"code":"IS","name":"아이슬란드","currency":"ISK"},{"code":"HT","name":"아이티","currency":"HTG"},{"code":"IE","name":"아일랜드","currency":"EUR"},{"code":"AZ","name":"아제르바이잔","currency":"AZN"},{"code":"AF","name":"아프가니스탄","currency":"AFN"},{"code":"AD","name":"안도라","currency":"EUR"},{"code":"AL","name":"알바니아","currency":"ALL"},{"code":"DZ","name":"알제리","currency":"DZD"},{"code":"AO","name":"앙골라","currency":"AOA"},{"code":"AG","name":"앤티가 바부다","currency":"XCD"},{"code":"AI","name":"앵귈라","currency":"XCD"},{"code":"ER","name":"에리트리아","currency":"ERN"},{"code":"SZ","name":"에스와티니","currency":"SZL"},{"code":"EE","name":"에스토니아","currency":"EUR"},{"code":"EC","name":"에콰도르","currency":"USD"},{"code":"ET","name":"에티오피아","currency":"ETB"},{"code":"SV","name":"엘살바도르","currency":"USD"},{"code":"GB","name":"영국","currency":"GBP"},{"code":"VG","name":"영국령 버진아일랜드","currency":"USD"},{"code":"IO","name":"영국령 인도양 지역","currency":"USD"},{"code":"YE","name":"예멘","currency":"YER"},{"code":"OM","name":"오만","currency":"OMR"},{"code":"AU","name":"오스트레일리아","currency":"AUD"},{"code":"AT","name":"오스트리아","currency":"EUR"},{"code":"HN","name":"온두라스","currency":"HNL"},{"code":"AX","name":"올란드 제도","currency":"EUR"},{"code":"WF","name":"왈리스-푸투나 제도","currency":"XPF"},{"code":"JO","name":"요르단","currency":"JOD"},{"code":"UG","name":"우간다","currency":"UGX"},{"code":"UY","name":"우루과이","currency":"UYU"},{"code":"UZ","name":"우즈베키스탄","currency":"UZS"},{"code":"UA","name":"우크라이나","currency":"UAH"},{"code":"IQ","name":"이라크","currency":"IQD"},{"code":"IR","name":"이란","currency":"IRR"},{"code":"IL","name":"이스라엘","currency":"ILS"},{"code":"EG","name":"이집트","currency":"EGP"},{"code":"IT","name":"이탈리아","currency":"EUR"},{"code":"IN","name":"인도","currency":"INR"},{"code":"ID","name":"인도네시아","currency":"IDR"},{"code":"JP","name":"일본","currency":"JPY"},{"code":"JM","name":"자메이카","currency":"JMD"},{"code":"ZM","name":"잠비아","currency":"ZMW"},{"code":"JE","name":"저지","currency":"GBP"},{"code":"GQ","name":"적도 기니","currency":"XAF"},{"code":"GE","name":"조지아","currency":"GEL"},{"code":"CN","name":"중국","currency":"CNY"},{"code":"CF","name":"중앙 아프리카 공화국","currency":"XAF"},{"code":"DJ","name":"지부티","currency":"DJF"},{"code":"GI","name":"지브롤터","currency":"GIP"},{"code":"ZW","name":"짐바브웨","currency":"USD"},{"code":"TD","name":"차드","currency":"XAF"},{"code":"CZ","name":"체코","currency":"CZK"},{"code":"CL","name":"칠레","currency":"CLP"},{"code":"CM","name":"카메룬","currency":"XAF"},{"code":"CV","name":"카보베르데","currency":"CVE"},{"code":"KZ","name":"카자흐스탄","currency":"KZT"},{"code":"QA","name":"카타르","currency":"QAR"},{"code":"KH","name":"캄보디아","currency":"KHR"},{"code":"CA","name":"캐나다","currency":"CAD"},{"code":"KE","name":"케냐","currency":"KES"},{"code":"KY","name":"케이맨 제도","currency":"KYD"},{"code":"KM","name":"코모로","currency":"KMF"},{"code":"CR","name":"코스타리카","currency":"CRC"},{"code":"CC","name":"코코스 제도","currency":"AUD"},{"code":"CI","name":"코트디부아르","currency":"XOF"},{"code":"CO","name":"콜롬비아","currency":"COP"},{"code":"CG","name":"콩고-브라자빌","currency":"XAF"},{"code":"CD","name":"콩고-킨샤사","currency":"CDF"},{"code":"CU","name":"쿠바","currency":"CUP"},{"code":"KW","name":"쿠웨이트","currency":"KWD"},{"code":"CK","name":"쿡 제도","currency":"NZD"},{"code":"CW","name":"퀴라소","currency":"XCG"},{"code":"HR","name":"크로아티아","currency":"EUR"},{"code":"CX","name":"크리스마스섬","currency":"AUD"},{"code":"KG","name":"키르기스스탄","currency":"KGS"},{"code":"KI","name":"키리바시","currency":"AUD"},{"code":"CY","name":"키프로스","currency":"EUR"},{"code":"TJ","name":"타지키스탄","currency":"TJS"},{"code":"TZ","name":"탄자니아","currency":"TZS"},{"code":"TH","name":"태국","currency":"THB"},{"code":"TC","name":"터크스 케이커스 제도","currency":"USD"},{"code":"TG","name":"토고","currency":"XOF"},{"code":"TK","name":"토켈라우","currency":"NZD"},{"code":"TO","name":"통가","currency":"TOP"},{"code":"TM","name":"투르크메니스탄","currency":"TMT"},{"code":"TV","name":"투발루","currency":"AUD"},{"code":"TN","name":"튀니지","currency":"TND"},{"code":"TR","name":"튀르키예","currency":"TRY"},{"code":"TT","name":"트리니다드 토바고","currency":"TTD"},{"code":"PA","name":"파나마","currency":"PAB"},{"code":"PY","name":"파라과이","currency":"PYG"},{"code":"PK","name":"파키스탄","currency":"PKR"},{"code":"PG","name":"파푸아뉴기니","currency":"PGK"},{"code":"PW","name":"팔라우","currency":"USD"},{"code":"PS","name":"팔레스타인 지구","currency":"ILS"},{"code":"FO","name":"페로 제도","currency":"DKK"},{"code":"PE","name":"페루","currency":"PEN"},{"code":"PT","name":"포르투갈","currency":"EUR"},{"code":"FK","name":"포클랜드 제도","currency":"FKP"},{"code":"PL","name":"폴란드","currency":"PLN"},{"code":"PR","name":"푸에르토리코","currency":"USD"},{"code":"FR","name":"프랑스","currency":"EUR"},{"code":"GF","name":"프랑스령 기아나","currency":"EUR"},{"code":"TF","name":"프랑스령 남방 지역","currency":"EUR"},{"code":"PF","name":"프랑스령 폴리네시아","currency":"XPF"},{"code":"FJ","name":"피지","currency":"FJD"},{"code":"FI","name":"핀란드","currency":"EUR"},{"code":"PH","name":"필리핀","currency":"PHP"},{"code":"PN","name":"핏케언 제도","currency":"NZD"},{"code":"HM","name":"허드 맥도널드 제도","currency":"AUD"},{"code":"HU","name":"헝가리","currency":"HUF"},{"code":"HK","name":"홍콩(중국 특별행정구)","currency":"HKD"}];
-            var PLANNER_REGION_MAP={"대한민국": ["서울", "부산", "인천", "대구", "대전", "광주", "울산", "경기", "강원", "충북", "충남", "전북", "전남", "경북", "경남", "제주"], "일본": ["도쿄", "오사카", "교토", "후쿠오카", "삿포로", "나고야", "오키나와", "나라", "고베", "요코하마"], "중국": ["베이징", "상하이", "광저우", "선전", "칭다오", "청두", "시안", "항저우"], "대만": ["타이베이", "가오슝", "타이중", "타이난", "화롄"], "태국": ["방콕", "치앙마이", "푸껫", "파타야", "끄라비"], "베트남": ["하노이", "호찌민", "다낭", "나트랑", "호이안", "푸꾸옥"], "미국": ["뉴욕", "로스앤젤레스", "샌프란시스코", "라스베이거스", "시애틀", "시카고", "보스턴", "하와이"], "프랑스": ["파리", "니스", "리옹", "마르세유", "보르도"], "이탈리아": ["로마", "밀라노", "피렌체", "베네치아", "나폴리"], "스페인": ["마드리드", "바르셀로나", "세비야", "발렌시아"], "영국": ["런던", "에든버러", "맨체스터", "리버풀"], "독일": ["베를린", "뮌헨", "프랑크푸르트", "함부르크"], "싱가포르": ["싱가포르"], "말레이시아": ["쿠알라룸푸르", "코타키나발루", "페낭", "말라카"], "인도네시아": ["발리", "자카르타", "욕야카르타", "롬복"], "필리핀": ["마닐라", "세부", "보라카이", "보홀"], "호주": ["시드니", "멜버른", "브리즈번", "골드코스트", "퍼스"], "캐나다": ["밴쿠버", "토론토", "몬트리올", "퀘벡"]};
 
             function normalizePlannerText(v){ return String(v||'').trim(); }
+
+            function normalizePlannerDateValue(value){
+                if(value==null || value==='') return '';
+
+                var raw=String(value).trim();
+                var iso=raw.match(/^(\d{4})-(\d{2})-(\d{2})/);
+                if(iso){
+                    return iso[1]+'-'+iso[2]+'-'+iso[3];
+                }
+
+                var parsed=new Date(raw);
+                if(isNaN(parsed.getTime())) return '';
+
+                var y=parsed.getFullYear();
+                var m=String(parsed.getMonth()+1).padStart(2,'0');
+                var d=String(parsed.getDate()).padStart(2,'0');
+                return y+'-'+m+'-'+d;
+            }
+
+            function updatePlannerTitleCount(){
+                var input=$('#tripTitle');
+                var count=$('#plannerTitleCount');
+                if(!input || !count) return;
+                if(input.value.length>30){
+                    input.value=input.value.slice(0,30);
+                }
+                count.textContent=input.value.length+'/30';
+            }
             function findPlannerCountry(name){
                 var n=normalizePlannerText(name);
 
@@ -5629,18 +5567,6 @@ request.setAttribute("activePage", "planner");
                 var btn=$('#plannerRegionClear');
                 if(btn) btn.classList.toggle('hidden',!(input && input.value));
             }
-            function plannerRegionFallbackOptions(matched, query){
-                if(!matched) return [];
-
-                var options=PLANNER_REGION_MAP[matched.name]||[];
-                var q=normalizePlannerText(query);
-
-                return options
-                    .filter(function(name){
-                        return !q || normalizePlannerText(name).indexOf(q)!==-1;
-                    })
-                    .slice(0,8);
-            }
 
             function renderPlannerRegionButtons(items){
                 var region=$('#plannerRegion');
@@ -5708,11 +5634,15 @@ request.setAttribute("activePage", "planner");
                 dropdown.classList.toggle('hidden',items.length===0);
             }
 
-            function renderPlannerRegionFallback(matched, query){
-                var options=plannerRegionFallbackOptions(matched,query);
-                renderPlannerRegionButtons(options.map(function(name){
-                    return {name:name,secondary:'추천 지역'};
-                }));
+            function renderPlannerRegionMessage(message){
+                var dropdown=$('#plannerRegionDropdown');
+                if(!dropdown) return;
+                dropdown.innerHTML='';
+                var row=document.createElement('div');
+                row.className='px-3 py-2.5 text-xs text-gray-400';
+                row.textContent=message;
+                dropdown.appendChild(row);
+                dropdown.classList.remove('hidden');
             }
 
             function refreshRegionOptions(clearValue){
@@ -5748,7 +5678,7 @@ request.setAttribute("activePage", "planner");
                 }
 
                 region.disabled=false;
-                region.placeholder='지역/도시 검색 또는 직접 입력';
+                region.placeholder='Google Places에서 지역/도시 검색';
                 dropdown.classList.add('hidden');
                 updateRegionClear();
             }
@@ -5773,14 +5703,15 @@ request.setAttribute("activePage", "planner");
                     plannerRegionSearchTimer=null;
                 }
 
-                // 빈 입력에서는 기존의 대표 지역 목록만 보여준다.
+                // Google Places Autocomplete는 검색어를 기준으로 후보를 반환한다.
+                // 빈 입력에서는 로컬 목록을 대신 보여주지 않는다.
                 if(!query){
-                    renderPlannerRegionFallback(matched,'');
+                    renderPlannerRegionMessage('지역/도시명을 입력하면 Google Places에서 검색합니다.');
                     return;
                 }
 
-                // Google 결과가 오기 전까지 기존 목록에서 즉시 일치하는 항목을 보여준다.
-                renderPlannerRegionFallback(matched,query);
+                // 입력 중 드롭다운을 유지하되, 후보 데이터는 Google Places 결과만 사용한다.
+                renderPlannerRegionMessage('Google Places에서 지역/도시를 검색 중입니다.');
 
                 plannerRegionSearchTimer=setTimeout(function(){
                     getPlannerPlacesLibrary()
@@ -5858,14 +5789,14 @@ request.setAttribute("activePage", "planner");
                             });
 
                             if(items.length){
-                                renderPlannerRegionButtons(items.slice(0,8));
+                                renderPlannerRegionButtons(items);
                             }else{
-                                renderPlannerRegionFallback(matched,query);
+                                renderPlannerRegionMessage('Google Places 검색 결과가 없습니다.');
                             }
                         })
                         .catch(function(){
                             if(requestSeq!==plannerRegionSearchSeq) return;
-                            renderPlannerRegionFallback(matched,query);
+                            renderPlannerRegionMessage('Google Places 지역/도시 검색에 실패했습니다.');
                         });
                 },250);
             }
@@ -6232,14 +6163,17 @@ request.setAttribute("activePage", "planner");
                     var country=$('#plannerCountry');
                     var region=$('#plannerRegion');
                     var traveler=$('#plannerTravelerCount');
-                    if(tripTitle) tripTitle.value=payload.title || '';
+                    if(tripTitle){
+                        tripTitle.value=payload.title || '';
+                        updatePlannerTitleCount();
+                    }
                     if(country) country.value=payload.country || '';
                     refreshCountryStatus();
                     refreshRegionOptions(false);
                     if(region) region.value=payload.city || '';
                     if(traveler) traveler.value=String(payload.travelerCount || 1);
-                    if(startDate) startDate.value=payload.startDate || '';
-                    if(endDate) endDate.value=payload.endDate || '';
+                    if(startDate) startDate.value=normalizePlannerDateValue(payload.startDate);
+                    if(endDate) endDate.value=normalizePlannerDateValue(payload.endDate);
                     setPlannerVisibility(payload.visibility || 'PUBLIC',false);
                     syncDates();
 
@@ -6252,37 +6186,22 @@ request.setAttribute("activePage", "planner");
                     if(publishSummary){
                         publishSummary.value=payload.summary || '';
                         var summaryCount=$('#plannerPublishSummaryCount');
-                        if(summaryCount) summaryCount.textContent=publishSummary.value.length+' / 500자';
+                        if(summaryCount) summaryCount.textContent=publishSummary.value.length+'/250';
                     }
 
-                    var existingDays=$$('.planner-day');
-                    var firstDay=existingDays[0];
-                    existingDays.slice(1).forEach(function(day){ day.remove(); });
-                    if(firstDay){
-                        var firstBody=$('.planner-day-body',firstDay);
-                        if(firstBody){
-                            $$('.planner-block-card,.planner-block-summary,.planner-empty-day-hint',firstBody)
-                                .forEach(function(node){ node.remove(); });
-                        }
-                    }
+                    $$('.planner-day').forEach(function(day){ day.remove(); });
 
                     var days=Array.isArray(payload.days) ? payload.days.slice().sort(function(a,b){
                         return Number(a.dayOrder||0)-Number(b.dayOrder||0);
                     }) : [];
-                    if(!days.length) days=[{dayOrder:1,title:'Day 1',blocks:[]}];
 
                     days.forEach(function(dayDto,index){
-                        var day;
-                        if(index===0){
-                            day=firstDay;
-                        }else{
-                            var beforeCount=$$('.planner-day').length;
-                            var addDayButton=$('#plannerAddDay');
-                            if(addDayButton) addDayButton.click();
-                            var dayList=$$('.planner-day');
-                            day=dayList[beforeCount] || dayList[dayList.length-1];
-                        }
-                        if(!day) return;
+                        var daysWrap=$('#plannerDays');
+                        var addDayButton=$('#plannerAddDay');
+                        if(!daysWrap) return;
+                        var day=createPlannerDayShell(dayDto.title || ('Day '+(index+1)));
+                        daysWrap.insertBefore(day,addDayButton||null);
+                        setupDay(day);
 
                         day.dataset.dayNumber=String(index+1);
                         day.dataset.dayOrder=String(index+1);
@@ -6936,7 +6855,7 @@ request.setAttribute("activePage", "planner");
                 if(summaryInput){
                     summaryInput.value=plannerPublishState.summary || '';
                     var count=$('#plannerPublishSummaryCount');
-                    if(count) count.textContent=summaryInput.value.length+' / 500자';
+                    if(count) count.textContent=summaryInput.value.length+'/250';
                 }
 
                 renderPublishPhotoCandidates();
@@ -7017,7 +6936,7 @@ request.setAttribute("activePage", "planner");
                         var count=$('#plannerPublishSummaryCount');
                         if(count){
                             count.textContent=
-                                plannerPublishSummary.value.length+' / 500자';
+                                plannerPublishSummary.value.length+'/250';
                         }
 
                         var summaryError=$('#plannerPublishSummaryError');
@@ -7151,6 +7070,11 @@ request.setAttribute("activePage", "planner");
                 setupPublishPreviewModal();
                 openPublishPreviewModal();
             });
+            var plannerTitleInput=$('#tripTitle');
+            if(plannerTitleInput){
+                plannerTitleInput.addEventListener('input',updatePlannerTitleCount);
+                updatePlannerTitleCount();
+            }
             ['#tripTitle','#plannerCountry','#plannerRegion','#plannerTravelerCount'].forEach(function(sel){var el=$(sel);if(el)el.addEventListener('input',markDirty)});
             var travelerCountInput=$('#plannerTravelerCount');
             if(travelerCountInput){
@@ -7441,8 +7365,6 @@ request.setAttribute("activePage", "planner");
                             }
 
                             var title=$('.planner-item-title',card);
-                            var cfg=TYPE_CONFIG[card.dataset.itemType]
-                                || TYPE_CONFIG.sightseeing;
 
                             points.push({
                                 day:dayNumber,
@@ -7455,7 +7377,7 @@ request.setAttribute("activePage", "planner");
                                 googlePlaceId:place.googlePlaceId || '',
                                 lat:place.lat,
                                 lng:place.lng,
-                                color:cfg.color
+                                color:getPlannerDayLineColor(dayNumber)
                             });
                         }
                     );
@@ -7510,12 +7432,15 @@ request.setAttribute("activePage", "planner");
                             fontWeight:'bold'
                         },
                         icon:{
-                            path:google.maps.SymbolPath.CIRCLE,
-                            scale:14,
+                            // 일반적인 지도 핀 형태. DAY 색상으로 핀/동선을 통일한다.
+                            path:'M0,-18 C-10,-18 -18,-10 -18,0 C-18,12 0,30 0,30 C0,30 18,12 18,0 C18,-10 10,-18 0,-18 Z',
+                            scale:.78,
                             fillColor:point.color,
                             fillOpacity:1,
                             strokeColor:'#fff',
-                            strokeWeight:2
+                            strokeWeight:2,
+                            anchor:new google.maps.Point(0,30),
+                            labelOrigin:new google.maps.Point(0,-1)
                         }
                     });
 
@@ -7653,7 +7578,7 @@ request.setAttribute("activePage", "planner");
                         geodesic:true,
                         strokeColor:getPlannerDayLineColor(dayKey),
                         strokeOpacity:.82,
-                        strokeWeight:4,
+                        strokeWeight:5,
                         map:map
                     });
 
@@ -7755,7 +7680,7 @@ request.setAttribute("activePage", "planner");
                 var region=$('#plannerRegion');
                 var traveler=$('#plannerTravelerCount');
 
-                if(tripTitle) tripTitle.value='';
+                if(tripTitle){ tripTitle.value=''; updatePlannerTitleCount(); }
                 if(country) country.value='';
                 if(region){
                     region.value='';
@@ -7768,25 +7693,7 @@ request.setAttribute("activePage", "planner");
 
                 setPlannerVisibility('PUBLIC',false);
 
-                var days=$$('.planner-day');
-                days.slice(1).forEach(function(day){ day.remove(); });
-
-                var firstDay=days[0];
-                if(firstDay){
-                    firstDay.dataset.dayNumber='1';
-                    firstDay.dataset.dayOrder='1';
-
-                    var title=$('.planner-day-title',firstDay);
-                    if(title) title.textContent='Day 1';
-
-                    var body=$('.planner-day-body',firstDay);
-                    if(body){
-                        $$('.planner-block-card,.planner-block-summary,.planner-empty-day-hint',body)
-                            .forEach(function(node){ node.remove(); });
-                    }
-
-                    ensureDayControls(firstDay);
-                }
+                $$('.planner-day').forEach(function(day){ day.remove(); });
 
                 refreshCountryStatus();
                 refreshRegionOptions(false);
@@ -7907,11 +7814,11 @@ request.setAttribute("activePage", "planner");
                                     class="text-xs font-bold text-gray-700">일정 소개 <span class="font-normal text-gray-400">(선택)</span></label>
 
                                 <span id="plannerPublishSummaryCount"
-                                    class="text-[10px] text-gray-400">0자</span>
+                                    class="text-[10px] text-gray-400">0/250</span>
                             </div>
 
                             <textarea id="plannerPublishSummary"
-                                maxlength="500"
+                                maxlength="250"
                                 class="planner-publish-summary"
                                 placeholder="이 여행 일정의 특징이나 추천 포인트를 작성해 주세요."></textarea>
 

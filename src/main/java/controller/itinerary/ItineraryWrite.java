@@ -195,6 +195,19 @@ public class ItineraryWrite extends HttpServlet {
             );
         }
 
+        if (itineraryDto.getTitle().trim().length() > 30) {
+            throw new IllegalArgumentException(
+                    "여행 제목은 30자 이하로 입력해 주세요."
+            );
+        }
+
+        if (itineraryDto.getSummary() != null
+                && itineraryDto.getSummary().length() > 250) {
+            throw new IllegalArgumentException(
+                    "일정 소개는 250자 이하로 입력해 주세요."
+            );
+        }
+
         if (itineraryDto.getCountry() == null
                 || itineraryDto.getCountry()
                         .trim().isEmpty()) {
