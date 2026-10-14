@@ -111,8 +111,11 @@ public class AdvertisementServiceImpl implements AdvertisementService {
 		 * TIP_SIDE → 여행 꿀팁 상세 좌·우 사이드
 		 *
 		 * MATE_SIDE → 여행 메이트 상세 좌·우 사이드
+		 *
+		 * CART_SIDE → 일정 카트 좌·우 사이드
 		 */
-		if (!"TRIP_CARD".equals(adPosition) && !"TIP_SIDE".equals(adPosition) && !"MATE_SIDE".equals(adPosition)) {
+		if (!"TRIP_CARD".equals(adPosition) && !"TIP_SIDE".equals(adPosition) && !"MATE_SIDE".equals(adPosition)
+				&& !"CART_SIDE".equals(adPosition)) {
 
 			throw new IllegalArgumentException("올바른 광고 영역을 선택해주세요.");
 		}

@@ -76,7 +76,7 @@ if (preservedAdPosition != null) {
 
 
 /*
- * 현재 실제 광고 상품 3종만 허용
+ * 현재 실제 광고 상품 4종만 허용
  */
 if (
     !"TRIP_CARD".equals(selectedAdPosition)
@@ -84,6 +84,8 @@ if (
     !"TIP_SIDE".equals(selectedAdPosition)
     &&
     !"MATE_SIDE".equals(selectedAdPosition)
+    &&
+    !"CART_SIDE".equals(selectedAdPosition)
 ) {
 
     selectedAdPosition = "";
@@ -200,7 +202,7 @@ String formEndDate =
 
 <!-- 반드시 support.css보다 뒤에 -->
 <link rel="stylesheet"
-    href="<%=ctx%>/view/assets/css/support/adInquiry.css">
+    href="<%=ctx%>/view/assets/css/support/adInquiry.css?v=3">
 
 </head>
 
@@ -231,15 +233,10 @@ String formEndDate =
                     <a
                         href="<%=ctx%>/view/support/adGuide.jsp">
 
-                        <span>←</span>
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m15 18-6-6 6-6"/></svg>
                         광고 안내
 
                     </a>
-
-
-                    <span>
-                        AD INQUIRY
-                    </span>
 
                 </div>
 
@@ -247,13 +244,15 @@ String formEndDate =
 
                 <header class="ad-inquiry-header">
 
+                    <span>광고 문의</span>
+
                     <h1>
                         광고 문의하기
                     </h1>
 
                     <p>
                         광고 위치와 기간, 이미지를 등록하면
-                        담당자가 내용을 검토한 뒤 안내드립니다.
+                        담당자가 검토한 뒤 이메일로 안내드려요.
                     </p>
 
                 </header>
@@ -310,59 +309,6 @@ String formEndDate =
                 %>
 
 
-
-                <!-- =================================================
-                     상품 요약
-                ================================================== -->
-
-                <section class="ad-inquiry-guide">
-
-                    <div class="ad-inquiry-guide-title">
-
-                        <div>
-
-                            <span>
-                                PLACEMENT GUIDE
-                            </span>
-
-                            <strong>
-                                현재 신청 가능한 광고 영역
-                            </strong>
-
-                        </div>
-
-
-                        <a
-                            href="<%=ctx%>/view/support/adGuide.jsp">
-                            자세히 보기 →
-                        </a>
-
-                    </div>
-
-
-                    <div class="ad-inquiry-guide-grid">
-
-                        <div>
-                            <span>HOME</span>
-                            <strong>슬라이딩 카드</strong>
-                            <b>600 × 400</b>
-                        </div>
-
-                        <div>
-                            <span>TIP</span>
-                            <strong>좌·우 사이드</strong>
-                            <b>160 × 600</b>
-                        </div>
-
-                        <div>
-                            <span>MATE</span>
-                            <strong>좌·우 사이드</strong>
-                            <b>160 × 600</b>
-                        </div>
-
-                    </div>
-
-                </section>
 
 
 
@@ -522,7 +468,7 @@ String formEndDate =
 
                             <!-- HOME -->
 
-                            <label class="ad-inquiry-position-card">
+                            <label class="ad-inquiry-position-card pos-home">
 
                                 <input
                                     type="radio"
@@ -557,7 +503,7 @@ String formEndDate =
 
 
                                 <span class="ad-inquiry-position-size">
-                                    600 × 400 px
+                                    290 × 230 px
                                 </span>
 
                             </label>
@@ -566,7 +512,7 @@ String formEndDate =
 
                             <!-- TIP -->
 
-                            <label class="ad-inquiry-position-card">
+                            <label class="ad-inquiry-position-card pos-tip">
 
                                 <input
                                     type="radio"
@@ -610,7 +556,7 @@ String formEndDate =
 
                             <!-- MATE -->
 
-                            <label class="ad-inquiry-position-card">
+                            <label class="ad-inquiry-position-card pos-mate">
 
                                 <input
                                     type="radio"
@@ -641,6 +587,50 @@ String formEndDate =
 
                                 <small>
                                     상세 페이지 좌·우에 노출
+                                </small>
+
+
+                                <span class="ad-inquiry-position-size">
+                                    160 × 600 px
+                                </span>
+
+                            </label>
+
+
+
+                            <!-- CART -->
+
+                            <label class="ad-inquiry-position-card pos-cart">
+
+                                <input
+                                    type="radio"
+                                    name="adPosition"
+                                    value="CART_SIDE"
+                                    <%=
+                                        "CART_SIDE".equals(
+                                                selectedAdPosition
+                                        )
+                                        ? "checked"
+                                        : ""
+                                    %>
+                                    required>
+
+
+                                <span class="ad-inquiry-position-top">
+
+                                    <b>SCHEDULE CART</b>
+                                    <em>CART_SIDE</em>
+
+                                </span>
+
+
+                                <strong>
+                                    일정 카트 사이드
+                                </strong>
+
+
+                                <small>
+                                    일정 카트 페이지 좌·우에 노출
                                 </small>
 
 
@@ -717,6 +707,15 @@ String formEndDate =
                         </div>
 
 
+                        <!-- 기준 기간 빠른 선택 : 시작일 기준으로 종료일 자동 입력 -->
+                        <div class="ad-inquiry-period-chips" role="group" aria-label="기준 기간 빠른 선택">
+                            <span>기준 기간</span>
+                            <button type="button" data-period-days="30">1개월 (30일)</button>
+                            <button type="button" data-period-days="90">3개월 (90일)</button>
+                            <button type="button" data-period-days="180">6개월 (180일)</button>
+                        </div>
+
+
                         <div class="ad-inquiry-price">
 
                             <div>
@@ -745,6 +744,19 @@ String formEndDate =
                             </div>
 
 
+                            <div>
+
+                                <span>
+                                    적용 단가
+                                </span>
+
+                                <strong id="priceRate">
+                                    -
+                                </strong>
+
+                            </div>
+
+
                             <div class="total">
 
                                 <span>
@@ -760,9 +772,12 @@ String formEndDate =
                         </div>
 
 
+                        <p class="ad-inquiry-price-hint" id="priceHint" hidden></p>
+
                         <p class="ad-inquiry-help">
-                            홈 카드 광고는 7일·14일·30일 기준 요금이 표시되며,
-                            사이드 광고는 관리자 검토 후 비용을 안내합니다.
+                            1개월·3개월·6개월 기준으로 오래 계약할수록 하루 단가가 낮아지며,
+                            30일 미만 단기 계약은 하루 단가가 더 높게 적용됩니다.
+                            최종 금액은 관리자 검토 후 확정됩니다.
                         </p>
 
                     </section>
@@ -983,6 +998,8 @@ String formEndDate =
 
 
 
+<script src="<%=ctx%>/view/assets/js/support/adPricing.js?v=1"></script>
+
 <script>
 
 document.addEventListener(
@@ -1064,41 +1081,40 @@ document.addEventListener(
            광고 상품 정보
         ====================================================== */
 
-        const POSITION_INFO = {
+        /*
+         * 크기 / 단가는 adPricing.js 한 곳에서 관리
+         */
+        const Pricing = window.PlanbAdPricing;
 
-            TRIP_CARD: {
-                name: "홈 슬라이딩 카드",
-                size: "600 × 400 px",
-                imageText: "3:2 비율의 가로형 이미지를 권장합니다.",
-                previewType: "card"
-            },
+        const priceRate =
+            document.getElementById(
+                "priceRate"
+            );
 
-            TIP_SIDE: {
-                name: "여행 꿀팁 사이드",
-                size: "160 × 600 px",
-                imageText: "여행 꿀팁 상세 좌·우에 들어가는 세로형 이미지입니다.",
-                previewType: "side"
-            },
+        const priceHint =
+            document.getElementById(
+                "priceHint"
+            );
 
-            MATE_SIDE: {
-                name: "여행 메이트 사이드",
-                size: "160 × 600 px",
-                imageText: "여행 메이트 상세 좌·우에 들어가는 세로형 이미지입니다.",
-                previewType: "side"
-            }
-
+        const IMAGE_TEXT = {
+            TRIP_CARD: "인기 여행일정 카드의 이미지 영역(290 × 230)에 꽉 차게 표시됩니다. 화면 높이가 낮으면 세로가 줄어들 수 있어 핵심 내용은 가운데에 배치해주세요.",
+            TIP_SIDE: "여행 꿀팁 상세 좌·우에 들어가는 세로형(160 × 600) 이미지입니다.",
+            MATE_SIDE: "여행 메이트 상세 좌·우에 들어가는 세로형(160 × 600) 이미지입니다.",
+            CART_SIDE: "일정 카트 페이지 좌·우에 들어가는 세로형(160 × 600) 이미지입니다."
         };
 
+        const POSITION_INFO = {};
 
-        const PRICE_TABLE = {
+        Object.keys(Pricing.POSITIONS).forEach(function (key) {
+            const item = Pricing.POSITIONS[key];
 
-            TRIP_CARD: {
-                7: 30000,
-                14: 50000,
-                30: 90000
-            }
-
-        };
+            POSITION_INFO[key] = {
+                name: item.name,
+                size: item.image + " px",
+                imageText: IMAGE_TEXT[key],
+                previewType: key === "TRIP_CARD" ? "card" : "side"
+            };
+        });
 
 
         /* =====================================================
@@ -1374,6 +1390,42 @@ document.addEventListener(
         );
 
 
+        /* =====================================================
+           기준 기간 빠른 선택
+           시작일이 없으면 오늘부터 시작
+        ====================================================== */
+
+        function toDateValue(date) {
+
+            return date.getFullYear()
+                + "-" + String(date.getMonth() + 1).padStart(2, "0")
+                + "-" + String(date.getDate()).padStart(2, "0");
+        }
+
+        document
+            .querySelectorAll("[data-period-days]")
+            .forEach(function (button) {
+
+                button.addEventListener("click", function () {
+
+                    const days = Number(button.dataset.periodDays);
+
+                    if (!startDate.value) {
+                        startDate.value = startDate.min || toDateValue(new Date());
+                    }
+
+                    const end = new Date(startDate.value + "T00:00:00");
+
+                    end.setDate(end.getDate() + days - 1);
+
+                    endDate.min = startDate.value;
+                    endDate.value = toDateValue(end);
+
+                    updatePrice();
+                });
+            });
+
+
         function calculateDays() {
 
             if (
@@ -1454,6 +1506,10 @@ document.addEventListener(
             }
 
 
+            priceRate.textContent = "-";
+            priceHint.hidden = true;
+            priceHint.textContent = "";
+
             if (!position) {
 
                 priceTotal.textContent =
@@ -1482,37 +1538,53 @@ document.addEventListener(
 
 
             /*
-             * TIP/MATE 사이드는 별도 견적
+             * 기간별 하루 단가 × 일수 (adPricing.js)
              */
-            if (
-                position === "TIP_SIDE"
-                ||
-                position === "MATE_SIDE"
-            ) {
+            const result =
+                Pricing.estimate(position, days);
+
+            if (!result) {
 
                 priceTotal.textContent =
-                    "관리자 검토 후 별도 안내";
+                    "기간을 확인해주세요.";
 
                 return;
             }
 
 
-            const price =
-                PRICE_TABLE[position]
-                &&
-                PRICE_TABLE[position][days];
+            priceRate.textContent =
+                result.tier.label
+                + " 요금 · 하루 "
+                + Pricing.won(result.dailyRate);
+
+            priceTotal.textContent =
+                Pricing.won(result.total);
 
 
-            if (price) {
+            /* 안내 문구 */
+            if (result.capped) {
 
-                priceTotal.textContent =
-                    price.toLocaleString()
-                    + "원";
+                priceHint.textContent =
+                    result.next.label
+                    + "(" + result.next.minDays + "일) 요금이 더 저렴해 "
+                    + Pricing.won(result.total)
+                    + "이 적용됩니다. 같은 금액으로 "
+                    + result.next.minDays
+                    + "일까지 노출할 수 있어요.";
 
-            } else {
+                priceHint.hidden = false;
 
-                priceTotal.textContent =
-                    "기간별 별도 안내";
+            } else if (result.next) {
+
+                priceHint.textContent =
+                    (result.next.minDays - days)
+                    + "일 더 계약하면 "
+                    + result.next.label
+                    + " 요금(하루 "
+                    + Pricing.won(result.nextDailyRate)
+                    + ")이 적용돼요.";
+
+                priceHint.hidden = false;
             }
         }
 

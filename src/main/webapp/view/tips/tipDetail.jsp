@@ -24,10 +24,10 @@ request.setAttribute("activePage", "tips");
 					<path d="M15 18l-6-6 6-6" /></svg>목록으로</a>
 			<div class="flex gap-6 items-start">
 				<div class="hidden lg:flex flex-col items-center justify-center gap-3 rounded-2xl shrink-0"
-					 style="width: 160px; min-height: 600px; background-color: var(- -brand-light); color: var(- -brand)">
+					 style="width: 160px; min-height: 600px; background-color: var(--brand-light); color: var(--brand)">
 					<div class="w-12 h-12 rounded-full flex items-center justify-center font-extrabold text-sm text-white"
-						 style="background-color: var(- -brand)">AD</div>
-					<p class="text-xs font-semibold text-center px-3" style="color: var(- -brand)">
+						 style="background-color: var(--brand)">AD</div>
+					<p class="text-xs font-semibold text-center px-3" style="color: var(--brand)">
 						좌측 광고 영역<br>
 						<span class="text-[10px] font-normal opacity-60">(예: 160x600)</span>
 					</p>
@@ -366,10 +366,10 @@ request.setAttribute("activePage", "tips");
 				<!-- 우측 광고 -->
 				</div>
 				<div class="hidden lg:flex flex-col items-center justify-center gap-3 rounded-2xl shrink-0"
-					 style="width: 160px; min-height: 600px; background-color: var(- -brand-light); color: var(- -brand)">
+					 style="width: 160px; min-height: 600px; background-color: var(--brand-light); color: var(--brand)">
 					<div class="w-12 h-12 rounded-full flex items-center justify-center font-extrabold text-sm text-white"
-						style="background-color: var(- -brand)">AD</div>
-					<p class="text-xs font-semibold text-center px-3" style="color: var(- -brand)">
+						style="background-color: var(--brand)">AD</div>
+					<p class="text-xs font-semibold text-center px-3" style="color: var(--brand)">
 						우측 광고 영역<br>
 						<span class="text-[10px] font-normal opacity-60">(예: 160x600)</span>
 					</p>
