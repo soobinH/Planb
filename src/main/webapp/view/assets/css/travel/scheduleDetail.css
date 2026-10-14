@@ -955,3 +955,123 @@ html::-webkit-scrollbar-thumb {
 html::-webkit-scrollbar-thumb:hover {
 	background: #a8abe0;
 }
+
+/* ===== 상세 화면: 정보·일정 확대 / planner 지도 디자인 ===== */
+#scheduleDetail.detail-layout {
+    grid-template-columns: clamp(320px, 19vw, 360px) minmax(420px, 1.2fr) minmax(340px, .85fr);
+}
+.detail-info-panel h1 { font-size: 19px; line-height: 1.45; }
+.detail-info-panel h1 + p { font-size: 13px; margin-bottom: 8px; }
+.detail-trip-date {
+    display: flex; align-items: center; flex-wrap: wrap; gap: 6px;
+    margin: 0 0 16px; padding: 0; border: 0; border-radius: 0;
+    background: transparent; color: #858b9d; font-size: 12px; line-height: 1.7;
+}
+.detail-trip-date svg { flex-shrink: 0; color: #8c91a6; }
+.detail-stats-row { display: flex; align-items: center; gap: 12px; margin-bottom: 14px; }
+#scheduleReportButton.detail-report-button {
+    display: inline-flex; align-items: center; justify-content: center; gap: 4px;
+    flex-shrink: 0; margin-left: auto; min-height: 30px; padding: 5px 8px;
+    border: 1px solid #f0e0d8; border-radius: 8px; background: #fffaf7;
+    color: #bc795c; font: inherit; font-size: 11px; font-weight: 600; line-height: 1;
+    transition: background .15s, border-color .15s;
+}
+#scheduleReportButton.detail-report-button:hover { background: #fff0e8; border-color: #eabca6; }
+#scheduleReportButton.detail-report-button svg { width: 12px; height: 12px; }
+#scheduleDetail .detail-cart-full {
+    display: flex; align-items: center; justify-content: center; gap: 8px;
+    flex: 1; width: 100%; min-width: 0; min-height: 42px; padding: 11px 14px;
+    border: 1px solid transparent; border-radius: 12px;
+    background: #6369D1; color: #fff; font: inherit; font-size: 13px; font-weight: 650;
+    box-shadow: 0 5px 14px rgba(99, 105, 209, .14); transition: filter .15s;
+}
+#scheduleDetail .detail-cart-full:hover { filter: brightness(.97); }
+#scheduleDetail .detail-cart-full svg { width: 17px; height: 17px; }
+#scheduleLikeButton.detail-thumbnail-like {
+    width: 46px; height: 46px; right: 14px; bottom: 14px; padding: 0;
+    border: 1px solid rgba(255,255,255,.9); border-radius: 15px;
+    background: rgba(255,255,255,.94); backdrop-filter: blur(8px);
+    box-shadow: 0 5px 18px rgba(24,32,52,.18);
+    transition: background .18s, border-color .18s, transform .18s, box-shadow .18s;
+}
+#scheduleLikeButton.detail-thumbnail-like svg { width: 21px; height: 21px; }
+#scheduleLikeButton.detail-thumbnail-like:hover { transform: translateY(-2px); background: #fff; }
+#scheduleLikeButton.detail-thumbnail-like[aria-pressed="true"] {
+    background: #fff0f3; border-color: #ffc9d6; box-shadow: 0 5px 18px rgba(224,80,113,.2);
+}
+#scheduleLikeButton.detail-thumbnail-like:active { transform: scale(.95); }
+#detailSchedulePanel .detail-day-header {
+    display: flex; align-items: center; gap: 12px; padding: 0 14px 0 0;
+    background: rgba(99,105,209,.071);
+}
+.detail-day-toggle {
+    display: flex; align-items: center; gap: 12px; flex: 1; min-width: 0;
+    padding: 15px 14px; border: 0; background: transparent; color: #6369D1;
+    font: inherit; text-align: left; border-radius: 12px;
+}
+.detail-day-toggle:hover { background: rgba(99,105,209,.055); }
+.detail-day-number {
+    display: flex; align-items: center; justify-content: center; flex: 0 0 34px;
+    height: 34px; border-radius: 12px; background: #6369D1; color: #fff; font-size: 14px; font-weight: 750;
+}
+.detail-day-copy { flex: 1; min-width: 0; }
+.detail-day-meta { display: flex; align-items: center; flex-wrap: wrap; gap: 9px; }
+.detail-day-label { color: #6369D1; font-size: 14px; font-weight: 750; }
+.detail-day-date { color: #8990a3; font-size: 12px; }
+.detail-day-title { display: block; margin-top: 4px; color: #555d71; font-size: 14px; line-height: 1.5; overflow-wrap: anywhere; white-space: normal; }
+.detail-day-chevron { flex-shrink: 0; color: #9599c0; transition: transform .18s; }
+.detail-day-toggle[aria-expanded="false"] .detail-day-chevron { transform: rotate(-90deg); }
+.detail-day-body[hidden] { display: none !important; }
+#detailSchedulePanel .detail-block-title { font-size: 16px; line-height: 1.5; }
+#detailSchedulePanel .detail-block-time { font-size: 12px; padding: 4px 7px; }
+#detailSchedulePanel .detail-block-place { color: #535b70; font-size: 14px; line-height: 1.6; }
+#detailSchedulePanel .detail-block-address { color: #82899a; font-size: 13px; line-height: 1.65; }
+.detail-block-notes { margin-top: 12px; min-width: 0; }
+.detail-block-notes.has-images { display: grid; grid-template-columns: minmax(0, 1fr) 116px; align-items: start; gap: 16px; }
+.detail-block-note-copy { min-width: 0; }
+#detailSchedulePanel .detail-block-memo {
+    margin: 0; padding: 10px 12px; border-radius: 10px; background: #f7f8fc;
+    color: #737b8e; font-size: 12px; font-weight: 400; line-height: 1.85;
+    white-space: pre-wrap; overflow-wrap: anywhere;
+}
+.detail-block-images { display: flex; flex-direction: column; align-items: stretch; gap: 8px; min-width: 0; }
+.detail-block-image {
+    display: block; width: 100%; aspect-ratio: 4 / 3; border: 1px solid #e4e6ef;
+    border-radius: 10px; overflow: hidden; background: #f4f5fa; transition: border-color .15s;
+}
+.detail-block-image:hover { border-color: #a8ace9; }
+.detail-block-image img { display: block; width: 100%; height: 100%; object-fit: cover; }
+/* planner와 같은 지도 헤더, 선택 버튼과 DAY 동선 범례 */
+.detail-map-panel { background: #fff; }
+.detail-map-toolbar { padding: 0 16px; border-bottom-color: #eef0f5; }
+.detail-map-toolbar .detail-map-heading { display: inline-flex; align-items: center; gap: 8px; color: #343b4d; font-size: 14px; font-weight: 700; }
+.detail-map-heading svg { flex-shrink: 0; }
+#detailMapFilterButton {
+    min-width: 86px; padding: 7px 12px; border-radius: 12px;
+    border-color: #D1D2F9; background: #F5F5FF; font-size: 12px;
+    box-shadow: 0 2px 5px rgba(99,105,209,.06); transition: box-shadow .15s;
+}
+#detailMapFilterButton:hover { box-shadow: 0 3px 10px rgba(99,105,209,.12); }
+#detailMapFilterLabel { flex: 1; text-align: left; }
+.detail-map-filter-menu { width: 176px; padding: 4px; border-radius: 12px; }
+.detail-map-canvas-wrap { background: #edf0f6; }
+.detail-map-day-legend {
+    top: 12px; left: 12px; padding: 10px 12px; border-radius: 16px;
+    background: rgba(17,24,39,.68); backdrop-filter: blur(6px);
+    min-width: 120px; font-size: 12px; box-shadow: 0 5px 20px rgba(0,0,0,.12);
+}
+.detail-map-type-legend { gap: 7px 12px; padding: 12px 16px; border-top-color: #eef0f5; }
+.detail-map-type-legend span { font-size: 11px; }
+@media (max-width: 1280px) {
+    #scheduleDetail.detail-layout { grid-template-columns: 300px minmax(360px, 1.2fr) minmax(310px, .78fr); }
+    .detail-block-notes.has-images { grid-template-columns: minmax(0, 1fr) 100px; gap: 12px; }
+}
+@media (max-width: 1000px) {
+    #scheduleDetail.detail-layout { grid-template-columns: 280px 350px 300px; overflow-x: auto; }
+    .detail-block-notes.has-images { grid-template-columns: minmax(0, 1fr) 88px; gap: 10px; }
+    #detailSchedulePanel .detail-day-header { gap: 7px; padding-right: 10px; }
+    .detail-day-toggle { gap: 8px; padding: 13px 10px; }
+}
+@media (prefers-reduced-motion: reduce) {
+    #scheduleLikeButton.detail-thumbnail-like, .detail-day-chevron { transition: none; }
+}

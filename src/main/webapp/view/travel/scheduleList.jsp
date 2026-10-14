@@ -1,6 +1,7 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt"%>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions"%>
 <%
 request.setAttribute("activePage", "travel");
 %>
@@ -13,6 +14,157 @@ request.setAttribute("activePage", "travel");
 	<link rel="stylesheet" href="${pageContext.request.contextPath}/view/assets/css/travel/scheduleList.css">
 	<title>여행일정 | Planb</title>
 	<jsp:include page="/common/headStyles.jsp" />
+<style>
+.schedule-infinite-scroll {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 32px 0;
+}
+
+.schedule-scroll-status {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+}
+
+.schedule-scroll-status[hidden],
+.schedule-scroll-sentinel[hidden] {
+    display: none;
+}
+
+.schedule-loading-spinner {
+    width: 28px;
+    height: 28px;
+    border: 3px solid #e5e7eb;
+    border-top-color: #6369d1;
+    border-radius: 50%;
+    animation: schedule-spin .7s linear infinite;
+}
+
+@keyframes schedule-spin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
+
+.schedule-scroll-title {
+    margin: 0;
+    color: #6b7280;
+    font-size: 12px;
+    font-weight: 600;
+}
+
+.schedule-scroll-count {
+    margin: 0;
+    color: #9ca3af;
+    font-size: 11px;
+}
+
+.schedule-scroll-complete .schedule-scroll-title {
+    color: #6369d1;
+    font-weight: 700;
+}
+
+.schedule-scroll-sentinel {
+    width: 100%;
+    height: 1px;
+}
+
+
+/* ================================
+   최상단 이동 버튼 - 여행꿀팁과 동일
+================================ */
+
+.schedule-scroll-top-btn {
+    position: fixed;
+
+    right: clamp(16px, 2.5vw, 36px);
+    bottom: clamp(20px, 3vw, 40px);
+
+    width: clamp(44px, 4vw, 52px);
+    height: clamp(44px, 4vw, 52px);
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border: 1px solid #e0e1ff;
+    border-radius: 50%;
+
+    background: #ffffff;
+    color: #6369D1;
+
+    box-shadow: 0 6px 20px rgba(99, 105, 209, 0.18);
+
+    cursor: pointer;
+    z-index: 100;
+
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(10px);
+
+    transition:
+        opacity 0.25s ease,
+        transform 0.25s ease,
+        visibility 0.25s ease,
+        background 0.2s ease;
+}
+
+.schedule-scroll-top-btn svg {
+    width: 22px;
+    height: 22px;
+}
+
+.schedule-scroll-top-btn.show {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+}
+
+.schedule-scroll-top-btn:hover {
+    background: #f0f1ff;
+    transform: translateY(-2px);
+}
+
+
+@media (max-width: 720px) {
+    .schedule-scroll-top-btn { right: 16px; bottom: 20px; width: 44px; height: 44px; }
+}
+.schedule-load-retry {
+    margin-top: 8px;
+    padding: 9px 14px;
+    border: 1px solid #D1D2F9;
+    border-radius: 10px;
+    background: #fff;
+    color: #6369D1;
+    font: inherit;
+    font-size: 12px;
+    cursor: pointer;
+}
+.schedule-load-retry[hidden] { display: none; }
+.schedule-load-retry:focus-visible, .schedule-scroll-top-btn:focus-visible {
+    outline: 3px solid #D1D2F9;
+    outline-offset: 3px;
+}
+.travel-list-sidebar .continent-panel { border-left: 0; }
+#scheduleCardGrid .jsp-schedule-card { position: relative; cursor: pointer; }
+#scheduleCardGrid .schedule-card-detail-link { position: static; }
+#scheduleCardGrid .schedule-card-detail-link::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    border-radius: 16px;
+}
+#scheduleCardGrid .schedule-card-detail-link:focus-visible::after {
+    outline: 3px solid #6369D1;
+    outline-offset: -3px;
+}
+#scheduleCardGrid [data-schedule-bookmark] { z-index: 2; }
+
+</style>
 </head>
 <body class="site-shell">
 	<jsp:include page="/common/header.jsp" />
@@ -78,8 +230,7 @@ request.setAttribute("activePage", "travel");
 					</svg>
 				</button>
 				<!-- 아시아 국가별 버튼 -->
-				<div class="continent-panel ml-2 mb-1 flex-col gap-0.5 border-l-2 pl-3 pt-1"
-					style="border-color: var(--brand-light)">
+				<div class="continent-panel ml-2 mb-1 flex-col gap-0.5 pl-3 pt-1">
 					<button type="button" data-schedule-country="대한민국" class="text-left text-sm py-1.5 px-2 rounded-md text-gray-500 hover:text-[#6369D1]">🇰🇷 대한민국</button>
 					<button type="button" data-schedule-country="일본" class="text-left text-sm py-1.5 px-2 rounded-md text-gray-500 hover:text-[#6369D1]">🇯🇵 일본</button>
 					<button type="button" data-schedule-country="중국" class="text-left text-sm py-1.5 px-2 rounded-md text-gray-500 hover:text-[#6369D1]">🇨🇳 중국</button>
@@ -108,7 +259,7 @@ request.setAttribute("activePage", "travel");
 					</svg>
 				</button>
 				<!-- 유럽 국가별 버튼 -->
-				<div class="continent-panel ml-2 mb-1 flex-col gap-0.5 border-l-2 pl-3 pt-1" style="border-color: var(--brand-light)">
+				<div class="continent-panel ml-2 mb-1 flex-col gap-0.5 pl-3 pt-1">
 					<button type="button" data-schedule-country="독일" class="text-left text-sm py-1.5 px-2 rounded-md text-gray-500 hover:text-[#6369D1]">🇩🇪 독일</button>
 					<button type="button" data-schedule-country="포르투갈" class="text-left text-sm py-1.5 px-2 rounded-md text-gray-500 hover:text-[#6369D1]">🇵🇹 포르투갈</button>
 					<button type="button" data-schedule-country="프랑스" class="text-left text-sm py-1.5 px-2 rounded-md text-gray-500 hover:text-[#6369D1]">🇫🇷 프랑스</button>
@@ -133,7 +284,7 @@ request.setAttribute("activePage", "travel");
 					</svg>
 				</button>
 				<!-- 북아메리카 국가별 버튼 -->
-				<div class="continent-panel ml-2 mb-1 flex-col gap-0.5 border-l-2 pl-3 pt-1" style="border-color: var(--brand-light)">
+				<div class="continent-panel ml-2 mb-1 flex-col gap-0.5 pl-3 pt-1">
 					<button type="button" data-schedule-country="멕시코" class="text-left text-sm py-1.5 px-2 rounded-md text-gray-500 hover:text-[#6369D1]">🇲🇽 멕시코</button>
 					<button type="button" data-schedule-country="미국" class="text-left text-sm py-1.5 px-2 rounded-md text-gray-500 hover:text-[#6369D1]">🇺🇸 미국</button>
 					<button type="button" data-schedule-country="캐나다" class="text-left text-sm py-1.5 px-2 rounded-md text-gray-500 hover:text-[#6369D1]">🇨🇦 캐나다</button>
@@ -154,7 +305,7 @@ request.setAttribute("activePage", "travel");
 					</svg>
 				</button>
 				<!-- 남아메리카 국가별 버튼 -->
-				<div class="continent-panel ml-2 mb-1 flex-col gap-0.5 border-l-2 pl-3 pt-1" style="border-color: var(--brand-light)">
+				<div class="continent-panel ml-2 mb-1 flex-col gap-0.5 pl-3 pt-1">
 					<button type="button" data-schedule-country="브라질" class="text-left text-sm py-1.5 px-2 rounded-md text-gray-500 hover:text-[#6369D1]">🇧🇷 브라질</button>
 					<button type="button" data-schedule-country="아르헨티나" class="text-left text-sm py-1.5 px-2 rounded-md text-gray-500 hover:text-[#6369D1]">🇦🇷 아르헨티나</button>
 					<button type="button" data-schedule-country="칠레" class="text-left text-sm py-1.5 px-2 rounded-md text-gray-500 hover:text-[#6369D1]">🇨🇱 칠레</button>
@@ -176,7 +327,7 @@ request.setAttribute("activePage", "travel");
 					</svg>
 				</button>
 				<!-- 아프리카 국가별 버튼 -->
-				<div class="continent-panel ml-2 mb-1 flex-col gap-0.5 border-l-2 pl-3 pt-1" style="border-color: var(--brand-light)">
+				<div class="continent-panel ml-2 mb-1 flex-col gap-0.5 pl-3 pt-1">
 					<button type="button" data-schedule-country="남아프리카" class="text-left text-sm py-1.5 px-2 rounded-md text-gray-500 hover:text-[#6369D1]">🇿🇦 남아프리카</button>
 					<button type="button" data-schedule-country="모로코" class="text-left text-sm py-1.5 px-2 rounded-md text-gray-500 hover:text-[#6369D1]">🇲🇦 모로코</button>
 					<button type="button" data-schedule-country="이집트" class="text-left text-sm py-1.5 px-2 rounded-md text-gray-500 hover:text-[#6369D1]">🇪🇬 이집트</button>
@@ -198,7 +349,7 @@ request.setAttribute("activePage", "travel");
 					</svg>
 				</button>
 				<!-- 오세아니아 국가별 버튼 -->
-				<div class="continent-panel ml-2 mb-1 flex-col gap-0.5 border-l-2 pl-3 pt-1" style="border-color: var(--brand-light)">
+				<div class="continent-panel ml-2 mb-1 flex-col gap-0.5 pl-3 pt-1">
 					<button type="button" data-schedule-country="뉴질랜드" class="text-left text-sm py-1.5 px-2 rounded-md text-gray-500 hover:text-[#6369D1]">🇳🇿 뉴질랜드</button>
 					<button type="button" data-schedule-country="피지" class="text-left text-sm py-1.5 px-2 rounded-md text-gray-500 hover:text-[#6369D1]">🇫🇯 피지</button>
 					<button type="button" data-schedule-country="호주" class="text-left text-sm py-1.5 px-2 rounded-md text-gray-500 hover:text-[#6369D1]">🇦🇺 호주</button>
@@ -219,7 +370,7 @@ request.setAttribute("activePage", "travel");
 					</svg>
 				</button>
 				<!-- 중동 국가별 버튼 -->
-				<div class="continent-panel ml-2 mb-1 flex-col gap-0.5 border-l-2 pl-3 pt-1" style="border-color: var(--brand-light)">
+				<div class="continent-panel ml-2 mb-1 flex-col gap-0.5 pl-3 pt-1">
 					<button type="button" data-schedule-country="UAE" class="text-left text-sm py-1.5 px-2 rounded-md text-gray-500 hover:text-[#6369D1]">🇦🇪 UAE</button>
 					<button type="button" data-schedule-country="이스라엘" class="text-left text-sm py-1.5 px-2 rounded-md text-gray-500 hover:text-[#6369D1]">🇮🇱 이스라엘</button>
 					<button type="button" data-schedule-country="터키" class="text-left text-sm py-1.5 px-2 rounded-md text-gray-500 hover:text-[#6369D1]">🇹🇷 터키</button>
@@ -429,38 +580,45 @@ request.setAttribute("activePage", "travel");
 
 			</div>
 		
-			<!-- 무한스크롤 -->
-			<div id="scheduleInfiniteScroll"
-     			data-load-url="${pageContext.request.contextPath}/schedules/load"
-     			data-loaded-count="${scheduleList.size()}"
-     			data-total-count="${totalCount}"
-     			class="py-6 text-center">
 
-    			<p id="scheduleLoading" class="hidden text-sm text-gray-500">
-        			여행 일정을 불러오는 중...
-    			</p>
+            <!-- 카트와 동일한 로딩·완료 표시 -->
+            <div id="scheduleInfiniteScroll" class="schedule-infinite-scroll"
+                data-load-url="${pageContext.request.contextPath}/schedules/load"
+                data-loaded-count="${fn:length(scheduleList)}"
+                data-total-count="${totalCount}">
+                <div id="scheduleLoading" class="schedule-scroll-status" role="status" hidden>
+                    <div class="schedule-loading-spinner" aria-hidden="true"></div>
+                    <p class="schedule-scroll-title">여행 일정을 불러오는 중...</p>
+                    <p class="schedule-scroll-count">
+                        <span id="scheduleCurrentCount">${fn:length(scheduleList)}</span>
+                        / 총 <span>${totalCount}</span>개
+                    </p>
+                </div>
+                <button type="button" id="scheduleLoadRetry" class="schedule-load-retry" hidden>
+                    불러오지 못했습니다. 다시 시도
+                </button>
+                <div id="scheduleLoadComplete" class="schedule-scroll-status schedule-scroll-complete" role="status" hidden>
+                    <p class="schedule-scroll-title">모든 여행 일정을 확인했습니다 ✓</p>
+                    <p class="schedule-scroll-count">
+                        <span id="scheduleCompleteCount">${fn:length(scheduleList)}</span>
+                        / 총 ${totalCount}개
+                    </p>
+                </div>
+                <div id="scheduleScrollSentinel" class="schedule-scroll-sentinel" aria-hidden="true"></div>
+            </div>
 
-    			<button type="button" id="scheduleLoadRetry" class="hidden text-sm" style="color: #6369D1">
-        			불러오지 못했습니다. 다시 시도
-    			</button>
-
-    			<p id="scheduleLoadComplete" class="hidden text-sm text-gray-500">
-    				<br>
-        			모든 여행 일정을 확인했습니다.
-    			</p>
-
-    			<div id="scheduleScrollSentinel" 
-    				style="height: 1px;"
-         			aria-hidden="true">
-         		</div>
-			</div>
 		</main>
 	</div>
+<button type="button" id="scheduleScrollTopBtn" class="schedule-scroll-top-btn" aria-label="페이지 최상단으로 이동">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M12 19V5M5 12l7-7 7 7" />
+    </svg>
+</button>
 	<script
 		src="${pageContext.request.contextPath}/view/assets/js/auth/tripily.js">
 	</script>
 	<script
-		src="${pageContext.request.contextPath}/view/assets/js/travel/scheduleList.js?v=8">
+		src="${pageContext.request.contextPath}/view/assets/js/travel/scheduleList.js?v=10">
 	</script>
 </body>
 </html>

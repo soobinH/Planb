@@ -1504,3 +1504,18 @@
 	});
 
 })();
+
+/* 일정표의 DAY별 접기·펼치기. 지도와 담기 상태에는 영향 없음. */
+(function () {
+    const panel = document.getElementById("detailSchedulePanel");
+    if (!panel) return;
+    panel.addEventListener("click", function (event) {
+        const toggle = event.target.closest("[data-detail-day-toggle]");
+        if (!toggle || !panel.contains(toggle)) return;
+        const body = document.getElementById(toggle.getAttribute("aria-controls"));
+        if (!body) return;
+        const expanded = toggle.getAttribute("aria-expanded") === "true";
+        toggle.setAttribute("aria-expanded", String(!expanded));
+        body.hidden = expanded;
+    });
+})();

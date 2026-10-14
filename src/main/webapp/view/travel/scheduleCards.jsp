@@ -82,7 +82,7 @@
 
 		<div class="p-3.5">
 
-			<a href="${scheduleDetailUrl}">
+			<a href="${scheduleDetailUrl}" class="schedule-card-detail-link">
 				<h3
 					class="font-bold text-[14px] leading-snug mb-1 line-clamp-2 transition-colors group-hover:text-[#6369D1]"
 					style="color: #18181b">
@@ -135,7 +135,7 @@
 
 			<!-- 작성자·작성일 -->
 			<div class="flex items-center justify-between gap-2 border-t pt-2.5"
-				style="border-color: #D1D2F9">
+				style="border-color: #FFD447">
 
 				<!-- 작성자 프로필 사진·닉네임 -->
 				<div class="flex items-center gap-1.5 min-w-0">
