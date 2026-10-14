@@ -1519,3 +1519,58 @@
         body.hidden = expanded;
     });
 })();
+
+
+/* 블록 사진: 버튼·좌우 방향키·터치 스와이프 */
+(function () {
+    document.querySelectorAll("[data-block-carousel]").forEach(function (carousel) {
+        const track = carousel.querySelector("[data-photo-track]");
+        const slides = track ? Array.from(track.querySelectorAll(".detail-block-image")) : [];
+        const previous = carousel.querySelector("[data-photo-prev]");
+        const next = carousel.querySelector("[data-photo-next]");
+        const counter = carousel.querySelector("[data-photo-count]");
+        if (!track || slides.length === 0) { carousel.hidden = true; return; }
+        let index = 0;
+        let destination = null;
+        function update() {
+            if (previous) { previous.hidden = slides.length < 2; previous.disabled = index === 0; }
+            if (next) { next.hidden = slides.length < 2; next.disabled = index === slides.length - 1; }
+            if (counter) { counter.hidden = slides.length < 2; counter.textContent = (index + 1) + " / " + slides.length; }
+        }
+        function move(step) {
+            if (track.clientWidth <= 0) return;
+            index = Math.max(0, Math.min(slides.length - 1, (destination === null ? index : destination) + step));
+            destination = index;
+            update();
+            track.scrollTo({left: index * track.clientWidth, behavior: "smooth"});
+        }
+        if (previous) previous.addEventListener("click", function () { move(-1); });
+        if (next) next.addEventListener("click", function () { move(1); });
+        track.addEventListener("keydown", function (event) {
+            if (event.key === "ArrowLeft" || event.key === "ArrowRight") {
+                event.preventDefault(); move(event.key === "ArrowLeft" ? -1 : 1);
+            }
+        });
+        track.addEventListener("scroll", function () {
+            if (track.clientWidth <= 0) return;
+            const visible = Math.max(0, Math.min(slides.length - 1, Math.round(track.scrollLeft / track.clientWidth)));
+            if (destination !== null && Math.abs(track.scrollLeft - destination * track.clientWidth) > 1) return;
+            destination = null;
+            index = visible; update();
+        }, {passive: true});
+        // 스와이프를 시작하면 버튼 이동의 목표 위치를 해제한다.
+        track.addEventListener("pointerdown", function () { destination = null; }, {passive: true});
+        function alignAfterResize() {
+            if (track.clientWidth > 0) {
+                destination = null;
+                track.scrollTo({left: index * track.clientWidth, behavior: "auto"});
+            }
+        }
+        if (typeof ResizeObserver === "function") {
+            new ResizeObserver(alignAfterResize).observe(track);
+        } else {
+            window.addEventListener("resize", alignAfterResize);
+        }
+        update();
+    });
+})();

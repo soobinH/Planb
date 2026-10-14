@@ -205,11 +205,6 @@ request.setAttribute("activePage", "travel");
 			        전체보기
 			    </span>
 			</a>
-			
-			<div class="text-xs font-bold text-gray-400 uppercase tracking-widest px-3 mb-1 mt-1">
-				여행 지역
-			</div>
-			
 			<div class="border-t border-gray-100 mb-3"></div>
 			
 			<div class="text-xs font-bold text-gray-400 uppercase tracking-widest px-3 mb-1">

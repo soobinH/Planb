@@ -1044,7 +1044,7 @@ html::-webkit-scrollbar-thumb:hover {
 /* planner와 같은 지도 헤더, 선택 버튼과 DAY 동선 범례 */
 .detail-map-panel { background: #fff; }
 .detail-map-toolbar { padding: 0 16px; border-bottom-color: #eef0f5; }
-.detail-map-toolbar .detail-map-heading { display: inline-flex; align-items: center; gap: 8px; color: #343b4d; font-size: 14px; font-weight: 700; }
+.detail-map-toolbar .detail-map-toolbar .detail-map-heading { display: inline-flex; align-items: center; gap: 8px; color: #343b4d; font-size: 14px; font-weight: 700; }
 .detail-map-heading svg { flex-shrink: 0; }
 #detailMapFilterButton {
     min-width: 86px; padding: 7px 12px; border-radius: 12px;
@@ -1074,4 +1074,62 @@ html::-webkit-scrollbar-thumb:hover {
 }
 @media (prefers-reduced-motion: reduce) {
     #scheduleLikeButton.detail-thumbnail-like, .detail-day-chevron { transition: none; }
+}
+
+
+/* ===== 블록 배지/시간 교환, 담기 아래의 큰 사진 슬라이더 ===== */
+#detailSchedulePanel .detail-block-content {
+    display: grid; grid-template-columns: minmax(0, 1fr) auto;
+    align-items: start; gap: 10px 16px; min-width: 0; padding-bottom: 14px; flex: 1;
+}
+#detailSchedulePanel .detail-block-content.has-photos {
+    grid-template-columns: minmax(0, 1fr) clamp(160px, 15vw, 210px);
+}
+.detail-block-heading { grid-column: 1; display: flex; align-items: center; flex-wrap: wrap; gap: 8px; min-width: 0; }
+.detail-block-type-row.detail-block-type-inline { margin-top: 0; flex-shrink: 0; }
+.detail-block-cart { grid-column: 2; grid-row: 1; justify-self: end; }
+.detail-block-body { grid-column: 1 / -1; grid-row: 2; min-width: 0; }
+.has-photos > .detail-block-body { grid-column: 1; }
+#detailSchedulePanel .detail-block-time {
+    display: block; width: fit-content; margin: 0 0 8px; padding: 0;
+    border: 0; border-radius: 0; background: transparent; color: #6369D1;
+    font-size: 12px; font-family: inherit; font-weight: 650; line-height: 1.5;
+    font-variant-numeric: tabular-nums;
+}
+#detailSchedulePanel .detail-block-place { color: #343b4d; font-weight: 600; }
+#detailSchedulePanel .detail-block-address { color: #555e70; }
+#detailSchedulePanel .detail-block-body .detail-block-memo { margin-top: 12px; }
+.detail-block-photos { position: relative; grid-column: 2; grid-row: 2; min-width: 0; overflow: hidden; border: 1px solid #e0e3ee; border-radius: 12px; background: #f4f5fa; }
+.detail-block-photos[hidden] { display: none; }
+.detail-block-photo-track {
+    display: flex; width: 100%; gap: 0; overflow-x: auto; overflow-y: hidden;
+    scroll-snap-type: x mandatory; overscroll-behavior-x: contain; scrollbar-width: none;
+}
+.detail-block-photo-track::-webkit-scrollbar { display: none; }
+.detail-block-photo-track .detail-block-image {
+    flex: 0 0 100%; width: 100%; min-width: 0; aspect-ratio: 4 / 3;
+    border: 0; border-radius: 0; scroll-snap-align: start; scroll-snap-stop: always;
+}
+.detail-block-photo-nav {
+    position: absolute; top: 50%; z-index: 2; display: flex; align-items: center; justify-content: center;
+    width: 28px; height: 28px; padding: 0; border: 1px solid rgba(255,255,255,.85);
+    border-radius: 50%; background: rgba(255,255,255,.94); color: #4b516c;
+    box-shadow: 0 2px 8px rgba(0,0,0,.15); transform: translateY(-50%); cursor: pointer;
+}
+.detail-block-photo-nav.is-prev { left: 7px; }
+.detail-block-photo-nav.is-next { right: 7px; }
+.detail-block-photo-nav:hover { background: #fff; color: #6369D1; }
+.detail-block-photo-nav:disabled { opacity: .35; cursor: default; }
+.detail-block-photo-nav[hidden], .detail-block-photo-count[hidden] { display: none; }
+.detail-block-photo-count {
+    position: absolute; left: 50%; bottom: 8px; z-index: 2; padding: 3px 8px;
+    border-radius: 7px; background: rgba(25,30,48,.65); color: #fff;
+    font-size: 10px; line-height: 1.5; font-variant-numeric: tabular-nums;
+    transform: translateX(-50%); pointer-events: none;
+}
+@media (max-width: 1280px) {
+    #detailSchedulePanel .detail-block-content.has-photos { grid-template-columns: minmax(0, 1fr) 160px; gap: 10px 12px; }
+}
+@media (max-width: 1000px) {
+    #detailSchedulePanel .detail-block-content.has-photos { grid-template-columns: minmax(0, 1fr) 145px; gap: 10px; }
 }

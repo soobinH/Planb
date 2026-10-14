@@ -13,7 +13,7 @@ request.setAttribute("activePage", "travel");
 <title><c:out value="${itinerary.title}" /> | Planb</title>
 <jsp:include page="/common/headStyles.jsp" />
 <link rel="stylesheet"
-   href="${pageContext.request.contextPath}/view/assets/css/travel/scheduleDetail.css?v=8">
+   href="${pageContext.request.contextPath}/view/assets/css/travel/scheduleDetail.css?v=9">
 </head>
 <body class="site-shell"><jsp:include page="/common/header.jsp" />
    <main id="scheduleDetail" class="detail-layout"
@@ -589,48 +589,38 @@ request.setAttribute("activePage", "travel");
 
                               </div>
 
-                              <div class="flex-1 min-w-0 pb-3">
+                              <div class="detail-block-content${empty block.images ? '' : ' has-photos'}">
+                                 <div class="detail-block-heading">
+<!-- 블록 종류 -->
+                                 <c:if test="${not empty block.blockType}">
+                                    <div class="detail-block-type-row detail-block-type-inline">
+                                       <span class="detail-block-type"
+                                          data-block-type="<c:out value='${block.blockType}'/>">
 
-                                 <!-- 시간과 제목 -->
-                                 <div class="flex items-start gap-2">
-                                    <div
-                                       class="flex flex-1 min-w-0 items-center gap-2 flex-wrap">
-
-                                       <c:if
-                                          test="${not empty block.startTime
-                                    or not empty block.endTime}">
-
-                                          <span
-                                             class="detail-block-time text-[10px] font-mono shrink-0
-                                               px-1.5 py-0.5 rounded-md font-bold"
-                                             style="background: #6369D115; color: #6369D1"> <c:if
-                                                test="${not empty block.startTime}">
-                                                <fmt:formatDate value="${block.startTime}"
-                                                   pattern="HH:mm" />
-                                             </c:if> <c:if
-                                                test="${not empty block.startTime
-                                            and not empty block.endTime}">
-                                            –
-                                        </c:if> <c:if
-                                                test="${not empty block.endTime}">
-                                                <fmt:formatDate value="${block.endTime}" pattern="HH:mm" />
-                                             </c:if>
-
-                                          </span>
-                                       </c:if>
-
-                                       <span
+                                          <c:choose>
+                                             <c:when test="${block.blockType eq 'ATTRACTION'}">관광</c:when>
+                                             <c:when test="${block.blockType eq 'MEAL'}">식사</c:when>
+                                             <c:when test="${block.blockType eq 'LODGING'}">숙소</c:when>
+                                             <c:when test="${block.blockType eq 'TRANSPORT'}">교통</c:when>
+                                             <c:when test="${block.blockType eq 'ACTIVITY'}">활동</c:when>
+                                             <c:otherwise>
+                                                <c:out value="${block.blockType}" />
+                                             </c:otherwise>
+                                          </c:choose>
+                                       </span>
+                                    </div>
+                                 </c:if>
+<span
                                           class="detail-block-title font-bold text-[13px]
                                              text-gray-900 leading-snug"
                                           style="overflow-wrap: anywhere"> <c:out
                                              value="${empty block.title
                                         ? block.placeName : block.title}" />
                                        </span>
-                                    </div>
-
-                                    <button type="button" data-cart-add="BLOCK"
+                                 </div>
+<button type="button" data-cart-add="BLOCK"
                                        data-target-id="${block.blockId}" data-cart-state="NONE"
-                                       aria-pressed="false" class="detail-cart-small"
+                                       aria-pressed="false" class="detail-cart-small detail-block-cart"
                                        title="블록 담기" aria-label="블록 담기">
 
                                        <svg xmlns="http://www.w3.org/2000/svg" width="12"
@@ -648,30 +638,28 @@ request.setAttribute("activePage", "travel");
                                           <circle cx="8" cy="20" r="2" /></svg>
                                        <span data-cart-label>담기</span>
                                     </button>
+                                 <div class="detail-block-body">
+<c:if
+                                          test="${not empty block.startTime
+                                    or not empty block.endTime}">
 
-                                 </div>
+                                          <span
+                                             class="detail-block-time"> <c:if
+                                                test="${not empty block.startTime}">
+                                                <fmt:formatDate value="${block.startTime}"
+                                                   pattern="HH:mm" />
+                                             </c:if> <c:if
+                                                test="${not empty block.startTime
+                                            and not empty block.endTime}">
+                                            –
+                                        </c:if> <c:if
+                                                test="${not empty block.endTime}">
+                                                <fmt:formatDate value="${block.endTime}" pattern="HH:mm" />
+                                             </c:if>
 
-                                 <!-- 블록 종류 -->
-                                 <c:if test="${not empty block.blockType}">
-                                    <div class="detail-block-type-row">
-                                       <span class="detail-block-type"
-                                          data-block-type="<c:out value='${block.blockType}'/>">
-
-                                          <c:choose>
-                                             <c:when test="${block.blockType eq 'ATTRACTION'}">관광</c:when>
-                                             <c:when test="${block.blockType eq 'MEAL'}">식사</c:when>
-                                             <c:when test="${block.blockType eq 'LODGING'}">숙소</c:when>
-                                             <c:when test="${block.blockType eq 'TRANSPORT'}">교통</c:when>
-                                             <c:when test="${block.blockType eq 'ACTIVITY'}">활동</c:when>
-                                             <c:otherwise>
-                                                <c:out value="${block.blockType}" />
-                                             </c:otherwise>
-                                          </c:choose>
-                                       </span>
-                                    </div>
-                                 </c:if>
-
-                                 <!-- 장소 -->
+                                          </span>
+                                       </c:if>
+<!-- 장소 -->
                                  <c:if
                                     test="${not empty block.placeName
                                 and block.placeName ne block.title}">
@@ -686,8 +674,6 @@ request.setAttribute("activePage", "travel");
                                        <c:out value="${block.placeAddress}" />
                                     </p>
                                  </c:if>
-                                 <div class="detail-block-notes${empty block.images ? '' : ' has-images'}">
-                                    <div class="detail-block-note-copy">
 <!-- 메모: 태그 안쪽의 불필요한 공백 제거 -->
                                  <c:if test="${not empty block.memo}">
                                     <p class="detail-block-memo"
@@ -713,13 +699,12 @@ request.setAttribute("activePage", "travel");
 
                                     </p>
                                  </c:if>
-
-                                                                     </div>
-<!-- 블록 사진: 최대 3장 -->
+                                 </div>
                                  <c:if test="${not empty block.images}">
-                                    <div class="detail-block-images">
-
-                                       <c:forEach var="image" items="${block.images}" end="2">
+                                    <div class="detail-block-photos" data-block-carousel>
+                                        <div class="detail-block-photo-track" data-photo-track tabindex="0"
+                                            role="region" aria-label="블록 사진, 좌우 방향키로 넘기기">
+<c:forEach var="image" items="${block.images}" end="2">
 
                                           <c:if test="${not empty image.imageUrl}">
                                              <c:choose>
@@ -751,11 +736,16 @@ request.setAttribute("activePage", "travel");
 
                                           </c:if>
                                        </c:forEach>
-
+                                        </div>
+                                        <button type="button" class="detail-block-photo-nav is-prev" data-photo-prev aria-label="이전 사진" hidden>
+                                            <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m15 6-6 6 6 6"/></svg>
+                                        </button>
+                                        <button type="button" class="detail-block-photo-nav is-next" data-photo-next aria-label="다음 사진" hidden>
+                                            <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg>
+                                        </button>
+                                        <span class="detail-block-photo-count" data-photo-count hidden aria-live="polite"></span>
                                     </div>
                                  </c:if>
-                                 </div>
-
                               </div>
                            </div>
 
@@ -929,7 +919,7 @@ request.setAttribute("activePage", "travel");
       src="${pageContext.request.contextPath}/view/assets/js/auth/tripily.js"></script>
 
    <script
-      src="${pageContext.request.contextPath}/view/assets/js/travel/scheduleDetail.js?v=14"></script>
+      src="${pageContext.request.contextPath}/view/assets/js/travel/scheduleDetail.js?v=15"></script>
       
    <script
        src="${pageContext.request.contextPath}/view/assets/js/travel/scheduleDetailMap.js?v=2"></script>
