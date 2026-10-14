@@ -13,7 +13,7 @@ request.setAttribute("activePage", "travel");
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>장바구니 | Tripily</title>
+<title>장바구니</title>
 
 <jsp:include page="/common/headStyles.jsp" />
 
