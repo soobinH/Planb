@@ -67,6 +67,10 @@ private String positionLabel(String position) {
         return "여행 메이트 사이드";
     }
 
+    if ("CART_SIDE".equals(position)) {
+        return "일정 카트 사이드";
+    }
+
     if ("MAIN_BANNER".equals(position)) {
         return "기존 메인 배너";
     }
