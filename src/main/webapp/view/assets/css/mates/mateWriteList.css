@@ -1,41 +1,54 @@
 /* ========================================
-   내가 작성한 여행꿀팁
+   내가 작성한 여행메이트 - 상단 영역
 ======================================== */
 
 .mate-my-banner {
 	width: 100%;
 	margin: 0;
-	background: linear-gradient(
-		120deg,
-		#6268d8 0%,
-		#747be2 55%,
-		#9298eb 100%
-	);
+
+	/* 목록 영역과 동일한 배경 */
+	background: #f7f7ff;
+
+	/* 배너 구분선 제거 */
+	border-bottom: none;
 }
 
+
 .mate-my-banner-inner {
-	width: min(100% - 40px, 1120px);
-	min-height: 150px;
+	width: min(100% - 40px, 1060px);
 	margin: 0 auto;
 
+	padding: 32px 0 22px;
+
 	display: flex;
-	align-items: center;
+	align-items: flex-end;
 	justify-content: space-between;
 	gap: 32px;
 }
+
+
+/* ========================================
+   경로
+======================================== */
 
 .mate-my-breadcrumb {
 	margin: 0 0 12px;
 
 	font-size: 13px;
-	font-weight: 500;
+	font-weight: 600;
 
-	color: rgba(255, 255, 255, 0.72);
+	color: #777d91;
 }
 
 .mate-my-breadcrumb span {
 	margin: 0 7px;
+	color: #b0b4c3;
 }
+
+
+/* ========================================
+   제목
+======================================== */
 
 .mate-my-banner h1 {
 	margin: 0;
@@ -43,28 +56,36 @@
 	font-size: clamp(25px, 2.3vw, 32px);
 	font-weight: 800;
 
-	color: #ffffff;
+	color: #171b2c;
 }
+
+
+/* ========================================
+   설명
+======================================== */
 
 .mate-my-description {
 	margin: 9px 0 0;
 
 	font-size: 13px;
 
-	color: rgba(255, 255, 255, 0.76);
+	color: #8b94a5;
 }
 
 .mate-my-description strong {
-	color: #ffffff;
+	color: #6369d1;
 }
 
 
-/* 배너 버튼 */
+/* ========================================
+   상단 버튼
+======================================== */
 
 .mate-my-banner-actions {
 	display: flex;
 	align-items: center;
 	gap: 12px;
+
 	flex-shrink: 0;
 }
 
@@ -86,7 +107,9 @@
 
 	transition:
 		transform 0.2s ease,
-		box-shadow 0.2s ease;
+		box-shadow 0.2s ease,
+		background-color 0.2s ease,
+		border-color 0.2s ease;
 }
 
 .mate-my-banner-actions svg {
@@ -95,20 +118,68 @@
 }
 
 
-/* 여행꿀팁 목록 */
+/* 여행 메이트 목록 */
 
 .mate-list-btn {
 	background: #ffffff;
 	color: #555cc9;
 
-	border: 2px solid rgba(255, 255, 255, 0.8);
+	border: 1px solid #d9dafb;
 
-	box-shadow: 0 5px 16px rgba(47, 53, 130, 0.2);
+	box-shadow: 0 3px 10px rgba(47, 53, 130, 0.08);
 }
 
 .mate-list-btn:hover {
+	background: #f7f7ff;
+	border-color: #bfc2f3;
+
 	transform: translateY(-2px);
-	box-shadow: 0 8px 22px rgba(47, 53, 130, 0.28);
+
+	box-shadow: 0 6px 16px rgba(47, 53, 130, 0.12);
+}
+
+
+/* 새 글 쓰기 */
+
+.mate-write-btn {
+	background: #ffd447;
+	color: #252525;
+
+	border: 1px solid #ffd447;
+
+	box-shadow: 0 3px 10px rgba(55, 50, 30, 0.12);
+}
+
+.mate-write-btn:hover {
+	background: #ffcf2f;
+	border-color: #ffcf2f;
+
+	transform: translateY(-2px);
+}
+
+
+/* ========================================
+   목록
+======================================== */
+
+.mate-my-main {
+	min-height: 520px;
+
+	padding:
+		18px
+		clamp(18px, 4vw, 40px)
+		clamp(60px, 7vw, 90px);
+
+	background: #f7f7ff;
+}
+
+.mate-my-list {
+	width: min(100%, 1060px);
+	margin: 0 auto;
+
+	display: flex;
+	flex-direction: column;
+	gap: 18px;
 }
 
 
@@ -443,9 +514,9 @@
 @media (max-width: 768px) {
 
 	.mate-my-banner-inner {
-		width: min(100% - 32px, 1120px);
+		width: min(100% - 32px, 1060px);
 
-		padding: 28px 0;
+		padding: 28px 0 20px;
 
 		flex-direction: column;
 		align-items: flex-start;
@@ -476,11 +547,10 @@
 	}
 
 	.mate-edit-btn,
-	.mate-delete-btn {
+	.mate-write-list-delete-btn {
 		flex: 1;
 	}
 }
-
 
 @media (max-width: 480px) {
 

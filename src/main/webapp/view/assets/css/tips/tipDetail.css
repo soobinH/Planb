@@ -1,10 +1,182 @@
 @charset "UTF-8";
-
-
+ 
+ 
+/* =========================
+   [추가] 페이지 전체 레이아웃
+   - 3단 grid: [왼쪽 여백] [본문] [오른쪽 여백]
+   - 광고는 양쪽 여백 칸의 "가운데"에 배치
+========================= */
+ 
+.tip-detail-page {
+    min-height: 100vh;
+    background-color: #f5f5fb;
+}
+ 
+.tip-detail-wrap {
+    width: 100%;
+    max-width: 1600px;          /* 전체 폭 (광고 칸 포함) */
+    margin: 0 auto;
+    padding: 2rem 1rem;
+    box-sizing: border-box;
+}
+ 
+.tip-detail-layout {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 780px) minmax(0, 1fr);
+    column-gap: 1.5rem;
+    align-items: stretch;       /* 광고 칸이 본문 높이만큼 늘어나야 sticky 동작 */
+}
+ 
+.tip-detail-main {
+    grid-column: 2;
+    min-width: 0;
+}
+ 
+ 
+/* =========================
+   [추가] 좌 / 우 광고 (스크롤 따라다님)
+========================= */
+ 
+.tip-ad-side {
+    display: none;              /* 좁은 화면에서는 숨김 */
+    justify-content: center;    /* 여백 칸의 가로 가운데 */
+    align-items: flex-start;
+    min-width: 0;
+}
+ 
+.tip-ad-left  { grid-column: 1; grid-row: 1; }
+.tip-ad-right { grid-column: 3; grid-row: 1; }
+ 
+.tip-ad-box {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 0.75rem;
+ 
+    width: 160px;               /* 광고 폭 */
+    height: 600px;              /* 광고 높이 */
+    flex-shrink: 0;
+ 
+    border-radius: 1rem;
+    background-color: var(--brand-light);
+    color: var(--brand);
+ 
+    /* 스크롤 따라다니기 */
+    position: sticky;
+    top: 96px;                  /* 헤더에 가리면 값을 키우기 */
+}
+ 
+.tip-ad-badge {
+    width: 3.5rem;
+    height: 3.5rem;
+    border-radius: 9999px;
+ 
+    display: flex;
+    align-items: center;
+    justify-content: center;
+ 
+    background-color: var(--brand);
+    color: #ffffff;
+ 
+    font-size: 1rem;
+    font-weight: 800;
+}
+ 
+.tip-ad-text {
+    margin: 0;
+    padding: 0 0.75rem;
+ 
+    color: var(--brand);
+    text-align: center;
+ 
+    font-size: 0.8125rem;
+    font-weight: 600;
+}
+ 
+.tip-ad-text span {
+    font-size: 11px;
+    font-weight: 400;
+    opacity: 0.6;
+}
+ 
+/* 1240px 이상: 광고 표시 (양쪽 칸이 160px 이상 확보되는 폭) */
+@media (min-width: 1240px) {
+    .tip-ad-side {
+        display: flex;
+    }
+}
+ 
+/* 1240px 미만: 광고 숨기고 본문만 가운데 */
+@media (max-width: 1239px) {
+    .tip-detail-layout {
+        grid-template-columns: minmax(0, 780px);
+        justify-content: center;
+    }
+ 
+    .tip-detail-main {
+        grid-column: 1;
+    }
+}
+ 
+ 
+/* =========================
+   [추가] 목록으로 (텍스트만)
+========================= */
+ 
+.tip-back-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+ 
+    margin-bottom: 1.5rem;
+    padding: 0;
+ 
+    border: 0;
+    background: none;
+    box-shadow: none;
+ 
+    color: #4b5563;
+    font-size: 0.875rem;
+    font-weight: 600;
+    text-decoration: none;
+ 
+    transition: color 0.2s ease;
+}
+ 
+.tip-back-link:hover {
+    color: #111827;
+}
+ 
+ 
+/* =========================
+   [추가] 본문 / 댓글 카드 (모서리 직각)
+========================= */
+ 
+.tip-square-card {
+    border-radius: 0;
+}
+ 
+ 
+/* =========================
+   [추가] 글 사이사이 사진 배치
+========================= */
+ 
+.tip-content-flow {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+ 
+.tip-content-flow p {
+    margin: 0;
+}
+ 
+ 
 /* =========================
    상세페이지 추가 이미지
 ========================= */
-
+ 
 .tip-detail-images {
     width: 100%;
     display: flex;
@@ -12,7 +184,7 @@
     gap: 16px;
     margin-top: 24px;
 }
-
+ 
 .tip-detail-image {
     display: block;
     width: 100%;
@@ -21,153 +193,153 @@
     object-fit: contain;
     border-radius: 16px;
 }
-
-
+ 
+ 
 /* =========================
    좋아요 / 수정 / 삭제 버튼
 ========================= */
-
+ 
 .tip-detail-actions {
     position: relative;
-
+ 
     display: flex;
     align-items: center;
     justify-content: center;
-
+ 
     width: 100%;
     min-height: 3rem;
     margin-top: 2rem;
 }
-
-
+ 
+ 
 /* =========================
    좋아요
 ========================= */
-
+ 
 .tip-like-form {
     margin: 0;
     display: flex;
 }
-
+ 
 .tip-like-btn {
     display: inline-flex;
     align-items: center;
     justify-content: center;
     gap: 0.45rem;
-
+ 
     min-height: 2.75rem;
     padding: 0.65rem 1.25rem;
-
+ 
     border: 1.5px solid var(--brand);
     border-radius: 9999px;
-
+ 
     background: #ffffff;
     color: var(--brand);
-
+ 
     font-size: 0.875rem;
     font-weight: 700;
     line-height: 1;
-
+ 
     white-space: nowrap;
     cursor: pointer;
-
+ 
     transition:
         background-color 0.2s ease,
         border-color 0.2s ease,
         color 0.2s ease,
         transform 0.15s ease;
 }
-
+ 
 .tip-like-btn:hover {
     background: rgba(99, 105, 209, 0.06);
 }
-
+ 
 .tip-like-btn.active {
     background: var(--brand);
     border-color: var(--brand);
     color: #ffffff;
 }
-
+ 
 .tip-like-btn:active {
     transform: scale(0.97);
 }
-
+ 
 .tip-like-icon {
     width: 1.1rem;
     height: 1.1rem;
     flex-shrink: 0;
 }
-
-
+ 
+ 
 /* =========================
    수정 / 삭제
 ========================= */
-
+ 
 .tip-detail-edit-btn,
 .tip-detail-delete-btn {
     position: absolute;
     top: 50%;
-
+ 
     display: inline-flex;
     align-items: center;
     justify-content: center;
     gap: 0.45rem;
-
+ 
     min-height: 2.75rem;
     padding: 0.65rem 1.15rem;
-
+ 
     border-radius: 9999px;
-
+ 
     font-size: 0.875rem;
     font-weight: 700;
     line-height: 1;
-
+ 
     white-space: nowrap;
     text-decoration: none;
     cursor: pointer;
-
+ 
     transform: translateY(-50%);
-
+ 
     transition:
         background-color 0.2s ease,
         border-color 0.2s ease,
         color 0.2s ease,
         transform 0.15s ease;
 }
-
-
+ 
+ 
 /* 수정하기 - 오른쪽에서 삭제 버튼만큼 띄움 */
 .tip-detail-edit-btn {
     right: 7.5rem;
-
+ 
     border: 1px solid #dfe1ff;
     background: #f7f7ff;
     color: var(--brand);
 }
-
+ 
 .tip-detail-edit-btn:hover {
     border-color: var(--brand);
     background: #eeeeff;
     color: var(--brand);
 }
-
-
+ 
+ 
 /* 삭제하기 - 오른쪽 끝 */
 .tip-detail-delete-btn {
     right: 0;
-
+ 
     border: 1px solid #fecaca;
     background: #fff5f5;
     color: #ef4444;
 }
-
+ 
 .tip-detail-delete-btn:hover {
     border-color: #ef4444;
     background: #ef4444;
     color: #ffffff;
 }
-
-
+ 
+ 
 /* 수정 / 삭제 아이콘 */
 .tip-detail-edit-btn svg,
 .tip-detail-delete-btn svg {
@@ -175,37 +347,37 @@
     height: 1.1rem;
     flex-shrink: 0;
 }
-
-
+ 
+ 
 /* 클릭 효과 */
 .tip-detail-edit-btn:active {
     transform: translateY(-50%) scale(0.97);
 }
-
+ 
 .tip-detail-delete-btn:active {
     border-color: #dc2626;
     background: #dc2626;
     color: #ffffff;
-
+ 
     transform: translateY(-50%) scale(0.97);
 }
-
-
+ 
+ 
 /* =========================
    태블릿 이하
 ========================= */
-
+ 
 @media (max-width: 768px) {
-
+ 
     .tip-detail-actions {
         flex-wrap: wrap;
         justify-content: center;
         gap: 0.5rem;
-
+ 
         min-height: auto;
         margin-top: 1.5rem;
     }
-
+ 
     /*
      * 좁은 화면에서는 absolute 해제.
      * 버튼이 화면 밖으로 밀려나지 않도록
@@ -214,48 +386,48 @@
     .tip-detail-edit-btn,
     .tip-detail-delete-btn {
         position: static;
-
+ 
         min-height: 2.625rem;
         padding: 0.6rem 1rem;
-
+ 
         font-size: 0.8125rem;
-
+ 
         transform: none;
     }
-
+ 
     .tip-like-btn {
         min-height: 2.625rem;
         padding: 0.6rem 1rem;
-
+ 
         font-size: 0.8125rem;
     }
-
+ 
     .tip-detail-edit-btn:active,
     .tip-detail-delete-btn:active {
         transform: scale(0.97);
     }
 }
-
-
+ 
+ 
 /* =========================
    모바일
 ========================= */
-
+ 
 @media (max-width: 480px) {
-
+ 
     .tip-detail-actions {
         gap: 0.4rem;
     }
-
+ 
     .tip-like-btn,
     .tip-detail-edit-btn,
     .tip-detail-delete-btn {
         min-height: 2.5rem;
         padding: 0.55rem 0.8rem;
-
+ 
         font-size: 0.75rem;
     }
-
+ 
     .tip-like-icon,
     .tip-detail-edit-btn svg,
     .tip-detail-delete-btn svg {
@@ -263,42 +435,42 @@
         height: 1rem;
     }
 }
-
+ 
 /* =========================
    본인 게시글 신고 Toast
 ========================= */
-
+ 
 .tip-report-toast {
 	position: fixed;
 	right: 20px;
 	bottom: 20px;
 	z-index: 99999;
-
+ 
 	display: none;
 	align-items: center;
 	gap: 8px;
-
+ 
 	padding: 12px 18px;
 	border-radius: 12px;
-
+ 
 	background: #1f2937;
 	color: #ffffff;
-
+ 
 	font-size: 14px;
 	font-weight: 600;
-
+ 
 	box-shadow: 0 8px 24px rgba(0, 0, 0, 0.18);
 }
-
+ 
 .tip-report-toast.show {
 	display: flex;
 }
-
-
+ 
+ 
 /* =========================
    꿀팁 신고 팝업
 ========================= */
-
+ 
 .tip-report-modal {
 	width: min(560px, calc(100vw - 32px));
 	max-height: calc(100dvh - 40px);
@@ -306,403 +478,403 @@
 	padding: 0;
 	border: 0;
 	border-radius: 22px;
-
+ 
 	background: #ffffff;
 	color: #182030;
-
+ 
 	overflow-y: auto;
-
+ 
 	box-shadow: 0 24px 80px rgba(0, 0, 0, 0.2);
 }
-
+ 
 .tip-report-modal,
 .tip-report-modal * {
 	box-sizing: border-box;
 }
-
+ 
 .tip-report-modal::backdrop {
 	background: rgba(0, 0, 0, 0.45);
 }
-
+ 
 /* hidden 속성을 다른 display보다 우선 */
 .tip-report-modal [hidden] {
 	display: none !important;
 }
-
-
+ 
+ 
 /* =========================
    신고 팝업 헤더
 ========================= */
-
+ 
 .tip-report-header {
 	display: flex;
 	align-items: center;
 	justify-content: space-between;
 	gap: 16px;
-
+ 
 	padding: 24px;
-
+ 
 	border-bottom: 1px solid #eef0f4;
 }
-
+ 
 .tip-report-header h2 {
 	margin: 0;
-
+ 
 	font-size: 20px;
 	font-weight: 800;
 }
-
+ 
 .tip-report-header p {
 	margin: 5px 0 0;
-
+ 
 	color: #98a2b3;
-
+ 
 	font-size: 13px;
 }
-
+ 
 .tip-report-close {
 	display: flex;
 	align-items: center;
 	justify-content: center;
-
+ 
 	width: 32px;
 	height: 32px;
 	flex-shrink: 0;
-
+ 
 	padding: 0;
-
+ 
 	border: 0;
 	border-radius: 8px;
-
+ 
 	background: transparent;
 	color: #98a2b3;
-
+ 
 	cursor: pointer;
 }
-
+ 
 .tip-report-close:hover {
 	background: #f5f5fa;
 }
-
-
+ 
+ 
 /* =========================
    신고 Form
 ========================= */
-
+ 
 .tip-report-form {
 	padding: 24px;
 }
-
-
+ 
+ 
 /* =========================
    신고 사유
 ========================= */
-
+ 
 .tip-report-reasons {
 	min-width: 0;
-
+ 
 	margin: 0;
 	padding: 0;
-
+ 
 	border: 0;
 }
-
+ 
 .tip-report-reasons legend {
 	margin-bottom: 12px;
 	padding: 0;
-
+ 
 	font-size: 14px;
 	font-weight: 700;
 }
-
+ 
 .tip-report-required {
 	color: #ef4444;
 }
-
+ 
 .tip-report-reason {
 	display: flex;
 	align-items: center;
 	gap: 12px;
-
+ 
 	margin-bottom: 10px;
-
+ 
 	color: #707b8e;
-
+ 
 	font-size: 14px;
-
+ 
 	cursor: pointer;
 }
-
+ 
 .tip-report-reason input {
 	width: 18px;
 	height: 18px;
-
+ 
 	margin: 0;
-
+ 
 	flex-shrink: 0;
-
+ 
 	accent-color: #6369d1;
-
+ 
 	cursor: pointer;
 }
-
-
+ 
+ 
 /* =========================
    상세 내용
 ========================= */
-
+ 
 .tip-report-detail {
 	margin-top: 24px;
 }
-
+ 
 .tip-report-detail label {
 	display: block;
-
+ 
 	margin-bottom: 12px;
-
+ 
 	font-size: 14px;
 	font-weight: 700;
 }
-
+ 
 .tip-report-detail label span {
 	color: #98a2b3;
-
+ 
 	font-weight: 400;
 }
-
+ 
 .tip-report-detail textarea {
 	display: block;
-
+ 
 	width: 100%;
 	min-height: 116px;
-
+ 
 	padding: 14px 16px;
-
+ 
 	border: 1px solid #dedff2;
 	border-radius: 15px;
-
+ 
 	background: #ffffff;
 	color: #374151;
-
+ 
 	font: inherit;
 	font-size: 14px;
 	line-height: 1.6;
-
+ 
 	resize: vertical;
 }
-
+ 
 .tip-report-detail textarea::placeholder {
 	color: #98a2b3;
 }
-
+ 
 .tip-report-detail textarea:focus {
 	outline: none;
-
+ 
 	border-color: #6369d1;
-
+ 
 	box-shadow: 0 0 0 3px rgba(99, 105, 209, 0.1);
 }
-
-
+ 
+ 
 /* =========================
    글자 수
 ========================= */
-
+ 
 .tip-report-counter {
 	margin: 8px 0 0;
-
+ 
 	text-align: right;
-
+ 
 	color: #98a2b3;
-
+ 
 	font-size: 12px;
 }
-
-
+ 
+ 
 /* =========================
    에러 / 신고 사유 없음
 ========================= */
-
+ 
 .tip-report-error,
 .tip-report-empty {
 	margin: 12px 0 0;
-
+ 
 	color: #dc2626;
-
+ 
 	font-size: 13px;
 }
-
-
+ 
+ 
 /* =========================
    취소 / 신고하기 버튼
 ========================= */
-
+ 
 .tip-report-actions {
 	display: flex;
 	gap: 10px;
-
+ 
 	margin-top: 24px;
 }
-
+ 
 .tip-report-actions button {
 	flex: 1;
 	min-width: 0;
-
+ 
 	padding: 14px 12px;
-
+ 
 	border-radius: 14px;
-
+ 
 	font: inherit;
 	font-size: 16px;
 	font-weight: 600;
-
+ 
 	cursor: pointer;
 }
-
+ 
 .tip-report-cancel {
 	border: 1px solid #dedff2;
-
+ 
 	background: #ffffff;
 	color: #707b8e;
 }
-
+ 
 .tip-report-submit {
 	border: 1px solid transparent;
-
+ 
 	background: #ef646b;
 	color: #ffffff;
 }
-
+ 
 .tip-report-submit:disabled {
 	background: #f8b2b6;
-
+ 
 	cursor: not-allowed;
 }
-
-
+ 
+ 
 /* =========================
    신고 접수 성공 화면
 ========================= */
-
+ 
 .tip-report-success {
 	padding: 48px 24px;
-
+ 
 	text-align: center;
 }
-
+ 
 .tip-report-success-icon {
 	display: flex;
 	align-items: center;
 	justify-content: center;
-
+ 
 	width: 70px;
 	height: 70px;
-
+ 
 	margin: 0 auto 24px;
-
+ 
 	border-radius: 50%;
-
+ 
 	background: #f0efff;
 	color: #6369d1;
 }
-
+ 
 .tip-report-success h3 {
 	margin: 0;
-
+ 
 	font-size: 19px;
 	font-weight: 800;
 }
-
+ 
 .tip-report-success p {
 	margin: 16px 0 26px;
-
+ 
 	color: #707b8e;
-
+ 
 	font-size: 14px;
 	line-height: 1.8;
 }
-
+ 
 .tip-report-confirm {
 	padding: 13px 38px;
-
+ 
 	border: 0;
 	border-radius: 14px;
-
+ 
 	background: #6369d1;
 	color: #ffffff;
-
+ 
 	font: inherit;
 	font-size: 16px;
 	font-weight: 700;
-
+ 
 	cursor: pointer;
 }
-
-
+ 
+ 
 /* =========================
    포커스
 ========================= */
-
+ 
 .tip-report-modal button:focus-visible {
 	outline: 2px solid #6369d1;
 	outline-offset: 3px;
 }
-
-
+ 
+ 
 /* =========================
    모바일
 ========================= */
-
+ 
 @media (max-width: 600px) {
-
+ 
 	.tip-report-modal {
 		width: calc(100vw - 24px);
 		max-height: calc(100dvh - 24px);
-
+ 
 		border-radius: 18px;
 	}
-
+ 
 	.tip-report-header {
 		padding: 20px;
 	}
-
+ 
 	.tip-report-form {
 		padding: 20px;
 	}
-
+ 
 	.tip-report-success {
 		padding: 40px 20px;
 	}
-
+ 
 	.tip-report-actions button {
 		padding: 13px 10px;
-
+ 
 		font-size: 15px;
 	}
 }
-
+ 
 /* ================================
    페이지 스크롤바
 ================================ */
-
+ 
 html {
 	scrollbar-width: thin;
 	scrollbar-color: #c7c9e8 transparent;
 }
-
+ 
 html::-webkit-scrollbar {
 	width: 7px;
 }
-
+ 
 html::-webkit-scrollbar-track {
 	background: transparent;
 }
-
+ 
 html::-webkit-scrollbar-thumb {
 	background: #c7c9e8;
 	border-radius: 9999px;
 }
-
+ 
 html::-webkit-scrollbar-thumb:hover {
 	background: #a8abe0;
 }

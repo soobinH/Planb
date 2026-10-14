@@ -29,7 +29,7 @@ String displayQ = (keyword == null || keyword.trim().isEmpty()) ? "전체" : key
 
 	<jsp:include page="/common/header.jsp" />
 
-	<main class="max-w-6xl mx-auto px-4 sm:px-6 py-8 sm:py-10">
+	<main class="w-full max-w-6xl mx-auto px-4 sm:px-6 py-8 sm:py-10">
 
 		<!-- =========================
 		     검색 결과 상단
@@ -38,17 +38,21 @@ String displayQ = (keyword == null || keyword.trim().isEmpty()) ? "전체" : key
 			<p class="text-xs font-bold tracking-widest text-[#6369D1]">
 				GLOBAL SEARCH
 			</p>
-
-			<h1 class="text-2xl sm:text-3xl font-black mt-2">
-				“<%=displayQ%>” 통합 검색
-			</h1>
-
-			<p class="text-sm text-gray-500 mt-2">
+		
+			<div class="flex items-center gap-3 mt-2">
+				<h1 class="text-2xl sm:text-3xl font-black">
+					“<%=displayQ%>” 통합 검색
+				</h1>
+			
+				<span class="text-sm sm:text-base font-semibold text-gray-400">
+					총 ${totalCount}건
+				</span>
+			</div>
+		
+			<p id="searchDescription" class="text-sm text-gray-500 mt-2">
 				여행일정 · 여행꿀팁 · 여행 메이트를 한 번에 검색합니다.
-				총 ${totalCount}건
 			</p>
 		</div>
-
 
 		<!-- 검색 결과 탭 -->
 		<div class="flex flex-wrap gap-2 mb-8" id="searchTabs">
@@ -422,7 +426,7 @@ String displayQ = (keyword == null || keyword.trim().isEmpty()) ? "전체" : key
 				<a
 					href="${tipListUrl}"
 					class="text-sm font-bold text-[#6369D1]">
-					전체 보기 →
+					상세 조건으로 더 보기 →
 				</a>
 
 			</div>
@@ -635,7 +639,7 @@ String displayQ = (keyword == null || keyword.trim().isEmpty()) ? "전체" : key
 				<a
 					href="${mateListUrl}"
 					class="text-sm font-bold text-[#6369D1]">
-					전체 보기 →
+					상세 조건으로 더 보기 →
 				</a>
 
 			</div>

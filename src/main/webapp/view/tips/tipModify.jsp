@@ -11,6 +11,7 @@ request.setAttribute("activePage", "tips");
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>여행꿀팁 수정 · Tripily</title>
     <jsp:include page="/common/headStyles.jsp" />
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/view/assets/css/tips/tipModify.css">
     <script defer src="${pageContext.request.contextPath}/view/assets/js/tips/tipModify.js"></script>
 </head>
 <body class="site-shell">
@@ -124,6 +125,8 @@ request.setAttribute("activePage", "tips");
 							여행과 관련된 자유로운 키워드를 입력해주세요. 예: #교통 #맛집 #혼자여행
 						</p>
 					</div>
+
+					<!-- [수정] 내용 + 사진 : 글 사이사이에 사진을 넣을 수 있는 편집기 -->
 					<div>
 						<label class="flex items-center gap-1.5 text-sm font-bold mb-3" style="color: #6369D1">
 							<span class="w-5 h-5 rounded-full flex items-center justify-center text-white text-xs font-bold bg-[#6369D1]">
@@ -134,88 +137,58 @@ request.setAttribute("activePage", "tips");
 								*
 							</span>
 						</label>
-						<div class="rounded-xl overflow-hidden" style="border: 1.5px solid #D1D2F9">
-							<div class="flex flex-wrap gap-1 px-3 py-2 border-b border-[#D1D2F9] bg-[#FAFAFF]">
+						<div class="tip-editor-wrap rounded-xl overflow-hidden" style="border: 1.5px solid #D1D2F9">
+							<div class="flex flex-wrap items-center gap-1 px-3 py-2 border-b border-[#D1D2F9] bg-[#FAFAFF]">
 								<button type="button" class="px-2 py-1 text-xs font-bold">↩</button>
 								<button type="button" class="px-2 py-1 text-xs font-bold">↪</button>
 								<button type="button" class="px-2 py-1 text-xs">본문 ▾</button>
 								<button type="button" class="px-2 py-1 text-xs font-bold">B</button>
 								<button type="button" class="px-2 py-1 text-xs italic">I</button>
 								<button type="button" class="px-2 py-1 text-xs underline">U</button>
-								<button type="button" class="px-2 py-1 text-xs">🖼</button>
+								<!-- 사진 추가 : 커서 위치에 삽입 -->
+								<button type="button" id="tipImageButton" class="tip-editor-photo-btn">🖼 사진 추가</button>
+								<span id="tipImageCount" class="tip-editor-count">0/5</span>
 							</div>
-							<textarea
-							name="content"
-							class="w-full min-h-[220px] p-4 outline-none resize-y text-sm text-gray-700"
-							placeholder="여행에서 직접 경험한 소중한 팁을 자세히 적어주세요."
-							required>${tip.content}</textarea>
+							<div id="tipEditor"
+								class="tip-editor is-empty"
+								contenteditable="true"
+								role="textbox"
+								aria-multiline="true"
+								aria-label="내용"
+								data-placeholder="여행에서 직접 경험한 소중한 팁을 자세히 적어주세요."></div>
 						</div>
+
+						<!-- 기존 본문 (편집기 초기값으로만 사용, 전송되지 않음) -->
+						<textarea id="tipContentSource" hidden><c:out value="${tip.content}" /></textarea>
+
+						<!-- 기존 이미지 목록 (글 작성 순서대로) -->
+						<div id="existingMediaData" hidden>
+							<c:forEach var="media" items="${tipMediaList}">
+								<c:if test="${media.mediaType eq 'IMAGE'}">
+									<span data-media-id="${media.mediaId}"
+										data-url="<c:out value='${pageContext.request.contextPath}${media.mediaUrl}' />"></span>
+								</c:if>
+							</c:forEach>
+						</div>
+
+						<!-- 삭제할 기존 이미지 ID (등록 시 자동 생성) -->
+						<div id="deletedMediaInputs"></div>
+
+						<!-- 편집기 내용은 전송 직전에 이 hidden 값(본문 + [[IMG:n]])으로 변환 -->
+						<input type="hidden" name="content" id="tipContent">
+						<!-- 새로 추가한 사진 : 전송 직전에 글에 나온 순서대로 파일이 채워짐 -->
+						<input type="file" id="tipImages" name="images" multiple accept="image/*" class="hidden">
+
+						<p id="tipContentError" class="hidden mt-2 text-xs" style="color: #ef4444;">
+							내용을 입력해주세요.
+						</p>
+						<p class="mt-2 text-xs text-gray-400">
+							사진을 넣을 위치에 커서를 두고 '사진 추가'를 누르거나, 사진을 글 안으로 끌어다 놓으세요.
+							삭제는 사진 우측 상단의 × 버튼을 눌러주세요.
+							기존 사진 + 새 사진 최대 5장 · JPG, PNG, GIF
+						</p>
 					</div>
-					<div>
-						<div class="flex items-center justify-between mb-2">
-							<label class="flex items-center gap-2 text-sm font-bold" style="color: #6369D1">
-								📎 사진 첨부
-							</label>
-							<span class="text-xs text-gray-400">
-								최대 5장
-							</span>
-						</div>
-						<c:if test="${not empty tipMediaList}">
-						    <div class="mb-4">
-						        <p class="text-xs font-semibold text-gray-500 mb-2">
-						            현재 등록된 이미지
-						        </p>
-						        <div id="existingImageList"class="grid gap-3"
-						             style="grid-template-columns: repeat(auto-fit, minmax(min(120px, 100%), 1fr));">
-						            <c:forEach var="media" items="${tipMediaList}">
-						                <c:if test="${media.mediaType eq 'IMAGE'}">
-						                    <div class="existing-image-item relative overflow-hidden rounded-xl border bg-gray-50"
-						                         data-media-id="${media.mediaId}" style="border-color: #D1D2F9; aspect-ratio: 4 / 3;">
-						                        <img src="${pageContext.request.contextPath}${media.mediaUrl}"
-						                            alt="현재 등록된 이미지" class="w-full h-full object-cover">
-						                        <button type="button" class="existing-image-delete absolute top-2 right-2
-						                                   w-7 h-7 rounded-full
-						                                   bg-black/60 text-white
-						                                   flex items-center justify-center"
-						                            data-media-id="${media.mediaId}"
-						                            aria-label="이미지 삭제">
-						                            ×
-						                        </button>
-						                    </div>
-						                </c:if>
-						            </c:forEach>
-						        </div>
-						        <!-- 삭제할 기존 이미지 ID 저장 -->
-						        <div id="deletedMediaInputs"></div>
-						        <p class="text-xs text-gray-400 mt-2">
-						            삭제할 사진은 우측 상단의 × 버튼을 눌러주세요.
-						        </p>
-						    </div>
-						</c:if>
-						<label class="rounded-xl py-12 flex flex-col items-center justify-center gap-3 cursor-pointer"
-							style="border: 2px dashed #D1D2F9; background: #fafaff">
-							<input type="file" id="tipImages" name="images" multiple accept="image/*" class="hidden">
-							<div class="w-14 h-14 rounded-2xl flex items-center justify-center bg-[#D1D2F9]">
-								<svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#6369D1" stroke-width="1.8">
-									<rect x="3" y="3" width="18" height="18" rx="2" />
-									<circle cx="8.5" cy="8.5" r="1.5" />
-									<polyline points="21 15 16 10 5 21" />
-								</svg>
-							</div>
-							<div class="text-center">
-								<p class="text-sm font-semibold text-[#6369D1]">
-									사진을 변경하려면 새 이미지를 선택해주세요.
-								</p>
-								<p class="text-xs text-gray-400 mt-0.5">
-									JPG, PNG, GIF 파일 (최대 10MB) 
-								</p>
-							</div>
-						</label>
-						<!-- 선택한 이미지 미리보기 -->
-						<div id="tipImagePreview" class="grid gap-3 mt-4"
-							style="grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));">
-						</div>
-					</div>
+
 					<div class="flex justify-end gap-3 pt-2">
 						<a href="${pageContext.request.contextPath}/tipDetail?tipId=${tip.tipId}" 
 							class="px-8 py-3 rounded-full text-sm font-semibold"

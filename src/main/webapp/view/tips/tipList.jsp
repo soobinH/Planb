@@ -1,6 +1,7 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
 	pageEncoding="UTF-8"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%
 request.setAttribute("activePage", "tips");
 %>
@@ -405,7 +406,7 @@ request.setAttribute("activePage", "tips");
 					<p class="text-[12px] font-medium text-gray-500">
 				        총 
 				        <span class="font-bold" style="color: #6369D1">
-				        	<span>${tipList.size()}</span>개의 여행 꿀팁
+				        	<span>${tipList.size()}</span>
 				        </span>
 				        개의 여행 꿀팁
 				    </p>
@@ -474,8 +475,14 @@ request.setAttribute("activePage", "tips");
 									group-hover:text-brand transition-colors mb-1.5" style="min-height: 2.6em">
 									<c:out value="${tip.title}" />
 								</h3>
+								<c:set var="tipPreview" value="${tip.content}" />
+								<c:set var="tipPreview" value="${fn:replace(tipPreview, '[[IMG:1]]', ' ')}" />
+								<c:set var="tipPreview" value="${fn:replace(tipPreview, '[[IMG:2]]', ' ')}" />
+								<c:set var="tipPreview" value="${fn:replace(tipPreview, '[[IMG:3]]', ' ')}" />
+								<c:set var="tipPreview" value="${fn:replace(tipPreview, '[[IMG:4]]', ' ')}" />
+								<c:set var="tipPreview" value="${fn:replace(tipPreview, '[[IMG:5]]', ' ')}" />
 								<p class="text-[11px] text-gray-500 leading-relaxed line-clamp-2 flex-1">
-									<c:out value="${tip.content}" />
+									<c:out value="${tipPreview}" />
 								</p>
 								<c:if test="${not empty tip.hashtag}">
 									<div class="flex flex-wrap gap-1.5 mt-2 mb-3">

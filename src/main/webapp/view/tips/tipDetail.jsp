@@ -15,25 +15,34 @@ request.setAttribute("activePage", "tips");
 	<script defer src="${pageContext.request.contextPath}/view/assets/js/tips/tipDetail.js"></script>
 <body class="site-shell">
 	<jsp:include page="/common/header.jsp" />
-	<div class="min-h-screen" style="background-color: #f5f5fb">
-    	<div class="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-			<a href="${pageContext.request.contextPath}/tips"
-				class="flex items-center gap-2 px-4 py-2 rounded-full bg-white border border-gray-200 text-sm font-semibold text-gray-600 hover:border-gray-400 hover:text-gray-800 transition-colors shadow-sm mb-6"><svg
-					width="14" height="14" viewBox="0 0 24 24" fill="none"
-					stroke="currentColor" stroke-width="2">
-					<path d="M15 18l-6-6 6-6" /></svg>목록으로</a>
-			<div class="flex gap-6 items-start">
-				<div class="hidden lg:flex flex-col items-center justify-center gap-3 rounded-2xl shrink-0"
-					 style="width: 160px; min-height: 600px; background-color: var(--brand-light); color: var(--brand)">
-					<div class="w-12 h-12 rounded-full flex items-center justify-center font-extrabold text-sm text-white"
-						 style="background-color: var(--brand)">AD</div>
-					<p class="text-xs font-semibold text-center px-3" style="color: var(--brand)">
-						좌측 광고 영역<br>
-						<span class="text-[10px] font-normal opacity-60">(예: 160x600)</span>
-					</p>
-				</div>
-				<div class="flex-1 min-w-0">
-					<div class="bg-white rounded-3xl shadow-sm border border-gray-100 overflow-hidden">
+
+	<!-- [수정] 전체 폭 축소: 레이아웃을 tipDetail.css의 전용 클래스로 제어 -->
+	<div class="tip-detail-page">
+    	<div class="tip-detail-wrap">
+
+			<div class="tip-detail-layout">
+
+				<!-- [수정] 좌측 광고 (스크롤 따라다님 / sticky) -->
+				<aside class="tip-ad-side tip-ad-left" aria-label="좌측 광고 영역">
+					<div class="tip-ad-box">
+						<div class="tip-ad-badge">AD</div>
+						<p class="tip-ad-text">
+							좌측 광고 영역<br>
+							<span>(예: 160x600)</span>
+						</p>
+					</div>
+				</aside>
+
+				<!-- [수정] 본문 영역 -->
+				<div class="tip-detail-main">
+
+					<a href="${pageContext.request.contextPath}/tips"
+						class="tip-back-link"><svg
+							width="14" height="14" viewBox="0 0 24 24" fill="none"
+							stroke="currentColor" stroke-width="2">
+							<path d="M15 18l-6-6 6-6" /></svg>목록으로</a>
+
+					<div class="tip-square-card bg-white shadow-sm border border-gray-100 overflow-hidden">
 						<div class="relative overflow-hidden" style="height: 280px">
 							<c:choose>
 							    <c:when test="${not empty tip.thumbnailImg}">
@@ -204,14 +213,12 @@ request.setAttribute("activePage", "tips");
 									</span>
 								</div>
 							</div>
-							<div class="prose prose-gray max-w-none">
-							    <p class="text-gray-700 text-base leading-relaxed whitespace-pre-wrap">
-							        <c:out value="${tip.content}" />
-							    </p>
+							<div class="prose prose-gray max-w-none" id="tipContentBody">
+							    <p class="text-gray-700 text-base leading-relaxed whitespace-pre-wrap" id="tipContentRaw"><c:out value="${tip.content}" /></p>
 							</div>
 							<!-- 추가 이미지 : 대표 이미지(sortOrder 1)는 제외 -->
 							<c:if test="${not empty tipMediaList}">
-							    <div class="tip-detail-images">
+							    <div class="tip-detail-images" id="tipLegacyImages">
 							        <c:forEach var="media" items="${tipMediaList}" varStatus="status">
 							            <!-- 첫 번째 이미지(대표 이미지)는 제외 -->
 							            <c:if test="${status.index > 0 && media.mediaType eq 'IMAGE'}">
@@ -220,6 +227,67 @@ request.setAttribute("activePage", "tips");
 							        </c:forEach>
 							    </div>
 							</c:if>
+							<!-- 글 사이사이 사진 : 본문의 [[IMG:n]] 위치에 n번째 이미지를 끼워 넣음 -->
+							<div id="tipMediaUrls" hidden>
+							    <c:forEach var="media" items="${tipMediaList}">
+							        <c:if test="${media.mediaType eq 'IMAGE'}">
+							            <span data-url="<c:out value='${pageContext.request.contextPath}${media.mediaUrl}' />"></span>
+							        </c:if>
+							    </c:forEach>
+							</div>
+							<script>
+							(function () {
+							    var raw = document.getElementById("tipContentRaw");
+							    var body = document.getElementById("tipContentBody");
+							    if (!raw || !body) return;
+
+							    var text = raw.textContent;
+							    var pattern = /\[\[IMG:(\d+)\]\]/g;
+
+							    // 마커가 없는 예전 글은 그대로 (기존 방식: 이미지가 아래에 나열)
+							    if (!pattern.test(text)) return;
+							    pattern.lastIndex = 0;
+
+							    var urls = Array.prototype.map.call(
+							        document.querySelectorAll("#tipMediaUrls [data-url]"),
+							        function (el) { return el.getAttribute("data-url"); }
+							    );
+
+							    var fragment = document.createDocumentFragment();
+
+							    function addText(value) {
+							        value = value.replace(/^\n/, "").replace(/\n$/, "");
+							        if (value.trim() === "") return;
+							        var p = document.createElement("p");
+							        p.className = "text-gray-700 text-base leading-relaxed whitespace-pre-wrap";
+							        p.textContent = value;
+							        fragment.appendChild(p);
+							    }
+
+							    var last = 0, match;
+							    while ((match = pattern.exec(text)) !== null) {
+							        addText(text.slice(last, match.index));
+							        var url = urls[parseInt(match[1], 10) - 1];
+							        if (url) {
+							            var img = document.createElement("img");
+							            img.src = url;
+							            img.alt = "";
+							            img.className = "tip-detail-image";
+							            fragment.appendChild(img);
+							        }
+							        last = pattern.lastIndex;
+							    }
+							    addText(text.slice(last));
+
+							    body.innerHTML = "";
+							    body.classList.add("tip-content-flow");
+							    body.appendChild(fragment);
+
+							    // 하단 이미지 목록은 중복이므로 제거
+							    var legacy = document.getElementById("tipLegacyImages");
+							    if (legacy) legacy.remove();
+							})();
+							</script>
 							<div class="flex flex-wrap gap-2 mt-8 pt-6 border-t border-gray-100">
 							    <c:forEach var="tag" items="${tip.hashtagList}">
 							        <span class="text-xs font-semibold px-3 py-1 rounded-full"
@@ -274,7 +342,7 @@ request.setAttribute("activePage", "tips");
 						</div>
 					</div>
 					<!-- 댓글 -->
-					<div class="bg-white rounded-3xl shadow-sm border border-gray-100 p-7 mt-4">
+					<div class="tip-square-card bg-white shadow-sm border border-gray-100 p-7 mt-4">
 					    <!-- 댓글 제목 -->
 					    <h3 class="flex items-center gap-2 text-base font-extrabold text-gray-900 mb-6">
 					        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"
@@ -363,17 +431,20 @@ request.setAttribute("activePage", "tips");
 					        </c:if>
 					    </div>
 					</div>
-				<!-- 우측 광고 -->
 				</div>
-				<div class="hidden lg:flex flex-col items-center justify-center gap-3 rounded-2xl shrink-0"
-					 style="width: 160px; min-height: 600px; background-color: var(--brand-light); color: var(--brand)">
-					<div class="w-12 h-12 rounded-full flex items-center justify-center font-extrabold text-sm text-white"
-						style="background-color: var(--brand)">AD</div>
-					<p class="text-xs font-semibold text-center px-3" style="color: var(--brand)">
-						우측 광고 영역<br>
-						<span class="text-[10px] font-normal opacity-60">(예: 160x600)</span>
-					</p>
-				</div>
+				<!-- /본문 영역 -->
+
+				<!-- [수정] 우측 광고 (스크롤 따라다님 / sticky) -->
+				<aside class="tip-ad-side tip-ad-right" aria-label="우측 광고 영역">
+					<div class="tip-ad-box">
+						<div class="tip-ad-badge">AD</div>
+						<p class="tip-ad-text">
+							우측 광고 영역<br>
+							<span>(예: 160x600)</span>
+						</p>
+					</div>
+				</aside>
+
 			</div>
 		</div>
 	</div>
