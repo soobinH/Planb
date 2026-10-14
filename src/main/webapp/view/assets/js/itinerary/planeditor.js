@@ -4198,7 +4198,7 @@
                 }
 
                 region.disabled=false;
-                region.placeholder='Google Places에서 지역/도시 검색';
+                region.placeholder='지역/도시 검색';
                 dropdown.classList.add('hidden');
                 updateRegionClear();
             }
@@ -4226,12 +4226,12 @@
                 // Google Places Autocomplete는 검색어를 기준으로 후보를 반환한다.
                 // 빈 입력에서는 로컬 목록을 대신 보여주지 않는다.
                 if(!query){
-                    renderPlannerRegionMessage('지역/도시명을 입력하면 Google Places에서 검색합니다.');
+                    renderPlannerRegionMessage('지역/도시명을 입력하면 검색합니다.');
                     return;
                 }
 
                 // 입력 중 드롭다운을 유지하되, 후보 데이터는 Google Places 결과만 사용한다.
-                renderPlannerRegionMessage('Google Places에서 지역/도시를 검색 중입니다.');
+                renderPlannerRegionMessage('지역/도시를 검색 중입니다.');
 
                 plannerRegionSearchTimer=setTimeout(function(){
                     getPlannerPlacesLibrary()
@@ -4311,12 +4311,12 @@
                             if(items.length){
                                 renderPlannerRegionButtons(items);
                             }else{
-                                renderPlannerRegionMessage('Google Places 검색 결과가 없습니다.');
+                                renderPlannerRegionMessage('검색 결과가 없습니다.');
                             }
                         })
                         .catch(function(){
                             if(requestSeq!==plannerRegionSearchSeq) return;
-                            renderPlannerRegionMessage('Google Places 지역/도시 검색에 실패했습니다.');
+                            renderPlannerRegionMessage('지역/도시 검색에 실패했습니다.');
                         });
                 },250);
             }
