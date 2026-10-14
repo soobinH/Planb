@@ -358,7 +358,8 @@ request.setAttribute("activePage", "planner");
                                                                 </div>
 
                                                                 <div class="planner-memo-field rounded-lg border border-gray-200 bg-white">
-                                                                    <textarea class="planner-item-note outline-none text-sm text-gray-700 placeholder-gray-400 bg-transparent" placeholder="메모 (선택)"></textarea>
+                                                                    <textarea class="planner-item-note outline-none text-sm text-gray-700 placeholder-gray-400 bg-transparent" maxlength="200" placeholder="메모 (선택)"></textarea>
+                                                                    <span class="planner-memo-count" aria-live="polite">0/200</span>
                                                                 </div>
                                                             </div>
 

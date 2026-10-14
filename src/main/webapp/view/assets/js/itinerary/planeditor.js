@@ -3495,6 +3495,18 @@
 
             function setupBlock(card){
                 var body=$('[data-block-body]',card), toggle=$('[data-block-toggle]',card), del=$('.planner-block-delete',card), header=$('.planner-block-header',card), title=$('.planner-item-title',card), label=$('.planner-block-title-label',card), badge=$('.planner-block-type-badge',card);
+                var memoInput=$('.planner-item-note',card);
+                var memoCounter=$('.planner-memo-count',card);
+                if(memoInput && memoCounter){
+                    var updateMemoCount=function(){
+                        var length=memoInput.value.length;
+                        memoCounter.textContent=length+'/200';
+                        memoCounter.classList.toggle('is-over-limit',length>200);
+                    };
+                    memoInput.maxLength=200;
+                    memoInput.addEventListener('input',updateMemoCount);
+                    updateMemoCount();
+                }
                 if(toggle&&body) toggle.addEventListener('click',function(){var c=body.classList.toggle('is-collapsed');toggle.textContent=c?'⌄':'˄';toggle.title=c?'블록 펼치기':'블록 접기';toggle.setAttribute('aria-expanded',c?'false':'true')});
                 if(header&&body) header.addEventListener('click',function(e){ if(e.target.closest('button')) return; var c=body.classList.toggle('is-collapsed'); if(toggle){toggle.textContent=c?'⌄':'˄';toggle.title=c?'블록 펼치기':'블록 접기';toggle.setAttribute('aria-expanded',c?'false':'true');} });
                 if(del) del.addEventListener('click',function(e){
@@ -4186,7 +4198,7 @@
                 }
 
                 region.disabled=false;
-                region.placeholder='Google Places에서 지역/도시 검색';
+                region.placeholder='지역/도시 검색';
                 dropdown.classList.add('hidden');
                 updateRegionClear();
             }
@@ -4214,12 +4226,12 @@
                 // Google Places Autocomplete는 검색어를 기준으로 후보를 반환한다.
                 // 빈 입력에서는 로컬 목록을 대신 보여주지 않는다.
                 if(!query){
-                    renderPlannerRegionMessage('지역/도시명을 입력하면 Google Places에서 검색합니다.');
+                    renderPlannerRegionMessage('지역/도시명을 입력하면 검색합니다.');
                     return;
                 }
 
                 // 입력 중 드롭다운을 유지하되, 후보 데이터는 Google Places 결과만 사용한다.
-                renderPlannerRegionMessage('Google Places에서 지역/도시를 검색 중입니다.');
+                renderPlannerRegionMessage('지역/도시를 검색 중입니다.');
 
                 plannerRegionSearchTimer=setTimeout(function(){
                     getPlannerPlacesLibrary()
@@ -4299,12 +4311,12 @@
                             if(items.length){
                                 renderPlannerRegionButtons(items);
                             }else{
-                                renderPlannerRegionMessage('Google Places 검색 결과가 없습니다.');
+                                renderPlannerRegionMessage('검색 결과가 없습니다.');
                             }
                         })
                         .catch(function(){
                             if(requestSeq!==plannerRegionSearchSeq) return;
-                            renderPlannerRegionMessage('Google Places 지역/도시 검색에 실패했습니다.');
+                            renderPlannerRegionMessage('지역/도시 검색에 실패했습니다.');
                         });
                 },250);
             }
@@ -6269,11 +6281,21 @@
                 if(traveler){
                     traveler.value=String(itinerary.travelerCount || 1);
                 }
+                /*
+                 * 수정 화면의 기존 여행기간은 서버 DTO의 java.sql.Date.toString()
+                 * (yyyy-MM-dd) 값을 우선 사용한다.
+                 * Gson의 Date 문자열 포맷/브라우저 로케일 차이 때문에
+                 * 기존 날짜가 빈 값으로 보이던 문제를 방지한다.
+                 */
                 if(startDate){
-                    startDate.value=normalizePlannerDateValue(itinerary.startDate);
+                    startDate.value=normalizePlannerDateValue(
+                        PLANNER_BOOTSTRAP.editStartDate || itinerary.startDate
+                    );
                 }
                 if(endDate){
-                    endDate.value=normalizePlannerDateValue(itinerary.endDate);
+                    endDate.value=normalizePlannerDateValue(
+                        PLANNER_BOOTSTRAP.editEndDate || itinerary.endDate
+                    );
                 }
 
                 setPlannerVisibility(itinerary.visibility || 'PUBLIC',false);

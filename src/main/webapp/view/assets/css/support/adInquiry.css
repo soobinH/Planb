@@ -631,20 +631,6 @@
     cursor: default;
 }
 
-/* ========================= 스크롤바 ========================= */
-html {
-    scrollbar-width: thin;
-    scrollbar-color: #c7c9e8 transparent;
-}
-
-html::-webkit-scrollbar {
-    width: 7px;
-}
-
-html::-webkit-scrollbar-thumb {
-    background: #c7c9e8;
-    border-radius: 999px;
-}
 
 /* ========================= 반응형 ========================= */
 @media (max-width: 680px) {

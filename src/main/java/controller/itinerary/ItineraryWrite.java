@@ -24,6 +24,8 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonParseException;
 
 import dto.itinerary.ItineraryDto;
+import dto.itinerary.ItineraryDayDto;
+import dto.itinerary.ItineraryBlockDto;
 import dto.member.UserDto;
 import service.itinerary.ItineraryService;
 import service.itinerary.ItineraryServiceImpl;
@@ -206,6 +208,22 @@ public class ItineraryWrite extends HttpServlet {
             throw new IllegalArgumentException(
                     "일정 소개는 250자 이하로 입력해 주세요."
             );
+        }
+
+        if (itineraryDto.getDays() != null) {
+            for (ItineraryDayDto day : itineraryDto.getDays()) {
+                if (day == null || day.getBlocks() == null) {
+                    continue;
+                }
+                for (ItineraryBlockDto block : day.getBlocks()) {
+                    if (block != null && block.getMemo() != null
+                            && block.getMemo().length() > 200) {
+                        throw new IllegalArgumentException(
+                                "블록 메모는 200자 이하로 입력해 주세요."
+                        );
+                    }
+                }
+            }
         }
 
         if (itineraryDto.getCountry() == null
