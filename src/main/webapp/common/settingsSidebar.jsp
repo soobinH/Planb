@@ -111,6 +111,23 @@ String settingsPage =
 
 
 		<!-- =========================================
+             내 활동 내역
+        ========================================== -->
+
+        <a class="settings-nav-link <%= "activity".equals(settingsPage) ? "active" : "" %>"
+           href="<%=ctx%>/settings/myActivity">
+            <span class="settings-nav-icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                     stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+                    <rect x="4" y="4" width="16" height="16" rx="2" />
+                    <path d="M8 9h8M8 13h8M8 17h5" />
+                </svg>
+            </span>
+            <span>내 활동 내역</span>
+        </a>
+
+
+		<!-- =========================================
              개인정보 및 공개범위
         ========================================== -->
 

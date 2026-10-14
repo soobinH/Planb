@@ -1,10 +1,6 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
-
 	pageEncoding="UTF-8" import="dto.member.UserDto"
-
-	import="dto.profile.ProfileFeedDto" import="java.util.List"
-
-	import="dto.profile.ProfileActivityDto" import="java.util.List"%>
+	import="dto.profile.ProfileFeedDto" import="java.util.List"%>
 
 <%
 
@@ -106,14 +102,6 @@ if (likedItineraries == null) {
 
 }
 
-List<ProfileActivityDto> activities = (List<ProfileActivityDto>) request.getAttribute("activities");
-
-if (activities == null) {
-
-	activities = new java.util.ArrayList<ProfileActivityDto>();
-
-}
-
 Integer postCount = (Integer) request.getAttribute("postCount");
 
 Integer likeCount = (Integer) request.getAttribute("likeCount");
@@ -189,36 +177,232 @@ boolean myLikedHasMore =
 
 <style>
 .profile-feed-sentinel {
-    width: 100%;
-    height: 1px;
+	width: 100%;
+	height: 1px;
 }
 
 .profile-feed-loading {
-    width: 100%;
-    padding: 22px 0 8px;
-    text-align: center;
-    font-size: 12px;
-    font-weight: 700;
-    color: #9ca3af;
+	width: 100%;
+	padding: 22px 0 8px;
+	text-align: center;
+	font-size: 12px;
+	font-weight: 700;
+	color: #9ca3af;
 }
 
 .profile-feed-loading::before {
-    content: "";
-    display: inline-block;
-    width: 14px;
-    height: 14px;
-    margin-right: 7px;
-    border: 2px solid #e5e7eb;
-    border-top-color: #6369D1;
-    border-radius: 50%;
-    vertical-align: -2px;
-    animation: profile-feed-spin .7s linear infinite;
+	content: "";
+	display: inline-block;
+	width: 14px;
+	height: 14px;
+	margin-right: 7px;
+	border: 2px solid #e5e7eb;
+	border-top-color: #6369D1;
+	border-radius: 50%;
+	vertical-align: -2px;
+	animation: profile-feed-spin .7s linear infinite;
 }
 
-@keyframes profile-feed-spin {
-    to {
-        transform: rotate(360deg);
-    }
+@
+keyframes profile-feed-spin {to { transform:rotate(360deg);
+	
+}
+
+}
+
+/* 북마크는 컬러 이모지가 아닌 선형 SVG 아이콘으로 통일 */
+.profile-tabs [data-profile-tab="saved"] {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	gap: 7px;
+}
+
+.profile-bookmark-outline {
+	display: inline-block;
+	width: 17px;
+	height: 17px;
+	flex: 0 0 auto;
+	vertical-align: -3px;
+	color: inherit;
+}
+
+.feed-hover-stats .profile-bookmark-outline {
+	width: 15px;
+	height: 15px;
+	vertical-align: -3px;
+	margin-right: 3px;
+}
+
+/* ============================================================
+   빈 피드: 3열 그리드의 전체 폭을 사용하고 안내 문구를 중앙에 배치
+   (게시물 / 북마크 / 좋아요 공통)
+   ============================================================ */
+.profile-page .profile-content .feed-grid>.empty-state {
+	grid-column: 1/-1 !important;
+	justify-self: stretch;
+	width: 100%;
+	min-height: clamp(180px, 32vh, 320px);
+	box-sizing: border-box;
+	display: flex !important;
+	align-items: center;
+	justify-content: center;
+	margin: 0 !important;
+	padding: 32px 20px;
+	text-align: center !important;
+}
+
+/* ============================================================
+   프로필 편집: 팝업 오픈 시 배경 스크롤 잠금 + 뷰포트 안에 표시
+   실제 크기 조정은 아래 fitProfileEditModal()에서 계산
+   ============================================================ */
+html.profile-modal-open, body.profile-modal-open {
+	overflow: hidden !important;
+	overscroll-behavior: none;
+}
+
+#profileEditModal.profile-edit-modal-backdrop {
+	position: fixed !important;
+	inset: 0 !important;
+	box-sizing: border-box;
+	padding: 0 !important;
+	overflow: hidden !important;
+	overscroll-behavior: contain;
+}
+
+#profileEditModal[aria-hidden="true"] {
+	display: none !important;
+}
+
+#profileEditModal.show[aria-hidden="false"] {
+	display: block !important;
+}
+
+#profileEditModal .profile-edit-modal {
+	position: absolute !important;
+	top: var(- -profile-edit-center-y, 50%) !important;
+	left: var(- -profile-edit-center-x, 50%) !important;
+	width: min(560px, calc(100vw - 24px)) !important;
+	max-width: none !important;
+	min-width: 0 !important;
+	height: auto !important;
+	max-height: none !important;
+	margin: 0 !important;
+	box-sizing: border-box;
+	overflow: hidden !important;
+	transform-origin: center center !important;
+	transform: translate(-50%, -50%) scale(var(- -profile-edit-fit-scale, 1))
+		!important;
+}
+
+#profileEditModal #profileEditModalForm, #profileEditModal .profile-edit-modal-body
+	{
+	min-height: 0;
+	max-height: none !important;
+	overflow: visible !important;
+}
+
+#profileEditModal .profile-edit-field, #profileEditModal .profile-edit-field input,
+	#profileEditModal .profile-edit-field textarea {
+	min-width: 0;
+	box-sizing: border-box;
+}
+
+#profileEditModal .profile-edit-field textarea {
+	resize: none;
+}
+
+/* 화면 세로 길이가 짧을 때 먼저 여백을 줄이고, 그래도 넘치면 자동 축소 */
+@media ( max-height : 720px) {
+	#profileEditModal .profile-edit-modal-header {
+		padding-top: 13px !important;
+		padding-bottom: 9px !important;
+	}
+	#profileEditModal .profile-edit-modal-body {
+		padding-top: 10px !important;
+		padding-bottom: 10px !important;
+		gap: 10px !important;
+	}
+	#profileEditModal .profile-edit-modal-actions {
+		padding-top: 10px !important;
+		padding-bottom: 10px !important;
+	}
+	#profileEditModal .profile-edit-photo-row {
+		gap: 12px !important;
+		margin-bottom: 9px !important;
+	}
+	#profileEditModal .profile-edit-field {
+		gap: 4px !important;
+		margin-bottom: 8px !important;
+	}
+	#profileEditModal .profile-edit-field textarea {
+		min-height: 64px !important;
+		height: 64px !important;
+	}
+}
+
+@media ( max-height : 520px) {
+	#profileEditModal .profile-edit-modal-header, #profileEditModal .profile-edit-modal-actions
+		{
+		padding-top: 7px !important;
+		padding-bottom: 7px !important;
+	}
+	#profileEditModal .profile-edit-modal-body {
+		padding-top: 6px !important;
+		padding-bottom: 6px !important;
+		gap: 6px !important;
+	}
+	#profileEditModal .profile-edit-photo-row {
+		margin-bottom: 4px !important;
+	}
+	#profileEditModal .profile-edit-field {
+		margin-bottom: 4px !important;
+	}
+	#profileEditModal .profile-edit-field textarea {
+		min-height: 52px !important;
+		height: 52px !important;
+	}
+}
+
+/* =========================================
+   프로필 편집 팝업 중앙 정렬 수정
+   ========================================= */
+
+/* 팝업 배경: 화면 전체 + 중앙 정렬 */
+#profileEditModal.show[aria-hidden="false"] {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+}
+
+/* 팝업 본체 */
+#profileEditModal .profile-edit-modal {
+    position: relative !important;
+
+    top: auto !important;
+    left: auto !important;
+    right: auto !important;
+    bottom: auto !important;
+
+    margin: 0 !important;
+
+    width: min(560px, calc(100vw - 24px)) !important;
+    max-width: none !important;
+
+    flex: 0 0 auto !important;
+
+    /* 작은 화면에서 자동 축소 유지 */
+    transform: scale(
+        var(--profile-edit-fit-scale, 1)
+    ) !important;
+
+    transform-origin: center center !important;
+
+    /* 상단 및 하단 둥근 모서리 유지 */
+    border-radius: 18px !important;
+    overflow: hidden !important;
+
+    box-sizing: border-box !important;
 }
 </style>
 
@@ -263,9 +447,7 @@ boolean myLikedHasMore =
 						%>
 
 						<img src="<%=ctx%><%=profilePath%>/<%=profileImg%>"
-
 							alt="<%=nickname%> 프로필 이미지"
-
 							onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
 
 						<!-- 이미지 로딩 실패 시 기본 프로필 -->
@@ -273,13 +455,11 @@ boolean myLikedHasMore =
 						<span class="profile-default-avatar" style="display: none;">
 
 							<svg width="48" height="48" viewBox="0 0 24 24" fill="none"
-
 								stroke="currentColor" stroke-width="1.5">
 
                                 <circle cx="12" cy="8" r="4" />
 
                                 <path
-
 									d="M4 21c0-4.3 3.6-7 8-7s8 2.7 8 7" />
 
                             </svg>
@@ -295,15 +475,12 @@ boolean myLikedHasMore =
 						<!-- 프로필 이미지 없는 경우 -->
 
 						<span class="profile-default-avatar"> <svg width="48"
-
 								height="48" viewBox="0 0 24 24" fill="none"
-
 								stroke="currentColor" stroke-width="1.5">
 
                                 <circle cx="12" cy="8" r="4" />
 
                                 <path
-
 									d="M4 21c0-4.3 3.6-7 8-7s8 2.7 8 7" />
 
                             </svg>
@@ -399,7 +576,6 @@ boolean myLikedHasMore =
 								프로필 편집</button>
 
 							<a class="icon-action" href="<%=ctx%>/profile/edit"
-
 								aria-label="설정" title="설정"> ⚙ </a>
 
 						</div>
@@ -526,19 +702,19 @@ boolean myLikedHasMore =
 
 			<button type="button" data-profile-tab="saved">
 
-				🔖 <span> 북마크한 게시글 </span>
+				<svg class="profile-bookmark-outline" width="17" height="17"
+					viewBox="0 0 24 24" fill="none" stroke="currentColor"
+					stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"
+					aria-hidden="true">
+                    <path d="M6 4.5h12v16l-6-4-6 4z" />
+                </svg>
+				<span> 북마크한 게시글 </span>
 
 			</button>
 
 			<button type="button" data-profile-tab="liked">
 
 				♡ <span> 좋아요한 게시글 </span>
-
-			</button>
-
-			<button type="button" data-profile-tab="activity">
-
-				◯ <span> 활동 </span>
 
 			</button>
 
@@ -589,7 +765,6 @@ boolean myLikedHasMore =
 					<div class="feed-admin-shell">
 
 						<a class="feed-item"
-
 							href="<%=ctx%>/schedules/detail?id=<%=item.getItineraryId()%>">
 
 							<%
@@ -632,7 +807,13 @@ boolean myLikedHasMore =
 
 							</span> <span class="feed-hover-stats"> <span> ♥ <%=item.getLikeCount()%>
 
-								</span> <span> 🔖 <%=item.getBookmarkCount()%>
+								</span> <span> <svg class="profile-bookmark-outline" width="17"
+											height="17" viewBox="0 0 24 24" fill="none"
+											stroke="currentColor" stroke-width="1.8"
+											stroke-linecap="round" stroke-linejoin="round"
+											aria-hidden="true">
+                    <path d="M6 4.5h12v16l-6-4-6 4z" />
+                </svg> <%=item.getBookmarkCount()%>
 
 								</span> <span> 💬 <%=item.getCommentCount()%>
 
@@ -649,19 +830,16 @@ boolean myLikedHasMore =
 						<div class="feed-owner-actions">
 
 							<button type="button" class="feed-owner-more" data-owner-more
-
 								aria-label="게시글 메뉴">•••</button>
 
 							<div class="feed-owner-menu" role="menu">
 
 								<a
-
 									href="<%=ctx%>/modifyplan?itineraryId=<%=item.getItineraryId()%>">
 
 									수정 </a>
 
 								<button type="button" class="danger"
-
 									data-delete-itinerary="<%=item.getItineraryId()%>">삭제</button>
 
 							</div>
@@ -689,11 +867,8 @@ boolean myLikedHasMore =
 				</div>
 
 				<div class="profile-feed-sentinel" data-feed-sentinel
-
 					data-scope="my" data-type="posts"
-
 					data-offset="<%=myItineraries.size()%>"
-
 					data-has-more="<%=myPostsHasMore%>"></div>
 
 				<div class="profile-feed-loading" data-feed-loading="posts" hidden>
@@ -745,7 +920,6 @@ boolean myLikedHasMore =
 					<div class="feed-admin-shell">
 
 						<a class="feed-item"
-
 							href="<%=ctx%>/schedules/detail?id=<%=item.getItineraryId()%>">
 
 							<%
@@ -780,7 +954,13 @@ boolean myLikedHasMore =
 
 							</span> <span class="feed-hover-stats"> <span> ♥ <%=item.getLikeCount()%>
 
-								</span> <span> 🔖 <%=item.getBookmarkCount()%>
+								</span> <span> <svg class="profile-bookmark-outline" width="17"
+											height="17" viewBox="0 0 24 24" fill="none"
+											stroke="currentColor" stroke-width="1.8"
+											stroke-linecap="round" stroke-linejoin="round"
+											aria-hidden="true">
+                    <path d="M6 4.5h12v16l-6-4-6 4z" />
+                </svg> <%=item.getBookmarkCount()%>
 
 								</span> <span> 💬 <%=item.getCommentCount()%>
 
@@ -813,11 +993,8 @@ boolean myLikedHasMore =
 				</div>
 
 				<div class="profile-feed-sentinel" data-feed-sentinel
-
 					data-scope="my" data-type="saved"
-
 					data-offset="<%=bookmarkedItineraries.size()%>"
-
 					data-has-more="<%=mySavedHasMore%>"></div>
 
 				<div class="profile-feed-loading" data-feed-loading="saved" hidden>
@@ -869,7 +1046,6 @@ boolean myLikedHasMore =
 					<div class="feed-admin-shell">
 
 						<a class="feed-item"
-
 							href="<%=ctx%>/schedules/detail?id=<%=item.getItineraryId()%>">
 
 							<%
@@ -904,7 +1080,13 @@ boolean myLikedHasMore =
 
 							</span> <span class="feed-hover-stats"> <span> ♥ <%=item.getLikeCount()%>
 
-								</span> <span> 🔖 <%=item.getBookmarkCount()%>
+								</span> <span> <svg class="profile-bookmark-outline" width="17"
+											height="17" viewBox="0 0 24 24" fill="none"
+											stroke="currentColor" stroke-width="1.8"
+											stroke-linecap="round" stroke-linejoin="round"
+											aria-hidden="true">
+                    <path d="M6 4.5h12v16l-6-4-6 4z" />
+                </svg> <%=item.getBookmarkCount()%>
 
 								</span> <span> 💬 <%=item.getCommentCount()%>
 
@@ -937,11 +1119,8 @@ boolean myLikedHasMore =
 				</div>
 
 				<div class="profile-feed-sentinel" data-feed-sentinel
-
 					data-scope="my" data-type="liked"
-
 					data-offset="<%=likedItineraries.size()%>"
-
 					data-has-more="<%=myLikedHasMore%>"></div>
 
 				<div class="profile-feed-loading" data-feed-loading="liked" hidden>
@@ -950,247 +1129,6 @@ boolean myLikedHasMore =
 
 			</div>
 
-			<!-- ======================================
-
-             활동
-
-        ======================================= -->
-
-			<!-- ======================================
-
-     활동
-
-======================================= -->
-
-			<div data-profile-panel="activity" class="jsp-hidden">
-
-				<div class="activity-panel">
-
-					<!-- =================================
-
-             활동 필터
-
-        ================================== -->
-
-					<div class="segmented-control">
-
-						<button type="button" class="active" data-activity-filter="ALL">
-
-							전체</button>
-
-						<button type="button" data-activity-filter="POST">글</button>
-
-						<button type="button" data-activity-filter="COMMENT">댓글</button>
-
-					</div>
-
-					<!-- =================================
-
-             활동 목록
-
-        ================================== -->
-
-					<div class="activity-list">
-
-						<%
-
-						if (!activities.isEmpty()) {
-
-							for (ProfileActivityDto activity : activities) {
-
-								String activityType = activity.getActivityType();
-
-								String activityGroup = activity.getActivityGroup();
-
-								String activityLabel = "";
-
-								String activitySection = "";
-
-								String activityUrl = "#";
-
-								/* =========================
-
-								   여행 꿀팁 게시글
-
-								========================== */
-
-								if ("TIP_POST".equals(activityType)) {
-
-							activityLabel = "글";
-
-							activitySection = "여행 꿀팁";
-
-							/*
-
-							 * TIP 상세 URL은
-
-							 * 실제 프로젝트 Servlet URL에
-
-							 * 맞춰야 함.
-
-							 */
-
-							activityUrl = ctx + "/tipDetail?tipId=" + activity.getTargetId();
-
-							/* =========================
-
-							   여행 메이트 게시글
-
-							========================== */
-
-								} else if ("MATE_POST".equals(activityType)) {
-
-							activityLabel = "글";
-
-							activitySection = "여행 메이트";
-
-							activityUrl = ctx + "/mateDetail?mateId=" + activity.getTargetId();
-
-							/* =========================
-
-							   여행 꿀팁 댓글
-
-							========================== */
-
-								} else if ("TIP_COMMENT".equals(activityType)) {
-
-							activityLabel = "댓글";
-
-							activitySection = "여행 꿀팁";
-
-							activityUrl = ctx + "/tipDetail?tipId=" + activity.getTargetId();
-
-							/* =========================
-
-							   여행 메이트 댓글
-
-							========================== */
-
-								} else if ("MATE_COMMENT".equals(activityType)) {
-
-							activityLabel = "댓글";
-
-							activitySection = "여행 메이트";
-
-							activityUrl = ctx + "/mateDetail?mateId=" + activity.getTargetId();
-
-							/* =========================
-
-							   여행 일정 댓글
-
-							========================== */
-
-								} else if ("ITINERARY_COMMENT".equals(activityType)) {
-
-							activityLabel = "댓글";
-
-							activitySection = "여행 일정";
-
-							activityUrl = ctx + "/schedules/detail?id=" + activity.getTargetId();
-
-								}
-
-								String activityContent = activity.getContent() == null ? "" : activity.getContent();
-
-								String targetTitle = activity.getTargetTitle() == null ? "" : activity.getTargetTitle();
-
-						%>
-
-						<a href="<%=activityUrl%>" class="activity-item"
-
-							data-activity-item data-activity-group="<%=activityGroup%>">
-
-							<div>
-
-								<div class="activity-kicker">
-
-									<span> <%=activityLabel%>
-
-									</span> ·
-
-									<%=activitySection%>
-
-								</div>
-
-								<p>
-
-									<%
-
-									if ("POST".equals(activityGroup)) {
-
-									%>
-
-									<strong> <%=targetTitle%>
-
-									</strong>
-
-									<%
-
-									} else {
-
-									%>
-
-									<strong> <%=targetTitle%>
-
-									</strong> <br>
-
-									<%=activityContent%>
-
-									<%
-
-									}
-
-									%>
-
-								</p>
-
-							</div> <time>
-
-								<%
-
-								if (activity.getCreatedAt() != null) {
-
-								%>
-
-								<%=activity.getCreatedAt()%>
-
-								<%
-
-								}
-
-								%>
-
-							</time>
-
-						</a>
-
-						<%
-
-						}
-
-						} else {
-
-						%>
-
-						<div class="empty-state" id="activityEmptyState">아직 활동 내역이
-
-							없습니다.</div>
-
-						<%
-
-						}
-
-						%>
-
-						<div class="empty-state jsp-hidden" id="activityFilterEmpty">
-
-							해당 활동 내역이 없습니다.</div>
-
-					</div>
-
-				</div>
-
-			</div>
 
 		</main>
 
@@ -1203,11 +1141,9 @@ boolean myLikedHasMore =
 ========================================================= -->
 
 	<div class="profile-edit-modal-backdrop" id="profileEditModal"
-
 		aria-hidden="true">
 
 		<div class="profile-edit-modal" role="dialog" aria-modal="true"
-
 			aria-labelledby="profileEditModalTitle">
 
 			<!-- 모달 헤더 -->
@@ -1223,13 +1159,11 @@ boolean myLikedHasMore =
 				</div>
 
 				<button type="button" class="profile-edit-modal-close"
-
 					id="closeProfileEditModal" aria-label="닫기">×</button>
 
 			</div>
 
 			<form id="profileEditModalForm" action="<%=ctx%>/profile/edit"
-
 				method="post" enctype="multipart/form-data">
 
 				<!--
@@ -1243,11 +1177,8 @@ boolean myLikedHasMore =
 				<input type="hidden" name="birthDate" value="<%=birthDate%>">
 
 				<input type="hidden" name="phone" value="<%=phone%>"> <input
-
 					type="hidden" name="postcode" value="<%=postcode%>"> <input
-
 					type="hidden" name="address" value="<%=address%>"> <input
-
 					type="hidden" name="addressDetail" value="<%=addressDetail%>">
 
 				<div class="profile-edit-modal-body">
@@ -1259,23 +1190,16 @@ boolean myLikedHasMore =
 						<div class="profile-edit-preview">
 
 							<img id="profileEditPreviewImage"
-
 								<%if (!profileImg.isEmpty()) {%>
-
 								src="<%=ctx%><%=profilePath%>/<%=profileImg%>" <%}%>
-
 								alt="<%=nickname%> 프로필 이미지"
-
 								style="display:<%=profileImg.isEmpty() ? "none" : "block"%>;">
 
 							<div class="profile-edit-preview-empty"
-
 								id="profileEditPreviewEmpty"
-
 								style="display:<%=profileImg.isEmpty() ? "flex" : "none"%>;">
 
 								<svg width="34" height="34" viewBox="0 0 24 24" fill="none"
-
 									stroke="currentColor" stroke-width="1.6">
 
 									<circle cx="12" cy="8" r="4" />
@@ -1291,11 +1215,8 @@ boolean myLikedHasMore =
 						<div class="profile-edit-photo-copy">
 
 							<strong><%=nickname%></strong> <span>프로필 사진을 변경할 수 있습니다.</span> <label
-
 								class="profile-edit-photo-btn"> 사진 변경 <input type="file"
-
 								name="profileImage" id="profileEditImageInput"
-
 								accept="image/jpeg,image/png,image/webp,image/gif">
 
 							</label>
@@ -1307,9 +1228,7 @@ boolean myLikedHasMore =
 					<!-- 닉네임 -->
 
 					<label class="profile-edit-field"> <span>닉네임</span> <input
-
 						type="text" name="nickname" value="<%=nickname%>" maxlength="50"
-
 						required>
 
 					</label>
@@ -1317,7 +1236,6 @@ boolean myLikedHasMore =
 					<!-- 이름 -->
 
 					<label class="profile-edit-field"> <span>이름</span> <input
-
 						type="text" name="name" value="<%=name%>" maxlength="50" required>
 
 					</label>
@@ -1325,7 +1243,6 @@ boolean myLikedHasMore =
 					<!-- 소개 -->
 
 					<label class="profile-edit-field"> <span>소개</span> <textarea
-
 							name="bio" rows="4" maxlength="300"><%=bio%></textarea> <small>프로필에
 
 							공개되는 소개글입니다.</small>
@@ -1335,7 +1252,6 @@ boolean myLikedHasMore =
 					<!-- 지역 -->
 
 					<label class="profile-edit-field"> <span>지역</span> <input
-
 						type="text" name="region" value="<%=region%>" maxlength="100">
 
 					</label>
@@ -1347,7 +1263,6 @@ boolean myLikedHasMore =
 				<div class="profile-edit-modal-actions">
 
 					<button type="button" class="profile-edit-cancel-btn"
-
 						id="cancelProfileEditModal">취소</button>
 
 					<button type="submit" class="profile-edit-save-btn">저장</button>
@@ -1998,15 +1913,46 @@ boolean myLikedHasMore =
 
 									: "flex";
 
+							var profileEditDialog = modal.querySelector(".profile-edit-modal");
+
+							/* 실제 팝업 높이에 맞춰 비율을 조정하므로 별도 스크롤이 생기지 않음 */
+							function fitProfileEditModal() {
+								if (!profileEditDialog || !modal.classList.contains("show")) {
+									return;
+								}
+
+								var viewport = window.visualViewport;
+								var viewportWidth = viewport ? viewport.width : window.innerWidth;
+								var viewportHeight = viewport ? viewport.height : window.innerHeight;
+
+								/* 키보드가 올라오는 모바일에서도 보이는 영역의 중심에 배치 */
+								var centerX = (viewport ? viewport.offsetLeft : 0) + viewportWidth / 2;
+								var centerY = (viewport ? viewport.offsetTop : 0) + viewportHeight / 2;
+								modal.style.setProperty("--profile-edit-center-x", centerX + "px");
+								modal.style.setProperty("--profile-edit-center-y", centerY + "px");
+
+								profileEditDialog.style.setProperty("--profile-edit-fit-scale", "1");
+								var naturalWidth = Math.max(profileEditDialog.offsetWidth, profileEditDialog.scrollWidth);
+								var naturalHeight = Math.max(profileEditDialog.offsetHeight, profileEditDialog.scrollHeight);
+
+								var availableWidth = Math.max(1, viewportWidth - 24);
+								var availableHeight = Math.max(1, viewportHeight - 24);
+								var scale = Math.min(1, availableWidth / Math.max(1, naturalWidth),
+										availableHeight / Math.max(1, naturalHeight));
+
+								profileEditDialog.style.setProperty("--profile-edit-fit-scale", scale.toFixed(4));
+							}
+
 							function openProfileModal() {
 
 								modal.classList.add("show");
 
 								modal.setAttribute("aria-hidden", "false");
 
-								document.body.classList
-
-										.add("profile-modal-open");
+								document.body.classList.add("profile-modal-open");
+								document.documentElement.classList.add("profile-modal-open");
+								fitProfileEditModal();
+								window.requestAnimationFrame(fitProfileEditModal);
 
 							}
 
@@ -2064,9 +2010,11 @@ boolean myLikedHasMore =
 
 								modal.setAttribute("aria-hidden", "true");
 
-								document.body.classList
-
-										.remove("profile-modal-open");
+								document.body.classList.remove("profile-modal-open");
+							document.documentElement.classList.remove("profile-modal-open");
+							if (profileEditDialog) {
+								profileEditDialog.style.removeProperty("--profile-edit-fit-scale");
+							}
 
 								if (form) {
 
@@ -2076,6 +2024,12 @@ boolean myLikedHasMore =
 
 								resetImagePreview();
 
+							}
+
+							window.addEventListener("resize", fitProfileEditModal);
+							if (window.visualViewport) {
+								window.visualViewport.addEventListener("resize", fitProfileEditModal);
+								window.visualViewport.addEventListener("scroll", fitProfileEditModal);
 							}
 
 							openBtn.addEventListener("click", openProfileModal);
@@ -2312,75 +2266,6 @@ boolean myLikedHasMore =
 
 	</script>
 
-	<script>
-
-		document.addEventListener("DOMContentLoaded", function() {
-
-			var filterButtons = document
-
-					.querySelectorAll("[data-activity-filter]");
-
-			var activityItems = document
-
-					.querySelectorAll("[data-activity-item]");
-
-			var filterEmpty = document.getElementById("activityFilterEmpty");
-
-			filterButtons.forEach(function(button) {
-
-				button.addEventListener("click", function() {
-
-					var filter = button.getAttribute("data-activity-filter");
-
-					/* 버튼 활성화 */
-
-					filterButtons.forEach(function(item) {
-
-						item.classList.remove("active");
-
-					});
-
-					button.classList.add("active");
-
-					var visibleCount = 0;
-
-					/* 목록 필터 */
-
-					activityItems.forEach(function(item) {
-
-						var group = item.getAttribute("data-activity-group");
-
-						if (filter === "ALL" || filter === group) {
-
-							item.style.display = "";
-
-							visibleCount++;
-
-						} else {
-
-							item.style.display = "none";
-
-						}
-
-					});
-
-					/* 검색 결과 없음 */
-
-					if (filterEmpty) {
-
-						filterEmpty.classList.toggle("jsp-hidden",
-
-								visibleCount !== 0);
-
-					}
-
-				});
-
-			});
-
-		});
-
-	</script>
 
 </body>
 

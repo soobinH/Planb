@@ -12,10 +12,7 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import dto.member.UserDto;
-import dto.profile.ProfileActivityDto;
 import dto.profile.ProfileFeedDto;
-import service.profile.ProfileActivityService;
-import service.profile.ProfileActivityServiceImpl;
 import service.profile.ProfileFeedService;
 import service.profile.ProfileFeedServiceImpl;
 
@@ -26,10 +23,7 @@ public class myProfile extends HttpServlet {
 
     private static final int PAGE_SIZE = 9;
 
-    private final ProfileActivityService activityService =
-            new ProfileActivityServiceImpl();
-
-    private final ProfileFeedService profileFeedService =
+private final ProfileFeedService profileFeedService =
             new ProfileFeedServiceImpl();
 
 
@@ -153,22 +147,7 @@ public class myProfile extends HttpServlet {
                             likedPage
                     );
 
-
-            List<ProfileActivityDto> activities =
-                    activityService
-                        .getProfileActivities(
-                                userId
-                        );
-
-
-            if (activities == null) {
-
-                activities =
-                        new ArrayList<ProfileActivityDto>();
-            }
-
-
-            /*
+/*
              * 상단 통계는 현재 9개 목록 크기로 계산하면 안 된다.
              * 별도 COUNT 쿼리로 전체 건수를 계산한다.
              */
@@ -228,14 +207,7 @@ public class myProfile extends HttpServlet {
                     likedItineraries
             );
 
-
-            request.setAttribute(
-                    "activities",
-                    activities
-            );
-
-
-            request.setAttribute(
+request.setAttribute(
                     "myPostsHasMore",
                     myPostsHasMore
             );

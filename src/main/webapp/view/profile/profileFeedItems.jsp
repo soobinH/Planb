@@ -212,7 +212,10 @@ if (items != null) {
                 </span>
 
                 <span>
-                    🔖 <%=item.getBookmarkCount()%>
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none"
+                        stroke="currentColor" stroke-width="1.8" stroke-linecap="round"
+                        stroke-linejoin="round" style="vertical-align:-3px;margin-right:3px"
+                        aria-hidden="true"><path d="M6 4.5h12v16l-6-4-6 4z"/></svg> <%=item.getBookmarkCount()%>
                 </span>
 
                 <span>
