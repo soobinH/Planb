@@ -14,12 +14,16 @@ import dao.notification.NotificationDaoImpl;
 import dto.community.TipCommentDto;
 import dto.community.TipDto;
 import dto.notification.NotificationDto;
+import service.notification.NotificationPushService;
+import service.notification.NotificationPushServiceImpl;
 
 public class TipCommentServiceImpl implements TipCommentService {
 
 	private TipCommentDao tipCommentDao = new TipCommentDaoImpl();
 	private TipDao tipDao = new TipDaoImpl();
 	private NotificationDao notificationDao = new NotificationDaoImpl();
+	private final NotificationPushService notificationPushService =
+			new NotificationPushServiceImpl();
 
 	// 댓글 작성
 	@Override
@@ -88,9 +92,14 @@ public class TipCommentServiceImpl implements TipCommentService {
 				notification.setTargetId(tipId);
 				notification.setSourceCommentId(commentId);
 
-				notificationDao.insertCommentNotification(sqlSession, notification);
+				int notificationRows = notificationDao.insertCommentNotification(sqlSession, notification);
 
 				sqlSession.commit();
+
+				// 새 알림 저장 후 작성자의 헤더 갱신
+				if (notificationRows > 0) {
+					notificationPushService.refreshUser(tip.getUserId());
+				}
 				return insertedRows;
 
 			} catch (Exception e) {

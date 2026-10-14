@@ -12,12 +12,16 @@ import dao.notification.NotificationDaoImpl;
 import dto.community.TipDto;
 import dto.community.TipLikeDto;
 import dto.notification.NotificationDto;
+import service.notification.NotificationPushService;
+import service.notification.NotificationPushServiceImpl;
 
 public class TipLikeServiceImpl implements TipLikeService {
 
 	private TipLikeDao tipLikeDao = new TipLikeDaoImpl();
 	private TipDao tipDao = new TipDaoImpl();
 	private NotificationDao notificationDao = new NotificationDaoImpl();
+	private final NotificationPushService notificationPushService =
+			new NotificationPushServiceImpl();
 
 	// 좋아요 등록
 	@Override
@@ -73,9 +77,14 @@ public class TipLikeServiceImpl implements TipLikeService {
 				notification.setTargetType("TIP");
 				notification.setTargetId(tipId);
 
-				notificationDao.insertLikeNotification(sqlSession, notification);
+				int notificationRows = notificationDao.insertLikeNotification(sqlSession, notification);
 
 				sqlSession.commit();
+
+				// 새 알림 저장 후 작성자의 헤더 갱신
+				if (notificationRows > 0) {
+					notificationPushService.refreshUser(tip.getUserId());
+				}
 				return insertedRows;
 
 			} catch (Exception e) {

@@ -213,7 +213,10 @@
 	});
 
 	// 전체 알림 페이지에서 모두 읽음 처리 후 헤더 배지를 새로고침
-	window.addEventListener("notifications-updated", loadNotifications);
+	window.addEventListener("notifications-updated", function() {
+		console.log("[헤더] 갱신 이벤트 수신");
+		loadNotifications();
+	});
 
 	// 처음 화면이 열릴 때 배지 수를 조회
 	loadNotifications();

@@ -92,6 +92,8 @@ async function initializeFirebaseNotifications() {
 
 	// 현재 화면을 보고 있을 때 메시지를 받으면 헤더 다시 조회
 	onMessage(messaging, function() {
+		console.log("[Firebase] 화면에서 메시지 수신");
+
 		window.dispatchEvent(
 			new CustomEvent("notifications-updated")
 		);
@@ -103,6 +105,8 @@ async function initializeFirebaseNotifications() {
 		function(event) {
 			if (event.data &&
 				event.data.type === "PLANB_NOTIFICATION_REFRESH") {
+
+				console.log("[Firebase] 서비스 워커에서 갱신 신호 수신");
 
 				window.dispatchEvent(
 					new CustomEvent("notifications-updated")

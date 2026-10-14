@@ -193,7 +193,7 @@ request.setAttribute("activePage", "travel");
                   </span>
 
                   <!-- 여행 날짜 -->
-                  <span
+                  <%-- <span
                      class="flex items-center gap-1 text-[12px] px-3 py-1.5 rounded-full border font-medium"
                      style="border-color: #D1D2F9; background: #f5f5ff; color: #4a4a6a">
                      <span>📍</span> <c:choose>
@@ -207,7 +207,7 @@ request.setAttribute("activePage", "travel");
                         </c:when>
                         <c:otherwise>날짜 미정</c:otherwise>
                      </c:choose>
-                  </span>
+                  </span> --%>
 
                   <!-- 여행 인원 -->
                   <span

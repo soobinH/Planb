@@ -192,4 +192,9 @@ public final class FirebaseAccessToken {
 			this.privateKey = privateKey;
 		}
 	}
+	
+	public static synchronized void invalidateToken() {
+	    cachedToken = null;
+	    expiresAt = 0;
+	}
 }

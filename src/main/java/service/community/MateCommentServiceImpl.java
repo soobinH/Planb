@@ -14,12 +14,16 @@ import dao.notification.NotificationDaoImpl;
 import dto.community.MateCommentDto;
 import dto.community.MateDto;
 import dto.notification.NotificationDto;
+import service.notification.NotificationPushService;
+import service.notification.NotificationPushServiceImpl;
 
 public class MateCommentServiceImpl implements MateCommentService {
 
 	private MateCommentDao mateCommentDao = new MateCommentDaoImpl();
 	private MateDao mateDao = new MateDaoImpl();
 	private NotificationDao notificationDao = new NotificationDaoImpl();
+	private final NotificationPushService notificationPushService =
+			new NotificationPushServiceImpl();
 
 	@Override
 	public int insertMateComment(MateCommentDto mateCommentDto) {
@@ -87,9 +91,14 @@ public class MateCommentServiceImpl implements MateCommentService {
 				notification.setTargetId(mateId);
 				notification.setSourceCommentId(commentId);
 
-				notificationDao.insertCommentNotification(sqlSession, notification);
+				int notificationRows = notificationDao.insertCommentNotification(sqlSession, notification);
 
 				sqlSession.commit();
+
+				// 새 알림 저장 후 작성자의 헤더 갱신
+				if (notificationRows > 0) {
+					notificationPushService.refreshUser(mate.getUserId());
+				}
 				return insertedRows;
 
 			} catch (Exception e) {

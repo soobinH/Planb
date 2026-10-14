@@ -34,6 +34,8 @@ import dto.itinerary.ItineraryDayDto;
 import dto.itinerary.ItineraryDto;
 import dto.itinerary.ItineraryLikeDto;
 import dto.notification.NotificationDto;
+import service.notification.NotificationPushService;
+import service.notification.NotificationPushServiceImpl;
 
 public class ItineraryServiceImpl implements ItineraryService {
 
@@ -52,6 +54,8 @@ public class ItineraryServiceImpl implements ItineraryService {
 	private ItineraryCommentDao itineraryCommentDao;
 
 	private NotificationDao notificationDao;
+
+	private final NotificationPushService notificationPushService = new NotificationPushServiceImpl();
 
 	public ItineraryServiceImpl() {
 
@@ -406,6 +410,8 @@ public class ItineraryServiceImpl implements ItineraryService {
 
 				}
 
+				int notificationRows = 0;
+
 				if (!alreadyLiked) {
 					NotificationDto notification = new NotificationDto();
 
@@ -415,7 +421,7 @@ public class ItineraryServiceImpl implements ItineraryService {
 					notification.setTargetType("ITINERARY");
 					notification.setTargetId(itineraryId);
 
-					notificationDao.insertLikeNotification(sqlSession, notification);
+					notificationRows = notificationDao.insertLikeNotification(sqlSession, notification);
 				}
 
 				int likeCount = itineraryLikeDao.countItineraryLikes(sqlSession, itineraryId);
@@ -427,6 +433,13 @@ public class ItineraryServiceImpl implements ItineraryService {
 				result.put("likeCount", likeCount);
 
 				sqlSession.commit();
+
+				// DB에 새 알림이 저장됐을 때만 Firebase로 갱신 신호 발송
+				if (notificationRows > 0) {
+					System.out.println("[Firebase] 새 알림 저장됨, 발송 시작");
+					System.out.println("[Firebase] 수신자 userId: " + itinerary.getUserId());
+					notificationPushService.refreshUser(itinerary.getUserId());
+				}
 
 				return result;
 
@@ -545,11 +558,11 @@ public class ItineraryServiceImpl implements ItineraryService {
 					throw new IllegalStateException("댓글 등록에 실패했습니다.");
 
 				}
-				
+
 				Long commentId = comment.getCommentId();
 
 				if (commentId == null) {
-				    throw new IllegalStateException("댓글 번호를 가져오지 못했습니다.");
+					throw new IllegalStateException("댓글 번호를 가져오지 못했습니다.");
 				}
 
 				NotificationDto notification = new NotificationDto();
@@ -561,12 +574,11 @@ public class ItineraryServiceImpl implements ItineraryService {
 				notification.setTargetId(itineraryId);
 				notification.setSourceCommentId(commentId);
 
-				notificationDao.insertCommentNotification(sqlSession, notification);
+				int notificationRows = notificationDao.insertCommentNotification(sqlSession, notification);
 
 				// 등록 후 최신 댓글 목록과 개수 조회
 
 				List<ItineraryCommentDto> comments = itineraryCommentDao.selectItineraryComments(sqlSession,
-
 						itineraryId);
 
 				int commentCount = itineraryCommentDao.countItineraryComments(sqlSession, itineraryId);
@@ -579,6 +591,12 @@ public class ItineraryServiceImpl implements ItineraryService {
 
 				sqlSession.commit();
 
+				// 새 알림이 저장됐을 때 일정 작성자에게 갱신 신호 발송
+				if (notificationRows > 0) {
+				    notificationPushService.refreshUser(itinerary.getUserId());
+				}
+
+				
 				return result;
 
 			} catch (Exception e) {

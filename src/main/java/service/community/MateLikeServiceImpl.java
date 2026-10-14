@@ -12,12 +12,16 @@ import dao.notification.NotificationDaoImpl;
 import dto.community.MateDto;
 import dto.community.MateLikeDto;
 import dto.notification.NotificationDto;
+import service.notification.NotificationPushService;
+import service.notification.NotificationPushServiceImpl;
 
 public class MateLikeServiceImpl implements MateLikeService {
 
 	private MateLikeDao mateLikeDao = new MateLikeDaoImpl();
 	private MateDao mateDao = new MateDaoImpl();
 	private NotificationDao notificationDao = new NotificationDaoImpl();
+	private final NotificationPushService notificationPushService =
+			new NotificationPushServiceImpl();
 
 	@Override
 	public boolean toggleMateLike(Long mateId, Long userId) {
@@ -72,6 +76,8 @@ public class MateLikeServiceImpl implements MateLikeService {
 	                throw new IllegalStateException("좋아요 처리에 실패했습니다.");
 	            }
 
+	            int notificationRows = 0;
+
 	            // 좋아요가 추가된 경우에만 알림 생성
 	            if (!alreadyLiked) {
 	                NotificationDto notification = new NotificationDto();
@@ -82,11 +88,16 @@ public class MateLikeServiceImpl implements MateLikeService {
 	                notification.setTargetType("MATE");
 	                notification.setTargetId(mateId);
 
-	                notificationDao.insertLikeNotification(
+	                notificationRows = notificationDao.insertLikeNotification(
 	                        sqlSession, notification);
 	            }
 
 	            sqlSession.commit();
+
+	            // 새 알림 저장 후 작성자의 헤더 갱신
+	            if (notificationRows > 0) {
+	            	notificationPushService.refreshUser(mate.getUserId());
+	            }
 
 	            // 처리 후 좋아요 상태
 	            return !alreadyLiked;
