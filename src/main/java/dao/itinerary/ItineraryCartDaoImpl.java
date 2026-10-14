@@ -20,6 +20,16 @@ public class ItineraryCartDaoImpl implements ItineraryCartDao {
 	}
 
 	@Override
+	public List<ItineraryCartDto> selectCartSnapshotsPaged(SqlSession sqlSession, Long userId, int offset, int pageSize)
+			throws Exception {
+		Map<String, Object> params = new HashMap<>();
+		params.put("userId", userId);
+		params.put("offset", offset);
+		params.put("pageSize", pageSize);
+		return sqlSession.selectList(NAMESPACE + "selectCartSnapshotsPaged", params);
+	}
+
+	@Override
 	public List<ItineraryDayCartDto> selectDaySnapshots(SqlSession sqlSession, Long cartId) throws Exception {
 		return sqlSession.selectList(NAMESPACE + "selectDaySnapshots", cartId);
 	}

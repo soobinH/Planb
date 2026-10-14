@@ -43,21 +43,28 @@ public class ItineraryCartPage extends HttpServlet {
         }
 
         try {
+            int page = 1;
+            int pageSize = 20;
+
             List<ItineraryDto> cartItineraries =
-                    itineraryCartService.getCartItineraries(loginUser.getUserId());
+                    itineraryCartService.getCartItineraries(loginUser.getUserId(), page, pageSize);
 
             if (cartItineraries == null) {
                 cartItineraries = Collections.emptyList();
             }
 
+            int totalCount = itineraryCartService.getCartCount(loginUser.getUserId());
+
             request.setAttribute("cartItineraries", cartItineraries);
-            request.setAttribute("cartTotalCount", cartItineraries.size());
+            request.setAttribute("cartTotalCount", totalCount);
+            request.setAttribute("page", page);
+            request.setAttribute("pageSize", pageSize);
 
             request.getRequestDispatcher("/view/travel/cart.jsp").forward(request, response);
 
         } catch (Exception e) {
-            getServletContext().log("장바구니 페이지 조회 중 오류 발생", e);
-            throw new ServletException("장바구니를 불러오는 중 오류가 발생했습니다.", e);
+            getServletContext().log("카트 페이지 조회 중 오류 발생", e);
+            throw new ServletException("카트를 불러오는 중 오류가 발생했습니다.", e);
         }
     }
 }

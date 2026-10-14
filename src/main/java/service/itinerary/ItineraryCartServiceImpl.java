@@ -52,35 +52,57 @@ public class ItineraryCartServiceImpl implements ItineraryCartService {
 
 		try (SqlSession sqlSession = MybatisSqlSessionFactory.getSqlSessionFactory().openSession()) {
 			List<ItineraryCartDto> cartSnapshots = cartDao.selectCartSnapshots(sqlSession, userId);
-			List<ItineraryDto> result = new ArrayList<>();
+			return loadCartHierarchy(sqlSession, cartSnapshots);
+		}
+	}
 
-			for (ItineraryCartDto cart : cartSnapshots) {
-				ItineraryDto itinerary = toItineraryDto(cart);
+	@Override
+	public List<ItineraryDto> getCartItineraries(Long userId, int page, int pageSize) throws Exception {
+		if (userId == null || userId <= 0) {
+			return Collections.emptyList();
+		}
 
-				List<ItineraryDayCartDto> daySnapshots = cartDao.selectDaySnapshots(sqlSession, cart.getCartId());
-				List<ItineraryDayDto> days = new ArrayList<>();
+		int safePage = Math.max(1, page);
+		int safePageSize = Math.max(1, pageSize);
+		int offset = (safePage - 1) * safePageSize;
 
-				for (ItineraryDayCartDto dayCart : daySnapshots) {
-					ItineraryDayDto day = toDayDto(dayCart, cart.getSourceItineraryId());
+		try (SqlSession sqlSession = MybatisSqlSessionFactory.getSqlSessionFactory().openSession()) {
+			List<ItineraryCartDto> cartSnapshots =
+					cartDao.selectCartSnapshotsPaged(sqlSession, userId, offset, safePageSize);
+			return loadCartHierarchy(sqlSession, cartSnapshots);
+		}
+	}
 
-					List<ItineraryBlockCartDto> blockSnapshots = cartDao.selectBlockSnapshots(sqlSession,
-							dayCart.getDayCartId());
-					List<ItineraryBlockDto> blocks = new ArrayList<>();
+	private List<ItineraryDto> loadCartHierarchy(SqlSession sqlSession, List<ItineraryCartDto> cartSnapshots)
+			throws Exception {
+		List<ItineraryDto> result = new ArrayList<>();
 
-					for (ItineraryBlockCartDto blockCart : blockSnapshots) {
-						blocks.add(toBlockDto(blockCart, dayCart.getSourceDayId()));
-					}
+		for (ItineraryCartDto cart : cartSnapshots) {
+			ItineraryDto itinerary = toItineraryDto(cart);
 
-					day.setBlocks(blocks);
-					days.add(day);
+			List<ItineraryDayCartDto> daySnapshots = cartDao.selectDaySnapshots(sqlSession, cart.getCartId());
+			List<ItineraryDayDto> days = new ArrayList<>();
+
+			for (ItineraryDayCartDto dayCart : daySnapshots) {
+				ItineraryDayDto day = toDayDto(dayCart, cart.getSourceItineraryId());
+
+				List<ItineraryBlockCartDto> blockSnapshots =
+						cartDao.selectBlockSnapshots(sqlSession, dayCart.getDayCartId());
+				List<ItineraryBlockDto> blocks = new ArrayList<>();
+
+				for (ItineraryBlockCartDto blockCart : blockSnapshots) {
+					blocks.add(toBlockDto(blockCart, dayCart.getSourceDayId()));
 				}
 
-				itinerary.setDays(days);
-				result.add(itinerary);
+				day.setBlocks(blocks);
+				days.add(day);
 			}
 
-			return result;
+			itinerary.setDays(days);
+			result.add(itinerary);
 		}
+
+		return result;
 	}
 
 	private ItineraryDto toItineraryDto(ItineraryCartDto cart) {

@@ -9,6 +9,8 @@ public interface ItineraryCartService {
 
 	List<ItineraryDto> getCartItineraries(Long userId) throws Exception;
 
+	List<ItineraryDto> getCartItineraries(Long userId, int page, int pageSize) throws Exception;
+
 	void removeItinerary(Long userId, Long itineraryId) throws Exception;
 
 	void removeDay(Long userId, Long dayId) throws Exception;

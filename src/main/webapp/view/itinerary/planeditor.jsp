@@ -250,6 +250,99 @@ request.setAttribute("activePage", "planner");
         background: transparent;
         font-size: 13px;
         color: #111827;
+        cursor: pointer;
+    }
+
+    .planner-time-box input[type="time"]::-webkit-calendar-picker-indicator {
+        display: none;
+        -webkit-appearance: none;
+    }
+
+    .planner-time-trigger {
+        width: 24px;
+        height: 24px;
+        flex: 0 0 24px;
+        border: 0;
+        background: transparent;
+        color: #6B7280;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 6px;
+        cursor: pointer;
+        padding: 0;
+    }
+
+    .planner-time-trigger:hover {
+        background: #F3F4F6;
+        color: #374151;
+    }
+
+    .planner-time-picker {
+        position: fixed;
+        z-index: 9999;
+        width: 236px;
+        padding: 10px;
+        border: 1px solid #E5E7EB;
+        border-radius: 12px;
+        background: #fff;
+        box-shadow: 0 16px 40px rgba(17, 24, 39, 0.18);
+        display: none;
+    }
+
+    .planner-time-picker.is-open {
+        display: block;
+    }
+
+    .planner-time-picker-head,
+    .planner-time-picker-columns {
+        display: grid;
+        grid-template-columns: 68px 1fr 1fr;
+        gap: 6px;
+    }
+
+    .planner-time-picker-head {
+        padding: 0 2px 6px;
+        color: #9CA3AF;
+        font-size: 10px;
+        font-weight: 800;
+        text-align: center;
+    }
+
+    .planner-time-picker-column {
+        max-height: 184px;
+        overflow-y: auto;
+        overscroll-behavior: contain;
+        scrollbar-width: thin;
+        border-radius: 8px;
+        background: #F9FAFB;
+        padding: 4px;
+    }
+
+    .planner-time-picker-column[data-time-column="period"] {
+        align-self: start;
+    }
+
+    .planner-time-option {
+        width: 100%;
+        min-height: 30px;
+        border: 0;
+        border-radius: 7px;
+        background: transparent;
+        color: #4B5563;
+        font-size: 12px;
+        font-weight: 700;
+        cursor: pointer;
+    }
+
+    .planner-time-option:hover {
+        background: #EEF2FF;
+        color: #4F46E5;
+    }
+
+    .planner-time-option.is-selected {
+        background: #6366F1;
+        color: #fff;
     }
 
     .planner-block-type-row {
@@ -1814,11 +1907,21 @@ request.setAttribute("activePage", "planner");
                                                                 <div class="planner-time-grid planner-field">
                                                                     <div class="planner-time-box">
                                                                         <label>시작</label>
-                                                                        <input class="planner-start-time" type="time" value="">
+                                                                        <input class="planner-start-time" type="time" value="" readonly aria-label="시작 시간">
+                                                                        <button type="button" class="planner-time-trigger" data-time-trigger aria-label="시작 시간 선택" title="시작 시간 선택">
+                                                                            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                                                                                <circle cx="12" cy="12" r="9"></circle><path d="M12 7v5l3 2"></path>
+                                                                            </svg>
+                                                                        </button>
                                                                     </div>
                                                                     <div class="planner-time-box">
                                                                         <label>종료</label>
-                                                                        <input class="planner-end-time" type="time" value="">
+                                                                        <input class="planner-end-time" type="time" value="" readonly aria-label="종료 시간">
+                                                                        <button type="button" class="planner-time-trigger" data-time-trigger aria-label="종료 시간 선택" title="종료 시간 선택">
+                                                                            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                                                                                <circle cx="12" cy="12" r="9"></circle><path d="M12 7v5l3 2"></path>
+                                                                            </svg>
+                                                                        </button>
                                                                     </div>
                                                                 </div>
 
@@ -2066,6 +2169,241 @@ request.setAttribute("activePage", "planner");
                 value=String(value);
                 return value.length>=5 ? value.substring(0,5) : value;
             }
+
+            /*
+             * 브라우저 기본 time picker 대신 프로젝트 공통 시간 선택창을 사용한다.
+             * - 오전/오후는 항상 둘 중 하나가 선택된 상태를 유지한다.
+             * - 시간(1~12), 분(00~59)은 실제 목록만 렌더링하므로 무한 반복되지 않는다.
+             * - 시간/분을 더블클릭하면 해당 값으로 확정하고 선택창을 닫는다.
+             */
+            var plannerTimePickerState={
+                input:null,
+                period:'AM',
+                hour:12,
+                minute:0
+            };
+            var plannerTimePickerEl=null;
+
+            function plannerPad2(value){
+                return String(value).padStart(2,'0');
+            }
+
+            function plannerParseTimeValue(value){
+                var match=String(value||'').match(/^(\d{1,2}):(\d{2})/);
+                if(!match) return null;
+                var h24=parseInt(match[1],10);
+                var minute=parseInt(match[2],10);
+                if(!isFinite(h24)||h24<0||h24>23||!isFinite(minute)||minute<0||minute>59) return null;
+                return {
+                    period:h24>=12 ? 'PM' : 'AM',
+                    hour:(h24%12)||12,
+                    minute:minute
+                };
+            }
+
+            function plannerTimeDraftToValue(){
+                var h12=parseInt(plannerTimePickerState.hour,10)||12;
+                var h24=h12%12;
+                if(plannerTimePickerState.period==='PM') h24+=12;
+                return plannerPad2(h24)+':'+plannerPad2(plannerTimePickerState.minute);
+            }
+
+            function ensurePlannerTimePicker(){
+                if(plannerTimePickerEl) return plannerTimePickerEl;
+
+                var picker=document.createElement('div');
+                picker.className='planner-time-picker';
+                picker.setAttribute('role','dialog');
+                picker.setAttribute('aria-label','시간 선택');
+                picker.innerHTML=''
+                    +'<div class="planner-time-picker-head"><span>오전/오후</span><span>시</span><span>분</span></div>'
+                    +'<div class="planner-time-picker-columns">'
+                    +'<div class="planner-time-picker-column" data-time-column="period"></div>'
+                    +'<div class="planner-time-picker-column" data-time-column="hour"></div>'
+                    +'<div class="planner-time-picker-column" data-time-column="minute"></div>'
+                    +'</div>';
+
+                var periodCol=picker.querySelector('[data-time-column="period"]');
+                ['AM','PM'].forEach(function(period){
+                    var btn=document.createElement('button');
+                    btn.type='button';
+                    btn.className='planner-time-option';
+                    btn.dataset.timePart='period';
+                    btn.dataset.timeValue=period;
+                    btn.textContent=period==='AM' ? '오전' : '오후';
+                    periodCol.appendChild(btn);
+                });
+
+                var hourCol=picker.querySelector('[data-time-column="hour"]');
+                for(var hour=1;hour<=12;hour++){
+                    var hourBtn=document.createElement('button');
+                    hourBtn.type='button';
+                    hourBtn.className='planner-time-option';
+                    hourBtn.dataset.timePart='hour';
+                    hourBtn.dataset.timeValue=String(hour);
+                    hourBtn.textContent=String(hour);
+                    hourCol.appendChild(hourBtn);
+                }
+
+                var minuteCol=picker.querySelector('[data-time-column="minute"]');
+                for(var minute=0;minute<=59;minute++){
+                    var minuteBtn=document.createElement('button');
+                    minuteBtn.type='button';
+                    minuteBtn.className='planner-time-option';
+                    minuteBtn.dataset.timePart='minute';
+                    minuteBtn.dataset.timeValue=String(minute);
+                    minuteBtn.textContent=plannerPad2(minute);
+                    minuteCol.appendChild(minuteBtn);
+                }
+
+                picker.addEventListener('click',function(e){
+                    // 빈 공간을 눌러도 현재 선택값(특히 오전/오후)을 해제하지 않는다.
+                    e.stopPropagation();
+                    var option=e.target.closest('.planner-time-option');
+                    if(!option) return;
+                    plannerSelectTimeOption(option);
+                });
+
+                picker.addEventListener('dblclick',function(e){
+                    e.stopPropagation();
+                    var option=e.target.closest('.planner-time-option');
+                    if(!option) return;
+                    var part=option.dataset.timePart;
+                    if(part!=='hour' && part!=='minute') return;
+                    plannerSelectTimeOption(option);
+                    closePlannerTimePicker();
+                });
+
+                document.body.appendChild(picker);
+                plannerTimePickerEl=picker;
+                return picker;
+            }
+
+            function plannerSelectTimeOption(option){
+                var part=option.dataset.timePart;
+                var raw=option.dataset.timeValue;
+                if(part==='period'){
+                    plannerTimePickerState.period=raw==='PM' ? 'PM' : 'AM';
+                }else if(part==='hour'){
+                    var hour=parseInt(raw,10);
+                    if(hour>=1&&hour<=12) plannerTimePickerState.hour=hour;
+                }else if(part==='minute'){
+                    var minute=parseInt(raw,10);
+                    if(minute>=0&&minute<=59) plannerTimePickerState.minute=minute;
+                }else{
+                    return;
+                }
+
+                renderPlannerTimePickerSelection();
+                if(plannerTimePickerState.input){
+                    var nextValue=plannerTimeDraftToValue();
+                    if(plannerTimePickerState.input.value!==nextValue){
+                        plannerTimePickerState.input.value=nextValue;
+                        plannerTimePickerState.input.dispatchEvent(new Event('input',{bubbles:true}));
+                        plannerTimePickerState.input.dispatchEvent(new Event('change',{bubbles:true}));
+                    }
+                }
+            }
+
+            function renderPlannerTimePickerSelection(){
+                var picker=ensurePlannerTimePicker();
+                picker.querySelectorAll('.planner-time-option').forEach(function(option){
+                    var part=option.dataset.timePart;
+                    var selected=false;
+                    if(part==='period') selected=option.dataset.timeValue===plannerTimePickerState.period;
+                    if(part==='hour') selected=Number(option.dataset.timeValue)===Number(plannerTimePickerState.hour);
+                    if(part==='minute') selected=Number(option.dataset.timeValue)===Number(plannerTimePickerState.minute);
+                    option.classList.toggle('is-selected',selected);
+                });
+            }
+
+            function positionPlannerTimePicker(){
+                var picker=ensurePlannerTimePicker();
+                var input=plannerTimePickerState.input;
+                if(!input||!picker.classList.contains('is-open')) return;
+                var box=input.closest('.planner-time-box')||input;
+                var rect=box.getBoundingClientRect();
+                var pickerWidth=236;
+                var left=Math.min(rect.left,window.innerWidth-pickerWidth-8);
+                left=Math.max(8,left);
+                var estimatedHeight=226;
+                var top=rect.bottom+6;
+                if(top+estimatedHeight>window.innerHeight-8){
+                    top=Math.max(8,rect.top-estimatedHeight-6);
+                }
+                picker.style.left=Math.round(left)+'px';
+                picker.style.top=Math.round(top)+'px';
+            }
+
+            function openPlannerTimePicker(input){
+                if(!input) return;
+                var picker=ensurePlannerTimePicker();
+                if(plannerTimePickerState.input===input && picker.classList.contains('is-open')){
+                    closePlannerTimePicker();
+                    return;
+                }
+
+                var parsed=plannerParseTimeValue(input.value);
+                if(!parsed){
+                    var now=new Date();
+                    parsed={
+                        period:now.getHours()>=12 ? 'PM' : 'AM',
+                        hour:(now.getHours()%12)||12,
+                        minute:now.getMinutes()
+                    };
+                }
+
+                plannerTimePickerState.input=input;
+                plannerTimePickerState.period=parsed.period;
+                plannerTimePickerState.hour=parsed.hour;
+                plannerTimePickerState.minute=parsed.minute;
+                renderPlannerTimePickerSelection();
+                picker.classList.add('is-open');
+                positionPlannerTimePicker();
+
+                window.requestAnimationFrame(function(){
+                    ['hour','minute'].forEach(function(part){
+                        var selected=picker.querySelector('[data-time-part="'+part+'"].is-selected');
+                        if(selected) selected.scrollIntoView({block:'center'});
+                    });
+                });
+            }
+
+            function closePlannerTimePicker(){
+                if(plannerTimePickerEl) plannerTimePickerEl.classList.remove('is-open');
+                plannerTimePickerState.input=null;
+            }
+
+            document.addEventListener('click',function(e){
+                var trigger=e.target.closest('[data-time-trigger]');
+                if(trigger){
+                    e.preventDefault();
+                    e.stopPropagation();
+                    var box=trigger.closest('.planner-time-box');
+                    openPlannerTimePicker(box ? box.querySelector('input[type="time"]') : null);
+                    return;
+                }
+
+                var timeInput=e.target.closest('.planner-time-box input[type="time"]');
+                if(timeInput){
+                    e.preventDefault();
+                    e.stopPropagation();
+                    openPlannerTimePicker(timeInput);
+                    return;
+                }
+
+                if(plannerTimePickerEl && !e.target.closest('.planner-time-picker')){
+                    closePlannerTimePicker();
+                }
+            },true);
+
+            document.addEventListener('keydown',function(e){
+                if(e.key==='Escape' && plannerTimePickerEl && plannerTimePickerEl.classList.contains('is-open')){
+                    closePlannerTimePicker();
+                }
+            });
+
+            window.addEventListener('resize',positionPlannerTimePicker);
 
             function calculateTripDays(startDate,endDate,fallback){
                 startDate=normalizePlannerDateValue(startDate);
@@ -3798,8 +4136,8 @@ request.setAttribute("activePage", "planner");
                 var place=$('.planner-place-search',card);
                 if(title) title.value=prefill.title||'';
                 if(label) label.textContent=prefill.title||'새 일정';
-                if(start) start.value=prefill.startTime||'';
-                if(end) end.value=prefill.endTime||'';
+                if(start) start.value=shortTime(prefill.startTime||'');
+                if(end) end.value=shortTime(prefill.endTime||'');
                 if(cost) cost.value=prefill.cost||'';
                 var costModeBtn=$('.planner-cost-mode-btn',card);
                 var costType=prefill.costType || card.dataset.costType || 'PER_PERSON';

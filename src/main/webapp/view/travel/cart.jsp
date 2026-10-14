@@ -13,7 +13,7 @@ request.setAttribute("activePage", "travel");
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>장바구니</title>
+<title>카트</title>
 
 <jsp:include page="/common/headStyles.jsp" />
 
@@ -402,8 +402,9 @@ request.setAttribute("activePage", "travel");
     height: 23px;
     padding: 0 7px;
     border-radius: 7px;
-    background: #6369d1;
-    color: #fff;
+    background: #ececff;
+    color: #6666c8;
+    border: 1px solid #dddfff;
     font-size: 10px;
     font-weight: 900;
 }
@@ -557,7 +558,128 @@ request.setAttribute("activePage", "travel");
     line-height: 1.6;
 }
 
+
+.cart-infinite-scroll {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 32px 0;
+}
+
+.cart-scroll-status {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+}
+
+.cart-scroll-status[hidden],
+.cart-scroll-sentinel[hidden] {
+    display: none;
+}
+
+.cart-loading-spinner {
+    width: 28px;
+    height: 28px;
+    border: 3px solid #e5e7eb;
+    border-top-color: #6369d1;
+    border-radius: 50%;
+    animation: cart-spin .7s linear infinite;
+}
+
+@keyframes cart-spin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
+
+.cart-scroll-title {
+    margin: 0;
+    color: #6b7280;
+    font-size: 12px;
+    font-weight: 600;
+}
+
+.cart-scroll-count {
+    margin: 0;
+    color: #9ca3af;
+    font-size: 11px;
+}
+
+.cart-scroll-complete .cart-scroll-title {
+    color: #6369d1;
+    font-weight: 700;
+}
+
+.cart-scroll-sentinel {
+    width: 100%;
+    height: 1px;
+}
+
+
+/* ================================
+   최상단 이동 버튼 - 여행꿀팁과 동일
+================================ */
+
+.cart-scroll-top-btn {
+    position: fixed;
+
+    right: clamp(16px, 2.5vw, 36px);
+    bottom: clamp(20px, 3vw, 40px);
+
+    width: clamp(44px, 4vw, 52px);
+    height: clamp(44px, 4vw, 52px);
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border: 1px solid #e0e1ff;
+    border-radius: 50%;
+
+    background: #ffffff;
+    color: #6369D1;
+
+    box-shadow: 0 6px 20px rgba(99, 105, 209, 0.18);
+
+    cursor: pointer;
+    z-index: 100;
+
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(10px);
+
+    transition:
+        opacity 0.25s ease,
+        transform 0.25s ease,
+        visibility 0.25s ease,
+        background 0.2s ease;
+}
+
+.cart-scroll-top-btn svg {
+    width: 22px;
+    height: 22px;
+}
+
+.cart-scroll-top-btn.show {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+}
+
+.cart-scroll-top-btn:hover {
+    background: #f0f1ff;
+    transform: translateY(-2px);
+}
+
 @media (max-width: 720px) {
+    .cart-scroll-top-btn {
+        right: 16px;
+        bottom: 20px;
+        width: 44px;
+        height: 44px;
+    }
+
     .cart-page-inner {
         padding: 24px 14px 44px;
     }
@@ -615,9 +737,9 @@ request.setAttribute("activePage", "travel");
 
         <div class="cart-heading">
             <div>
-                <h1 class="cart-title">일정 장바구니</h1>
+                <h1 class="cart-title">일정 카트</h1>
                 <p class="cart-description">
-                    담아둔 일정·DAY·블록을 확인할 수 있습니다. 일정 만들기에서는 이 내용을 드래그해 가져올 수 있습니다.
+                    담아둔 일정·DAY·블록을 확인할 수 있습니다.<br>일정 만들기에서는 이 내용을 드래그해 가져올 수 있습니다.
                 </p>
             </div>
 
@@ -638,7 +760,7 @@ request.setAttribute("activePage", "travel");
                     </svg>
 
                     <input id="cartSearchInput" class="cart-search-input" type="search"
-                           placeholder="일정·DAY·장소 이름으로 검색..." aria-label="장바구니 검색" autocomplete="off">
+                           placeholder="일정·DAY·장소 이름으로 검색..." aria-label="카트 검색" autocomplete="off">
 
                     <button id="cartSearchClear" class="cart-search-clear" type="button" aria-label="검색어 지우기" hidden>
                         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
@@ -657,197 +779,40 @@ request.setAttribute("activePage", "travel");
                             <path stroke-linecap="round" stroke-linejoin="round" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13 5.4 5M7 13l-2.3 2.3c-.6.6-.2 1.7.7 1.7H17m0 0a2 2 0 100 4 2 2 0 000-4Zm-8 2a2 2 0 11-4 0 2 2 0 014 0Z" />
                         </svg>
                     </div>
-                    <p class="cart-empty-title">장바구니가 비어있습니다.</p>
+                    <p class="cart-empty-title">카트가 비어있습니다.</p>
                     <p class="cart-empty-description">여행 일정 상세에서 일정 전체, DAY 또는 블록을 담아보세요.</p>
                 </div>
             </c:when>
 
             <c:otherwise>
                 <div id="cartList" class="cart-list">
-                    <c:forEach var="itinerary" items="${cartItineraries}" varStatus="itineraryStatus">
-                        <article class="cart-itinerary-card" data-cart-card>
-                            <div class="cart-itinerary-head">
-                                <button type="button" class="cart-itinerary-toggle" data-cart-toggle="itinerary"
-                                        aria-expanded="true" aria-controls="cartItineraryBody${itineraryStatus.index}">
-                                    <span class="cart-itinerary-mark">
-                                        <c:choose>
-                                            <c:when test="${fn:startsWith(itinerary.thumbnailImg, 'gplace:')}">
-                                                <img class="cart-itinerary-thumb"
-                                                     src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///ywAAAAAAQABAAACAUwAOw=="
-                                                     data-google-place-id="${fn:substringAfter(itinerary.thumbnailImg, 'gplace:')}"
-                                                     alt="" loading="lazy">
-                                            </c:when>
-                                            <c:when test="${fn:startsWith(itinerary.thumbnailImg, 'flag:')}">
-                                                <img class="cart-itinerary-thumb"
-                                                     src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///ywAAAAAAQABAAACAUwAOw=="
-                                                     data-country-flag-code="${fn:substringAfter(itinerary.thumbnailImg, 'flag:')}"
-                                                     alt="" loading="lazy">
-                                            </c:when>
-                                            <c:when test="${fn:startsWith(itinerary.thumbnailImg, 'http://') or fn:startsWith(itinerary.thumbnailImg, 'https://')}">
-                                                <img class="cart-itinerary-thumb" src="${itinerary.thumbnailImg}" alt="" loading="lazy">
-                                            </c:when>
-                                            <c:when test="${not empty itinerary.thumbnailImg}">
-                                                <img class="cart-itinerary-thumb"
-                                                     src="${pageContext.request.contextPath}${itinerary.thumbnailImg}"
-                                                     alt="" loading="lazy">
-                                            </c:when>
-                                            <c:when test="${not empty itinerary.country}">
-                                                <span class="cart-itinerary-thumb-fallback">
-                                                    <c:out value="${fn:substring(itinerary.country, 0, 1)}" />
-                                                </span>
-                                            </c:when>
-                                            <c:otherwise>
-                                                <span class="cart-itinerary-thumb-fallback">TR</span>
-                                            </c:otherwise>
-                                        </c:choose>
-                                    </span>
+                    <jsp:include page="/view/travel/cartCardList.jsp" />
+                </div>
 
-                                    <span class="cart-itinerary-copy">
-                                        <span class="cart-itinerary-title-row">
-                                            <span class="cart-itinerary-title">
-                                                <c:choose>
-                                                    <c:when test="${not empty itinerary.title}"><c:out value="${itinerary.title}" /></c:when>
-                                                    <c:otherwise>제목 없는 일정</c:otherwise>
-                                                </c:choose>
-                                            </span>
-                                        </span>
-                                        <span class="cart-itinerary-meta">
-                                            <span>
-                                                <strong><c:out value="${itinerary.country}" /></strong>
-                                                <c:if test="${not empty itinerary.city}"> · <c:out value="${itinerary.city}" /></c:if>
-                                            </span>
-                                            <c:if test="${not empty itinerary.nickname}">
-                                                <span>작성자 <strong><c:out value="${itinerary.nickname}" /></strong></span>
-                                            </c:if>
-                                            <span><strong>${fn:length(itinerary.days)}</strong> DAY</span>
-                                            <span><strong><c:out value="${itinerary.travelerCount}" /></strong>명</span>
-                                        </span>
-                                    </span>
+                <div id="cartInfiniteScroll" class="cart-infinite-scroll"
+                     data-current-count="${fn:length(cartItineraries)}"
+                     data-total-count="${cartTotalCount}"
+                     data-current-page="${page}"
+                     data-page-size="${pageSize}">
 
-                                    <span class="cart-chevron" aria-hidden="true">⌄</span>
-                                </button>
+                    <div id="cartLoading" class="cart-scroll-status" hidden>
+                        <div class="cart-loading-spinner"></div>
+                        <p class="cart-scroll-title">카트를 불러오는 중...</p>
+                        <p class="cart-scroll-count">
+                            <span id="cartCurrentCount">${fn:length(cartItineraries)}</span>
+                            / 총 <span id="cartScrollTotalCount">${cartTotalCount}</span>개
+                        </p>
+                    </div>
 
-                                <div class="cart-head-actions">
-                                    <a class="cart-detail-link"
-                                       href="${pageContext.request.contextPath}/schedules/detail?id=${itinerary.itineraryId}"
-                                       title="해당 일정 상세보기" aria-label="해당 일정 상세보기">
-                                        상세보기
-                                        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
-                                            <path stroke-linecap="round" stroke-linejoin="round" d="M7 17 17 7M9 7h8v8" />
-                                        </svg>
-                                    </a>
+                    <div id="cartLoadComplete" class="cart-scroll-status cart-scroll-complete" hidden>
+                        <p class="cart-scroll-title">모든 카트를 확인했습니다 ✓</p>
+                        <p class="cart-scroll-count">
+                            <span id="cartCompleteCount">${fn:length(cartItineraries)}</span>
+                            / 총 ${cartTotalCount}개
+                        </p>
+                    </div>
 
-                                    <form class="cart-delete-form cart-head-delete" method="post"
-                                          action="${pageContext.request.contextPath}/itinerary/cart/remove"
-                                          data-remove-label="이 일정 묶음을 장바구니에서 삭제하시겠습니까?">
-                                        <input type="hidden" name="itineraryId" value="${itinerary.itineraryId}">
-                                        <input type="hidden" name="itemType" value="ITINERARY">
-                                        <input type="hidden" name="targetId" value="${itinerary.itineraryId}">
-                                        <button type="submit" class="cart-delete-btn" title="일정 전체 삭제" aria-label="일정 전체 삭제">
-                                            <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" aria-hidden="true">
-                                                <path stroke-linecap="round" stroke-linejoin="round" d="M4 7h16M10 11v6M14 11v6M6 7l1 13h10l1-13M9 7V4h6v3" />
-                                            </svg>
-                                        </button>
-                                    </form>
-                                </div>
-                            </div>
-
-                            <div class="cart-itinerary-body" id="cartItineraryBody${itineraryStatus.index}">
-                                <c:forEach var="day" items="${itinerary.days}" varStatus="dayStatus">
-                                    <section class="cart-day">
-                                        <div class="cart-day-head">
-                                            <button type="button" class="cart-day-toggle" data-cart-toggle="day"
-                                                    aria-expanded="false"
-                                                    aria-controls="cartDayBody${itineraryStatus.index}_${dayStatus.index}">
-                                                <span class="cart-day-badge">D<c:out value="${empty day.dayOrder ? dayStatus.index + 1 : day.dayOrder}" /></span>
-                                                <span class="cart-day-title">
-                                                    <c:choose>
-                                                        <c:when test="${not empty day.title}"><c:out value="${day.title}" /></c:when>
-                                                        <c:otherwise>Day ${empty day.dayOrder ? dayStatus.index + 1 : day.dayOrder}</c:otherwise>
-                                                    </c:choose>
-                                                </span>
-                                                <c:if test="${not empty day.dayDate}">
-                                                    <span class="cart-day-date"><c:out value="${day.dayDate}" /></span>
-                                                </c:if>
-                                                <span class="cart-day-count">${fn:length(day.blocks)}개</span>
-                                                <span class="cart-chevron" aria-hidden="true">⌄</span>
-                                            </button>
-
-                                            <form class="cart-delete-form cart-day-delete" method="post"
-                                                  action="${pageContext.request.contextPath}/itinerary/cart/remove"
-                                                  data-remove-label="이 DAY를 장바구니에서 삭제하시겠습니까?">
-                                                <input type="hidden" name="itineraryId" value="${itinerary.itineraryId}">
-                                                <input type="hidden" name="itemType" value="DAY">
-                                                <input type="hidden" name="targetId" value="${day.dayId}">
-                                                <button type="submit" class="cart-delete-btn" title="DAY 삭제" aria-label="DAY 삭제">
-                                                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" aria-hidden="true">
-                                                        <path stroke-linecap="round" stroke-linejoin="round" d="M4 7h16M10 11v6M14 11v6M6 7l1 13h10l1-13M9 7V4h6v3" />
-                                                    </svg>
-                                                </button>
-                                            </form>
-                                        </div>
-
-                                        <div class="cart-block-list" id="cartDayBody${itineraryStatus.index}_${dayStatus.index}" hidden>
-                                            <c:choose>
-                                                <c:when test="${empty day.blocks}">
-                                                    <div class="cart-no-blocks">담긴 일정 블록이 없습니다.</div>
-                                                </c:when>
-                                                <c:otherwise>
-                                                    <c:forEach var="block" items="${day.blocks}">
-                                                        <div class="cart-block-row">
-                                                            <c:choose>
-                                                                <c:when test="${block.blockType eq 'ATTRACTION'}"><span class="cart-block-type attraction">관광</span></c:when>
-                                                                <c:when test="${block.blockType eq 'MEAL'}"><span class="cart-block-type meal">식사</span></c:when>
-                                                                <c:when test="${block.blockType eq 'LODGING'}"><span class="cart-block-type lodging">숙박</span></c:when>
-                                                                <c:when test="${block.blockType eq 'TRANSPORT'}"><span class="cart-block-type transport">교통</span></c:when>
-                                                                <c:when test="${block.blockType eq 'ACTIVITY'}"><span class="cart-block-type activity">활동</span></c:when>
-                                                                <c:otherwise><span class="cart-block-type unknown">일정</span></c:otherwise>
-                                                            </c:choose>
-
-                                                            <div class="cart-block-copy">
-                                                                <div class="cart-block-name">
-                                                                    <c:choose>
-                                                                        <c:when test="${not empty block.title}"><c:out value="${block.title}" /></c:when>
-                                                                        <c:when test="${not empty block.placeName}"><c:out value="${block.placeName}" /></c:when>
-                                                                        <c:otherwise>새 일정</c:otherwise>
-                                                                    </c:choose>
-                                                                </div>
-                                                                <div class="cart-block-meta">
-                                                                    <c:if test="${not empty block.placeName}"><span><c:out value="${block.placeName}" /></span></c:if>
-                                                                    <c:if test="${not empty block.startTime}">
-                                                                        <span>
-                                                                            <c:out value="${fn:substring(block.startTime, 0, 5)}" />
-                                                                            <c:if test="${not empty block.endTime}">–<c:out value="${fn:substring(block.endTime, 0, 5)}" /></c:if>
-                                                                        </span>
-                                                                    </c:if>
-                                                                    <c:if test="${not empty block.cost}">
-                                                                        <span><c:out value="${block.cost}" />원<c:if test="${block.costType eq 'PER_PERSON'}">/인</c:if></span>
-                                                                    </c:if>
-                                                                </div>
-                                                            </div>
-
-                                                            <form class="cart-delete-form cart-block-delete" method="post"
-                                                                  action="${pageContext.request.contextPath}/itinerary/cart/remove"
-                                                                  data-remove-label="이 블록을 장바구니에서 삭제하시겠습니까?">
-                                                                <input type="hidden" name="itineraryId" value="${itinerary.itineraryId}">
-                                                                <input type="hidden" name="itemType" value="BLOCK">
-                                                                <input type="hidden" name="targetId" value="${block.blockId}">
-                                                                <button type="submit" class="cart-delete-btn" title="블록 삭제" aria-label="블록 삭제">
-                                                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" aria-hidden="true">
-                                                                        <path stroke-linecap="round" stroke-linejoin="round" d="M4 7h16M10 11v6M14 11v6M6 7l1 13h10l1-13M9 7V4h6v3" />
-                                                                    </svg>
-                                                                </button>
-                                                            </form>
-                                                        </div>
-                                                    </c:forEach>
-                                                </c:otherwise>
-                                            </c:choose>
-                                        </div>
-                                    </section>
-                                </c:forEach>
-                            </div>
-                        </article>
-                    </c:forEach>
+                    <div id="cartScrollSentinel" class="cart-scroll-sentinel"></div>
                 </div>
 
                 <div id="cartSearchEmpty" class="cart-search-empty" hidden>
@@ -866,15 +831,33 @@ request.setAttribute("activePage", "travel");
     </div>
 </main>
 
+<!-- 최상단 이동 버튼 - 여행꿀팁과 동일 -->
+<button type="button" id="cartScrollTopBtn" class="cart-scroll-top-btn" aria-label="페이지 최상단으로 이동">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M12 19V5M5 12l7-7 7 7" />
+    </svg>
+</button>
+
 <script src="${pageContext.request.contextPath}/view/assets/js/tripily.js"></script>
 <script>
 (function () {
     var searchInput = document.getElementById('cartSearchInput');
     var clearButton = document.getElementById('cartSearchClear');
     var searchEmpty = document.getElementById('cartSearchEmpty');
-    var totalCount = document.getElementById('cartTotalCount');
-    var cards = Array.prototype.slice.call(document.querySelectorAll('[data-cart-card]'));
-    var baseCount = cards.length;
+    var totalCountLabel = document.getElementById('cartTotalCount');
+    var infiniteScroll = document.getElementById('cartInfiniteScroll');
+    var cartList = document.getElementById('cartList');
+    var sentinel = document.getElementById('cartScrollSentinel');
+    var loading = document.getElementById('cartLoading');
+    var loadComplete = document.getElementById('cartLoadComplete');
+
+    var totalCartCount = infiniteScroll
+        ? Number(infiniteScroll.dataset.totalCount || 0)
+        : Number(totalCountLabel ? totalCountLabel.textContent : 0) || 0;
+
+    function getCards() {
+        return Array.prototype.slice.call(document.querySelectorAll('[data-cart-card]'));
+    }
 
     function setExpanded(button, expanded) {
         var targetId = button.getAttribute('aria-controls');
@@ -896,7 +879,7 @@ request.setAttribute("activePage", "travel");
         var query = searchInput.value.trim().toLowerCase();
         var visibleCount = 0;
 
-        cards.forEach(function (card) {
+        getCards().forEach(function (card) {
             var matched = !query || card.textContent.toLowerCase().indexOf(query) !== -1;
             card.hidden = !matched;
             if (matched) visibleCount++;
@@ -904,7 +887,7 @@ request.setAttribute("activePage", "travel");
 
         if (clearButton) clearButton.hidden = query.length === 0;
         if (searchEmpty) searchEmpty.hidden = visibleCount !== 0 || query.length === 0;
-        if (totalCount) totalCount.textContent = query ? visibleCount : baseCount;
+        if (totalCountLabel) totalCountLabel.textContent = query ? visibleCount : totalCartCount;
     }
 
     if (searchInput) {
@@ -923,11 +906,138 @@ request.setAttribute("activePage", "travel");
         var form = event.target.closest('.cart-delete-form');
         if (!form) return;
 
-        var message = form.getAttribute('data-remove-label') || '장바구니에서 삭제하시겠습니까?';
+        var message = form.getAttribute('data-remove-label') || '카트에서 삭제하시겠습니까?';
         if (!window.confirm(message)) {
             event.preventDefault();
         }
     });
+
+    // 여행 꿀팁과 같은 방식의 무한 스크롤: 하단 30px, 로딩 대기 1초.
+    if (infiniteScroll && cartList) {
+        var currentPage = Number(infiniteScroll.dataset.currentPage || 1);
+        var currentCount = Number(infiniteScroll.dataset.currentCount || 0);
+        var totalCount = Number(infiniteScroll.dataset.totalCount || 0);
+        var isLoading = false;
+
+        function hideLoading() {
+            if (loading) loading.hidden = true;
+        }
+
+        function showComplete() {
+            if (sentinel) sentinel.hidden = true;
+
+            var completeCount = document.getElementById('cartCompleteCount');
+            if (completeCount) completeCount.textContent = currentCount;
+
+            if (loadComplete) loadComplete.hidden = false;
+        }
+
+        function loadNextPage() {
+            if (isLoading || currentCount >= totalCount) return;
+
+            isLoading = true;
+
+            if (loading) loading.hidden = false;
+
+            var currentCountElement = document.getElementById('cartCurrentCount');
+            if (currentCountElement) currentCountElement.textContent = currentCount;
+
+            var nextPage = currentPage + 1;
+            var params = new URLSearchParams(window.location.search);
+            params.set('page', nextPage);
+
+            var loadUrl = window.location.pathname + '/load?' + params.toString();
+
+            fetch(loadUrl)
+                .then(function (response) {
+                    if (!response.ok) {
+                        throw new Error('카트를 불러오지 못했습니다.');
+                    }
+                    return response.text();
+                })
+                .then(function (html) {
+                    var temp = document.createElement('div');
+                    temp.innerHTML = html.trim();
+                    var newCards = Array.from(temp.children);
+
+                    setTimeout(function () {
+                        if (newCards.length === 0) {
+                            currentCount = totalCount;
+                            hideLoading();
+                            showComplete();
+                            isLoading = false;
+                            return;
+                        }
+
+                        newCards.forEach(function (card) {
+                            cartList.appendChild(card);
+                        });
+
+                        currentPage = nextPage;
+                        currentCount = Math.min(currentCount + newCards.length, totalCount);
+
+                        infiniteScroll.dataset.currentPage = currentPage;
+                        infiniteScroll.dataset.currentCount = currentCount;
+
+                        hideLoading();
+
+                        if (searchInput && searchInput.value.trim()) {
+                            filterCards();
+                        }
+
+                        if (currentCount >= totalCount) {
+                            showComplete();
+                        }
+
+                        isLoading = false;
+                    }, 1000);
+                })
+                .catch(function (error) {
+                    console.error('카트 무한 스크롤 오류:', error);
+                    hideLoading();
+                    isLoading = false;
+                });
+        }
+
+        window.addEventListener('scroll', function () {
+            if (isLoading || currentCount >= totalCount) return;
+
+            var scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+            var windowHeight = window.innerHeight;
+            var documentHeight = document.documentElement.scrollHeight;
+
+            if (scrollTop + windowHeight < documentHeight - 30) return;
+
+            loadNextPage();
+        });
+
+        if (currentCount >= totalCount) {
+            showComplete();
+        }
+    }
+
+    // ================================
+    // 최상단 이동 버튼 - 여행꿀팁과 동일
+    // ================================
+    var cartScrollTopBtn = document.getElementById('cartScrollTopBtn');
+
+    if (cartScrollTopBtn) {
+        window.addEventListener('scroll', function () {
+            if (window.scrollY > 500) {
+                cartScrollTopBtn.classList.add('show');
+            } else {
+                cartScrollTopBtn.classList.remove('show');
+            }
+        });
+
+        cartScrollTopBtn.addEventListener('click', function () {
+            window.scrollTo({
+                top: 0,
+                behavior: 'smooth'
+            });
+        });
+    }
+
 })();
 </script>
 

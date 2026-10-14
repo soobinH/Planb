@@ -29,6 +29,28 @@
 		ORDER BY c.added_at DESC, c.cart_id DESC
 	</select>
 
+	<!-- 카트 페이지/무한 스크롤용: 일정 묶음을 20개 단위로 조회 -->
+	<select id="selectCartSnapshotsPaged" parameterType="map"
+		resultType="dto.itinerary.ItineraryCartDto">
+		SELECT
+		c.cart_id,
+		c.user_id,
+		c.source_itinerary_id,
+		c.author_nickname,
+		c.title,
+		c.country,
+		c.city,
+		c.traveler_count,
+		i.thumbnail_img,
+		c.added_at
+		FROM TB_ITINERARY_CART c
+		LEFT JOIN TB_ITINERARY i
+		ON i.itinerary_id = c.source_itinerary_id
+		WHERE c.user_id = #{userId}
+		ORDER BY c.added_at DESC, c.cart_id DESC
+		LIMIT #{pageSize} OFFSET #{offset}
+	</select>
+
 	<select id="selectDaySnapshots" parameterType="long"
 		resultType="dto.itinerary.ItineraryDayCartDto">
 		SELECT

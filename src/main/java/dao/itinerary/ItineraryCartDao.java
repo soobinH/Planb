@@ -12,6 +12,8 @@ public interface ItineraryCartDao {
 
 	List<ItineraryCartDto> selectCartSnapshots(SqlSession sqlSession, Long userId) throws Exception;
 
+	List<ItineraryCartDto> selectCartSnapshotsPaged(SqlSession sqlSession, Long userId, int offset, int pageSize) throws Exception;
+
 	List<ItineraryDayCartDto> selectDaySnapshots(SqlSession sqlSession, Long cartId) throws Exception;
 
 	List<ItineraryBlockCartDto> selectBlockSnapshots(SqlSession sqlSession, Long dayCartId) throws Exception;
