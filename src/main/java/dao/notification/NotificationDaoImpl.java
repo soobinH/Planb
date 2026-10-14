@@ -27,9 +27,12 @@ public class NotificationDaoImpl implements NotificationDao {
 	}
 
 	@Override
-	public List<NotificationDto> selectNotificationPage(SqlSession sqlSession, Long recipientUserId)
+	public List<NotificationDto> selectNotificationPage(SqlSession sqlSession, Long recipientUserId, Long beforeNotificationId)
 			throws Exception {
-		return sqlSession.selectList(NAMESPACE + "selectNotificationPage", recipientUserId);
+		Map<String, Object> params = new HashMap<>();
+		params.put("recipientUserId", recipientUserId);
+		params.put("beforeNotificationId", beforeNotificationId);
+		return sqlSession.selectList(NAMESPACE + "selectNotificationPage", params);
 	}
 
 	@Override

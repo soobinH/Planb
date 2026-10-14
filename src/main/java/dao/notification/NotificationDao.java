@@ -12,7 +12,7 @@ public interface NotificationDao {
 
 	List<NotificationDto> selectUnreadNotifications(SqlSession sqlSession, Long recipientUserId) throws Exception;
 
-	List<NotificationDto> selectNotificationPage(SqlSession sqlSession, Long recipientUserId) throws Exception;
+	List<NotificationDto> selectNotificationPage(SqlSession sqlSession, Long recipientUserId, Long beforeNotificationId) throws Exception;
 
 	long countUnreadNotifications(SqlSession sqlSession, Long recipientUserId) throws Exception;
 

@@ -5,6 +5,12 @@
 
 <mapper namespace="mapper.notification.notification">
 
+    <!-- isRead()의 JavaBean 프로퍼티는 read.
+         DB is_read를 read에 명시적으로 연결하여 페이지 재조회 시 읽음 상태 복원. -->
+    <resultMap id="notificationResultMap" type="notification" autoMapping="true">
+        <result column="is_read" property="read" javaType="boolean" />
+    </resultMap>
+
 	<!-- 공통 조회 컬럼 -->
 	<sql id="notificationColumns">
 		n.notification_id,
@@ -20,9 +26,9 @@
 		u.nickname AS sender_nickname
 	</sql>
 
-	<!-- 헤더: 읽음 여부와 관계없이 최신 3건 -->
+	<!-- 헤더: 최신 미읽음 3건 (읽은 알림은 제외) -->
 	<select id="selectRecentNotifications"
-		parameterType="java.lang.Long" resultType="notification">
+		parameterType="java.lang.Long" resultMap="notificationResultMap">
 
 		SELECT
 		<include refid="notificationColumns" />
@@ -31,6 +37,7 @@
 		ON u.user_id =
 		n.sender_user_id
 		WHERE n.recipient_user_id = #{value}
+		AND n.is_read = 0
 		ORDER BY
 		n.created_at DESC, n.notification_id DESC
 		LIMIT 3
@@ -39,7 +46,7 @@
 
 	<!-- 전체보기: 로그인 회원의 미읽음 알림 -->
 	<select id="selectUnreadNotifications"
-		parameterType="java.lang.Long" resultType="notification">
+		parameterType="java.lang.Long" resultMap="notificationResultMap">
 
 		SELECT
 		<include refid="notificationColumns" />
@@ -53,14 +60,31 @@
 
 	</select>
 
-	<!-- 전체보기: 읽음 여부와 관계없이 최신 100건 (DB 기록은 삭제하지 않음) -->
-	<select id="selectNotificationPage" parameterType="java.lang.Long" resultType="notification">
+	<!-- 최근 100개 안에서 20개씩 더보기. 21번째 행으로 다음 페이지 존재 확인 -->
+	<select id="selectNotificationPage" parameterType="map" resultMap="notificationResultMap">
 		SELECT <include refid="notificationColumns" />
 		FROM tb_notification n
+		INNER JOIN (
+			SELECT notification_id
+			FROM tb_notification
+			WHERE recipient_user_id = #{recipientUserId}
+			ORDER BY created_at DESC, notification_id DESC
+			LIMIT 100
+		) latest ON latest.notification_id = n.notification_id
 		LEFT JOIN tb_user u ON u.user_id = n.sender_user_id
-		WHERE n.recipient_user_id = #{value}
+		WHERE n.recipient_user_id = #{recipientUserId}
+		<if test="beforeNotificationId != null">
+			AND EXISTS (
+				SELECT 1 FROM tb_notification cursor_row
+				WHERE cursor_row.notification_id = #{beforeNotificationId}
+				AND cursor_row.recipient_user_id = #{recipientUserId}
+				AND (n.created_at &lt; cursor_row.created_at
+					OR (n.created_at = cursor_row.created_at
+						AND n.notification_id &lt; cursor_row.notification_id))
+			)
+		</if>
 		ORDER BY n.created_at DESC, n.notification_id DESC
-		LIMIT 100
+		LIMIT 21
 	</select>
 
 	<!-- 헤더 배지 및 전체보기 미읽음 개수 -->
@@ -77,7 +101,7 @@
 
 	<!-- 알림 클릭: 본인에게 온 알림만 조회 -->
 	<select id="selectNotification" parameterType="map"
-		resultType="notification">
+		resultMap="notificationResultMap">
 
 		SELECT
 		<include refid="notificationColumns" />

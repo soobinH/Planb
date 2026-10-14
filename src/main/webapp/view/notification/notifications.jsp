@@ -205,6 +205,11 @@ request.setAttribute("activePage", "notifications");
             color: #9295a4;
             font-size: 12px;
         }
+        .pb-notifications-more-wrap { padding: 20px; text-align: center; border-top: 1px solid #eef0f5; }
+        .pb-notifications-more-wrap[hidden] { display: none; }
+        .pb-notifications-more { padding: 10px 28px; border: 1px solid #e1e3ec; border-radius: 10px; background: #fff; color: #6369d1; font: inherit; font-size: 13px; cursor: pointer; }
+        .pb-notifications-more:disabled { opacity: .5; cursor: default; }
+        .pb-notifications-more:focus-visible { outline: 3px solid #9c9fe7; outline-offset: 3px; }
         .pb-notifications-note {
             margin: 18px 4px 0;
             color: #9295a4;
@@ -245,7 +250,8 @@ request.setAttribute("activePage", "notifications");
             </button>
         </div>
         <div class="pb-notifications-panel" data-notification-list
-            data-read-url="${pageContext.request.contextPath}/notifications/read">
+            data-read-url="${pageContext.request.contextPath}/notifications/read"
+            data-context-path="${pageContext.request.contextPath}">
             <div class="pb-notifications-toolbar">
                 <span class="pb-notifications-toolbar-title">
                     새 알림
@@ -253,6 +259,7 @@ request.setAttribute("activePage", "notifications");
                 </span>
                 <span class="pb-notifications-toolbar-hint">최근 알림 최대 100개</span>
             </div>
+            <div data-notification-rows>
             <c:choose>
                 <c:when test="${empty notifications}">
                     <p data-notification-empty>아직 도착한 알림이 없습니다.</p>
@@ -295,10 +302,16 @@ request.setAttribute("activePage", "notifications");
                     </c:forEach>
                 </c:otherwise>
             </c:choose>
+            </div>
+            <div class="pb-notifications-more-wrap" data-more-wrap ${hasMore ? '' : 'hidden'}>
+                <button type="button" class="pb-notifications-more" data-notification-more
+                    data-more-url="${pageContext.request.contextPath}/notifications/more"
+                    data-next-cursor="${nextCursor}">더보기</button>
+            </div>
         </div>
-        <p class="pb-notifications-note">최근 알림을 최대 100개까지 보여드려요. 읽은 알림도 목록에 남습니다.</p>
+        <p class="pb-notifications-note">최근 알림 100개까지 더보기로 확인할 수 있어요. 읽은 알림도 목록에 남습니다.</p>
     </main>
     <jsp:include page="/common/footer.jsp" />
-    <script src="${pageContext.request.contextPath}/view/assets/js/common/notifications.js?v=2" defer></script>
+    <script src="${pageContext.request.contextPath}/view/assets/js/common/notifications.js?v=3" defer></script>
 </body>
 </html>

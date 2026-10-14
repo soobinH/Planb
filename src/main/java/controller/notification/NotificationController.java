@@ -20,7 +20,7 @@ import util.JsonResponse;
 /**
  * Servlet implementation class NotificationController
  */
-@WebServlet(urlPatterns = { "/notifications", "/notifications/header", "/notifications/read",
+@WebServlet(urlPatterns = { "/notifications", "/notifications/header", "/notifications/more", "/notifications/read",
 		"/notifications/read-all" })
 public class NotificationController extends HttpServlet {
 	private static final long serialVersionUID = 1L;
@@ -57,6 +57,8 @@ public class NotificationController extends HttpServlet {
 
 				request.setAttribute("notifications", page.get("notifications"));
 				request.setAttribute("unreadCount", page.get("unreadCount"));
+				request.setAttribute("hasMore", page.get("hasMore"));
+				request.setAttribute("nextCursor", page.get("nextCursor"));
 
 				request.getRequestDispatcher("/view/notification/notifications.jsp").forward(request, response);
 
@@ -91,6 +93,29 @@ public class NotificationController extends HttpServlet {
 			return;
 		}
 		
+
+		// 전체보기 더보기: 최근 100개 범위 안에서 다음 20개
+		if ("/notifications/more".equals(path)) {
+			if (loginUser == null) {
+				JsonResponse.writeFailure(response, HttpServletResponse.SC_UNAUTHORIZED, "로그인이 필요합니다.");
+				return;
+			}
+			Long cursor = parsePositiveLong(request.getParameter("beforeNotificationId"));
+			if (cursor == null) {
+				JsonResponse.writeFailure(response, HttpServletResponse.SC_BAD_REQUEST, "더보기 기준 번호가 올바르지 않습니다.");
+				return;
+			}
+			try {
+				NotificationService service = new NotificationServiceImpl();
+				Map<String, Object> result = service.getNotificationPage(Long.valueOf(loginUser.getUserId()), cursor);
+				result.put("success", true);
+				JsonResponse.writeJson(response, result);
+			} catch (Exception e) {
+				getServletContext().log("추가 알림 조회 실패", e);
+				JsonResponse.writeFailure(response, HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "추가 알림을 불러오지 못했습니다.");
+			}
+			return;
+		}
 
 		response.sendError(HttpServletResponse.SC_NOT_FOUND);
 	}

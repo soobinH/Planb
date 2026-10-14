@@ -5,7 +5,7 @@ import java.util.Map;
 
 public interface NotificationService {
 
-	// 헤더 드롭다운: 최신 알림 3개와 읽지 않은 알림 수
+	// 헤더 드롭다운: 최신 미읽음 알림 3개와 읽지 않은 알림 수
 	Map<String, Object> getHeaderNotifications(Long recipientUserId) throws Exception;
 
 	// 알림 전체보기: 읽지 않은 알림만 조회
@@ -13,6 +13,9 @@ public interface NotificationService {
 
 	// 전체보기: 읽음 포함 최신 알림 최대 100개와 전체 미읽음 수
 	Map<String, Object> getNotificationPage(Long recipientUserId) throws Exception;
+
+	// 최근 100개 범위에서 20개씩 더보기
+	Map<String, Object> getNotificationPage(Long recipientUserId, Long beforeNotificationId) throws Exception;
 
 	// 알림 하나 읽음 처리
 	boolean markAsRead(Long notificationId, Long recipientUserId) throws Exception;

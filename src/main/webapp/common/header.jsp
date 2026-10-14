@@ -59,7 +59,7 @@ if (user != null && user.getProfileImg() != null && !user.getProfileImg().trim()
 
 
 <link rel="stylesheet"
-	href="<%=ctx%>/view/assets/css/common/header.css?v=4">
+	href="<%=ctx%>/view/assets/css/common/header.css?v=5">
 
 
 <header class="site-header<%=homeHeader ? " site-header--home" : ""%>">
