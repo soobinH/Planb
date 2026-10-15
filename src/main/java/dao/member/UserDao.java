@@ -19,4 +19,5 @@ public interface UserDao {
 	int updateProfileVisibility(long userId, String profileVisibility) throws Exception;
 	int updateShowLikedItinerary(long userId,boolean show) throws Exception;
 	int updateShowBookmarkedItinerary(long userId, boolean show)throws Exception;
+	int updateProfileImg(long userId, String profileImg) throws Exception;
 }

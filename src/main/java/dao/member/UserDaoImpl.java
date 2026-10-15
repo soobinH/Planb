@@ -421,4 +421,16 @@ public class UserDaoImpl implements UserDao {
 		}
 	}
 
+	@Override
+	public int updateProfileImg(long userId, String profileImg) throws Exception {
+		try(SqlSession sqlSession = MybatisSqlSessionFactory.getSqlSessionFactory().openSession()) {
+			Map<String, Object> param = new HashMap<String, Object>();
+			param.put("userId", userId);
+			param.put("profileImg", profileImg);
+			int result = sqlSession.update("mapper.member.user.updateProfileImg", param);
+			sqlSession.commit();
+			return result;
+		}
+	}
+
 }

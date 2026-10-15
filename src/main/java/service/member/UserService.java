@@ -30,4 +30,5 @@ public interface UserService {
 	void updateProfileVisibility(long userId, String profileVisibility) throws Exception;
 	void updateShowLikedItinerary(long userId, boolean show) throws Exception;
 	void updateShowBookmarkedItinerary(long userId, boolean show) throws Exception;
+	void updateProfileImg(long userId, String profileImg) throws Exception;
 }

@@ -348,17 +348,33 @@
 	<select id="selectUserById" parameterType="long"
 		resultType="dto.member.UserDto">
 
+		<!-- 세션 회원정보 갱신에도 쓰이므로 로그인 조회(selectUser)와 같은 컬럼을 가져옴
+		     (비밀번호 제외) -->
 		SELECT
 		user_id AS userId,
 		login_id AS loginId,
 		name,
 		nickname AS nickName,
+		email,
+		phone,
+		birth_date AS birthDate,
 		profile_img AS profileImg,
+		region,
+		postcode,
+		address,
+		address_detail AS addressDetail,
 		bio,
+		provider,
+		role,
+		status,
+		last_login_at AS lastLoginAt,
+		created_at AS createdAt,
+		updated_at AS updatedAt,
 		profile_visibility AS profileVisibility,
 		show_liked_itinerary AS showLikedItinerary,
 		show_bookmarked_itinerary AS showBookmarkedItinerary,
-		status AS status
+		notify_like AS notifyLike,
+		notify_comment AS notifyComment
 
 		FROM TB_USER
 
@@ -401,6 +417,20 @@
 		updated_at = CURRENT_TIMESTAMP
 
 		WHERE user_id = #{userId}
+
+	</update>
+
+	<!-- 프로필 사진만 변경 (설정 화면에서 사진 선택 즉시 저장) -->
+	<update id="updateProfileImg" parameterType="map">
+
+		UPDATE TB_USER
+
+		SET profile_img = #{profileImg},
+		updated_at = CURRENT_TIMESTAMP
+
+		WHERE user_id = #{userId}
+
+		AND status = 'ACTIVE'
 
 	</update>
 

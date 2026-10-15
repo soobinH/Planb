@@ -1752,3 +1752,65 @@
   color: #e5484d;
   font-weight: 700;
 }
+
+/* =========================================================
+   프로필 사진 즉시 저장 상태 / 우편번호 찾기
+========================================================= */
+.settings-page .settings-profile-copy .settings-photo-status {
+  color: var(--settings-muted);
+  font-size: 10.5px;
+  line-height: 1.4;
+}
+
+.settings-page .settings-photo-status.is-loading {
+  color: var(--settings-primary);
+}
+
+.settings-page .settings-photo-status.is-success {
+  color: #12A150;
+}
+
+.settings-page .settings-photo-status.is-error {
+  color: #E5484D;
+}
+
+.settings-page .settings-photo-label.is-busy {
+  opacity: .55;
+  pointer-events: none;
+}
+
+.settings-page .settings-postcode-row {
+  display: flex;
+  gap: 8px;
+}
+
+.settings-page .settings-postcode-row input {
+  flex: 1;
+  min-width: 0;
+}
+
+.settings-page .settings-field input.settings-address-input[readonly] {
+  background: #fff;
+  color: var(--settings-ink);
+  cursor: pointer;
+}
+
+.settings-page .settings-postcode-btn {
+  flex-shrink: 0;
+  min-height: 44px;
+  padding: 0 16px;
+  border: 1px solid var(--settings-primary);
+  border-radius: 10px;
+  background: #fff;
+  color: var(--settings-primary);
+  font: inherit;
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background .16s ease, color .16s ease;
+}
+
+.settings-page .settings-postcode-btn:hover {
+  background: var(--settings-primary);
+  color: #fff;
+}

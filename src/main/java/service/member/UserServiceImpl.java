@@ -373,4 +373,11 @@ public class UserServiceImpl implements UserService {
 		userDao.updateShowBookmarkedItinerary(userId, show);
 	}
 
+	@Override
+	public void updateProfileImg(long userId, String profileImg) throws Exception {
+		if (userDao.updateProfileImg(userId, profileImg) == 0) {
+			throw new Exception("프로필 사진을 저장하지 못했습니다.");
+		}
+	}
+
 }
