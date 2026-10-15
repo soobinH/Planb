@@ -155,6 +155,7 @@ public class ItineraryModify extends HttpServlet {
                     );
 
             validateRequiredFields(itineraryDto);
+            ItineraryLocationValidator.validate(itineraryDto, getServletContext());
 
             if (itineraryDto.getItineraryId() == null) {
                 throw new IllegalArgumentException(

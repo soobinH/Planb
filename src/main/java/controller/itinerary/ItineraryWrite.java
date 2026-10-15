@@ -89,6 +89,7 @@ public class ItineraryWrite extends HttpServlet {
                     );
 
             validateRequiredFields(itineraryDto);
+            ItineraryLocationValidator.validate(itineraryDto, getServletContext());
 
             /*
              * 클라이언트의 userId는 사용하지 않는다.

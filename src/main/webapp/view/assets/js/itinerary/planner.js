@@ -28,11 +28,9 @@
                 return plannerDayLinePalette[(dayIndex-1)%plannerDayLinePalette.length];
             }
             var plannerPlacesLibraryPromise=null;
-            // 국가 선택 후 지역/도시는 Google Places Autocomplete (New) 검색 결과만 사용한다.
-            // 로컬 하드코딩 지역 목록이나 fallback은 사용하지 않는다.
-            var plannerRegionSearchTimer=null;
+            // 첫 클릭 시 ISO 3166-2의 1차 행정구역만 표시한다 (동일 JSON을 서버가 검증).
+            var plannerAdmin1Cache=Object.create(null);
             var plannerRegionSearchSeq=0;
-            var plannerRegionSessionToken=null;
             var dirty=false;
 
             function $(sel, root){ return (root||document).querySelector(sel); }
@@ -4008,237 +4006,180 @@
                 if(btn) btn.classList.toggle('hidden',!(input && input.value));
             }
 
-            function renderPlannerRegionButtons(items){
+            /**
+             * ISO 3166-2 및 Unicode CLDR 한글 명칭을 서버에서 캐시한 목록.
+             * 서버 저장 검증과 동일한 목록으로 임의 지역 입력을 막는다.
+             * Google Places는 블록의 장소 검색에만 사용한다.
+             */
+            var plannerAdmin1CatalogPromise=null;
+            function getPlannerRegionCatalog(){
+                if(plannerAdmin1CatalogPromise) return plannerAdmin1CatalogPromise;
+                var url=PLANNER_CONTEXT_PATH+'/itinerary/regionCatalog';
+                plannerAdmin1CatalogPromise=fetch(url,{credentials:'same-origin'})
+                    .then(function(response){
+                        if(!response.ok) throw new Error('지역 목록 응답 '+response.status);
+                        return response.json();
+                    })
+                    .then(function(data){
+                        if(!data || !Array.isArray(data.countries)){
+                            throw new Error('지역 목록 형식이 올바르지 않습니다.');
+                        }
+                        var result=Object.create(null);
+                        data.countries.forEach(function(entry){
+                            if(entry && entry.code && Array.isArray(entry.regions)){
+                                result[String(entry.code).toUpperCase()]=entry.regions.map(function(region){
+                                    return {code:region.code, name:region.name,
+                                        nameEn:region.en||'',source:'admin1'};
+                                });
+                            }
+                        });
+                        return result;
+                    })
+                    .catch(function(error){
+                        plannerAdmin1CatalogPromise=null; // 네트워크 일시 오류 시 재시도
+                        throw error;
+                    });
+                return plannerAdmin1CatalogPromise;
+            }
+            function getPlannerAdmin1Regions(code){
+                code=String(code||'').toUpperCase();
+                if(Object.prototype.hasOwnProperty.call(plannerAdmin1Cache,code)){
+                    return Promise.resolve(plannerAdmin1Cache[code]);
+                }
+                return getPlannerRegionCatalog().then(function(catalog){
+                    var rows=(catalog[code]||[]).slice().sort(function(a,b){
+                        return String(a.name||'').localeCompare(String(b.name||''),'ko-KR');
+                    });
+                    plannerAdmin1Cache[code]=rows;
+                    return rows;
+                });
+            }
+            function syncPlannerSavedRegion(matched,items){
+                var region=$('#plannerRegion');
+                var country=$('#plannerCountry');
+                if(!region || !country || !matched) return;
+                var current=findPlannerCountry(country.value);
+                if(!current || current.code!==matched.code) return;
+                // 기존 일정 불러오기: 정식 명칭과 일치하면 자동으로 선택된 항목으로 인식.
+                var selected=items.find(function(item){return item.name===region.value.trim();});
+                if(selected){
+                    region.dataset.regionCode=selected.code;
+                    region.dataset.regionCountry=matched.code;
+                    region.setAttribute('aria-invalid','false');
+                }else if(region.value.trim()){
+                    region.dataset.regionCode='';
+                    region.dataset.regionCountry='';
+                }
+            }
+            function renderPlannerRegionButtons(items,matched){
                 var region=$('#plannerRegion');
                 var dropdown=$('#plannerRegionDropdown');
                 if(!region || !dropdown) return;
-
                 dropdown.innerHTML='';
-
                 items.forEach(function(item){
                     var btn=document.createElement('button');
                     btn.type='button';
                     btn.className='flex flex-col items-start px-3 py-2.5 text-left min-w-0';
-
-                    var name=document.createElement('span');
-                    name.className='text-sm font-medium text-gray-800 w-full truncate';
-                    name.textContent=item.name||'';
-                    btn.appendChild(name);
-
-                    if(item.secondary){
-                        var secondary=document.createElement('span');
-                        secondary.className='text-[11px] text-gray-400 mt-0.5 w-full truncate';
-                        secondary.textContent=item.secondary;
-                        btn.appendChild(secondary);
-                    }
-
-                    btn.addEventListener('mousedown',function(e){
-                        e.preventDefault();
-                        var selectedPrediction=item.prediction||null;
-                        region.value=item.name||'';
-                        region.dataset.regionPlaceId=item.placeId||'';
-                        region.dataset.regionAddress=item.secondary||'';
+                    var label=document.createElement('span');
+                    label.className='text-sm font-medium text-gray-800 w-full truncate';
+                    label.textContent=item.name;
+                    btn.appendChild(label);
+                    btn.addEventListener('mousedown',function(event){
+                        event.preventDefault();
+                        region.value=item.name;
+                        region.dataset.regionCode=item.code;
+                        region.dataset.regionCountry=matched.code;
+                        region.dataset.regionPlaceId='';
+                        region.dataset.regionAddress='';
+                        region.setAttribute('aria-invalid','false');
                         dropdown.classList.add('hidden');
                         updateRegionClear();
                         markDirty();
-
-                        /*
-                         * Autocomplete 세션은 사용자가 후보를 선택했을 때
-                         * Place Details 최소 필드 조회로 종료한다.
-                         */
-                        if(selectedPrediction && typeof selectedPrediction.toPlace==='function'){
-                            try{
-                                var place=selectedPrediction.toPlace();
-                                Promise.resolve(place.fetchFields({
-                                    fields:['displayName','formattedAddress']
-                                })).then(function(){
-                                    if(place.displayName){
-                                        region.value=place.displayName;
-                                    }
-                                    if(place.formattedAddress){
-                                        region.dataset.regionAddress=place.formattedAddress;
-                                    }
-                                    updateRegionClear();
-                                }).catch(function(){
-                                    // prediction의 표시값은 이미 입력되어 있으므로 상세조회 실패는 무시한다.
-                                });
-                            }catch(ignore){}
-                        }
-
-                        plannerRegionSessionToken=null;
                     });
-
                     dropdown.appendChild(btn);
                 });
-
                 dropdown.classList.toggle('hidden',items.length===0);
             }
-
             function renderPlannerRegionMessage(message){
                 var dropdown=$('#plannerRegionDropdown');
                 if(!dropdown) return;
                 dropdown.innerHTML='';
                 var row=document.createElement('div');
-                row.className='px-3 py-2.5 text-xs text-gray-400';
+                row.className='px-3 py-2.5 text-xs text-gray-500';
                 row.textContent=message;
                 dropdown.appendChild(row);
                 dropdown.classList.remove('hidden');
             }
-
             function refreshRegionOptions(clearValue){
                 var country=$('#plannerCountry');
                 var region=$('#plannerRegion');
                 var dropdown=$('#plannerRegionDropdown');
                 if(!country || !region || !dropdown) return;
-
                 var matched=findPlannerCountry(country.value);
                 dropdown.innerHTML='';
                 plannerRegionSearchSeq++;
-                if(plannerRegionSearchTimer){
-                    clearTimeout(plannerRegionSearchTimer);
-                    plannerRegionSearchTimer=null;
-                }
-                plannerRegionSessionToken=null;
-
                 if(clearValue){
                     region.value='';
+                    region.dataset.regionCode='';
+                    region.dataset.regionCountry='';
                     region.dataset.regionPlaceId='';
                     region.dataset.regionAddress='';
                 }
-
                 if(!matched){
                     region.disabled=true;
-                    region.placeholder='국가 먼저 입력';
+                    region.placeholder='국가 먼저 선택';
                     region.value='';
-                    region.dataset.regionPlaceId='';
-                    region.dataset.regionAddress='';
+                    region.dataset.regionCode='';
+                    region.dataset.regionCountry='';
                     dropdown.classList.add('hidden');
                     updateRegionClear();
                     return;
                 }
-
                 region.disabled=false;
-                region.placeholder='Google Places에서 지역/도시 검색';
+                region.placeholder='선택 또는 검색';
+                // 기존 일정 및 초안 불러오기도 검증할 수 있도록 미리 로딩한다.
+                getPlannerAdmin1Regions(matched.code).then(function(items){
+                    syncPlannerSavedRegion(matched,items);
+                }).catch(function(){});
                 dropdown.classList.add('hidden');
                 updateRegionClear();
             }
-
             function renderRegionDropdown(){
                 var country=$('#plannerCountry');
                 var region=$('#plannerRegion');
                 var dropdown=$('#plannerRegionDropdown');
                 if(!country || !region || !dropdown || region.disabled) return;
-
                 var matched=findPlannerCountry(country.value);
                 if(!matched){
                     dropdown.classList.add('hidden');
                     return;
                 }
-
-                var query=normalizePlannerText(region.value);
-                var requestSeq=++plannerRegionSearchSeq;
-
-                if(plannerRegionSearchTimer){
-                    clearTimeout(plannerRegionSearchTimer);
-                    plannerRegionSearchTimer=null;
-                }
-
-                // Google Places Autocomplete는 검색어를 기준으로 후보를 반환한다.
-                // 빈 입력에서는 로컬 목록을 대신 보여주지 않는다.
-                if(!query){
-                    renderPlannerRegionMessage('지역/도시명을 입력하면 Google Places에서 검색합니다.');
-                    return;
-                }
-
-                // 입력 중 드롭다운을 유지하되, 후보 데이터는 Google Places 결과만 사용한다.
-                renderPlannerRegionMessage('Google Places에서 지역/도시를 검색 중입니다.');
-
-                plannerRegionSearchTimer=setTimeout(function(){
-                    getPlannerPlacesLibrary()
-                        .then(function(placesLibrary){
-                            var AutocompleteSuggestion=
-                                placesLibrary.AutocompleteSuggestion
-                                || (google.maps.places && google.maps.places.AutocompleteSuggestion);
-
-                            if(!AutocompleteSuggestion
-                                    || typeof AutocompleteSuggestion.fetchAutocompleteSuggestions!=='function'){
-                                throw new Error('Google Places Autocomplete를 사용할 수 없습니다.');
-                            }
-
-                            if(!plannerRegionSessionToken
-                                    && placesLibrary.AutocompleteSessionToken){
-                                plannerRegionSessionToken=
-                                    new placesLibrary.AutocompleteSessionToken();
-                            }
-
-                            var request={
-                                input:query,
-                                includedPrimaryTypes:['(regions)'],
-                                includedRegionCodes:[String(matched.code||'').toLowerCase()],
-                                language:'ko'
-                            };
-
-                            if(plannerRegionSessionToken){
-                                request.sessionToken=plannerRegionSessionToken;
-                            }
-
-                            return AutocompleteSuggestion.fetchAutocompleteSuggestions(request);
-                        })
-                        .then(function(response){
-                            if(requestSeq!==plannerRegionSearchSeq) return;
-
-                            var currentCountry=findPlannerCountry(country.value);
-                            if(!currentCountry || currentCountry.code!==matched.code) return;
-                            if(normalizePlannerText(region.value)!==query) return;
-
-                            var seen={};
-                            var items=[];
-                            var suggestions=(response && response.suggestions) || [];
-
-                            suggestions.forEach(function(suggestion){
-                                var prediction=suggestion && suggestion.placePrediction;
-                                if(!prediction) return;
-
-                                var types=Array.isArray(prediction.types) ? prediction.types : [];
-                                // 지역 입력칸에서 국가 자체가 다시 후보로 나오는 것은 제외한다.
-                                if(types.indexOf('country')!==-1) return;
-
-                                var mainText=prediction.mainText
-                                    ? String(prediction.mainText.toString())
-                                    : '';
-                                var fullText=prediction.text
-                                    ? String(prediction.text.toString())
-                                    : '';
-                                var secondaryText=prediction.secondaryText
-                                    ? String(prediction.secondaryText.toString())
-                                    : '';
-
-                                var name=mainText || fullText;
-                                if(!name) return;
-
-                                var key=(prediction.placeId||'')+'|'+name;
-                                if(seen[key]) return;
-                                seen[key]=true;
-
-                                items.push({
-                                    name:name,
-                                    secondary:secondaryText || fullText,
-                                    placeId:prediction.placeId||'',
-                                    prediction:prediction
-                                });
-                            });
-
-                            if(items.length){
-                                renderPlannerRegionButtons(items);
-                            }else{
-                                renderPlannerRegionMessage('Google Places 검색 결과가 없습니다.');
-                            }
-                        })
-                        .catch(function(){
-                            if(requestSeq!==plannerRegionSearchSeq) return;
-                            renderPlannerRegionMessage('Google Places 지역/도시 검색에 실패했습니다.');
-                        });
-                },250);
+                var query=normalizePlannerText(region.value).toLocaleLowerCase();
+                var seq=++plannerRegionSearchSeq;
+                renderPlannerRegionMessage('행정구역 목록을 불러오는 중입니다.');
+                getPlannerAdmin1Regions(matched.code).then(function(items){
+                    if(seq!==plannerRegionSearchSeq) return;
+                    var current=findPlannerCountry(country.value);
+                    if(!current || current.code!==matched.code) return;
+                    if(normalizePlannerText(region.value).toLocaleLowerCase()!==query) return;
+                    var matches=items.filter(function(item){
+                        if(!query) return true;
+                        return item.name.toLocaleLowerCase().indexOf(query)!==-1
+                            || item.nameEn.toLocaleLowerCase().indexOf(query)!==-1
+                            || item.code.toLocaleLowerCase().indexOf(query)!==-1;
+                    });
+                    if(matches.length){
+                        renderPlannerRegionButtons(matches,matched);
+                    }else{
+                        renderPlannerRegionMessage(items.length
+                            ? '일치하는 행정구역이 없습니다. 목록에서 선택해 주세요.'
+                            : '해당 국가의 등록된 행정구역이 없습니다. 지역은 비워둘 수 있습니다.');
+                    }
+                }).catch(function(){
+                    if(seq===plannerRegionSearchSeq){
+                        renderPlannerRegionMessage('지역 목록을 불러오지 못했습니다. 다시 클릭해 주세요.');
+                    }
+                });
             }
 
             function validatePlannerMemoLengths(){
@@ -4328,6 +4269,19 @@
                     refreshCountryStatus();
                 }
 
+                var regionInput=$('#plannerRegion');
+                var validCountry=country ? findPlannerCountry(country.value) : null;
+                if(regionInput && regionInput.value.trim()){
+                    // 복원된 일정과 초안은 원본 목록과 일치하면 syncPlannerSavedRegion이 갱신한다.
+                    var items=validCountry && plannerAdmin1Cache[validCountry.code];
+                    if(items && items.length){syncPlannerSavedRegion(validCountry,items);}
+                    if(!validCountry || regionInput.dataset.regionCountry!==validCountry.code
+                            || !regionInput.dataset.regionCode){
+                        regionInput.setAttribute('aria-invalid','true');
+                        missing.push('지역은 검색 결과의 행정구역을 직접 선택해 주세요. (임의 입력 불가)');
+                    }
+                }
+
                 if(missing.length){
                     showRequiredFieldsModal(missing);
                     return false;
@@ -4391,6 +4345,9 @@
                 plannerRegionInput.addEventListener('input',function(){
                     plannerRegionInput.dataset.regionPlaceId='';
                     plannerRegionInput.dataset.regionAddress='';
+                    plannerRegionInput.dataset.regionCode='';
+                    plannerRegionInput.dataset.regionCountry='';
+                    plannerRegionInput.setAttribute('aria-invalid','false');
                     updateRegionClear();
                     closePlannerDropdowns('plannerRegionDropdown');
                     renderRegionDropdown();
@@ -4407,7 +4364,9 @@
                     plannerRegionInput.value='';
                     plannerRegionInput.dataset.regionPlaceId='';
                     plannerRegionInput.dataset.regionAddress='';
-                    plannerRegionSessionToken=null;
+                    plannerRegionInput.dataset.regionCode='';
+                    plannerRegionInput.dataset.regionCountry='';
+                    plannerRegionInput.setAttribute('aria-invalid','false');
                     updateRegionClear();
                     renderRegionDropdown();
                     plannerRegionInput.focus();
