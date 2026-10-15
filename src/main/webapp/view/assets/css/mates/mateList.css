@@ -309,3 +309,20 @@
         max-width: 65px;
     }
 }
+
+/* ========================================
+   여행꿀팁과 동일한 좌측 사이드바 레이아웃
+   두 페이지 모두 flex 레이아웃을 사용해야
+   gap-1 (4px) 등 공통 유틸리티 간격이 적용됩니다.
+======================================== */
+.mate-list-sidebar {
+    display: flex;
+    flex: 0 0 12rem;
+    width: 12rem;
+}
+
+@media (max-width: 900px) {
+    .mate-list-sidebar {
+        display: none;
+    }
+}
