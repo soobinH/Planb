@@ -11,6 +11,11 @@
 <title>탈퇴한 회원</title>
 
 <style>
+/* 페이지 스크롤바 - 일정 카트(tripily.css)와 동일 */
+::-webkit-scrollbar { width:5px; height:5px; }
+::-webkit-scrollbar-track { background:transparent; }
+::-webkit-scrollbar-thumb { background:#D1D2F9; border-radius:999px; }
+
 .withdrawn-page {
 	min-height: calc(100vh - 80px);
 	display: flex;

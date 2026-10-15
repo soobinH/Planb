@@ -1,6 +1,7 @@
 document.addEventListener("DOMContentLoaded", function () {
 	const tabs = document.querySelectorAll("[data-search-tab]");
 	const sections = document.querySelectorAll("[data-search-section]");
+	const searchDescription = document.getElementById("searchDescription");
 
 	if (tabs.length === 0 || sections.length === 0) {
 		return;
@@ -41,6 +42,22 @@ document.addEventListener("DOMContentLoaded", function () {
 					section.style.display = "none";
 				}
 			});
+
+			if (searchDescription) {
+				if (target === "all") {
+					searchDescription.textContent =
+						"여행일정 · 여행꿀팁 · 여행 메이트를 한 번에 검색합니다.";
+				} else if (target === "schedule") {
+					searchDescription.textContent =
+						"여행일정에 대한 검색 내용입니다.";
+				} else if (target === "tip") {
+					searchDescription.textContent =
+						"여행꿀팁에 대한 검색 내용입니다.";
+				} else if (target === "mate") {
+					searchDescription.textContent =
+						"여행 메이트에 대한 검색 내용입니다.";
+				}
+			}
 		});
 	});
 });

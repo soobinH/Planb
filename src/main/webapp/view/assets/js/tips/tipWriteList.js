@@ -120,3 +120,4 @@ function getContextPath() {
         secondSlash
     );
 }
+

@@ -1,27 +1,191 @@
 @charset "UTF-8";
-
+<<<<<<< HEAD
+ 
+/* ================================
+   내용 편집기 (글 + 사진)
+================================ */
+ 
+.tip-editor-wrap:focus-within {
+	box-shadow: 0 0 0 3px rgba(99, 105, 209, 0.1);
+}
+ 
+/* 툴바 : 사진 추가 버튼 */
+.tip-editor-photo-btn {
+	margin-left: 4px;
+	padding: 4px 10px;
+ 
+	border: 1px solid #D1D2F9;
+	border-radius: 9999px;
+ 
+	background: #ffffff;
+	color: #6369D1;
+ 
+	font-size: 12px;
+	font-weight: 700;
+ 
+	cursor: pointer;
+ 
+	transition: background-color 0.2s ease;
+}
+ 
+.tip-editor-photo-btn:hover {
+	background: #eeeeff;
+}
+ 
+/* 툴바 : 사진 개수 */
+.tip-editor-count {
+	margin-left: auto;
+ 
+	color: #9ca3af;
+ 
+	font-size: 12px;
+}
+ 
+/* 편집 영역 */
+.tip-editor {
+	position: relative;
+ 
+	min-height: 260px;
+	padding: 16px;
+ 
+	outline: none;
+	overflow: auto;
+	resize: vertical;
+ 
+	color: #374151;
+ 
+	font-size: 14px;
+	line-height: 1.7;
+ 
+	white-space: pre-wrap;
+	word-break: break-word;
+}
+ 
+/* 비어 있을 때 안내 문구 */
+.tip-editor.is-empty::before {
+	content: attr(data-placeholder);
+ 
+	position: absolute;
+ 
+	color: #9ca3af;
+ 
+	pointer-events: none;
+}
+ 
+/* 글 사이에 들어가는 사진 */
+.tip-editor-image {
+	position: relative;
+ 
+	display: block;
+	width: fit-content;
+	max-width: 100%;
+ 
+	margin: 12px auto;
+	padding: 0;
+ 
+	user-select: none;
+}
+ 
+.tip-editor-image img {
+	display: block;
+ 
+	max-width: 100%;
+	max-height: 420px;
+	height: auto;
+ 
+	border-radius: 12px;
+}
+ 
+/* 사진 삭제 버튼 */
+.tip-editor-image-remove {
+	position: absolute;
+	top: 8px;
+	right: 8px;
+ 
+	display: flex;
+	align-items: center;
+	justify-content: center;
+ 
+	width: 28px;
+	height: 28px;
+	padding: 0;
+ 
+	border: 0;
+	border-radius: 9999px;
+ 
+	background: rgba(0, 0, 0, 0.6);
+	color: #ffffff;
+ 
+	font-size: 18px;
+	line-height: 1;
+ 
+	cursor: pointer;
+ 
+	opacity: 0;
+	transition: opacity 0.15s ease;
+}
+ 
+.tip-editor-image:hover .tip-editor-image-remove,
+.tip-editor-image-remove:focus-visible {
+	opacity: 1;
+}
+ 
+/* 대표 이미지 표시 (첫 번째 사진) */
+.tip-editor-image.is-representative::before {
+	content: "대표";
+ 
+	position: absolute;
+	top: 8px;
+	left: 8px;
+	z-index: 1;
+ 
+	padding: 3px 8px;
+ 
+	border-radius: 9999px;
+ 
+	background: #6369D1;
+	color: #ffffff;
+ 
+	font-size: 11px;
+	font-weight: 700;
+	line-height: 1.4;
+}
+ 
+/* 모바일에서는 삭제 버튼을 항상 표시 */
+@media (hover: none) {
+ 
+	.tip-editor-image-remove {
+		opacity: 1;
+	}
+}
+ 
+ 
 /* ================================
    페이지 스크롤바
 ================================ */
-
+ 
 html {
 	scrollbar-width: thin;
 	scrollbar-color: #c7c9e8 transparent;
 }
-
+ 
 html::-webkit-scrollbar {
 	width: 7px;
 }
-
+ 
 html::-webkit-scrollbar-track {
 	background: transparent;
 }
-
+ 
 html::-webkit-scrollbar-thumb {
 	background: #c7c9e8;
 	border-radius: 9999px;
 }
-
+ 
 html::-webkit-scrollbar-thumb:hover {
 	background: #a8abe0;
 }
+ 
+=======
+
+>>>>>>> branch 'origin' of https://github.com/yoooong96/Planb.git

@@ -21,6 +21,15 @@ String name = request.getParameter("name") == null ? "" : request.getParameter("
 String email = request.getParameter("email") == null ? "" : request.getParameter("email");
 
 String phone = request.getParameter("phone") == null ? "" : request.getParameter("phone");
+
+/*
+ * 오류로 다시 돌아온 경우에도 같은 이메일로 인증을 마쳤다면 인증 완료 상태 유지
+ */
+String findPwVerifiedEmail = (String) session.getAttribute("findPwVerifiedEmail");
+
+boolean emailVerified = Boolean.TRUE.equals(session.getAttribute("findPwEmailVerified"))
+		&& findPwVerifiedEmail != null && !email.isEmpty()
+		&& findPwVerifiedEmail.equalsIgnoreCase(email.trim());
 %>
 
 <!DOCTYPE html>
@@ -140,6 +149,71 @@ String phone = request.getParameter("phone") == null ? "" : request.getParameter
 .find-password-field input:focus {
 	border-color: #6369D1;
 	box-shadow: 0 0 0 3px rgba(99, 105, 209, 0.09);
+}
+
+/* ============================================================
+   EMAIL VERIFICATION
+   ============================================================ */
+.find-password-inline {
+	display: flex;
+	gap: 8px;
+}
+
+.find-password-inline input {
+	flex: 1;
+	min-width: 0;
+}
+
+.find-password-inline input[readonly] {
+	background: #f6f6f9;
+	color: #6b6c75;
+}
+
+.find-password-side-btn {
+	flex: 0 0 auto;
+	height: 45px;
+	padding: 0 14px;
+	border: 1px solid #6369D1;
+	border-radius: 10px;
+	background: #fff;
+	color: #6369D1;
+	font: inherit;
+	font-size: 12px;
+	font-weight: 700;
+	white-space: nowrap;
+	cursor: pointer;
+	transition: background 0.15s ease, color 0.15s ease;
+}
+
+.find-password-side-btn:hover:not(:disabled) {
+	background: #6369D1;
+	color: #fff;
+}
+
+.find-password-side-btn:disabled {
+	border-color: #dadbe1;
+	color: #b0b1b8;
+	cursor: default;
+}
+
+.find-password-field[hidden] {
+	display: none;
+}
+
+.find-password-email-msg {
+	min-height: 16px;
+	margin: -8px 0 14px;
+	color: #c73d49;
+	font-size: 11px;
+	line-height: 1.5;
+}
+
+.find-password-email-msg:empty {
+	display: none;
+}
+
+.find-password-email-msg.success {
+	color: #1f8a5b;
 }
 
 /* ============================================================
@@ -281,7 +355,7 @@ String phone = request.getParameter("phone") == null ? "" : request.getParameter
              FORM
         ========================== -->
 
-			<form class="find-password-form" action="<%=ctx%>/auth/findPassword"
+			<form class="find-password-form" id="findPwForm" action="<%=ctx%>/auth/findPassword"
 				method="post">
 
 
@@ -305,13 +379,29 @@ String phone = request.getParameter("phone") == null ? "" : request.getParameter
 
 
 
-				<!-- 이메일 -->
-				<label class="find-password-field"> <span
-					class="find-password-field-label"> 이메일 </span> <input type="email"
-					name="email" value="<%=email%>" placeholder="example@email.com"
-					autocomplete="email" maxlength="100" required>
+				<!-- 이메일 + 인증번호 발송 -->
+				<div class="find-password-field">
+					<label class="find-password-field-label" for="findPwEmail"> 이메일 </label>
+					<div class="find-password-inline">
+						<input type="email" id="findPwEmail" name="email" value="<%=email%>"
+							placeholder="example@email.com" autocomplete="email"
+							maxlength="100" required <%=emailVerified ? "readonly" : ""%>>
+						<button type="button" class="find-password-side-btn" id="findPwSendBtn"
+							<%=emailVerified ? "disabled" : ""%>>인증번호 발송</button>
+					</div>
+				</div>
 
-				</label>
+				<!-- 인증번호 확인 -->
+				<div class="find-password-field" id="findPwCodeField" <%=emailVerified ? "hidden" : ""%>>
+					<label class="find-password-field-label" for="findPwCode"> 인증번호 </label>
+					<div class="find-password-inline">
+						<input type="text" id="findPwCode" inputmode="numeric"
+							maxlength="6" placeholder="6자리 인증번호" autocomplete="one-time-code">
+						<button type="button" class="find-password-side-btn" id="findPwVerifyBtn">확인</button>
+					</div>
+				</div>
+
+				<p class="find-password-email-msg<%=emailVerified ? " success" : ""%>" id="findPwEmailMsg" aria-live="polite"><%=emailVerified ? "이메일 인증이 완료되었습니다." : ""%></p>
 
 
 
@@ -349,7 +439,7 @@ String phone = request.getParameter("phone") == null ? "" : request.getParameter
 				<!-- 안내 -->
 				<div class="find-password-info">
 
-					<strong> 확인해주세요. </strong> 입력한 아이디, 이름, 이메일, 전화번호가 가입정보와 모두 일치해야 다음
+					<strong> 확인해주세요. </strong> 이메일 인증을 마치고, 입력한 아이디, 이름, 이메일, 전화번호가 가입정보와 모두 일치해야 다음
 					단계로 이동할 수 있습니다.
 
 				</div>
@@ -437,6 +527,131 @@ String phone = request.getParameter("phone") == null ? "" : request.getParameter
 					phone.value = formatPhoneNumber(phone.value);
 
 				});
+	</script>
+
+	<script>
+		/* =========================================================
+		   이메일 인증 (purpose=findPassword)
+		   - 인증번호 발송 → 6자리 확인 → 인증 완료 후에만 다음 단계 진행
+		========================================================= */
+		document.addEventListener("DOMContentLoaded", function() {
+
+			var ctx = "<%=ctx%>";
+			var form = document.getElementById("findPwForm");
+			var emailInput = document.getElementById("findPwEmail");
+			var sendBtn = document.getElementById("findPwSendBtn");
+			var codeField = document.getElementById("findPwCodeField");
+			var codeInput = document.getElementById("findPwCode");
+			var verifyBtn = document.getElementById("findPwVerifyBtn");
+			var message = document.getElementById("findPwEmailMsg");
+
+			if (!form || !emailInput || !sendBtn || !verifyBtn) {
+				return;
+			}
+
+			var verified = emailInput.hasAttribute("readonly");
+
+			function showMessage(text, success) {
+				message.textContent = text;
+				message.classList.toggle("success", !!success);
+			}
+
+			function post(url, data) {
+				var body = new URLSearchParams(data);
+				body.set("purpose", "findPassword");
+
+				return fetch(ctx + url, {
+					method: "POST",
+					headers: { "Content-Type": "application/x-www-form-urlencoded; charset=UTF-8" },
+					body: body.toString()
+				}).then(function(res) {
+					return res.json();
+				});
+			}
+
+			sendBtn.addEventListener("click", function() {
+
+				var email = emailInput.value.trim();
+
+				if (!email) {
+					showMessage("이메일을 입력해주세요.");
+					emailInput.focus();
+					return;
+				}
+
+				sendBtn.disabled = true;
+				sendBtn.textContent = "발송 중...";
+
+				post("/auth/emailSend", { email: email })
+					.then(function(result) {
+						showMessage(result.message, result.success);
+
+						if (result.success) {
+							codeField.hidden = false;
+							codeInput.value = "";
+							codeInput.focus();
+						}
+					})
+					.catch(function() {
+						showMessage("인증번호 발송 중 오류가 발생했습니다.");
+					})
+					.finally(function() {
+						sendBtn.disabled = false;
+						sendBtn.textContent = "재발송";
+					});
+			});
+
+			verifyBtn.addEventListener("click", function() {
+
+				var code = codeInput.value.trim();
+
+				if (!/^\d{6}$/.test(code)) {
+					showMessage("6자리 인증번호를 입력해주세요.");
+					codeInput.focus();
+					return;
+				}
+
+				verifyBtn.disabled = true;
+
+				post("/auth/emailVerify", { email: emailInput.value.trim(), code: code })
+					.then(function(result) {
+						showMessage(result.message, result.success);
+
+						if (result.success) {
+							verified = true;
+							emailInput.readOnly = true;
+							sendBtn.disabled = true;
+							codeField.hidden = true;
+						}
+					})
+					.catch(function() {
+						showMessage("인증번호 확인 중 오류가 발생했습니다.");
+					})
+					.finally(function() {
+						verifyBtn.disabled = false;
+					});
+			});
+
+			codeInput.addEventListener("input", function() {
+				this.value = this.value.replace(/[^0-9]/g, "").slice(0, 6);
+			});
+
+			codeInput.addEventListener("keydown", function(event) {
+				if (event.key === "Enter") {
+					event.preventDefault();
+					verifyBtn.click();
+				}
+			});
+
+			/* 인증을 마치지 않으면 다음 단계로 넘어가지 않음 */
+			form.addEventListener("submit", function(event) {
+				if (!verified) {
+					event.preventDefault();
+					showMessage("이메일 인증을 완료해주세요.");
+					emailInput.focus();
+				}
+			});
+		});
 	</script>
 
 </body>

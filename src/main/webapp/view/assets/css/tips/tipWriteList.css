@@ -5,21 +5,22 @@
 .tip-my-banner {
 	width: 100%;
 	margin: 0;
-	background: linear-gradient(
-		120deg,
-		#6268d8 0%,
-		#747be2 55%,
-		#9298eb 100%
-	);
+
+	/* 배너 배경 제거 → 목록 영역과 동일 */
+	background: #f7f7ff;
+
+	/* 배너처럼 보이던 구분선 제거 */
+	border-bottom: none;
 }
 
 .tip-my-banner-inner {
-	width: min(100% - 40px, 1120px);
-	min-height: 150px;
+	width: min(100% - 40px, 1060px);
 	margin: 0 auto;
 
+	padding: 32px 0 22px;
+
 	display: flex;
-	align-items: center;
+	align-items: flex-end;
 	justify-content: space-between;
 	gap: 32px;
 }
@@ -28,13 +29,14 @@
 	margin: 0 0 12px;
 
 	font-size: 13px;
-	font-weight: 500;
+	font-weight: 600;
 
-	color: rgba(255, 255, 255, 0.72);
+	color: #777d91;
 }
 
 .tip-my-breadcrumb span {
 	margin: 0 7px;
+	color: #b0b4c3;
 }
 
 .tip-my-banner h1 {
@@ -43,7 +45,7 @@
 	font-size: clamp(25px, 2.3vw, 32px);
 	font-weight: 800;
 
-	color: #ffffff;
+	color: #171b2c;
 }
 
 .tip-my-description {
@@ -51,13 +53,12 @@
 
 	font-size: 13px;
 
-	color: rgba(255, 255, 255, 0.76);
+	color: #8b94a5;
 }
 
 .tip-my-description strong {
-	color: #ffffff;
+	color: #6369d1;
 }
-
 
 /* 배너 버튼 */
 
@@ -86,7 +87,9 @@
 
 	transition:
 		transform 0.2s ease,
-		box-shadow 0.2s ease;
+		box-shadow 0.2s ease,
+		background-color 0.2s ease,
+		border-color 0.2s ease;
 }
 
 .tip-my-banner-actions svg {
@@ -94,23 +97,25 @@
 	height: 17px;
 }
 
-
 /* 여행꿀팁 목록 */
 
 .tip-list-btn {
 	background: #ffffff;
 	color: #555cc9;
 
-	border: 2px solid rgba(255, 255, 255, 0.8);
+	border: 1px solid #d9dafb;
 
-	box-shadow: 0 5px 16px rgba(47, 53, 130, 0.2);
+	box-shadow: 0 3px 10px rgba(47, 53, 130, 0.08);
 }
 
 .tip-list-btn:hover {
-	transform: translateY(-2px);
-	box-shadow: 0 8px 22px rgba(47, 53, 130, 0.28);
-}
+	background: #f7f7ff;
+	border-color: #bfc2f3;
 
+	transform: translateY(-2px);
+
+	box-shadow: 0 6px 16px rgba(47, 53, 130, 0.12);
+}
 
 /* 새 글 쓰기 */
 
@@ -118,12 +123,15 @@
 	background: #ffd447;
 	color: #252525;
 
-	border: 2px solid #ffd447;
+	border: 1px solid #ffd447;
 
-	box-shadow: 0 5px 16px rgba(55, 50, 30, 0.18);
+	box-shadow: 0 3px 10px rgba(55, 50, 30, 0.12);
 }
 
 .tip-write-btn:hover {
+	background: #ffcf2f;
+	border-color: #ffcf2f;
+
 	transform: translateY(-2px);
 }
 
@@ -132,8 +140,9 @@
 ======================================== */
 .tip-my-main {
 	min-height: 520px;
+
 	padding:
-		clamp(30px, 4vw, 48px)
+		18px
 		clamp(18px, 4vw, 40px)
 		clamp(60px, 7vw, 90px);
 
@@ -639,28 +648,3 @@
     }
 }
 
-/* ================================
-   페이지 스크롤바
-================================ */
-
-html {
-	scrollbar-width: thin;
-	scrollbar-color: #c7c9e8 transparent;
-}
-
-html::-webkit-scrollbar {
-	width: 7px;
-}
-
-html::-webkit-scrollbar-track {
-	background: transparent;
-}
-
-html::-webkit-scrollbar-thumb {
-	background: #c7c9e8;
-	border-radius: 9999px;
-}
-
-html::-webkit-scrollbar-thumb:hover {
-	background: #a8abe0;
-}

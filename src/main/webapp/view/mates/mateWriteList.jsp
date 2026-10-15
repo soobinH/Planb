@@ -18,8 +18,8 @@ request.setAttribute("activePage", "mate");
 	<jsp:include page="/common/headStyles.jsp" />
 
 	<link
-		rel="stylesheet"
-		href="${pageContext.request.contextPath}/view/assets/css/mates/mateWriteList.css">
+	rel="stylesheet"
+	href="${pageContext.request.contextPath}/view/assets/css/mates/mateWriteList.css?v=20261014-2">
 
 	<script
 		defer

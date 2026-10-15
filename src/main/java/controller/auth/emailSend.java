@@ -21,6 +21,8 @@ import service.member.UserServiceImpl;
  * 회원가입: /auth/emailSend
  *
  * 회원탈퇴: /auth/emailSend purpose=withdraw
+ *
+ * 비밀번호 찾기: /auth/emailSend purpose=findPassword
  */
 @WebServlet("/auth/emailSend")
 public class emailSend extends HttpServlet {
@@ -52,6 +54,8 @@ public class emailSend extends HttpServlet {
 		String purpose = request.getParameter("purpose");
 
 		boolean withdrawMode = "withdraw".equals(purpose);
+
+		boolean findPasswordMode = "findPassword".equals(purpose);
 
 		/*
 		 * ===================================================== 이메일 입력 확인
@@ -127,6 +131,24 @@ public class emailSend extends HttpServlet {
 					return;
 				}
 
+			} else if (findPasswordMode) {
+
+				/*
+				 * ============================================= 비밀번호 찾기 인증
+				 *
+				 * 가입된 이메일로만 인증번호 전송
+				 * ==============================================
+				 */
+
+				if (userService.isEmailAvailable(email)) {
+
+					sendJson(response, false, "가입된 이메일이 아닙니다.");
+
+					return;
+				}
+
+				session = request.getSession();
+
 			} else {
 
 				/*
@@ -174,6 +196,18 @@ public class emailSend extends HttpServlet {
 				expiresKey = "withdrawEmailVerificationExpiresAt";
 
 				failCountKey = "withdrawEmailVerificationFailCount";
+
+			} else if (findPasswordMode) {
+
+				sentAtKey = "findPwEmailVerificationSentAt";
+
+				emailKey = "findPwEmailVerificationEmail";
+
+				codeKey = "findPwEmailVerificationCode";
+
+				expiresKey = "findPwEmailVerificationExpiresAt";
+
+				failCountKey = "findPwEmailVerificationFailCount";
 
 			} else {
 
@@ -244,6 +278,12 @@ public class emailSend extends HttpServlet {
 				session.setAttribute("withdrawEmailVerified", false);
 
 				session.removeAttribute("withdrawVerifiedEmail");
+
+			} else if (findPasswordMode) {
+
+				session.setAttribute("findPwEmailVerified", false);
+
+				session.removeAttribute("findPwVerifiedEmail");
 
 			} else {
 
