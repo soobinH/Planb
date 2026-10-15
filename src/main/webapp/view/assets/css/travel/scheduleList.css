@@ -190,3 +190,39 @@ html::-webkit-scrollbar-thumb:hover {
     outline-offset: -3px;
 }
 #scheduleCardGrid [data-schedule-bookmark] { z-index: 2; }
+
+/* PlanB 색상: 보라를 중심으로 연보라와 노랑을 작은 포인트로 사용 */
+.schedule-list-page > .flex > main {
+    background: linear-gradient(135deg, #f6f6ff 0%, #fcfcff 58%, #fffdf5 100%);
+}
+.schedule-list-page .travel-list-sidebar { background: #fff; border-right-color: #D1D2F9 !important; }
+.schedule-list-page .continent-toggle:hover { background: #efeffd; color: #6369D1; }
+.schedule-list-page [data-schedule-country]:hover { background: #fff5ce; color: #494da4; }
+.schedule-list-page #scheduleSearchBar {
+    background: #fff; box-shadow: 0 4px 16px rgba(99,105,209,.08);
+}
+.schedule-list-page #scheduleSearchBar:focus-within {
+    border-color: #6369D1 !important; box-shadow: 0 0 0 3px rgba(209,210,249,.5);
+}
+.schedule-list-page #scheduleSearchBar > svg { color: #6369D1 !important; }
+.schedule-list-page #scheduleFilterToggle { color: #6369D1 !important; }
+.schedule-list-page #scheduleFilterPanel { background: #fcfcff; }
+.schedule-list-page #scheduleFilterPanel .bg-gray-50 { background: #f0f0fe; }
+.schedule-list-page #scheduleFilterPanel input[type="checkbox"] { accent-color: #6369D1; }
+.schedule-list-page #scheduleCardGrid .jsp-schedule-card {
+    border-color: #e1e2f7 !important; box-shadow: 0 3px 12px rgba(99,105,209,.055);
+}
+.schedule-list-page #scheduleCardGrid .jsp-schedule-card:hover {
+    border-color: #6369D1 !important; box-shadow: 0 9px 24px rgba(99,105,209,.13);
+}
+.schedule-list-page #scheduleCardGrid .schedule-card-country {
+    background: #6369D1 !important; color: #fff; box-shadow: 0 2px 8px rgba(45,48,112,.18);
+}
+.schedule-list-page #scheduleCardGrid .schedule-card-duration {
+    background: #FFD447; color: #504514; box-shadow: 0 2px 8px rgba(70,59,12,.12);
+}
+.schedule-list-page #scheduleCardGrid .schedule-card-author {
+    border-color: #FFD447 !important; background: linear-gradient(90deg, #fafaff, #fffdf4);
+}
+.schedule-list-page #scheduleScrollTopBtn { border-color: #D1D2F9; background: #f5f5ff; }
+.schedule-list-page #scheduleScrollTopBtn:hover { background: #fff5ce; border-color: #FFD447; }

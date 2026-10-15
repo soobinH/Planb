@@ -26,7 +26,7 @@ request.setAttribute("activePage", "travel");
 <title><c:out value="${itinerary.title}" /> | Planb</title>
 <jsp:include page="/common/headStyles.jsp" />
 <link rel="stylesheet"
-   href="${pageContext.request.contextPath}/view/assets/css/travel/scheduleDetail.css?v=20261015-3">
+   href="${pageContext.request.contextPath}/view/assets/css/travel/scheduleDetail.css?v=20261015-colors">
 </head>
 <body class="site-shell"><jsp:include page="/common/header.jsp" />
    <main id="scheduleDetail" class="detail-layout"

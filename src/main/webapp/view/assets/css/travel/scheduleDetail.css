@@ -930,6 +930,31 @@
 	display: none !important;
 }
 
+/* ================================
+   페이지 스크롤바
+================================ */
+
+html {
+	scrollbar-width: thin;
+	scrollbar-color: #c7c9e8 transparent;
+}
+
+html::-webkit-scrollbar {
+	width: 7px;
+}
+
+html::-webkit-scrollbar-track {
+	background: transparent;
+}
+
+html::-webkit-scrollbar-thumb {
+	background: #c7c9e8;
+	border-radius: 9999px;
+}
+
+html::-webkit-scrollbar-thumb:hover {
+	background: #a8abe0;
+}
 
 /* ===== 상세 화면: 정보·일정 확대 / planner 지도 디자인 ===== */
 #scheduleDetail.detail-layout {
@@ -1163,3 +1188,37 @@
 .detail-map-day-legend > div { padding: 4px 0; }
 .detail-map-day-legend > div + div { margin-top: 0; }
 .detail-map-day-legend-label { color: rgba(255,255,255,.9); }
+
+/* 상세 색상 포인트 — 배치와 planner 지도 팔레트는 유지 */
+#scheduleDetail .detail-content-panel { background: #f4f4fd; }
+#scheduleDetail .detail-info-panel { border-right-color: #D1D2F9; }
+#scheduleDetail .detail-info-header { background: #f7f7ff; border-bottom-color: #D1D2F9; }
+#scheduleDetail .detail-panel-header:not(.detail-info-header) { background: #fbfbff; border-bottom-color: #D1D2F9; }
+#scheduleDetail #detailInfoPanel .detail-travel-meta-inline > span:nth-child(1) {
+    background: #eeeffd !important; border-color: #D1D2F9 !important; color: #494da4 !important;
+}
+#scheduleDetail #detailInfoPanel .detail-travel-meta-inline > span:nth-child(2) {
+    background: #fafaff !important; border-color: #D1D2F9 !important; color: #555978 !important;
+}
+#scheduleDetail #detailInfoPanel .detail-travel-meta-inline > span:nth-child(3) {
+    background: #fff7d9 !important; border-color: #ffe58b !important; color: #6c591b !important;
+}
+#scheduleDetail .detail-cart-full {
+    background: linear-gradient(115deg, #6369D1, #777cdd) !important;
+    box-shadow: 0 5px 16px rgba(99,105,209,.2);
+}
+#scheduleDetail #detailSchedulePanel > .rounded-2xl { border-color: #D1D2F9 !important; }
+#scheduleDetail #detailSchedulePanel .detail-day-header { background: #eeeffc; }
+#scheduleDetail #detailSchedulePanel .detail-day-number { background: #FFD447; color: #554613; }
+#scheduleDetail #detailSchedulePanel .detail-day-label { color: #5359bf; }
+#scheduleDetail #detailSchedulePanel > .rounded-2xl:nth-of-type(even) .detail-day-header { background: #fff9e6; }
+#scheduleDetail #detailSchedulePanel > .rounded-2xl:nth-of-type(even) .detail-day-number { background: #6369D1; color: #fff; }
+#scheduleDetail #detailSchedulePanel .detail-block-memo { background: #f5f5ff; }
+#scheduleDetail #detailSchedulePanel .detail-cart-small[data-cart-state="NONE"] {
+    background: #fafaff; border-color: #D1D2F9; color: #6369D1;
+}
+#scheduleDetail #detailSchedulePanel .detail-cart-small[data-cart-state="NONE"]:hover {
+    background: #fff5ce; border-color: #FFD447;
+}
+#scheduleDetail #detailCommentPanel > .rounded-2xl { border-color: #D1D2F9 !important; }
+#scheduleDetail #scheduleReportButton svg { color: #EF6461; }

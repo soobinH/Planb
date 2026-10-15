@@ -11,7 +11,7 @@ request.setAttribute("activePage", "travel");
 <head>
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width,initial-scale=1">
-	<link rel="stylesheet" href="${pageContext.request.contextPath}/view/assets/css/travel/scheduleList.css">
+	<link rel="stylesheet" href="${pageContext.request.contextPath}/view/assets/css/travel/scheduleList.css?v=20261015-colors">
 	<title>여행일정 | Planb</title>
 	<jsp:include page="/common/headStyles.jsp" />
 <style>
@@ -166,7 +166,7 @@ request.setAttribute("activePage", "travel");
 
 </style>
 </head>
-<body class="site-shell">
+<body class="site-shell schedule-list-page">
 	<jsp:include page="/common/header.jsp" />
 	<div class="flex" style="min-height: calc(100vh - 68px)">
 		<aside class="travel-list-sidebar shrink-0 w-48 flex-col gap-1 bg-white py-5 px-2 border-r overflow-y-auto" style="border-color: #ebebf5">
