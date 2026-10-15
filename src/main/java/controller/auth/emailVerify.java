@@ -41,6 +41,8 @@ public class emailVerify extends HttpServlet {
 
 		boolean withdrawMode = "withdraw".equals(purpose);
 
+		boolean findPasswordMode = "findPassword".equals(purpose);
+
 		/*
 		 * ===================================================== 입력값 확인
 		 * ======================================================
@@ -115,6 +117,16 @@ public class emailVerify extends HttpServlet {
 
 			failCountKey = "withdrawEmailVerificationFailCount";
 
+		} else if (findPasswordMode) {
+
+			emailKey = "findPwEmailVerificationEmail";
+
+			codeKey = "findPwEmailVerificationCode";
+
+			expiresKey = "findPwEmailVerificationExpiresAt";
+
+			failCountKey = "findPwEmailVerificationFailCount";
+
 		} else {
 
 			emailKey = "emailVerificationEmail";
@@ -146,7 +158,7 @@ public class emailVerify extends HttpServlet {
 
 		if (failCount >= 5) {
 
-			clearVerification(session, withdrawMode);
+			clearVerification(session, withdrawMode, findPasswordMode);
 
 			sendJson(response, false, "인증번호 입력 횟수를 초과했습니다. 인증번호를 다시 발급해주세요.");
 
@@ -184,7 +196,7 @@ public class emailVerify extends HttpServlet {
 
 		if (System.currentTimeMillis() > expiresAt) {
 
-			clearVerification(session, withdrawMode);
+			clearVerification(session, withdrawMode, findPasswordMode);
 
 			sendJson(response, false, "인증번호가 만료되었습니다. 다시 발급해주세요.");
 
@@ -221,6 +233,15 @@ public class emailVerify extends HttpServlet {
 
 			session.setAttribute("withdrawVerifiedEmail", email);
 
+		} else if (findPasswordMode) {
+
+			/*
+			 * 비밀번호 찾기 전용 인증 완료
+			 */
+			session.setAttribute("findPwEmailVerified", Boolean.TRUE);
+
+			session.setAttribute("findPwVerifiedEmail", email);
+
 		} else {
 
 			/*
@@ -245,7 +266,7 @@ public class emailVerify extends HttpServlet {
 		sendJson(response, true, "이메일 인증이 완료되었습니다.");
 	}
 
-	private void clearVerification(HttpSession session, boolean withdrawMode) {
+	private void clearVerification(HttpSession session, boolean withdrawMode, boolean findPasswordMode) {
 
 		if (withdrawMode) {
 
@@ -258,6 +279,18 @@ public class emailVerify extends HttpServlet {
 			session.setAttribute("withdrawEmailVerified", false);
 
 			session.removeAttribute("withdrawVerifiedEmail");
+
+		} else if (findPasswordMode) {
+
+			session.removeAttribute("findPwEmailVerificationCode");
+
+			session.removeAttribute("findPwEmailVerificationExpiresAt");
+
+			session.removeAttribute("findPwEmailVerificationFailCount");
+
+			session.setAttribute("findPwEmailVerified", false);
+
+			session.removeAttribute("findPwVerifiedEmail");
 
 		} else {
 

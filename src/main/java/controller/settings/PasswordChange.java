@@ -202,13 +202,13 @@ public class PasswordChange extends HttpServlet {
 		}
 
 		/*
-		 * 비밀번호 규칙 : 영문 숫자 특수문자 8자 이상
+		 * 비밀번호 규칙 : 영문 + 숫자 혼용 8자 이상 (특수문자는 선택)
 		 */
-		String passwordPattern = "^(?=.*[A-Za-z])" + "(?=.*\\d)" + "(?=.*[^A-Za-z0-9\\s])" + ".{8,}$";
+		String passwordPattern = "^(?=.*[A-Za-z])" + "(?=.*\\d)" + ".{8,}$";
 
 		if (!newPassword.matches(passwordPattern)) {
 
-			throw new Exception("비밀번호는 영문, 숫자, 특수문자를 포함하여 8자 이상 입력해주세요.");
+			throw new Exception("비밀번호는 영문과 숫자를 포함하여 8자 이상 입력해주세요.");
 		}
 
 		/* 현재 비밀번호와 같은지 확인 후 변경 */
