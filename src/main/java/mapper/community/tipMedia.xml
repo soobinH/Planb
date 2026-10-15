@@ -31,6 +31,13 @@
 	    WHERE media_id = #{mediaId} AND tip_id = #{tipId}
 	</delete>
 	
+	<!-- 사진 순서 변경 (수정 시 본문에 나온 순서대로 다시 정렬) -->
+	<update id="updateTipMediaSortOrder" parameterType="map">
+	    UPDATE TB_TIP_MEDIA
+	    SET sort_order = #{sortOrder}
+	    WHERE media_id = #{mediaId} AND tip_id = #{tipId}
+	</update>
+
 	<delete id="deleteTipMediaByTipId" parameterType="long">
 	    DELETE FROM TB_TIP_MEDIA
 	    WHERE tip_id = #{tipId}

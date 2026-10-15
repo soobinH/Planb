@@ -24,4 +24,7 @@ public interface MateMediaDao {
 
 	// 첫 번째 이미지 조회
 	MateMediaDto selectFirstMateMedia(long mateId);
+
+	// 사진 순서 변경
+	int updateMateMediaSortOrder(long mediaId, long mateId, int sortOrder);
 }

@@ -105,4 +105,11 @@
 
 	</select>
 
+	<!-- 사진 순서 변경 (수정 시 본문에 나온 순서대로 다시 정렬) -->
+	<update id="updateMateMediaSortOrder" parameterType="map">
+		UPDATE TB_MATE_MEDIA
+		SET sort_order = #{sortOrder}
+		WHERE media_id = #{mediaId} AND mate_id = #{mateId}
+	</update>
+
 </mapper>

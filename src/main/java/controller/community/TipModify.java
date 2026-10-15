@@ -20,6 +20,7 @@ import service.community.TipMediaService;
 import service.community.TipMediaServiceImpl;
 import service.community.TipService;
 import service.community.TipServiceImpl;
+import util.PostImageOrder;
 import util.image.SharedImageStorage;
 
 @WebServlet("/tipModify")
@@ -344,7 +345,14 @@ public class TipModify extends HttpServlet {
 			tip.setCountry(country.trim());
 			tip.setCity(city.trim());
 			tip.setHashtag(hashtag == null ? null : hashtag.trim());
-			tip.setContent(content.trim());
+			/*
+			 * 본문의 사진 표시를 "본문에 나온 순서"로 다시 번호 매김
+			 * (작성 화면과 동일하게 글 맨 위 사진이 대표 이미지가 되도록)
+			 */
+			PostImageOrder.Result imageOrder =
+				PostImageOrder.reorder(content.trim(), existingImageCount + imageUrls.size());
+
+			tip.setContent(imageOrder.getContent());
 
 			int result = tipService.updateTip(tip);
 
@@ -374,6 +382,34 @@ public class TipModify extends HttpServlet {
 				);
 
 				sortOrder++;
+			}
+
+			// ========================================
+			// 11-1. 사진 순서를 본문에 나온 순서대로 다시 정렬
+			//  - 현재 목록 순서 : 남은 기존 사진 → 새 사진 (본문의 [[IMG:n]] 기준 순서)
+			// ========================================
+			List<TipMediaDto> orderedMediaList =
+				tipMediaService.selectTipMediaList(tipId);
+
+			int imageIndex = 0;
+
+			for (TipMediaDto media : orderedMediaList) {
+
+				if (!"IMAGE".equals(media.getMediaType())) {
+					continue;
+				}
+
+				if (imageIndex >= existingImageCount + imageUrls.size()) {
+					break;
+				}
+
+				tipMediaService.updateTipMediaSortOrder(
+					media.getMediaId(),
+					tipId,
+					imageOrder.getNewOrder(imageIndex)
+				);
+
+				imageIndex++;
 			}
 
 			// ========================================

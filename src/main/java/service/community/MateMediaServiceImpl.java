@@ -39,4 +39,9 @@ public class MateMediaServiceImpl implements MateMediaService {
 	public MateMediaDto selectFirstMateMedia(long mateId) {
 		return mateMediaDao.selectFirstMateMedia(mateId);
 	}
+
+	@Override
+	public int updateMateMediaSortOrder(long mediaId, long mateId, int sortOrder) {
+		return mateMediaDao.updateMateMediaSortOrder(mediaId, mateId, sortOrder);
+	}
 }

@@ -43,4 +43,9 @@ public class TipMediaServiceImpl implements TipMediaService {
     public TipMediaDto selectFirstTipMedia(long tipId) {
         return tipMediaDao.selectFirstTipMedia(tipId);
     }
+
+    @Override
+    public int updateTipMediaSortOrder(long mediaId, long tipId, int sortOrder) {
+        return tipMediaDao.updateTipMediaSortOrder(mediaId, tipId, sortOrder);
+    }
 }

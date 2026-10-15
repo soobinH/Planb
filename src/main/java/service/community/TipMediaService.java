@@ -19,4 +19,7 @@ public interface TipMediaService {
     int deleteTipMedia(long mediaId, long tipId);
     
     TipMediaDto selectFirstTipMedia(long tipId);
+
+    // 사진 순서 변경
+    int updateTipMediaSortOrder(long mediaId, long tipId, int sortOrder);
 }

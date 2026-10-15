@@ -1,0 +1,677 @@
+@charset "UTF-8";
+
+/* =========================================================
+   여행꿀팁 / 여행메이트 글쓰기 · 수정 공통
+   - 블로그 글쓰기 형태 : 한 장의 흰 문서 안에
+     글 정보 → 큰 제목 → 툴바 → 본문(사진 포함) 순서
+   - 모서리는 거의 각지게, 배너는 밝고 가볍게
+   - 키컬러 : 보라 #6369D1 / 노랑 #FFD447
+========================================================= */
+.post-page {
+    --post-brand: #6369D1;
+    --post-brand-hover: #5257c4;
+    --post-brand-soft: #F3F3FD;
+    --post-lavender: #D1D2F9;
+    --post-yellow: #FFD447;
+    --post-text: #191F28;
+    --post-sub: #4E5968;
+    --post-muted: #8B95A1;
+    --post-placeholder: #B0B8C1;
+    --post-line: #E5E8EB;
+    --post-surface: #F7F8FA;
+    --post-danger: #E5484D;
+    --post-radius: 4px;
+
+    flex: 1 0 auto;
+    background: var(--post-surface);
+    color: var(--post-text);
+    font-family: Pretendard, 'Noto Sans KR', sans-serif;
+    letter-spacing: -0.01em;
+}
+
+.post-page a {
+    text-decoration: none;
+}
+
+/* =========================================================
+   상단 배너 : 사진 + 옅은 보라 톤, 아래는 페이지 배경으로 자연스럽게
+========================================================= */
+.post-hero {
+    position: relative;
+    overflow: hidden;
+    height: 220px;
+    color: #fff;
+    background: #8f93df;
+}
+
+.post-hero-bg {
+    position: absolute;
+    inset: 0;
+    background-size: cover;
+    background-position: center 45%;
+    animation: postHeroZoom 14s ease-out forwards;
+}
+
+.post-hero-overlay {
+    position: absolute;
+    inset: 0;
+    background:
+        linear-gradient(90deg, rgba(76, 80, 170, .55) 0%, rgba(99, 105, 209, .28) 50%, rgba(99, 105, 209, .05) 100%),
+        linear-gradient(0deg, rgba(40, 42, 110, .28) 0%, rgba(40, 42, 110, 0) 60%);
+}
+
+.post-hero-inner {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    width: min(100% - 48px, 860px);
+    height: 100%;
+    margin: 0 auto;
+    box-sizing: border-box;
+}
+
+.post-hero-back {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    width: fit-content;
+    margin-bottom: 14px;
+    color: rgba(255, 255, 255, .85) !important;
+    font-size: 14px;
+    font-weight: 600;
+    text-shadow: 0 1px 8px rgba(20, 20, 60, .3);
+    transition: color .15s ease;
+}
+
+.post-hero-back:hover {
+    color: #fff !important;
+}
+
+.post-hero-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    width: fit-content;
+    color: rgba(255, 255, 255, .92);
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: .14em;
+    text-transform: uppercase;
+    text-shadow: 0 1px 8px rgba(20, 20, 60, .3);
+}
+
+.post-hero-badge i {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: var(--post-yellow);
+}
+
+.post-hero h1 {
+    margin: 10px 0 0;
+    font-size: clamp(26px, 3vw, 34px);
+    font-weight: 800;
+    line-height: 1.3;
+    letter-spacing: -0.04em;
+    word-break: keep-all;
+    text-shadow: 0 2px 16px rgba(20, 20, 60, .3);
+}
+
+.post-hero h1 em {
+    font-style: normal;
+    color: var(--post-yellow);
+}
+
+.post-hero p {
+    margin: 8px 0 0;
+    color: rgba(255, 255, 255, .9);
+    font-size: 15px;
+    line-height: 1.6;
+    word-break: keep-all;
+    text-shadow: 0 1px 10px rgba(20, 20, 60, .3);
+}
+
+@keyframes postHeroZoom {
+    from { transform: scale(1.06); }
+    to   { transform: scale(1.0); }
+}
+
+/* =========================================================
+   글쓰기 문서
+========================================================= */
+.post-form {
+    width: min(100% - 48px, 860px);
+    margin: 32px auto 0;
+}
+
+.post-sheet {
+    border: 1px solid var(--post-line);
+    border-radius: var(--post-radius);
+    background: #fff;
+}
+
+.post-alert {
+    margin: 0 0 12px;
+    padding: 12px 16px;
+    border-left: 3px solid var(--post-danger);
+    background: #FFF1F1;
+    color: var(--post-danger);
+    font-size: 14px;
+}
+
+/* ---------- 글 정보 (여행지 / 해시태그 / 모집 인원) ---------- */
+.post-meta {
+    padding: 8px 40px;
+    border-bottom: 1px solid var(--post-line);
+    background: #FCFCFD;
+}
+
+.post-meta-row {
+    display: grid;
+    grid-template-columns: 96px minmax(0, 1fr);
+    align-items: start;
+    gap: 16px;
+    padding: 14px 0;
+}
+
+.post-meta-row + .post-meta-row {
+    border-top: 1px dashed var(--post-line);
+}
+
+.post-meta-label {
+    padding-top: 11px;
+    color: var(--post-sub);
+    font-size: 14px;
+    font-weight: 700;
+}
+
+.post-meta-label .post-required {
+    margin-left: 2px;
+    color: var(--post-danger);
+}
+
+.post-meta-label .optional {
+    display: block;
+    margin-top: 2px;
+    color: var(--post-muted);
+    font-size: 12px;
+    font-weight: 500;
+}
+
+.post-grid-2 {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 12px;
+}
+
+.post-input {
+    width: 100%;
+    height: 42px;
+    padding: 0 12px;
+    border: 1px solid var(--post-line);
+    border-radius: var(--post-radius);
+    background: #fff;
+    color: var(--post-text);
+    font: inherit;
+    font-size: 15px;
+    box-sizing: border-box;
+    transition: border-color .15s ease;
+}
+
+.post-input::placeholder {
+    color: var(--post-placeholder);
+}
+
+.post-input:focus {
+    border-color: var(--post-brand);
+    outline: 0;
+}
+
+.post-input:disabled {
+    background: var(--post-surface);
+    color: var(--post-placeholder);
+    cursor: not-allowed;
+}
+
+.post-input.is-error,
+.post-input.is-error:focus {
+    border-color: var(--post-danger);
+}
+
+.post-help {
+    margin: 6px 0 0;
+    color: var(--post-muted);
+    font-size: 13px;
+    line-height: 1.55;
+}
+
+.post-error {
+    margin: 6px 0 0;
+    color: var(--post-danger);
+    font-size: 13px;
+}
+
+.post-error[hidden],
+.post-error.hidden {
+    display: none;
+}
+
+/* 나라 / 도시 추천 */
+.post-chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+}
+
+.post-chips:not(:empty) {
+    margin-top: 8px;
+}
+
+.post-chip {
+    height: 30px;
+    padding: 0 11px;
+    border: 1px solid var(--post-lavender);
+    border-radius: var(--post-radius);
+    background: var(--post-brand-soft);
+    color: var(--post-brand);
+    font: inherit;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background .15s ease, color .15s ease;
+}
+
+.post-chip:hover {
+    background: var(--post-brand);
+    color: #fff;
+}
+
+/* 모집 인원 − + */
+.post-stepper {
+    display: inline-flex;
+    align-items: center;
+    height: 42px;
+    border: 1px solid var(--post-line);
+    border-radius: var(--post-radius);
+    background: #fff;
+}
+
+.post-stepper button {
+    width: 42px;
+    height: 100%;
+    border: 0;
+    background: transparent;
+    color: var(--post-sub);
+    font-size: 18px;
+    cursor: pointer;
+    transition: background .15s ease;
+}
+
+.post-stepper button:hover:not(:disabled) {
+    background: var(--post-surface);
+}
+
+.post-stepper button:disabled {
+    color: #C9CDD2;
+    cursor: default;
+}
+
+.post-stepper input {
+    width: 40px;
+    height: 100%;
+    border: 0;
+    border-left: 1px solid var(--post-line);
+    outline: 0;
+    background: transparent;
+    color: var(--post-text);
+    font: inherit;
+    font-size: 16px;
+    font-weight: 700;
+    text-align: right;
+    -moz-appearance: textfield;
+}
+
+.post-stepper input::-webkit-outer-spin-button,
+.post-stepper input::-webkit-inner-spin-button {
+    margin: 0;
+    -webkit-appearance: none;
+}
+
+.post-stepper span {
+    padding: 0 12px 0 4px;
+    border-right: 1px solid var(--post-line);
+    color: var(--post-muted);
+    font-size: 14px;
+    line-height: 40px;
+}
+
+/* ---------- 제목 ---------- */
+.post-title {
+    position: relative;
+    padding: 36px 40px 0;
+}
+
+.post-title-input {
+    width: 100%;
+    padding: 0 64px 18px 0;
+    border: 0;
+    border-bottom: 1px solid var(--post-line);
+    border-radius: 0;
+    outline: 0;
+    background: transparent;
+    color: var(--post-text);
+    font: inherit;
+    font-size: 30px;
+    font-weight: 700;
+    letter-spacing: -0.03em;
+    box-sizing: border-box;
+    transition: border-color .15s ease;
+}
+
+.post-title-input::placeholder {
+    color: #C4CAD1;
+}
+
+.post-title-input:focus {
+    border-bottom-color: var(--post-brand);
+}
+
+.post-counter {
+    position: absolute;
+    right: 40px;
+    bottom: 22px;
+    color: var(--post-placeholder);
+    font-size: 13px;
+    font-variant-numeric: tabular-nums;
+}
+
+/* ---------- 툴바 (스크롤해도 헤더 아래에 붙어 있음) ---------- */
+.post-editor-toolbar {
+    position: sticky;
+    top: var(--tripily-header-h, 68px);
+    z-index: 5;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 40px;
+    border-bottom: 1px solid var(--post-line);
+    background: rgba(255, 255, 255, .96);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+}
+
+.post-editor-photo-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    height: 34px;
+    padding: 0 12px;
+    border: 1px solid var(--post-line);
+    border-radius: var(--post-radius);
+    background: #fff;
+    color: var(--post-text);
+    font: inherit;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: border-color .15s ease, color .15s ease, background .15s ease;
+}
+
+.post-editor-photo-btn svg {
+    color: var(--post-brand);
+}
+
+.post-editor-photo-btn:hover {
+    border-color: var(--post-brand);
+    background: var(--post-brand-soft);
+    color: var(--post-brand);
+}
+
+.post-editor-tip {
+    color: var(--post-muted);
+    font-size: 13px;
+}
+
+.post-editor-count {
+    margin-left: auto;
+    color: var(--post-sub);
+    font-size: 13px;
+    font-weight: 600;
+    font-variant-numeric: tabular-nums;
+}
+
+/* ---------- 본문 ---------- */
+.post-editor {
+    position: relative;
+    min-height: 460px;
+    padding: 28px 40px 40px;
+    outline: none;
+    color: #333D4B;
+    font-size: 16px;
+    line-height: 1.85;
+    white-space: pre-wrap;
+    word-break: break-word;
+}
+
+.post-editor.is-empty::before {
+    content: attr(data-placeholder);
+    position: absolute;
+    color: var(--post-placeholder);
+    pointer-events: none;
+}
+
+.post-editor.is-dragover {
+    background: var(--post-brand-soft);
+    box-shadow: inset 0 0 0 2px var(--post-lavender);
+}
+
+/* 글 사이에 들어가는 사진 */
+.post-editor-image {
+    position: relative;
+    display: block;
+    width: fit-content;
+    max-width: 100%;
+    margin: 16px auto;
+    padding: 0;
+    user-select: none;
+}
+
+.post-editor-image img {
+    display: block;
+    max-width: 100%;
+    max-height: 460px;
+    height: auto;
+    border-radius: 2px;
+}
+
+.post-editor-image-remove {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 28px;
+    padding: 0;
+    border: 0;
+    border-radius: var(--post-radius);
+    background: rgba(25, 31, 40, .65);
+    color: #fff;
+    font-size: 18px;
+    line-height: 1;
+    cursor: pointer;
+    opacity: 0;
+    transition: opacity .15s ease, background .15s ease;
+}
+
+.post-editor-image:hover .post-editor-image-remove,
+.post-editor-image-remove:focus-visible {
+    opacity: 1;
+}
+
+.post-editor-image-remove:hover {
+    background: var(--post-danger);
+}
+
+/* 대표 이미지 (글 맨 위 사진) */
+.post-editor-image.is-representative::before {
+    content: "대표";
+    position: absolute;
+    top: 8px;
+    left: 8px;
+    z-index: 1;
+    padding: 3px 8px;
+    border-radius: 2px;
+    background: var(--post-brand);
+    color: #fff;
+    font-size: 12px;
+    font-weight: 700;
+    line-height: 1.3;
+}
+
+@media (hover: none) {
+    .post-editor-image-remove {
+        opacity: 1;
+    }
+}
+
+.post-sheet-foot {
+    padding: 14px 40px;
+    border-top: 1px solid var(--post-line);
+    background: #FCFCFD;
+}
+
+.post-sheet-foot .post-help,
+.post-sheet-foot .post-error {
+    margin: 0;
+}
+
+.post-sheet-foot .post-error + .post-help {
+    margin-top: 4px;
+}
+
+/* =========================================================
+   하단 발행 바 (화면 아래에 붙어 있음)
+========================================================= */
+.post-actions {
+    position: sticky;
+    bottom: 0;
+    z-index: 5;
+    display: flex;
+    justify-content: flex-end;
+    gap: 8px;
+    margin-top: 8px;
+    padding: 14px 0 18px;
+    background: var(--post-surface);
+}
+
+.post-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    height: 46px;
+    padding: 0 24px;
+    border: 1px solid transparent;
+    border-radius: var(--post-radius);
+    font: inherit;
+    font-size: 15px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: background .15s ease, border-color .15s ease;
+}
+
+.post-btn--ghost {
+    border-color: var(--post-line);
+    background: #fff;
+    color: var(--post-sub) !important;
+}
+
+.post-btn--ghost:hover {
+    border-color: #D1D6DB;
+    background: #F9FAFB;
+}
+
+.post-btn--primary {
+    min-width: 140px;
+    background: var(--post-brand);
+    color: #fff !important;
+}
+
+.post-btn--primary:hover {
+    background: var(--post-brand-hover);
+}
+
+.post-page-end {
+    height: 56px;
+}
+
+/* =========================================================
+   반응형
+========================================================= */
+@media (max-width: 680px) {
+    .post-hero {
+        height: 190px;
+    }
+
+    .post-hero-inner,
+    .post-form {
+        width: calc(100% - 32px);
+    }
+
+    .post-form {
+        margin-top: 20px;
+    }
+
+    .post-meta {
+        padding: 4px 20px;
+    }
+
+    .post-meta-row {
+        grid-template-columns: 1fr;
+        gap: 8px;
+    }
+
+    .post-meta-label {
+        padding-top: 0;
+    }
+
+    .post-meta-label .optional {
+        display: inline;
+        margin-left: 4px;
+    }
+
+    .post-grid-2 {
+        grid-template-columns: 1fr;
+        gap: 8px;
+    }
+
+    .post-title {
+        padding: 26px 20px 0;
+    }
+
+    .post-title-input {
+        font-size: 24px;
+    }
+
+    .post-counter {
+        right: 20px;
+    }
+
+    .post-editor-toolbar,
+    .post-editor,
+    .post-sheet-foot {
+        padding-left: 20px;
+        padding-right: 20px;
+    }
+
+    .post-editor-tip {
+        display: none;
+    }
+
+    .post-btn {
+        flex: 1;
+    }
+}

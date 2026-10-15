@@ -20,6 +20,7 @@ import service.community.MateMediaService;
 import service.community.MateMediaServiceImpl;
 import service.community.MateService;
 import service.community.MateServiceImpl;
+import util.PostImageOrder;
 import util.image.SharedImageStorage;
 
 @WebServlet("/mateModify")
@@ -365,8 +366,7 @@ public class MateModify extends HttpServlet {
 			for (Part part : newImageParts) {
 
 				String imageUrl =
-					SharedImageStorage.saveImage(
-						part,
+					SharedImageStorage.saveImage(part,
 						SharedImageStorage.Category.MATE
 					);
 
@@ -384,7 +384,14 @@ public class MateModify extends HttpServlet {
 			mate.setTitle(title.trim());
 			mate.setCountry(country.trim());
 			mate.setRecruitCount(recruitCount);
-			mate.setContent(content.trim());
+			/*
+			 * 본문의 사진 표시를 "본문에 나온 순서"로 다시 번호 매김
+			 * (작성 화면과 동일하게 글 맨 위 사진이 대표 이미지가 되도록)
+			 */
+			PostImageOrder.Result imageOrder =
+				PostImageOrder.reorder(content.trim(), existingImageCount + imageUrls.size());
+
+			mate.setContent(imageOrder.getContent());
 
 			int result =
 				mateService.updateMate(mate);
@@ -420,6 +427,34 @@ public class MateModify extends HttpServlet {
 				);
 
 				sortOrder++;
+			}
+
+			// ========================================
+			// 사진 순서를 본문에 나온 순서대로 다시 정렬
+			//  - 현재 목록 순서 : 남은 기존 사진 → 새 사진 (본문의 [[IMG:n]] 기준 순서)
+			// ========================================
+			List<MateMediaDto> orderedMediaList =
+				mateMediaService.selectMateMediaList(mateId);
+
+			int imageIndex = 0;
+
+			for (MateMediaDto media : orderedMediaList) {
+
+				if (!"IMAGE".equals(media.getMediaType())) {
+					continue;
+				}
+
+				if (imageIndex >= existingImageCount + imageUrls.size()) {
+					break;
+				}
+
+				mateMediaService.updateMateMediaSortOrder(
+					media.getMediaId(),
+					mateId,
+					imageOrder.getNewOrder(imageIndex)
+				);
+
+				imageIndex++;
 			}
 
 			// ========================================

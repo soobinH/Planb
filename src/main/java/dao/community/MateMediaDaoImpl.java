@@ -158,4 +158,23 @@ public class MateMediaDaoImpl implements MateMediaDao {
 			);
 		}
 	}
+
+	@Override
+	public int updateMateMediaSortOrder(long mediaId, long mateId, int sortOrder) {
+
+		Map<String, Object> param = new HashMap<>();
+
+		param.put("mediaId", mediaId);
+		param.put("mateId", mateId);
+		param.put("sortOrder", sortOrder);
+
+		try (SqlSession sqlSession = MybatisSqlSessionFactory.getSqlSessionFactory().openSession()) {
+
+			int result = sqlSession.update("mapper.community.mateMedia.updateMateMediaSortOrder", param);
+
+			sqlSession.commit();
+
+			return result;
+		}
+	}
 }

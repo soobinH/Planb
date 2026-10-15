@@ -82,4 +82,17 @@ public class TipMediaDaoImpl implements TipMediaDao {
 	        return sqlSession.selectOne("mapper.community.tipMedia.selectFirstTipMedia", tipId);
 	    }
 	}
+
+	@Override
+	public int updateTipMediaSortOrder(long mediaId, long tipId, int sortOrder) {
+	    Map<String, Object> param = new HashMap<>();
+	    param.put("mediaId", mediaId);
+	    param.put("tipId", tipId);
+	    param.put("sortOrder", sortOrder);
+	    try (SqlSession sqlSession = MybatisSqlSessionFactory.getSqlSessionFactory().openSession()) {
+	        int result = sqlSession.update("mapper.community.tipMedia.updateTipMediaSortOrder", param);
+	        sqlSession.commit();
+	        return result;
+	    }
+	}
 }
