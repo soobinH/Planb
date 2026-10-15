@@ -930,6 +930,31 @@
 	display: none !important;
 }
 
+/* ================================
+   페이지 스크롤바
+================================ */
+
+html {
+	scrollbar-width: thin;
+	scrollbar-color: #c7c9e8 transparent;
+}
+
+html::-webkit-scrollbar {
+	width: 7px;
+}
+
+html::-webkit-scrollbar-track {
+	background: transparent;
+}
+
+html::-webkit-scrollbar-thumb {
+	background: #c7c9e8;
+	border-radius: 9999px;
+}
+
+html::-webkit-scrollbar-thumb:hover {
+	background: #a8abe0;
+}
 
 /* ===== 상세 화면: 정보·일정 확대 / planner 지도 디자인 ===== */
 #scheduleDetail.detail-layout {
@@ -1108,3 +1133,92 @@
 @media (max-width: 1000px) {
     #detailSchedulePanel .detail-block-content.has-photos { grid-template-columns: minmax(0, 1fr) 145px; gap: 10px; }
 }
+
+
+/* 사진과 메모를 같은 Grid 행에 두어 시작 높이를 정확히 맞춤 */
+.detail-block-note-body { grid-column: 1 / -1; grid-row: 3; min-width: 0; }
+.has-photos > .detail-block-note-body { grid-column: 1; }
+#detailSchedulePanel .detail-block-note-body .detail-block-memo { margin-top: 0; }
+#detailSchedulePanel .detail-block-photos { grid-row: 3; align-self: start; }
+
+
+/* 원본 아이콘 배지를 한 줄에 두고 내용 너비를 유지하며 간격만 분산 */
+#scheduleDetail #detailInfoPanel .detail-travel-meta-inline {
+    display: flex; align-items: center; justify-content: space-between; flex-wrap: nowrap;
+    gap: 4px; width: 100%; margin-bottom: 14px; padding: 0;
+    border: 0; background: transparent; box-sizing: border-box;
+}
+#scheduleDetail #detailInfoPanel .detail-travel-meta-inline > span {
+    display: inline-flex; align-items: center; flex: 0 0 auto; gap: 4px;
+    padding: 6px 8px; border: 1px solid #D1D2F9; border-radius: 9999px;
+    background: #f5f5ff; color: #4a4a6a; white-space: nowrap;
+    font-size: 12px; font-weight: 500; line-height: 1.5; box-sizing: border-box;
+}
+.detail-trip-date { color: #4f566c; font-weight: 600; }
+#scheduleReportButton.detail-report-button {
+    min-height: 28px; padding: 5px 9px; gap: 5px;
+    border: 1px solid #f0dce0; border-radius: 9px;
+    background: #fff7f8; box-shadow: none; color: #b65c6a;
+    font-size: 11px; font-weight: 600; text-decoration: none; cursor: pointer;
+    transition: background .15s, border-color .15s, color .15s;
+}
+#scheduleReportButton.detail-report-button:hover {
+    background: #ffedf0; border-color: #e9bbc4; color: #a34153; text-decoration: none;
+}
+#scheduleReportButton.detail-report-button:focus-visible {
+    outline: 2px solid #6369D1; outline-offset: 3px;
+}
+#scheduleReportButton.detail-report-button svg { width: 13px; height: 13px; }
+#scheduleLikeButton.detail-thumbnail-like {
+    width: 36px; height: 36px; right: 12px; bottom: 12px; border-radius: 12px;
+    background: rgba(255,255,255,.79); border-color: rgba(255,255,255,.65);
+    backdrop-filter: blur(8px); box-shadow: 0 3px 10px rgba(24,32,52,.16);
+}
+#scheduleLikeButton.detail-thumbnail-like svg { width: 18px; height: 18px; }
+#scheduleLikeButton.detail-thumbnail-like:hover { background: rgba(255,255,255,.94); }
+#scheduleLikeButton.detail-thumbnail-like[aria-pressed="true"] { background: rgba(255,237,242,.9); border-color: rgba(255,190,207,.8); }
+/* planner의 지도 헤더, 메뉴와 범례 디자인 */
+.detail-map-toolbar { padding: 0 16px; border-bottom: 1px solid #f0f1f4; }
+.detail-map-toolbar .detail-map-heading { color: #1f2937; font-size: 14px; }
+#detailMapFilterButton { min-width: 86px; padding: 6px 12px; border-radius: 12px; font-size: 12px; }
+.detail-map-filter-menu { width: 176px; padding: 0; border-radius: 12px; }
+.detail-map-filter-menu button { padding: 8px 12px; border-radius: 0; font-size: 12px; }
+.detail-map-filter-menu button:hover { background: #faf5ff; }
+.detail-map-day-legend { padding: 8px 12px; border-radius: 16px; background: rgba(17,24,39,.68); backdrop-filter: blur(6px); min-width: 120px; font-size: 12px; }
+.detail-map-day-legend > div { padding: 4px 0; }
+.detail-map-day-legend > div + div { margin-top: 0; }
+.detail-map-day-legend-label { color: rgba(255,255,255,.9); }
+
+/* 상세 색상 포인트 — 배치와 planner 지도 팔레트는 유지 */
+#scheduleDetail .detail-content-panel { background: #f4f4fd; }
+#scheduleDetail .detail-info-panel { border-right-color: #D1D2F9; }
+#scheduleDetail .detail-info-header { background: #f7f7ff; border-bottom-color: #D1D2F9; }
+#scheduleDetail .detail-panel-header:not(.detail-info-header) { background: #fbfbff; border-bottom-color: #D1D2F9; }
+#scheduleDetail #detailInfoPanel .detail-travel-meta-inline > span:nth-child(1) {
+    background: #eeeffd !important; border-color: #D1D2F9 !important; color: #494da4 !important;
+}
+#scheduleDetail #detailInfoPanel .detail-travel-meta-inline > span:nth-child(2) {
+    background: #fafaff !important; border-color: #D1D2F9 !important; color: #555978 !important;
+}
+#scheduleDetail #detailInfoPanel .detail-travel-meta-inline > span:nth-child(3) {
+    background: #fff7d9 !important; border-color: #ffe58b !important; color: #6c591b !important;
+}
+#scheduleDetail .detail-cart-full {
+    background: linear-gradient(115deg, #6369D1, #777cdd) !important;
+    box-shadow: 0 5px 16px rgba(99,105,209,.2);
+}
+#scheduleDetail #detailSchedulePanel > .rounded-2xl { border-color: #D1D2F9 !important; }
+#scheduleDetail #detailSchedulePanel .detail-day-header { background: #eeeffc; }
+#scheduleDetail #detailSchedulePanel .detail-day-number { background: #FFD447; color: #554613; }
+#scheduleDetail #detailSchedulePanel .detail-day-label { color: #5359bf; }
+#scheduleDetail #detailSchedulePanel > .rounded-2xl:nth-of-type(even) .detail-day-header { background: #fff9e6; }
+#scheduleDetail #detailSchedulePanel > .rounded-2xl:nth-of-type(even) .detail-day-number { background: #6369D1; color: #fff; }
+#scheduleDetail #detailSchedulePanel .detail-block-memo { background: #f5f5ff; }
+#scheduleDetail #detailSchedulePanel .detail-cart-small[data-cart-state="NONE"] {
+    background: #fafaff; border-color: #D1D2F9; color: #6369D1;
+}
+#scheduleDetail #detailSchedulePanel .detail-cart-small[data-cart-state="NONE"]:hover {
+    background: #fff5ce; border-color: #FFD447;
+}
+#scheduleDetail #detailCommentPanel > .rounded-2xl { border-color: #D1D2F9 !important; }
+#scheduleDetail #scheduleReportButton svg { color: #EF6461; }

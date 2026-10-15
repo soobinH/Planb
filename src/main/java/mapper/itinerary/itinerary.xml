@@ -12,6 +12,11 @@
 		u.profile_img AS profileImg,
 		(
 		SELECT COUNT(*)
+		FROM TB_ITINERARY_DAY d
+		WHERE d.itinerary_id = i.itinerary_id
+		) AS dayCount,
+		(
+		SELECT COUNT(*)
 		FROM TB_ITINERARY_LIKE l
 		WHERE l.itinerary_id =
 		i.itinerary_id

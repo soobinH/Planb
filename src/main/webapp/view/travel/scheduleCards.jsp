@@ -44,7 +44,7 @@
 
 			<!-- 국가·도시 -->
 			<span
-				class="absolute top-2.5 left-2.5 text-[10px] font-bold px-2 py-0.5 rounded-full"
+				class="schedule-card-country absolute top-2.5 left-2.5 text-[10px] font-bold px-2 py-0.5 rounded-full"
 				style="background: #6369D1; color: white"> <c:out
 					value="${schedule.country}" /> · <c:out value="${schedule.city}" />
 			</span>
@@ -74,8 +74,8 @@
 
 			<!-- 여행 기간: n박 m일 -->
 			<span
-				class="absolute bottom-2.5 left-2.5 text-white text-[11px] font-bold bg-black/50 rounded-full px-2.5 py-1">
-				<c:out value="${schedule.durationText}" />
+				class="schedule-card-duration absolute bottom-2.5 left-2.5 text-white text-[11px] font-bold bg-black/50 rounded-full px-2.5 py-1">
+				<c:out value="${schedule.dayDurationText}" />
 			</span>
 
 		</div>
@@ -134,7 +134,7 @@
 			</div>
 
 			<!-- 작성자·작성일 -->
-			<div class="flex items-center justify-between gap-2 border-t pt-2.5"
+			<div class="schedule-card-author flex items-center justify-between gap-2 border-t pt-2.5"
 				style="border-color: #FFD447">
 
 				<!-- 작성자 프로필 사진·닉네임 -->

@@ -2122,7 +2122,12 @@
                             ? String(prefill.placeLng)
                             : (prefill.lng!=null ? String(prefill.lng) : '');
                 }
-                if(note) note.value=prefill.note||'';
+                if(note){
+                    note.value=prefill.note||'';
+                    // 과거 저장본의 200자 초과 메모는 임의로 잘라내지 않는다.
+                    // 저장할 때 초과 위치를 안내하여 직접 수정하도록 한다.
+                    note.dataset.plannerLegacyOverLimit=note.value.length>200 ? '1' : '';
+                }
                 var foreign=$('.planner-foreign-cost',card); if(foreign) foreign.textContent='—';
                 var body=$('[data-block-body]',card); if(body) body.classList.remove('is-collapsed');
                 var toggle=$('[data-block-toggle]',card); if(toggle){toggle.textContent='˄';toggle.setAttribute('aria-expanded','true');}
@@ -3388,14 +3393,39 @@
                 var memoInput=$('.planner-item-note',card);
                 var memoCounter=$('.planner-memo-count',card);
                 if(memoInput && memoCounter){
-                    var updateMemoCount=function(){
+                    var updateMemoCount=function(enforceLimit){
+                        // 한글 IME 조합에서는 일시적으로 maxlength보다 한 글자
+                        // 길어질 수 있으므로, 조합 완료 및 저장 시에도 보정한다.
+                        if(enforceLimit && memoInput.value.length>200
+                                && memoInput.dataset.plannerLegacyOverLimit!=='1'){
+                            memoInput.value=memoInput.value.slice(0,200);
+                        }
                         var length=memoInput.value.length;
+                        if(length<=200){
+                            memoInput.dataset.plannerLegacyOverLimit='';
+                        }
                         memoCounter.textContent=length+'/200';
                         memoCounter.classList.toggle('is-over-limit',length>200);
+                        memoInput.setAttribute('aria-invalid',length>200?'true':'false');
+                        memoCounter.title=length>200
+                            ? '메모가 200자를 초과했습니다. 저장하려면 200자 이하로 수정해 주세요.'
+                            : '';
                     };
                     memoInput.maxLength=200;
-                    memoInput.addEventListener('input',updateMemoCount);
-                    updateMemoCount();
+                    memoInput.addEventListener('input',function(event){
+                        updateMemoCount(!event.isComposing);
+                        markDirty();
+                    });
+                    memoInput.addEventListener('compositionend',function(){
+                        updateMemoCount(true);
+                    });
+                    memoInput.addEventListener('change',function(){
+                        updateMemoCount(true);
+                    });
+                    memoInput.addEventListener('blur',function(){
+                        updateMemoCount(true);
+                    });
+                    updateMemoCount(false);
                 }
                 if(toggle&&body) toggle.addEventListener('click',function(){var c=body.classList.toggle('is-collapsed');toggle.textContent=c?'⌄':'˄';toggle.title=c?'블록 펼치기':'블록 접기';toggle.setAttribute('aria-expanded',c?'false':'true')});
                 if(header&&body) header.addEventListener('click',function(e){ if(e.target.closest('button')) return; var c=body.classList.toggle('is-collapsed'); if(toggle){toggle.textContent=c?'⌄':'˄';toggle.title=c?'블록 펼치기':'블록 접기';toggle.setAttribute('aria-expanded',c?'false':'true');} });
@@ -4088,7 +4118,7 @@
                 }
 
                 region.disabled=false;
-                region.placeholder='지역/도시 검색';
+                region.placeholder='Google Places에서 지역/도시 검색';
                 dropdown.classList.add('hidden');
                 updateRegionClear();
             }
@@ -4116,12 +4146,12 @@
                 // Google Places Autocomplete는 검색어를 기준으로 후보를 반환한다.
                 // 빈 입력에서는 로컬 목록을 대신 보여주지 않는다.
                 if(!query){
-                    renderPlannerRegionMessage('지역/도시명을 입력하면 검색합니다.');
+                    renderPlannerRegionMessage('지역/도시명을 입력하면 Google Places에서 검색합니다.');
                     return;
                 }
 
                 // 입력 중 드롭다운을 유지하되, 후보 데이터는 Google Places 결과만 사용한다.
-                renderPlannerRegionMessage('지역/도시를 검색 중입니다.');
+                renderPlannerRegionMessage('Google Places에서 지역/도시를 검색 중입니다.');
 
                 plannerRegionSearchTimer=setTimeout(function(){
                     getPlannerPlacesLibrary()
@@ -4201,20 +4231,71 @@
                             if(items.length){
                                 renderPlannerRegionButtons(items);
                             }else{
-                                renderPlannerRegionMessage('검색 결과가 없습니다.');
+                                renderPlannerRegionMessage('Google Places 검색 결과가 없습니다.');
                             }
                         })
                         .catch(function(){
                             if(requestSeq!==plannerRegionSearchSeq) return;
-                            renderPlannerRegionMessage('지역/도시 검색에 실패했습니다.');
+                            renderPlannerRegionMessage('Google Places 지역/도시 검색에 실패했습니다.');
                         });
                 },250);
             }
 
-            function showRequiredFieldsModal(items){
+            function validatePlannerMemoLengths(){
+                var problem=null;
+                $$('.planner-day').some(function(day,dayIndex){
+                    return $$('.planner-block-card',day).some(function(card,blockIndex){
+                        var input=$('.planner-item-note',card);
+                        if(!input) return false;
+
+                        // 저장 버튼을 조합 중 바로 눌러도 201자가 넘어가지 않게 한다.
+                        // 단, 기존에 저장되어 있던 200자 초과 메모는
+                        // 사용자의 동의 없이 잘라내지 않는다.
+                        if(input.value.length>200
+                                && input.dataset.plannerLegacyOverLimit!=='1'){
+                            input.value=input.value.slice(0,200);
+                        }
+                        var count=$('.planner-memo-count',card);
+                        var length=input.value.length;
+                        if(length<=200){
+                            input.dataset.plannerLegacyOverLimit='';
+                        }
+                        if(count){
+                            count.textContent=length+'/200';
+                            count.classList.toggle('is-over-limit',length>200);
+                        }
+                        input.setAttribute('aria-invalid',length>200?'true':'false');
+                        if(length<=200) return false;
+                        problem={day:day,card:card,dayIndex:dayIndex,
+                            blockIndex:blockIndex,length:length};
+                        return true;
+                    });
+                });
+                if(!problem) return true;
+
+                // 초과된 블록이 접혀 있어도 사용자가 바로 찾을 수 있게 펼친다.
+                var dayBody=$('.planner-day-body',problem.day);
+                var blockBody=$('[data-block-body]',problem.card);
+                if(dayBody) dayBody.classList.remove('is-collapsed');
+                if(blockBody) blockBody.classList.remove('is-collapsed');
+                problem.card.scrollIntoView({behavior:'smooth',block:'center'});
+                var titleInput=$('.planner-item-title',problem.card);
+                var blockName=titleInput && titleInput.value.trim()
+                    ? ' ('+titleInput.value.trim()+')' : '';
+                showRequiredFieldsModal([
+                    'Day '+(problem.dayIndex+1)+'의 '+(problem.blockIndex+1)
+                    +'번째 블록'+blockName+' 메모가 '+problem.length
+                    +'자입니다. 200자 이하로 수정한 뒤 저장해 주세요.'
+                ], '블록 메모 글자 수 초과');
+                return false;
+            }
+
+            function showRequiredFieldsModal(items,headingText){
                 var backdrop=$('#plannerRequiredBackdrop');
                 var list=$('#plannerRequiredList');
                 if(!backdrop || !list) return;
+                var heading=$('#plannerRequiredTitle');
+                if(heading) heading.textContent=headingText||'필수 항목을 확인해 주세요';
                 list.innerHTML='';
                 items.forEach(function(item){
                     var li=document.createElement('li');
@@ -5310,6 +5391,8 @@
                     return;
                 }
 
+                // 미리보기에서 확정하는 순간에도 저장 직전 글자 수를 재검사한다.
+                if(!validatePlannerMemoLengths()) return;
                 var payload=collectPlannerPayload();
 
                 appendPlannerImageParts(form);
@@ -5472,6 +5555,7 @@
             var save=$('#plannerSaveBtn');
             if(save) save.addEventListener('click',function(){
                 if(!validatePlannerRequiredFields()) return;
+                if(!validatePlannerMemoLengths()) return;
 
                 /*
                  * DOMContentLoaded 시점 차이와 관계없이
