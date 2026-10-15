@@ -1,0 +1,42 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 800" preserveAspectRatio="xMidYMid slice">
+  <!-- 여행일정 기본 이미지 : 지도 + 경로 + 핀 -->
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#EEF0FF"/>
+      <stop offset="1" stop-color="#F7F3FF"/>
+    </linearGradient>
+  </defs>
+
+  <rect width="1200" height="800" fill="url(#bg)"/>
+
+  <!-- 배경 장식 -->
+  <circle cx="160" cy="650" r="130" fill="#E2E4FB"/>
+  <circle cx="1060" cy="150" r="100" fill="#E4E5FB"/>
+  <circle cx="300" cy="170" r="10" fill="#D1D2F9"/>
+  <circle cx="960" cy="640" r="14" fill="#D1D2F9"/>
+
+  <!-- 접힌 지도 -->
+  <path d="M370 250 L530 210 L670 250 L830 210 L830 570 L670 610 L530 570 L370 610 Z" fill="#fff"/>
+  <path d="M530 210 L670 250 L670 610 L530 570 Z" fill="#F1F1FD"/>
+  <path d="M370 250 L530 210 L670 250 L830 210 L830 570 L670 610 L530 570 L370 610 Z" fill="none" stroke="#D1D2F9" stroke-width="6" stroke-linejoin="round"/>
+  <line x1="530" y1="210" x2="530" y2="570" stroke="#D1D2F9" stroke-width="6"/>
+  <line x1="670" y1="250" x2="670" y2="610" stroke="#D1D2F9" stroke-width="6"/>
+
+  <!-- 경로 -->
+  <path d="M430 530 Q 480 420 570 450 T 720 360" fill="none" stroke="#6369D1" stroke-width="10" stroke-linecap="round" stroke-dasharray="4 26"/>
+  <circle cx="430" cy="530" r="14" fill="#6369D1"/>
+  <circle cx="430" cy="530" r="6" fill="#fff"/>
+
+  <!-- 도착 핀 -->
+  <path d="M740 380 C 700 330 680 300 680 270 A60 60 0 0 1 800 270 C 800 300 780 330 740 380 Z" fill="#FFD447"/>
+  <circle cx="740" cy="270" r="22" fill="#fff"/>
+  <ellipse cx="740" cy="392" rx="26" ry="7" fill="#C9CBF5"/>
+
+  <!-- 비행기 -->
+  <g transform="translate(470 300) rotate(-20)">
+    <path d="M-50 0 L50 0 Q62 0 62 -4 Q62 -8 50 -8 L-50 -8 Z" fill="#6369D1"/>
+    <path d="M-5 -6 L-30 -40 L-16 -40 L22 -6 Z" fill="#6369D1"/>
+    <path d="M-5 -2 L-30 32 L-16 32 L22 -2 Z" fill="#4B51B8"/>
+    <path d="M-50 -6 L-62 -24 L-52 -24 L-36 -6 Z" fill="#6369D1"/>
+  </g>
+</svg>

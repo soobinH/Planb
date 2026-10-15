@@ -1,6 +1,7 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
 	pageEncoding="UTF-8"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions"%>
 
 <%
 request.setAttribute("activePage", "search");
@@ -174,11 +175,10 @@ String displayQ = (keyword == null || keyword.trim().isEmpty()) ? "전체" : key
 		
 												<c:otherwise>
 		
-													<div
-														class="w-full h-full flex items-center justify-center text-sm font-bold"
-														style="background: #F0F0FF; color: #6369D1;">
-														이미지 없음
-													</div>
+													<img
+														src="${pageContext.request.contextPath}/view/assets/images/default/itinerary-default.svg"
+														alt="여행일정 기본 이미지"
+														class="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105">
 		
 												</c:otherwise>
 		
@@ -459,9 +459,10 @@ String displayQ = (keyword == null || keyword.trim().isEmpty()) ? "전체" : key
 										</c:when>
 
 										<c:otherwise>
-											<div class="w-full h-full flex items-center justify-center bg-gray-100 text-gray-400 text-sm">
-												이미지 없음
-											</div>
+											<img
+												src="${pageContext.request.contextPath}/view/assets/images/default/tip-default.svg"
+												alt="여행꿀팁 기본 이미지"
+												class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300">
 										</c:otherwise>
 
 									</c:choose>
@@ -482,7 +483,11 @@ String displayQ = (keyword == null || keyword.trim().isEmpty()) ? "전체" : key
 
 
 									<p class="text-[11px] text-gray-500 leading-relaxed line-clamp-2 flex-1">
-										<c:out value="${tip.content}" />
+										<c:set var="tipPreview" value="${tip.content}" />
+										<c:forEach var="imgNo" begin="0" end="5">
+											<c:set var="tipPreview" value="${fn:replace(tipPreview, '[[IMG:' += imgNo += ']]', ' ')}" />
+										</c:forEach>
+										<c:out value="${tipPreview}" />
 									</p>
 
 
