@@ -15,10 +15,10 @@ request.setAttribute("activePage", "tips");
 	<script>
 		window.selectedCountry = "${country}";
 	</script>
-	<link rel="stylesheet" href="${pageContext.request.contextPath}/view/assets/css/tips/tipList.css?v=20261015-scrollbar">
+	<link rel="stylesheet" href="${pageContext.request.contextPath}/view/assets/css/tips/tipList.css?v=20261015-card-match">
 	<script defer src="${pageContext.request.contextPath}/view/assets/js/tips/tipList.js"></script>
 </head>
-<body class="site-shell">
+<body class="site-shell tip-list-page">
 	<jsp:include page="/common/header.jsp" />
 	<div class="tips-page-layout">
 		<div class="flex" style="min-height: calc(100vh - 68px)">
@@ -390,8 +390,7 @@ request.setAttribute("activePage", "tips");
 				<div class="grid gap-5" style="grid-template-columns: repeat(4, minmax(0, 1fr))" data-card-grid>
 					<c:forEach var="tip" items="${tipList}">
 						<a href="${pageContext.request.contextPath}/tipDetail?tipId=${tip.tipId}"
-							class="relative bg-white rounded-2xl border border-gray-100 shadow-sm hover:shadow-md 
-							transition-shadow cursor-pointer group overflow-hidden flex flex-col">
+							class="tip-schedule-card relative bg-white rounded-2xl border border-gray-100 transition-all duration-200 cursor-pointer group overflow-hidden flex flex-col">
 				
 							<div class="relative shrink-0 overflow-hidden" style="aspect-ratio: 4 / 3">
 								<c:choose>
@@ -407,7 +406,7 @@ request.setAttribute("activePage", "tips");
 								</c:choose>
 							</div>
 							<div class="flex flex-col flex-1 p-3 min-h-0">
-								<h3 class="font-bold text-[13px] text-gray-900 leading-snug line-clamp-2 
+								<h3 class="tip-card-title font-bold text-[14px] text-gray-900 leading-snug line-clamp-2 
 									group-hover:text-brand transition-colors mb-1.5" style="min-height: 2.6em">
 									<c:out value="${tip.title}" />
 								</h3>
@@ -417,7 +416,7 @@ request.setAttribute("activePage", "tips");
 								<c:set var="tipPreview" value="${fn:replace(tipPreview, '[[IMG:3]]', ' ')}" />
 								<c:set var="tipPreview" value="${fn:replace(tipPreview, '[[IMG:4]]', ' ')}" />
 								<c:set var="tipPreview" value="${fn:replace(tipPreview, '[[IMG:5]]', ' ')}" />
-								<p class="text-[11px] text-gray-500 leading-relaxed line-clamp-2 flex-1">
+								<p class="tip-card-summary text-[12px] text-gray-500 leading-relaxed line-clamp-2 flex-1">
 									<c:out value="${tipPreview}" />
 								</p>
 								<c:if test="${not empty tip.hashtag}">
@@ -538,13 +537,13 @@ request.setAttribute("activePage", "tips");
 										    </c:choose>
 										
 										</div>
-										<span class="text-[10px] text-gray-500" style="min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
+										<span class="tip-card-author-name text-[11px] text-gray-500 font-medium" style="min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
 											<c:out value="${tip.nickname}" default="알 수 없음" />
 										</span>
 										
 										
 									</div>
-                        <span class="text-[10px] text-gray-400" style="flex-shrink: 0; white-space: nowrap;"><c:out value="${tip.timeAgo}" /></span>
+                        <span class="tip-card-time text-[10px] text-gray-400" style="flex-shrink: 0; white-space: nowrap;"><c:out value="${tip.timeAgo}" /></span>
                     </div>
                 </div>
 							</div>

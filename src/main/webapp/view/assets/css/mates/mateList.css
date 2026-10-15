@@ -326,3 +326,6 @@
         display: none;
     }
 }
+
+/* 일정 목록과 동일한 바탕색: 사이드바와 카드는 흰색 유지 */
+.mate-list-page > .min-h-screen > .flex > main { background: #f8f8fd; }
