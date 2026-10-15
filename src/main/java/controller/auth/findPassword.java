@@ -39,13 +39,38 @@ public class findPassword extends HttpServlet {
 
 		try {
 
+			HttpSession session = request.getSession();
+
+			/*
+			 * 이메일 인증 확인
+			 * 비밀번호 찾기 화면에서 인증을 마친 이메일과 입력한 이메일이 같아야 진행
+			 */
+			Boolean emailVerified = (Boolean) session.getAttribute("findPwEmailVerified");
+
+			String verifiedEmail = (String) session.getAttribute("findPwVerifiedEmail");
+
+			if (!Boolean.TRUE.equals(emailVerified) || verifiedEmail == null || email == null
+					|| !verifiedEmail.equalsIgnoreCase(email.trim())) {
+
+				throw new Exception("이메일 인증을 완료해주세요.");
+			}
+
 			Long userId = service.findPasswordUser(loginId, name, email, phone);
+
+			/*
+			 * 사용한 이메일 인증 정보 제거
+			 */
+			session.removeAttribute("findPwEmailVerified");
+
+			session.removeAttribute("findPwVerifiedEmail");
+
+			session.removeAttribute("findPwEmailVerificationEmail");
+
+			session.removeAttribute("findPwEmailVerificationSentAt");
 
 			/*
 			 * URL이나 hidden input에 userId를 넣지 않고 세션에 저장
 			 */
-			HttpSession session = request.getSession();
-
 			session.setAttribute("passwordResetUserId", userId);
 
 			response.sendRedirect(request.getContextPath() + "/view/auth/resetPassword.jsp");

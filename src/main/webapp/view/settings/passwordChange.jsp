@@ -422,7 +422,7 @@ boolean socialUser = user.getProvider() != null && !"LOCAL".equalsIgnoreCase(use
 									autocomplete="new-password" placeholder="새 비밀번호" required autofocus>
 
 
-									<small> 영문, 숫자, 특수문자를 포함해 8자 이상 입력해주세요. </small>
+									<small> 영문과 숫자를 포함해 8자 이상 입력해주세요. </small>
 
 
 								</label>
