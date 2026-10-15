@@ -26,7 +26,7 @@ request.setAttribute("activePage", "travel");
 <title><c:out value="${itinerary.title}" /> | Planb</title>
 <jsp:include page="/common/headStyles.jsp" />
 <link rel="stylesheet"
-   href="${pageContext.request.contextPath}/view/assets/css/travel/scheduleDetail.css?v=20261015-scrollbar">
+   href="${pageContext.request.contextPath}/view/assets/css/travel/scheduleDetail.css?v=20261015-typography">
 </head>
 <body class="site-shell"><jsp:include page="/common/header.jsp" />
    <main id="scheduleDetail" class="detail-layout"
@@ -122,9 +122,9 @@ request.setAttribute("activePage", "travel");
                   class="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent"></div>
                <span
                   class="detail-country-badge absolute top-4 left-4 text-[11px] font-bold px-2.5 py-1 rounded-full text-white"
-                  style="background: #D1D2F9; color: #494da4"> 🌏 <c:out
+                  style="background: rgba(209,210,249,.79); color: #494da4"> <c:out
                      value="${itinerary.country}" /> <c:if
-                     test="${not empty itinerary.city}">
+                     test="${not empty fn:trim(itinerary.city)}">
                        · <c:out value="${itinerary.city}" />
                   </c:if>
                </span> <%-- 썸네일 기간 배지 숨김
@@ -693,7 +693,7 @@ request.setAttribute("activePage", "travel");
                                     </p>
                                  </c:if>
                                  </div>
-                                 <div class="detail-block-note-body">
+                                 <div class="detail-block-note-body${empty block.memo ? '' : ' has-memo'}">
                                  <!-- 메모: 태그 안쪽의 불필요한 공백 제거 -->
                                  <c:if test="${not empty block.memo}">
                                     <p class="detail-block-memo"
@@ -702,7 +702,7 @@ request.setAttribute("activePage", "travel");
 
                                  <!-- 비용: 0원도 표시 -->
                                  <c:if test="${not empty block.cost}">
-                                    <p class="mt-2 text-[11px] font-semibold"
+                                    <p class="detail-block-cost mt-2 text-[11px] font-semibold"
                                        style="color: #6369D1">
 
                                        <fmt:formatNumber value="${block.cost}" pattern="#,##0.##" />
