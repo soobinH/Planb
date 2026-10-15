@@ -23,7 +23,7 @@ request.setAttribute("activePage", "travel");
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title><c:out value="${itinerary.title}" /> | Planb</title>
+<title><c:out value="${itinerary.title}" /></title>
 <jsp:include page="/common/headStyles.jsp" />
 <link rel="stylesheet"
    href="${pageContext.request.contextPath}/view/assets/css/travel/scheduleDetail.css?v=20261015-typography">

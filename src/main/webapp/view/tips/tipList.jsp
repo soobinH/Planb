@@ -400,8 +400,9 @@ request.setAttribute("activePage", "tips");
 											class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300">
 									</c:when>
 									<c:otherwise>
-										<img src="${pageContext.request.contextPath}/view/assets/images/default/tip-default.svg" alt="여행꿀팁 기본 이미지"
-											class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300">
+										<div class="w-full h-full flex items-center justify-center bg-gray-100 text-gray-400 text-sm">
+											이미지 없음
+										</div>
 									</c:otherwise>
 								</c:choose>
 							</div>
@@ -424,69 +425,15 @@ request.setAttribute("activePage", "tips");
 										<c:forEach var="tag" items="${tip.hashtagList}">
 											<span
 												class="inline-flex items-center rounded-full px-2.5 py-1 text-[11px] font-semibold"
-												style="background: #FFD447; color: #6369D1; border: 1px solid #E0E1FF;">
+												style="background: rgba(255,212,71,.55); color: #6369D1; border: 1px solid #E0E1FF;">
 												${tag}
 											</span>
 										</c:forEach>
 									</div>
 								</c:if>
-								<div class="pt-2 mt-auto border-t border-gray-50">
-									<div class="flex items-center gap-1.5 mb-1.5">
-										<!-- 작성자 프로필 이미지 -->
-										<div class="w-5 h-5 rounded-full overflow-hidden flex items-center justify-center text-white font-bold shrink-0"
-										     style="background: linear-gradient(135deg, #6369D1, #8B5CF6);">
-										
-										    <c:choose>
-										
-										        <%-- 프로필 이미지가 있는 경우 --%>
-										        <c:when test="${not empty tip.profileImg}">
-										
-										            <img
-										                src="${pageContext.request.contextPath}/uploads/profile/${tip.profileImg}"
-										                alt="작성자 프로필"
-										                class="w-full h-full object-cover rounded-full"
-										                loading="lazy"
-										                onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';"
-										            />
-										
-										            <%-- 이미지 로딩 실패 시 닉네임 첫 글자 --%>
-										            <span class="w-full h-full items-center justify-center"
-										                  style="display: none;">
-										                <c:choose>
-										                    <c:when test="${not empty tip.nickname}">
-										                        <c:out value="${tip.nickname.substring(0, 1)}"/>
-										                    </c:when>
-										                    <c:otherwise>U</c:otherwise>
-										                </c:choose>
-										            </span>
-										
-										        </c:when>
-										
-										        <%-- 프로필 이미지가 없는 경우 --%>
-										        <c:otherwise>
-										            <span>
-										                <c:choose>
-										                    <c:when test="${not empty tip.nickname}">
-										                        <c:out value="${tip.nickname.substring(0, 1)}"/>
-										                    </c:when>
-										                    <c:otherwise>U</c:otherwise>
-										                </c:choose>
-										            </span>
-										        </c:otherwise>
-										
-										    </c:choose>
-										
-										</div>
-										<span class="text-[10px] text-gray-500">
-											<c:out value="${tip.nickname}" default="알 수 없음" />
-										</span>
-										<span class="text-[10px] text-gray-300">·</span>
-										<span class="text-[10px] text-gray-400">
-											${tip.timeAgo}
-										</span>
-									</div>
-									<!-- 카드 하단 정보 -->
-									<div class="flex items-center justify-start gap-4 mt-2 text-[11px] text-gray-400">
+								<div class="mt-auto pt-2">
+                    <!-- 좋아요·댓글·조회수는 작성자 구분선 위에 표시 -->
+                    <div class="tip-card-stats flex items-center gap-2.5 mb-3 text-[11px] text-gray-400">
 									
 									    <!-- 좋아요 -->
 									    <span class="flex items-center gap-1">
@@ -544,7 +491,62 @@ request.setAttribute("activePage", "tips");
 									    </span>
 									
 									</div>
-								</div>
+                    <div class="tip-card-author flex items-center justify-between gap-2 border-t pt-2.5" style="border-color: #D1D2F9;">
+                        <div class="flex items-center gap-1.5 min-w-0">
+										<!-- 작성자 프로필 이미지 -->
+										<div class="w-5 h-5 rounded-full overflow-hidden flex items-center justify-center text-white font-bold shrink-0"
+										     style="background: linear-gradient(135deg, #6369D1, #8B5CF6);">
+										
+										    <c:choose>
+										
+										        <%-- 프로필 이미지가 있는 경우 --%>
+										        <c:when test="${not empty tip.profileImg}">
+										
+										            <img
+										                src="${pageContext.request.contextPath}/uploads/profile/${tip.profileImg}"
+										                alt="작성자 프로필"
+										                class="w-full h-full object-cover rounded-full"
+										                loading="lazy"
+										                onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';"
+										            />
+										
+										            <%-- 이미지 로딩 실패 시 닉네임 첫 글자 --%>
+										            <span class="w-full h-full items-center justify-center"
+										                  style="display: none;">
+										                <c:choose>
+										                    <c:when test="${not empty tip.nickname}">
+										                        <c:out value="${tip.nickname.substring(0, 1)}"/>
+										                    </c:when>
+										                    <c:otherwise>U</c:otherwise>
+										                </c:choose>
+										            </span>
+										
+										        </c:when>
+										
+										        <%-- 프로필 이미지가 없는 경우 --%>
+										        <c:otherwise>
+										            <span>
+										                <c:choose>
+										                    <c:when test="${not empty tip.nickname}">
+										                        <c:out value="${tip.nickname.substring(0, 1)}"/>
+										                    </c:when>
+										                    <c:otherwise>U</c:otherwise>
+										                </c:choose>
+										            </span>
+										        </c:otherwise>
+										
+										    </c:choose>
+										
+										</div>
+										<span class="text-[10px] text-gray-500" style="min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
+											<c:out value="${tip.nickname}" default="알 수 없음" />
+										</span>
+										
+										
+									</div>
+                        <span class="text-[10px] text-gray-400" style="flex-shrink: 0; white-space: nowrap;"><c:out value="${tip.timeAgo}" /></span>
+                    </div>
+                </div>
 							</div>
 						</a>
 					</c:forEach>

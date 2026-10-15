@@ -19,8 +19,7 @@
 							class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300">
 					</c:when>
 					<c:otherwise>
-						<img src="${pageContext.request.contextPath}/view/assets/images/default/tip-default.svg" alt="여행꿀팁 기본 이미지"
-							class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300">
+						<div class="w-full h-full flex items-center justify-center bg-gray-100 text-gray-400 text-sm">이미지 없음</div>
 					</c:otherwise>
 				</c:choose>
 			</div>
@@ -36,15 +35,75 @@
 					<div class="flex flex-wrap gap-1.5 mt-2 mb-3">
 						<c:forEach var="tag" items="${tip.hashtagList}">
 							<span class="inline-flex items-center rounded-full px-2.5 py-1 text-[11px] font-semibold"
-								  style="background: #FFD447; color: #6369D1; border: 1px solid #E0E1FF;">
+								  style="background: rgba(255,212,71,.55); color: #6369D1; border: 1px solid #E0E1FF;">
 								  ${tag}
 							</span>
 						</c:forEach>
 					</div>
 				</c:if>
-				<hr class="line">
-				<div class="pt-2 mt-auto border-t border-gray-50">
-					<div class="flex items-center gap-1.5 mb-1.5">
+				
+				<div class="mt-auto pt-2">
+                    <!-- 좋아요·댓글·조회수는 작성자 구분선 위에 표시 -->
+                    <div class="tip-card-stats flex items-center gap-2.5 mb-3 text-[11px] text-gray-400">
+									
+									    <!-- 좋아요 -->
+									    <span class="flex items-center gap-1">
+									        <svg
+									            width="15"
+									            height="15"
+									            viewBox="0 0 24 24"
+									            fill="none"
+									            stroke="currentColor"
+									            stroke-width="2"
+									            stroke-linecap="round"
+									            stroke-linejoin="round">
+									
+									            <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" />
+									
+									        </svg>
+									        <span>${tip.likeCount}</span>
+									    </span>
+									
+									    <!-- 댓글 -->
+									    <span class="flex items-center gap-1">
+									        <svg
+									            width="15"
+									            height="15"
+									            viewBox="0 0 24 24"
+									            fill="none"
+									            stroke="currentColor"
+									            stroke-width="2"
+									            stroke-linecap="round"
+									            stroke-linejoin="round">
+									
+									            <path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z" />
+									
+									        </svg>
+									        <span>${tip.commentCount}</span>
+									    </span>
+									
+									    <!-- 조회수 -->
+									    <span class="flex items-center gap-1">
+									        <svg
+									            width="15"
+									            height="15"
+									            viewBox="0 0 24 24"
+									            fill="none"
+									            stroke="currentColor"
+									            stroke-width="2"
+									            stroke-linecap="round"
+									            stroke-linejoin="round">
+									
+									            <path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12Z" />
+									            <circle cx="12" cy="12" r="3" />
+									
+									        </svg>
+									        <span>${tip.viewCount}</span>
+									    </span>
+									
+									</div>
+                    <div class="tip-card-author flex items-center justify-between gap-2 border-t pt-2.5" style="border-color: #D1D2F9;">
+                        <div class="flex items-center gap-1.5 min-w-0">
 						<div class="w-5 h-5 rounded-full flex items-center justify-center text-white text-[9px] font-bold shrink-0"
 							 style="background: #8B5CF6">
 							<c:choose>
@@ -56,21 +115,15 @@
 								</c:otherwise>
 							</c:choose>
 						</div>
-							<span class="text-[10px] text-gray-500">
+							<span class="text-[10px] text-gray-500" style="min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
 							<c:out value="${tip.nickname}" default="알 수 없음" />
 						</span>
-						<span class="text-[10px] text-gray-300">·</span>
-						<span class="text-[10px] text-gray-400"> ${tip.timeAgo} </span>
+						
+						
 					</div>
-					<div class="flex items-center gap-3 text-[10px] text-gray-400">
-						<span>
-							♡ ${tip.likeCount}
-						</span>
-						<span>
-							▢ ${tip.commentCount}
-						</span>
-					</div>
-				</div>
+                        <span class="text-[10px] text-gray-400" style="flex-shrink: 0; white-space: nowrap;"><c:out value="${tip.timeAgo}" /></span>
+                    </div>
+                </div>
 			</div>
 		</a>
 	</c:forEach>
