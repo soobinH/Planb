@@ -231,6 +231,15 @@ request.setAttribute("activePage", "notifications");
             .pb-notification-message { font-size: 13px; }
             .pb-notification-arrow { margin-top: 11px; width: 15px; }
         }
+
+        .pb-notifications-filters { display: flex; align-items: center; gap: 6px; padding: 14px 26px; border-bottom: 1px solid #eef0f5; background: #fcfcff; }
+        .pb-notifications-filter { display: inline-flex; align-items: center; justify-content: center; min-height: 34px; padding: 7px 16px; border: 1px solid transparent; border-radius: 999px; color: #737687; font-size: 13px; font-weight: 600; text-decoration: none; transition: background .15s, color .15s; }
+        .pb-notifications-filter:hover { background: #eeeefe; color: #6369D1; }
+        .pb-notifications-filter[aria-current="page"] { background: #6369D1; color: #fff; box-shadow: 0 3px 9px rgba(99,105,209,.14); }
+        .pb-notifications-filter:focus-visible { outline: 3px solid #D1D2F9; outline-offset: 2px; }
+        .pb-notifications-panel[data-notification-filter="unread"] [data-notification-empty]::after,
+        .pb-notifications-panel[data-notification-filter="read"] [data-notification-empty]::after { content: "최근 알림 100개 안에서 선택한 상태의 알림을 확인할 수 있어요."; }
+        @media (max-width: 600px) { .pb-notifications-filters { padding: 12px 18px; } }
     </style>
 </head>
 <body class="site-shell">
@@ -251,7 +260,8 @@ request.setAttribute("activePage", "notifications");
         </div>
         <div class="pb-notifications-panel" data-notification-list
             data-read-url="${pageContext.request.contextPath}/notifications/read"
-            data-context-path="${pageContext.request.contextPath}">
+            data-context-path="${pageContext.request.contextPath}"
+            data-notification-filter="${empty notificationFilter ? 'all' : notificationFilter}">
             <div class="pb-notifications-toolbar">
                 <span class="pb-notifications-toolbar-title">
                     새 알림
@@ -259,10 +269,22 @@ request.setAttribute("activePage", "notifications");
                 </span>
                 <span class="pb-notifications-toolbar-hint">최근 알림 최대 100개</span>
             </div>
+            <nav class="pb-notifications-filters" aria-label="알림 읽음 상태">
+                <c:url var="notificationAllUrl" value="/notifications"><c:param name="filter" value="all" /></c:url>
+                <c:url var="notificationUnreadUrl" value="/notifications"><c:param name="filter" value="unread" /></c:url>
+                <c:url var="notificationReadUrl" value="/notifications"><c:param name="filter" value="read" /></c:url>
+                <a class="pb-notifications-filter" href="${notificationAllUrl}" aria-current="${empty notificationFilter or notificationFilter eq 'all' ? 'page' : 'false'}">전체</a>
+                <a class="pb-notifications-filter" href="${notificationUnreadUrl}" aria-current="${notificationFilter eq 'unread' ? 'page' : 'false'}">안 읽음</a>
+                <a class="pb-notifications-filter" href="${notificationReadUrl}" aria-current="${notificationFilter eq 'read' ? 'page' : 'false'}">읽음</a>
+            </nav>
             <div data-notification-rows>
             <c:choose>
                 <c:when test="${empty notifications}">
-                    <p data-notification-empty>아직 도착한 알림이 없습니다.</p>
+                    <p data-notification-empty><c:choose>
+                        <c:when test="${notificationFilter eq 'unread'}">읽지 않은 알림이 없습니다.</c:when>
+                        <c:when test="${notificationFilter eq 'read'}">읽은 알림이 없습니다.</c:when>
+                        <c:otherwise>아직 도착한 알림이 없습니다.</c:otherwise>
+                    </c:choose></p>
                 </c:when>
                 <c:otherwise>
                     <c:forEach var="notification" items="${notifications}">
@@ -312,6 +334,6 @@ request.setAttribute("activePage", "notifications");
         <p class="pb-notifications-note">최근 알림 100개까지 더보기로 확인할 수 있어요. 읽은 알림도 목록에 남습니다.</p>
     </main>
     <jsp:include page="/common/footer.jsp" />
-    <script src="${pageContext.request.contextPath}/view/assets/js/common/notifications.js?v=3" defer></script>
+    <script src="${pageContext.request.contextPath}/view/assets/js/common/notifications.js?v=20261015-filters" defer></script>
 </body>
 </html>

@@ -14,6 +14,8 @@ public interface NotificationDao {
 
 	List<NotificationDto> selectNotificationPage(SqlSession sqlSession, Long recipientUserId, Long beforeNotificationId) throws Exception;
 
+	List<NotificationDto> selectNotificationPage(SqlSession sqlSession, Long recipientUserId, Long beforeNotificationId, String readFilter) throws Exception;
+
 	long countUnreadNotifications(SqlSession sqlSession, Long recipientUserId) throws Exception;
 
 	NotificationDto selectNotification(SqlSession sqlSession, Long notificationId, Long recipientUserId)

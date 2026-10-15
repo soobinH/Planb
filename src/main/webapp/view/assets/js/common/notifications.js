@@ -8,6 +8,23 @@
         return;
     }
 
+    const readFilter = list.dataset.notificationFilter || "all";
+
+    function updateEmptyState() {
+        const rows = list.querySelector("[data-notification-rows]");
+        if (!rows) return;
+        let empty = rows.querySelector("[data-notification-empty]");
+        if (rows.querySelector("[data-notification-row]")) {
+            if (empty) empty.remove();
+        } else if (!empty) {
+            empty = document.createElement("p");
+            empty.dataset.notificationEmpty = "";
+            empty.textContent = readFilter === "unread" ? "읽지 않은 알림이 없습니다." :
+                readFilter === "read" ? "읽은 알림이 없습니다." : "아직 도착한 알림이 없습니다.";
+            rows.appendChild(empty);
+        }
+    }
+
     function showError(message) {
         if (typeof window.tripilyToast === "function") {
             window.tripilyToast(message);
@@ -58,6 +75,7 @@
 
     const pendingRows = new WeakSet();
     let readVersion = 0;
+    let paginationVersion = 0;
 
     function makeRow(item) {
         const row = document.createElement("a");
@@ -118,6 +136,7 @@
             if (!cursor || !moreButton.dataset.moreUrl) {
                 return;
             }
+            const paginationAtStart = paginationVersion;
             moreButton.disabled = true;
             moreButton.textContent = "불러오는 중…";
             try {
@@ -125,7 +144,7 @@
                 let version;
                 do {
                     version = readVersion;
-                    const params = new URLSearchParams({beforeNotificationId: cursor});
+                    const params = new URLSearchParams({beforeNotificationId: cursor, filter: readFilter});
                     const response = await fetch(moreButton.dataset.moreUrl + "?" + params, {
                         credentials: "same-origin", cache: "no-store",
                         headers: {"Accept": "application/json"}
@@ -135,6 +154,7 @@
                         throw new Error(data.message || "추가 알림을 불러오지 못했습니다.");
                     }
                 } while (version !== readVersion);
+                if (paginationAtStart !== paginationVersion) return;
                 const rows = list.querySelector("[data-notification-rows]");
                 const existing = new Set(Array.from(list.querySelectorAll("[data-notification-row]"), function (row) {
                     return row.dataset.notificationId;
@@ -145,6 +165,7 @@
                         existing.add(String(item.notificationId));
                     }
                 });
+                updateEmptyState();
                 setUnreadCount(data.unreadCount);
                 moreButton.dataset.nextCursor = data.nextCursor || "";
                 if (moreWrap) {
@@ -224,7 +245,7 @@
             readAllButton.disabled = true;
 
             try {
-                const data = await postForm(readAllUrl, {});
+                const data = await postForm(readAllUrl, {filter: readFilter});
                 readVersion++;
                 // 응답의 실제 읽음 상태를 반영 (처리 도중 새로 온 알림은 미읽음 유지)
                 const states = new Map((data.notifications || []).map(function (item) {
@@ -236,6 +257,15 @@
                         markRowRead(row);
                     }
                 });
+                if (readFilter !== "all") {
+                    paginationVersion++;
+                    const rows = list.querySelector("[data-notification-rows]");
+                    rows.replaceChildren();
+                    (data.notifications || []).forEach(function (item) { rows.appendChild(makeRow(item)); });
+                    if (moreButton) moreButton.dataset.nextCursor = data.nextCursor || "";
+                    if (moreWrap) moreWrap.hidden = data.hasMore !== true;
+                }
+                updateEmptyState();
                 setUnreadCount(data.unreadCount);
 
                 window.dispatchEvent(

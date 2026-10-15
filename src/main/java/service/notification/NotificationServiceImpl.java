@@ -60,17 +60,25 @@ public class NotificationServiceImpl implements NotificationService {
 	@Override
 	public Map<String, Object> getNotificationPage(Long recipientUserId, Long beforeNotificationId)
 			throws Exception {
-		validateUserId(recipientUserId);
-		if (beforeNotificationId != null && beforeNotificationId <= 0) {
+        return getNotificationPage(recipientUserId, beforeNotificationId, "all");
+    }
+
+    @Override
+    public Map<String, Object> getNotificationPage(Long recipientUserId, Long beforeNotificationId, String readFilter)
+            throws Exception {
+        readFilter = "unread".equals(readFilter) ? "unread" : "read".equals(readFilter) ? "read" : "all";
+        validateUserId(recipientUserId);
+        if (beforeNotificationId != null && beforeNotificationId <= 0) {
 			throw new IllegalArgumentException("더보기 기준 알림 번호가 올바르지 않습니다.");
 		}
 		try (SqlSession sqlSession = MybatisSqlSessionFactory.getSqlSessionFactory().openSession()) {
 			List<NotificationDto> rows = notificationDao.selectNotificationPage(
-					sqlSession, recipientUserId, beforeNotificationId);
+					sqlSession, recipientUserId, beforeNotificationId, readFilter);
 			boolean hasMore = rows.size() > 20;
 			List<NotificationDto> page = new ArrayList<>(rows.subList(0, Math.min(rows.size(), 20)));
 			Map<String, Object> result = new HashMap<>();
 			result.put("notifications", toResponseList(page));
+            result.put("filter", readFilter);
 			result.put("unreadCount", notificationDao.countUnreadNotifications(sqlSession, recipientUserId));
 			result.put("hasMore", hasMore);
 			result.put("nextCursor", page.isEmpty() ? null :

@@ -11,7 +11,7 @@ request.setAttribute("activePage", "tips");
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<title>Planb</title>
 	<jsp:include page="/common/headStyles.jsp" /></head>
-	<link rel="stylesheet" href="${pageContext.request.contextPath}/view/assets/css/tips/tipDetail.css?v=20261015-scrollbar">
+	<link rel="stylesheet" href="${pageContext.request.contextPath}/view/assets/css/tips/tipDetail.css?v=20261015-report">
 	<script defer src="${pageContext.request.contextPath}/view/assets/js/tips/tipDetail.js"></script>
 <body class="site-shell">
 	<jsp:include page="/common/header.jsp" />
@@ -171,20 +171,9 @@ request.setAttribute("activePage", "tips");
 										data-login-url="${pageContext.request.contextPath}/auth/login"
 										aria-haspopup="dialog"
 										aria-controls="tipReportModal"
-										class="flex items-center gap-1 px-3 py-2 rounded-xl text-[12px] font-bold border transition-all hover:bg-[#FFE8DE] hover:border-[#FF8A5B] hover:text-[#D95B2B]"
-										style="background: #FFF5F0; border-color: #FFB08A; color: #E76F3C;">
+										class="tip-detail-report-button">
 									
-										<svg
-											class="w-3.5 h-3.5"
-											fill="none"
-											stroke="currentColor"
-											viewBox="0 0 24 24">
-											<path
-												stroke-linecap="round"
-												stroke-linejoin="round"
-												stroke-width="2"
-												d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
-										</svg>
+										<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 21V3M5 4h14l-3 5 3 5H5"/></svg>
 									
 										신고
 									</button>

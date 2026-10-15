@@ -17,6 +17,9 @@ public interface NotificationService {
 	// 최근 100개 범위에서 20개씩 더보기
 	Map<String, Object> getNotificationPage(Long recipientUserId, Long beforeNotificationId) throws Exception;
 
+	// 최근 100개 범위에서 전체/안 읽음/읽음 필터와 더보기
+	Map<String, Object> getNotificationPage(Long recipientUserId, Long beforeNotificationId, String readFilter) throws Exception;
+
 	// 알림 하나 읽음 처리
 	boolean markAsRead(Long notificationId, Long recipientUserId) throws Exception;
 

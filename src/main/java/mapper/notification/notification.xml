@@ -73,6 +73,10 @@
 		) latest ON latest.notification_id = n.notification_id
 		LEFT JOIN tb_user u ON u.user_id = n.sender_user_id
 		WHERE n.recipient_user_id = #{recipientUserId}
+        <choose>
+            <when test='readFilter == "unread"'>AND n.is_read = 0</when>
+            <when test='readFilter == "read"'>AND n.is_read = 1</when>
+        </choose>
 		<if test="beforeNotificationId != null">
 			AND EXISTS (
 				SELECT 1 FROM tb_notification cursor_row

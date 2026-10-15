@@ -53,12 +53,13 @@ public class NotificationController extends HttpServlet {
 			try {
 				NotificationService service = new NotificationServiceImpl();
 
-				Map<String, Object> page = service.getNotificationPage(Long.valueOf(loginUser.getUserId()));
+				Map<String, Object> page = service.getNotificationPage(Long.valueOf(loginUser.getUserId()), null, getReadFilter(request));
 
 				request.setAttribute("notifications", page.get("notifications"));
 				request.setAttribute("unreadCount", page.get("unreadCount"));
 				request.setAttribute("hasMore", page.get("hasMore"));
 				request.setAttribute("nextCursor", page.get("nextCursor"));
+                request.setAttribute("notificationFilter", page.get("filter"));
 
 				request.getRequestDispatcher("/view/notification/notifications.jsp").forward(request, response);
 
@@ -107,7 +108,7 @@ public class NotificationController extends HttpServlet {
 			}
 			try {
 				NotificationService service = new NotificationServiceImpl();
-				Map<String, Object> result = service.getNotificationPage(Long.valueOf(loginUser.getUserId()), cursor);
+				Map<String, Object> result = service.getNotificationPage(Long.valueOf(loginUser.getUserId()), cursor, getReadFilter(request));
 				result.put("success", true);
 				JsonResponse.writeJson(response, result);
 			} catch (Exception e) {
@@ -170,7 +171,7 @@ public class NotificationController extends HttpServlet {
 			if ("/notifications/read-all".equals(path)) {
 				int updatedCount = service.markAllAsRead(loginUserId);
 
-				Map<String, Object> result = service.getNotificationPage(loginUserId);
+				Map<String, Object> result = service.getNotificationPage(loginUserId, null, getReadFilter(request));
 
 				result.put("success", true);
 				result.put("updatedCount", updatedCount);
@@ -186,6 +187,11 @@ public class NotificationController extends HttpServlet {
 			JsonResponse.writeFailure(response, HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "알림 처리 중 오류가 발생했습니다.");
 		}
 	}
+
+    private String getReadFilter(HttpServletRequest request) {
+        String filter = request.getParameter("filter");
+        return "unread".equals(filter) ? "unread" : "read".equals(filter) ? "read" : "all";
+    }
 
 	private UserDto getLoginUser(HttpServletRequest request) {
 		HttpSession session = request.getSession(false);
