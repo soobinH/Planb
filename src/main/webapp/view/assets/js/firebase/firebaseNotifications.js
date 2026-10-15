@@ -29,11 +29,39 @@ async function initializeFirebaseNotifications() {
 		}
 	}
 
-	if (!(await isSupported())) {
+	const originalDisplay = button.style.display;
+    let registrationSaved = false;
+    let connecting = false;
+
+    function updateEnableButton() {
+        const permission = typeof Notification !== "undefined" ? Notification.permission : "denied";
+        const enabled = registrationSaved && permission === "granted";
+        button.hidden = enabled;
+        button.style.display = enabled ? "none" : originalDisplay;
+
+        if (enabled) {
+            button.disabled = false;
+            return;
+        }
+        if (permission === "denied") {
+            button.disabled = true;
+            button.textContent = "브라우저 설정에서 알림을 허용해주세요";
+        } else if (connecting) {
+            button.disabled = true;
+            button.textContent = "연결 중...";
+        } else {
+            button.disabled = false;
+            button.textContent = "실시간 알림 켜기";
+        }
+    }
+
+    if (typeof Notification === "undefined" || !(await isSupported())) {
 		button.disabled = true;
 		button.textContent = "실시간 알림을 지원하지 않는 브라우저";
 		return;
 	}
+
+	updateEnableButton();
 
 	const contextPath = root.dataset.contextPath || "";
 
@@ -77,12 +105,16 @@ async function initializeFirebaseNotifications() {
 
 			console.log("Firebase 등록 및 DB 저장 완료");
 
-			button.textContent = "실시간 알림 사용 중";
+			registrationSaved = true;
+            connecting = false;
+            updateEnableButton();
 
 		} catch (error) {
 			console.error("Firebase 등록 정보 저장 실패:", error);
 
-			button.textContent = "실시간 알림 켜기";
+			registrationSaved = false;
+            connecting = false;
+            updateEnableButton();
 
 			showMessage(
 				error.message || "실시간 알림 등록에 실패했습니다."
@@ -116,6 +148,9 @@ async function initializeFirebaseNotifications() {
 	);
 
 	async function connectMessaging() {
+        connecting = true;
+        updateEnableButton();
+        try {
 		const workerRegistration =
 			await navigator.serviceWorker.register(
 				contextPath + "/firebase-messaging-sw.js",
@@ -130,6 +165,12 @@ async function initializeFirebaseNotifications() {
 			vapidKey: window.planbFirebaseVapidKey,
 			serviceWorkerRegistration: workerRegistration
 		});
+        } catch (error) {
+            connecting = false;
+            registrationSaved = false;
+            updateEnableButton();
+            throw error;
+        }
 	}
 
 	button.addEventListener("click", async function() {
@@ -151,6 +192,8 @@ async function initializeFirebaseNotifications() {
 					: await Notification.requestPermission();
 
 			if (permission !== "granted") {
+                registrationSaved = false;
+                updateEnableButton();
 				showMessage("실시간 알림을 사용하려면 알림 권한이 필요합니다.");
 				return;
 			}
@@ -162,14 +205,16 @@ async function initializeFirebaseNotifications() {
 
 		} catch (error) {
 			console.error("Firebase 등록 실패:", error);
-			button.textContent = "실시간 알림 켜기";
+			registrationSaved = false;
+            connecting = false;
+            updateEnableButton();
 
 			showMessage(
 				"실시간 알림 연결에 실패했습니다. 콘솔 오류를 확인해주세요."
 			);
 
 		} finally {
-			button.disabled = false;
+            updateEnableButton();
 		}
 	});
 
@@ -177,6 +222,14 @@ async function initializeFirebaseNotifications() {
 	if (Notification.permission === "granted") {
 		await connectMessaging();
 	}
+
+    // 브라우저 설정에서 권한을 바꾼 뒤 돌아오면 안내 상태를 다시 반영한다.
+    document.addEventListener("visibilitychange", function() {
+        if (!document.hidden) {
+            if (Notification.permission !== "granted") registrationSaved = false;
+            updateEnableButton();
+        }
+    });
 }
 
 initializeFirebaseNotifications().catch(function(error) {

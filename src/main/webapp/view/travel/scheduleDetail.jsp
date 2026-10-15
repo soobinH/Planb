@@ -127,12 +127,13 @@ request.setAttribute("activePage", "travel");
                      test="${not empty fn:trim(itinerary.city)}">
                        · <c:out value="${itinerary.city}" />
                   </c:if>
-               </span> <%-- 썸네일 기간 배지 숨김
-<span
+               </span>
+                <!-- 썸네일 기간 배지 -->
+				<span
                   class="absolute bottom-4 left-4 text-white text-xs font-bold bg-black/50 rounded-full px-2.5 py-1">
                   <c:out value="${detailDurationText}" />
                </span>
-               --%>
+               
 
                <!-- 썸네일 우측 하단: 좋아요 토글 -->
                <button type="button" id="scheduleLikeButton"
