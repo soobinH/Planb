@@ -24,11 +24,92 @@ request.setAttribute("activePage", "travel");
     background: #fbfbfe;
 }
 
-.cart-page-inner {
+/* 여행 메이트/여행 꿀팁 상세 페이지와 같은 좌우 160x600 AD 배너 */
+.cart-page-layout {
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
+    /* 광고와 중앙 콘텐츠 간 간격을 확보하며 화면 폭에 따라 조정 */
+    gap: clamp(36px, 3.5vw, 56px);
     width: 100%;
-    max-width: 1180px;
+    max-width: 1600px;
     margin: 0 auto;
     padding: 64px 24px 56px;
+}
+
+.cart-page-inner {
+    flex: 1 1 0;
+    min-width: 0;
+    width: 100%;
+    max-width: 1180px;
+    margin: 0;
+    padding: 0;
+}
+
+.cart-side-ad {
+    display: none;
+    /* 스크롤 위치와 관계없이 화면에서 같은 좌표를 유지 */
+    position: fixed;
+    top: 132px;
+    left: max(24px, calc((100vw - 1600px) / 2 + 24px));
+    z-index: 20;
+    align-self: flex-start;
+    flex: 0 0 160px;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    width: 160px;
+    height: min(600px, calc(100vh - 156px));
+    min-height: 0;
+    border-radius: 16px;
+    background-color: var(--brand-light, #eef0ff);
+    color: var(--brand, #6369d1);
+}
+
+.cart-side-ad-badge {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    background-color: var(--brand, #6369d1);
+    color: #fff;
+    font-size: 14px;
+    font-weight: 800;
+}
+
+.cart-side-ad-label {
+    margin: 0;
+    padding: 0 12px;
+    color: var(--brand, #6369d1);
+    font-size: 12px;
+    font-weight: 600;
+    line-height: 1.5;
+    text-align: center;
+}
+
+.cart-side-ad-size {
+    font-size: 10px;
+    font-weight: 400;
+    opacity: .6;
+}
+
+@media (min-width: 1024px) {
+    /* fixed 광고는 flex 레이아웃에서 빠지므로 빈 자리만 보존한다. */
+    .cart-page-layout::before,
+    .cart-page-layout::after {
+        content: "";
+        flex: 0 0 160px;
+        width: 160px;
+    }
+
+    .cart-side-ad { display: flex; }
+    .cart-side-ad:last-of-type {
+        left: auto;
+        right: max(24px, calc((100vw - 1600px) / 2 + 24px));
+    }
 }
 
 .cart-heading {
@@ -701,7 +782,7 @@ request.setAttribute("activePage", "travel");
         height: 44px;
     }
 
-    .cart-page-inner {
+    .cart-page-layout {
         padding: 64px 14px 44px;
     }
 
@@ -754,7 +835,16 @@ request.setAttribute("activePage", "travel");
 <jsp:include page="/common/header.jsp" />
 
 <main class="cart-page">
-    <div class="cart-page-inner">
+    <div class="cart-page-layout">
+        <!-- 여행 상세페이지와 동일한 좌측 광고 영역 -->
+        <aside class="cart-side-ad" aria-label="좌측 광고 영역">
+            <div class="cart-side-ad-badge">AD</div>
+            <p class="cart-side-ad-label">좌측 광고 영역<br>
+                <span class="cart-side-ad-size">(예: 160x600)</span>
+            </p>
+        </aside>
+
+        <div class="cart-page-inner">
 
         <div class="cart-heading">
             <div class="cart-heading-main">
@@ -849,6 +939,15 @@ request.setAttribute("activePage", "travel");
             </c:otherwise>
         </c:choose>
 
+        </div>
+
+        <!-- 여행 상세페이지와 동일한 우측 광고 영역 -->
+        <aside class="cart-side-ad" aria-label="우측 광고 영역">
+            <div class="cart-side-ad-badge">AD</div>
+            <p class="cart-side-ad-label">우측 광고 영역<br>
+                <span class="cart-side-ad-size">(예: 160x600)</span>
+            </p>
+        </aside>
     </div>
 </main>
 
