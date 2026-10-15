@@ -270,18 +270,11 @@
 	min-height: 0;
 	overflow-y: auto;
 	overscroll-behavior: contain;
-	scrollbar-width: thin;
-	scrollbar-color: #d3d5e5 transparent;
 }
 
-.detail-panel-body::-webkit-scrollbar {
-	width: 5px;
-}
 
-.detail-panel-body::-webkit-scrollbar-thumb {
-	background: #d3d5e5;
-	border-radius: 10px;
-}
+
+
 
 /* 신고 팝업 */
 .schedule-report-modal {
@@ -934,27 +927,15 @@
    페이지 스크롤바
 ================================ */
 
-html {
-	scrollbar-width: thin;
-	scrollbar-color: #c7c9e8 transparent;
-}
 
-html::-webkit-scrollbar {
-	width: 7px;
-}
 
-html::-webkit-scrollbar-track {
-	background: transparent;
-}
 
-html::-webkit-scrollbar-thumb {
-	background: #c7c9e8;
-	border-radius: 9999px;
-}
 
-html::-webkit-scrollbar-thumb:hover {
-	background: #a8abe0;
-}
+
+
+
+
+
 
 /* ===== 상세 화면: 정보·일정 확대 / planner 지도 디자인 ===== */
 #scheduleDetail.detail-layout {
@@ -1142,9 +1123,9 @@ html::-webkit-scrollbar-thumb:hover {
 #detailSchedulePanel .detail-block-photos { grid-row: 3; align-self: start; }
 
 
-/* 원본 아이콘 배지를 한 줄에 두고 내용 너비를 유지하며 간격만 분산 */
+/* 원본 아이콘 배지를 줄바꿈 없이 왼쪽부터 배치 */
 #scheduleDetail #detailInfoPanel .detail-travel-meta-inline {
-    display: flex; align-items: center; justify-content: space-between; flex-wrap: nowrap;
+    display: flex; align-items: center; justify-content: flex-start; flex-wrap: nowrap;
     gap: 4px; width: 100%; margin-bottom: 14px; padding: 0;
     border: 0; background: transparent; box-sizing: border-box;
 }
@@ -1200,10 +1181,10 @@ html::-webkit-scrollbar-thumb:hover {
 }
 #scheduleDetail #detailSchedulePanel > .rounded-2xl { border-color: #e2e3f4 !important; }
 #scheduleDetail #detailSchedulePanel .detail-day-header { background: #f3f3fe; }
-#scheduleDetail #detailSchedulePanel .detail-day-number { background: #FFD447; color: #554613; }
+#scheduleDetail #detailSchedulePanel .detail-day-number { background: #B6B8EE; color: #3e427f; }
 #scheduleDetail #detailSchedulePanel .detail-day-label { color: #5359bf; }
 #scheduleDetail #detailSchedulePanel > .rounded-2xl:nth-of-type(even) .detail-day-header { background: #f3f3fe; }
-#scheduleDetail #detailSchedulePanel > .rounded-2xl:nth-of-type(even) .detail-day-number { background: #6369D1; color: #fff; }
+#scheduleDetail #detailSchedulePanel > .rounded-2xl:nth-of-type(even) .detail-day-number { background: #B6B8EE; color: #3e427f; }
 #scheduleDetail #detailSchedulePanel .detail-block-memo { background: #f8f8fc; }
 #scheduleDetail #detailSchedulePanel .detail-cart-small[data-cart-state="NONE"] {
     background: #fafaff; border-color: #D1D2F9; color: #6369D1;
@@ -1220,3 +1201,19 @@ html::-webkit-scrollbar-thumb:hover {
     border-color: #D1D2F9 !important;
     color: #4a4a6a !important;
 }
+
+/* 제목이 여러 줄이어도 신고 버튼은 첫 줄의 오른쪽 끝에 유지 */
+#scheduleDetail .detail-title-row {
+    display: grid; grid-template-columns: minmax(0, 1fr) auto;
+    align-items: start; gap: 10px; margin-bottom: 8px;
+}
+#scheduleDetail .detail-title-row h1 { min-width: 0; margin: 0; overflow-wrap: anywhere; }
+#scheduleDetail .detail-title-row #scheduleReportButton {
+    align-self: start; justify-self: end; margin: 0; white-space: nowrap;
+}
+#scheduleDetail .detail-summary {
+    font-size: 13px; line-height: 1.7; color: #7c8092; margin-bottom: 8px;
+}
+#scheduleDetail .detail-country-badge { background: #D1D2F9; color: #494da4; }
+
+/* 스크롤바는 mateList와 동일한 tripily.css 공통 스타일(5px, #D1D2F9)을 사용 */

@@ -110,27 +110,15 @@
    페이지 스크롤바
 ================================ */
 
-html {
-	scrollbar-width: thin;
-	scrollbar-color: #c7c9e8 transparent;
-}
 
-html::-webkit-scrollbar {
-	width: 7px;
-}
 
-html::-webkit-scrollbar-track {
-	background: transparent;
-}
 
-html::-webkit-scrollbar-thumb {
-	background: #c7c9e8;
-	border-radius: 9999px;
-}
 
-html::-webkit-scrollbar-thumb:hover {
-	background: #a8abe0;
-}
+
+
+
+
+
 
 .line {
 	color: #ead94c;
@@ -192,3 +180,5 @@ html::-webkit-scrollbar-thumb:hover {
     border-radius: 50%;
 }
 
+
+/* 스크롤바는 mateList와 동일한 tripily.css 공통 스타일(5px, #D1D2F9)을 사용 */

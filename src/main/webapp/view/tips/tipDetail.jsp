@@ -11,7 +11,7 @@ request.setAttribute("activePage", "tips");
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<title>Planb</title>
 	<jsp:include page="/common/headStyles.jsp" /></head>
-	<link rel="stylesheet" href="${pageContext.request.contextPath}/view/assets/css/tips/tipDetail.css">
+	<link rel="stylesheet" href="${pageContext.request.contextPath}/view/assets/css/tips/tipDetail.css?v=20261015-scrollbar">
 	<script defer src="${pageContext.request.contextPath}/view/assets/js/tips/tipDetail.js"></script>
 <body class="site-shell">
 	<jsp:include page="/common/header.jsp" />
@@ -50,8 +50,9 @@ request.setAttribute("activePage", "tips");
 							            class="absolute inset-0 w-full h-full object-cover">
 							    </c:when>
 							    <c:otherwise>
-							        <img src="${pageContext.request.contextPath}/view/assets/images/default/tip-default.svg" alt="여행꿀팁 기본 이미지"
-							            class="absolute inset-0 w-full h-full object-cover" style="object-position: center 30%">
+							        <div class="absolute inset-0 flex items-center justify-center bg-gray-100 text-gray-400">
+							            이미지 없음
+							        </div>
 							    </c:otherwise>
 							</c:choose>
 							<div class="absolute inset-0"

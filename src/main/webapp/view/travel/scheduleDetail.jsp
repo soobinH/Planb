@@ -26,7 +26,7 @@ request.setAttribute("activePage", "travel");
 <title><c:out value="${itinerary.title}" /> | Planb</title>
 <jsp:include page="/common/headStyles.jsp" />
 <link rel="stylesheet"
-   href="${pageContext.request.contextPath}/view/assets/css/travel/scheduleDetail.css?v=20261015-sidebar-match">
+   href="${pageContext.request.contextPath}/view/assets/css/travel/scheduleDetail.css?v=20261015-scrollbar">
 </head>
 <body class="site-shell"><jsp:include page="/common/header.jsp" />
    <main id="scheduleDetail" class="detail-layout"
@@ -121,8 +121,8 @@ request.setAttribute("activePage", "travel");
                <div
                   class="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent"></div>
                <span
-                  class="absolute top-4 left-4 text-[11px] font-bold px-2.5 py-1 rounded-full text-white"
-                  style="background: #6369D1"> 🌏 <c:out
+                  class="detail-country-badge absolute top-4 left-4 text-[11px] font-bold px-2.5 py-1 rounded-full text-white"
+                  style="background: #D1D2F9; color: #494da4"> 🌏 <c:out
                      value="${itinerary.country}" /> <c:if
                      test="${not empty itinerary.city}">
                        · <c:out value="${itinerary.city}" />
@@ -157,11 +157,24 @@ request.setAttribute("activePage", "travel");
             </div>
             <div class="px-5 pt-4 pb-3 border-b" style="border-color: #D1D2F9">
                <!-- 제목 -->
-               <h1 class="font-black text-[18px] leading-tight text-gray-900 mb-2">
+               <div class="detail-title-row">
+                  <h1 class="font-black text-[18px] leading-tight text-gray-900 mb-2">
                   <c:out value="${itinerary.title}" />
                </h1>
+                  <button type="button" id="scheduleReportButton"
+                     data-logged-in="${not empty sessionScope.user}"
+                     data-is-owner="${not empty sessionScope.user and itinerary.userId eq sessionScope.user.userId}"
+                     data-login-url="${pageContext.request.contextPath}/auth/login"
+                     aria-haspopup="dialog" aria-controls="scheduleReportModal"
+                     class="detail-report-button">
+                     
+                     
+                     <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 21V3M5 4h14l-3 5 3 5H5"/></svg>
+                     신고
+                  </button>
+               </div>
                <!-- 내용 -->
-               <p class="text-[13px] text-gray-500 leading-relaxed mb-3">
+               <p class="detail-summary text-[13px] text-gray-500 leading-relaxed mb-3">
                   <c:out value="${itinerary.summary}" />
                </p>
                <!-- 여행 날짜 -->
@@ -210,17 +223,7 @@ request.setAttribute("activePage", "travel");
                            pattern="#,##0" />
                      </span>
                   </div>
-               <button type="button" id="scheduleReportButton"
-                     data-logged-in="${not empty sessionScope.user}"
-                     data-is-owner="${not empty sessionScope.user and itinerary.userId eq sessionScope.user.userId}"
-                     data-login-url="${pageContext.request.contextPath}/auth/login"
-                     aria-haspopup="dialog" aria-controls="scheduleReportModal"
-                     class="detail-report-button">
-                     
-                     
-                     <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 21V3M5 4h14l-3 5 3 5H5"/></svg>
-                     신고
-                  </button>
+               
                </div>
                <div class="detail-travel-meta detail-travel-meta-inline">
 

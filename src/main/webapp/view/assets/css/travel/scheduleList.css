@@ -20,27 +20,15 @@
    페이지 스크롤바
 ================================ */
 
-html {
-	scrollbar-width: thin;
-	scrollbar-color: #c7c9e8 transparent;
-}
 
-html::-webkit-scrollbar {
-	width: 7px;
-}
 
-html::-webkit-scrollbar-track {
-	background: transparent;
-}
 
-html::-webkit-scrollbar-thumb {
-	background: #c7c9e8;
-	border-radius: 9999px;
-}
 
-html::-webkit-scrollbar-thumb:hover {
-	background: #a8abe0;
-}
+
+
+
+
+
 
 .schedule-infinite-scroll {
     display: flex;
@@ -216,13 +204,13 @@ html::-webkit-scrollbar-thumb:hover {
     border-color: #D1D2F9 !important; box-shadow: 0 7px 20px rgba(99,105,209,.11) !important;
 }
 .schedule-list-page #scheduleCardGrid .schedule-card-country {
-    background: #6369D1 !important; color: #fff; box-shadow: 0 2px 8px rgba(45,48,112,.18);
+    background: #D1D2F9 !important; color: #494da4; box-shadow: 0 2px 8px rgba(99,105,209,.09);
 }
 .schedule-list-page #scheduleCardGrid .schedule-card-duration {
     background: #FFD447; color: #554718; box-shadow: 0 2px 7px rgba(70,59,12,.08);
 }
 .schedule-list-page #scheduleCardGrid .schedule-card-author {
-    border-color: rgba(255,212,71,.65) !important; background: transparent;
+    border-color: #D1D2F9 !important; background: transparent;
 }
 .schedule-list-page #scheduleScrollTopBtn { border-color: #D1D2F9; background: #f5f5ff; }
 .schedule-list-page #scheduleScrollTopBtn:hover { background: #fff5ce; border-color: #FFD447; }
@@ -233,3 +221,5 @@ html::-webkit-scrollbar-thumb:hover {
     line-height: var(--text-sm--line-height, 1.25rem);
     font-weight: var(--font-weight-semibold, 600);
 }
+
+/* 스크롤바는 mateList와 동일한 tripily.css 공통 스타일(5px, #D1D2F9)을 사용 */

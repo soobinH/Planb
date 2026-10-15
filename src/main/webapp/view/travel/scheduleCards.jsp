@@ -47,7 +47,7 @@
 			<!-- 국가·도시 -->
 			<span
 				class="schedule-card-country absolute top-2.5 left-2.5 text-[10px] font-bold px-2 py-0.5 rounded-full"
-				style="background: #6369D1; color: white"> <c:out
+				style="background: #D1D2F9; color: #494da4"> <c:out
 					value="${schedule.country}" /> · <c:out value="${schedule.city}" />
 			</span>
 
@@ -137,7 +137,7 @@
 
 			<!-- 작성자·작성일 -->
 			<div class="schedule-card-author flex items-center justify-between gap-2 border-t pt-2.5"
-				style="border-color: #FFD447">
+				style="border-color: #D1D2F9">
 
 				<!-- 작성자 프로필 사진·닉네임 -->
 				<div class="flex items-center gap-1.5 min-w-0">
