@@ -1,5 +1,7 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+
 <%
 request.setAttribute("activePage", "planner");
 %>
@@ -14,6 +16,12 @@ request.setAttribute("activePage", "planner");
 </head>
 <body class="site-shell">
     <jsp:include page="/common/header.jsp" />
+    <c:if test="${not empty err}">
+        <div role="alert" aria-live="assertive"
+             style="margin:12px auto;padding:12px 18px;max-width:980px;border:1px solid #FCA5A5;border-radius:10px;background:#FEF2F2;color:#B91C1C;font-size:14px;font-weight:600;">
+            저장할 수 없습니다: <c:out value="${err}" />
+        </div>
+    </c:if>
 
     <main class="planner-page-shell flex flex-col">
         <div class="shrink-0 border-b border-gray-100" style="background: #F8F8FF">
@@ -497,7 +505,7 @@ request.setAttribute("activePage", "planner");
             exchangeRates: ${empty exchangeRatesJson ? '{}' : exchangeRatesJson}
         };
     </script>
-    <script src="${pageContext.request.contextPath}/view/assets/js/itinerary/planner.js?v=1"></script>
+    <script src="${pageContext.request.contextPath}/view/assets/js/itinerary/planner.js?v=20261015-memo-limit"></script>
     <script async
         onerror="showPlannerMapFallback()" src="https://maps.googleapis.com/maps/api/js?key=AIzaSyB7ioaQS08aAzCl7gZPk6SyE1w7EeIrYhI&language=ko&libraries=places&v=weekly&loading=async&callback=initPlannerMap"></script>
 
