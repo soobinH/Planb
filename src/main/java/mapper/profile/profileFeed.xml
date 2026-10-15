@@ -477,21 +477,8 @@
 	<!-- ===================================================== 프로필 활동 기존 기능 
 		유지 ====================================================== -->
 
-	<select id="selectProfileActivities" parameterType="long"
-		resultType="dto.profile.ProfileActivityDto">
-
-		SELECT
-		activityType,
-		activityGroup,
-		activityId,
-		targetId,
-		targetTitle,
-		content,
-		createdAt
-
-		FROM (
-
-		SELECT
+	<sql id="profileActivityRows">
+SELECT
 		'TIP_POST' AS activityType,
 		'POST' AS activityGroup,
 		t.tip_id AS activityId,
@@ -502,7 +489,7 @@
 
 		FROM tb_tip t
 
-		WHERE t.user_id = #{value}
+		WHERE t.user_id = #{userId}
 
 		AND t.status = 'ACTIVE'
 
@@ -521,7 +508,7 @@
 
 		FROM tb_mate m
 
-		WHERE m.user_id = #{value}
+		WHERE m.user_id = #{userId}
 
 		AND m.status = 'ACTIVE'
 
@@ -543,7 +530,7 @@
 		INNER JOIN tb_tip t
 		ON t.tip_id = c.tip_id
 
-		WHERE c.user_id = #{value}
+		WHERE c.user_id = #{userId}
 
 		AND c.status = 'ACTIVE'
 
@@ -567,7 +554,7 @@
 		INNER JOIN tb_mate m
 		ON m.mate_id = c.mate_id
 
-		WHERE c.user_id = #{value}
+		WHERE c.user_id = #{userId}
 
 		AND c.status = 'ACTIVE'
 
@@ -591,17 +578,42 @@
 		INNER JOIN tb_itinerary i
 		ON i.itinerary_id = c.itinerary_id
 
-		WHERE c.user_id = #{value}
+		WHERE c.user_id = #{userId}
 
 		AND c.status = 'ACTIVE'
 
 		AND i.status = 'ACTIVE'
+    </sql>
 
-		) activity
+    <sql id="profileActivityFilter">
+        <if test="filter != 'ALL'">AND activityGroup = #{filter}</if>
+    </sql>
 
-		ORDER BY createdAt DESC
+    <select id="selectProfileActivities" parameterType="long" resultType="dto.profile.ProfileActivityDto">
+        <bind name="userId" value="_parameter"/>
+        SELECT * FROM (<include refid="profileActivityRows"/>) activity
+        ORDER BY createdAt DESC, activityType DESC, activityId DESC
+    </select>
 
-	</select>
+    <select id="selectProfileActivitiesPage" parameterType="map" resultType="dto.profile.ProfileActivityDto">
+        SELECT * FROM (<include refid="profileActivityRows"/>) activity
+        WHERE 1=1
+        <include refid="profileActivityFilter"/>
+        <if test="beforeCreatedAt != null">
+            AND (createdAt &lt; #{beforeCreatedAt}
+                OR (createdAt = #{beforeCreatedAt} AND activityType &lt; #{beforeType})
+                OR (createdAt = #{beforeCreatedAt} AND activityType = #{beforeType}
+                    AND activityId &lt; #{beforeId}))
+        </if>
+        ORDER BY createdAt DESC, activityType DESC, activityId DESC
+        LIMIT 11
+    </select>
+
+    <select id="countProfileActivities" parameterType="map" resultType="int">
+        SELECT COUNT(*) FROM (<include refid="profileActivityRows"/>) activity
+        WHERE 1=1
+        <include refid="profileActivityFilter"/>
+    </select>
 
 
 </mapper>

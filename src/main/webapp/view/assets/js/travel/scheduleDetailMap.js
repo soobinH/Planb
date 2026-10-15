@@ -14,8 +14,6 @@
         return;
     }
 
-    // 일정 만들기 지도와 동일한 DAY 동선 팔레트.
-    // planner.js의 DAY별 핀/동선 팔레트를 그대로 사용한다.
     const dayLinePalette = ['#7C3AED','#2563EB','#F97316','#10B981','#EC4899','#06B6D4','#EF4444','#6366F1','#14B8A6','#D97706','#8B5CF6','#0EA5E9'];
 
 
@@ -408,21 +406,14 @@
             map: map,
             position: { lat: point.lat, lng: point.lng },
             title: point.placeName || point.title,
-            label: {
-                text: String(point.sequence),
-                color: "#fff",
-                fontWeight: "bold",
-                fontSize: "11px"
-            },
             icon: {
                 path: "M0,-18 C-10,-18 -18,-10 -18,0 C-18,12 0,30 0,30 C0,30 18,12 18,0 C18,-10 10,-18 0,-18 Z",
-                scale: .78,
+                scale: .5,
                 fillColor: color,
                 fillOpacity: 1,
                 strokeColor: "#fff",
                 strokeWeight: 2,
-                anchor: new google.maps.Point(0, 30),
-                labelOrigin: new google.maps.Point(0, -1)
+                anchor: new google.maps.Point(0, 30)
             }
         });
 

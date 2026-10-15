@@ -41,7 +41,7 @@ for (ProfileActivityDto a : activities) {
     <title>내 활동 내역 · Planb</title>
     <jsp:include page="/common/headStyles.jsp" />
     <link rel="stylesheet" href="<%=ctx%>/view/assets/css/setting/settings.css">
-    <link rel="stylesheet" href="<%=ctx%>/view/assets/css/setting/myActivity.css?v=1">
+    <link rel="stylesheet" href="<%=ctx%>/view/assets/css/setting/myActivity.css?v=2">
 </head>
 <body class="site-shell">
     <jsp:include page="/common/header.jsp" />
@@ -74,7 +74,9 @@ for (ProfileActivityDto a : activities) {
 
                         <div class="ma-list" id="maList">
                         <%
+                        int activityIndex = 0;
                         for (ProfileActivityDto activity : activities) {
+                            boolean initiallyHidden = activityIndex++ >= 10;
                             String kind = activity.getActivityType();
                             String group = activity.getActivityGroup();
                             String section = "";
@@ -97,9 +99,9 @@ for (ProfileActivityDto a : activities) {
                             String date = dateOnly(activity.getCreatedAt());
                         %>
                             <% if (!activityUrl.isEmpty()) { %>
-                            <a class="ma-item" href="<%=activityUrl%>" data-ma-item data-ma-group="<%=escapeHtml(group)%>">
+                            <a class="ma-item" href="<%=activityUrl%>" data-ma-item data-ma-group="<%=escapeHtml(group)%>" <%=initiallyHidden ? "hidden" : ""%>>
                             <% } else { %>
-                            <div class="ma-item ma-item--static" data-ma-item data-ma-group="<%=escapeHtml(group)%>">
+                            <div class="ma-item ma-item--static" data-ma-item data-ma-group="<%=escapeHtml(group)%>" <%=initiallyHidden ? "hidden" : ""%>>
                             <% } %>
                                 <div class="ma-item-icon" aria-hidden="true">
                                     <% if (post) { %>
@@ -123,6 +125,14 @@ for (ProfileActivityDto a : activities) {
                         <% } %>
                         </div>
 
+                        <div class="ma-more" id="maMore" <%=activities.size() > 10 ? "" : "hidden"%>>
+                            <span class="ma-more-progress" id="maMoreProgress" aria-live="polite"><%=Math.min(10, activities.size())%> / <%=activities.size()%>건</span>
+                            <button type="button" class="ma-more-button" id="maMoreButton" aria-controls="maList">
+                                더보기 <span id="maMoreCount"><%=Math.min(10, Math.max(0, activities.size() - 10))%></span>개
+                                <svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
+                            </button>
+                        </div>
+
                         <div class="ma-empty" id="maEmpty" <%=activities.isEmpty() ? "" : "hidden"%>>
                             <div class="ma-empty-icon" aria-hidden="true">
                                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="5" y="4" width="14" height="16" rx="2"/><path d="M9 9h6M9 13h6"/></svg>
@@ -144,26 +154,54 @@ for (ProfileActivityDto a : activities) {
             const count = document.getElementById('maVisibleCount');
             const emptyTitle = empty.querySelector('strong');
             const emptyText = empty.querySelector('p');
+            const pageSize = 10;
+            const more = document.getElementById('maMore');
+            const moreButton = document.getElementById('maMoreButton');
+            const moreCount = document.getElementById('maMoreCount');
+            const progress = document.getElementById('maMoreProgress');
+            let activeFilter = 'ALL';
+            let visibleLimit = pageSize;
+
+            function renderActivities() {
+                let matched = 0;
+                items.forEach(function (item) {
+                    const matches = activeFilter === 'ALL'
+                        || item.getAttribute('data-ma-group') === activeFilter;
+                    item.hidden = !matches || matched >= visibleLimit;
+                    if (matches) matched++;
+                });
+
+                const shown = Math.min(visibleLimit, matched);
+                count.textContent = matched + '건';
+                empty.hidden = matched !== 0;
+                emptyTitle.textContent = items.length === 0 ? '아직 활동 내역이 없어요.' : '해당 활동 내역이 없어요.';
+                emptyText.textContent = items.length === 0 ? '게시글이나 댓글을 작성하면 이곳에 표시돼요.' : '다른 유형을 선택해 보세요.';
+                more.hidden = shown >= matched;
+                moreCount.textContent = String(Math.min(pageSize, matched - shown));
+                progress.textContent = shown + ' / ' + matched + '건';
+            }
+
             buttons.forEach(function (button) {
                 button.addEventListener('click', function () {
                     const filter = button.getAttribute('data-ma-filter');
+                    if (activeFilter === filter) return;
+                    activeFilter = filter;
+                    visibleLimit = pageSize;
                     buttons.forEach(function (item) {
                         const selected = item === button;
                         item.classList.toggle('active', selected);
                         item.setAttribute('aria-pressed', String(selected));
                     });
-                    let visible = 0;
-                    items.forEach(function (item) {
-                        const show = filter === 'ALL' || item.getAttribute('data-ma-group') === filter;
-                        item.hidden = !show;
-                        if (show) visible++;
-                    });
-                    count.textContent = visible + '건';
-                    empty.hidden = visible !== 0;
-                    emptyTitle.textContent = items.length === 0 ? '아직 활동 내역이 없어요.' : '해당 활동 내역이 없어요.';
-                    emptyText.textContent = items.length === 0 ? '게시글이나 댓글을 작성하면 이곳에 표시돼요.' : '다른 유형을 선택해 보세요.';
+                    renderActivities();
                 });
             });
+
+            moreButton.addEventListener('click', function () {
+                visibleLimit += pageSize;
+                renderActivities();
+            });
+
+            renderActivities();
         });
     </script>
 </body>
