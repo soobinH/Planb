@@ -83,7 +83,7 @@ if (profilePath == null || profilePath.trim().isEmpty()) {
 
 <!-- 설정 CSS -->
 <link rel="stylesheet"
-	href="<%=ctx%>/view/assets/css/setting/settings.css">
+	href="<%=ctx%>/view/assets/css/setting/settings.css?v=2">
 <script defer src="<%=ctx%>/view/assets/js/common/bioCounter.js"></script>
 
 </head>
@@ -214,6 +214,7 @@ if (profilePath == null || profilePath.trim().isEmpty()) {
 									<strong> <%=nickname%>
 									</strong> <span> <%=name%>
 									</span>
+									<small id="profileImageStatus" class="settings-photo-status" aria-live="polite">사진을 고르면 바로 저장돼요.</small>
 
 								</div>
 
@@ -224,8 +225,8 @@ if (profilePath == null || profilePath.trim().isEmpty()) {
                             ============================== -->
 
 								<label class="settings-photo-label"> 프로필 사진 변경 <input
-									type="file" id="profileImageInput" name="profileImage"
-									accept="image/jpeg,image/png,image/webp,image/gif">
+									type="file" id="profileImageInput"
+									accept="image/jpeg,image/png,image/webp">
 
 								</label>
 
@@ -336,11 +337,16 @@ if (profilePath == null || profilePath.trim().isEmpty()) {
                                  우편번호
                             ============================== -->
 
-								<label class="settings-field"> <span
-									class="settings-field-label"> 우편번호 </span> <input type="text"
-									name="postcode" maxlength="100" value="<%=postcode%>" required>
+								<div class="settings-field"> <label for="postcode"
+									class="settings-field-label"> 우편번호 </label>
+									<div class="settings-postcode-row">
+										<input type="text" id="postcode" name="postcode" maxlength="100"
+											class="settings-address-input" value="<%=postcode%>"
+											placeholder="주소 검색을 눌러주세요" readonly required>
+										<button type="button" id="postcodeButton" class="settings-postcode-btn">주소 검색</button>
+									</div>
 
-								</label>
+								</div>
 
 
 
@@ -350,7 +356,8 @@ if (profilePath == null || profilePath.trim().isEmpty()) {
 
 								<label class="settings-field full"> <span
 									class="settings-field-label"> 주소 </span> <input type="text"
-									name="address" maxlength="200" value="<%=address%>" required>
+									id="address" name="address" maxlength="200" value="<%=address%>"
+									class="settings-address-input" placeholder="주소 검색으로 입력돼요" readonly required>
 
 								</label>
 
@@ -362,7 +369,8 @@ if (profilePath == null || profilePath.trim().isEmpty()) {
 
 								<label class="settings-field full"> <span
 									class="settings-field-label"> 상세주소 </span> <input type="text"
-									name="addressDetail" maxlength="200" value="<%=addressDetail%>">
+									id="addressDetail" name="addressDetail" maxlength="200" value="<%=addressDetail%>"
+									placeholder="동, 호수 등 상세 주소">
 
 								</label>
 
@@ -421,161 +429,209 @@ if (profilePath == null || profilePath.trim().isEmpty()) {
 
 
 	<!-- =========================================================
-     프로필 사진 즉시 미리보기
+     우편번호 찾기 (카카오 우편번호 서비스)
+========================================================= -->
+
+	<script src="//t1.kakaocdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script>
+
+	<script>
+		document.addEventListener("DOMContentLoaded", function() {
+
+			var postcodeButton = document.getElementById("postcodeButton");
+			var postcodeInput = document.getElementById("postcode");
+			var addressInput = document.getElementById("address");
+			var addressDetailInput = document.getElementById("addressDetail");
+
+			if (!postcodeButton || !postcodeInput || !addressInput) {
+				return;
+			}
+
+			function openPostcode() {
+
+				if (typeof daum === "undefined" || typeof daum.Postcode === "undefined") {
+					alert("주소 검색 서비스를 불러오지 못했습니다.\n잠시 후 다시 시도해주세요.");
+					return;
+				}
+
+				new daum.Postcode({
+					oncomplete: function(data) {
+
+						// 도로명 / 지번 중 사용자가 고른 주소
+						var selectedAddress = data.userSelectedType === "R"
+								? data.roadAddress
+								: data.jibunAddress;
+
+						// 도로명 주소면 건물명 / 법정동을 괄호로 붙임
+						if (data.userSelectedType === "R") {
+							var extra = [];
+
+							if (data.bname && /[동|로|가]$/g.test(data.bname)) {
+								extra.push(data.bname);
+							}
+
+							if (data.buildingName && data.apartment === "Y") {
+								extra.push(data.buildingName);
+							}
+
+							if (extra.length > 0) {
+								selectedAddress += " (" + extra.join(", ") + ")";
+							}
+						}
+
+						postcodeInput.value = data.zonecode;
+						addressInput.value = selectedAddress;
+
+						// 주소가 바뀌면 상세주소는 새로 입력
+						if (addressDetailInput) {
+							addressDetailInput.value = "";
+							addressDetailInput.focus();
+						}
+					}
+				}).open();
+			}
+
+			postcodeButton.addEventListener("click", openPostcode);
+			postcodeInput.addEventListener("click", openPostcode);
+			addressInput.addEventListener("click", openPostcode);
+		});
+	</script>
+
+
+
+	<!-- =========================================================
+     프로필 사진 : 고르면 바로 저장
+     - "변경사항 저장"을 누르지 않아도 /profile/image 로 즉시 업로드
+     - 실패하면 기존 사진으로 되돌림
 ========================================================= -->
 
 	<script>
-		document
-				.addEventListener(
-						"DOMContentLoaded",
-						function() {
+		document.addEventListener("DOMContentLoaded", function() {
 
-							var profileImageInput = document
-									.getElementById("profileImageInput");
+			var contextPath = "<%=ctx%>";
+			var profileImageInput = document.getElementById("profileImageInput");
+			var profilePreview = document.getElementById("profilePreview");
+			var profileDefaultAvatar = document.getElementById("profileDefaultAvatar");
+			var profileStatus = document.getElementById("profileImageStatus");
+			var photoLabel = document.querySelector(".settings-photo-label");
 
-							var profilePreview = document
-									.getElementById("profilePreview");
+			if (!profileImageInput || !profilePreview || !profileDefaultAvatar) {
+				return;
+			}
 
-							var profileDefaultAvatar = document
-									.getElementById("profileDefaultAvatar");
+			// 저장에 실패하면 되돌릴 현재 사진
+			var savedSrc = profilePreview.getAttribute("src");
 
-							/*
-							 * 요소를 찾지 못하면 종료
-							 */
-							if (!profileImageInput || !profilePreview
-									|| !profileDefaultAvatar) {
+			var allowedTypes = ["image/jpeg", "image/png", "image/webp"];
+			var maxFileSize = 5 * 1024 * 1024;
 
-								return;
-							}
+			function setStatus(message, type) {
+				if (!profileStatus) {
+					return;
+				}
 
-							/*
-							 * 현재 프로필 이미지 저장
-							 *
-							 * 잘못된 이미지를 선택했을 때
-							 * 기존 프로필 사진으로 복구하기 위해 사용.
-							 */
-							var originalSrc = profilePreview
-									.getAttribute("src");
+				profileStatus.textContent = message || "";
+				profileStatus.className = "settings-photo-status" + (type ? " is-" + type : "");
+			}
 
-							var originalPreviewDisplay = profilePreview.style.display;
+			function showImage(src) {
+				if (src) {
+					profilePreview.src = src;
+					profilePreview.style.display = "block";
+					profileDefaultAvatar.style.display = "none";
+				} else {
+					profilePreview.removeAttribute("src");
+					profilePreview.style.display = "none";
+					profileDefaultAvatar.style.display = "block";
+				}
+			}
 
-							var originalDefaultDisplay = profileDefaultAvatar.style.display;
+			// 헤더 등 화면에 떠 있는 내 프로필 사진도 같이 교체
+			function updateOtherAvatars(oldSrc, newSrc) {
+				if (!oldSrc) {
+					return;
+				}
 
-							/* =====================================================
-							   파일 선택
-							====================================================== */
+				document.querySelectorAll("img").forEach(function(img) {
+					if (img !== profilePreview && img.getAttribute("src") === oldSrc) {
+						img.src = newSrc;
+					}
+				});
+			}
 
-							profileImageInput
-									.addEventListener(
-											"change",
-											function() {
+			profileImageInput.addEventListener("change", function() {
 
-												/*
-												 * 파일 선택 취소
-												 */
-												if (!this.files
-														|| this.files.length === 0) {
+				if (!this.files || this.files.length === 0) {
+					return;
+				}
 
-													restoreProfilePreview();
+				var file = this.files[0];
 
-													return;
-												}
+				// 다음에 같은 파일을 골라도 change 가 발생하도록 비움
+				this.value = "";
 
-												var file = this.files[0];
+				if (allowedTypes.indexOf(file.type) === -1) {
+					setStatus("JPG, PNG, WEBP 이미지만 등록할 수 있어요.", "error");
+					return;
+				}
 
-												/* =============================================
-												   이미지 파일인지 검사
-												============================================== */
+				if (file.size > maxFileSize) {
+					setStatus("5MB 이하의 이미지만 등록할 수 있어요.", "error");
+					return;
+				}
 
-												if (!file.type
-														|| file.type
-																.indexOf("image/") !== 0) {
+				// 업로드 전 미리보기
+				var reader = new FileReader();
 
-													alert("이미지 파일만 선택할 수 있습니다.");
+				reader.onload = function(event) {
+					showImage(event.target.result);
+				};
 
-													this.value = "";
+				reader.readAsDataURL(file);
 
-													restoreProfilePreview();
+				var formData = new FormData();
+				formData.append("profileImage", file);
 
-													return;
-												}
+				setStatus("사진을 저장하는 중이에요...", "loading");
 
-												/* =============================================
-												   서버 제한과 동일하게 5MB 검사
-												============================================== */
+				if (photoLabel) {
+					photoLabel.classList.add("is-busy");
+				}
 
-												var maxFileSize = 5 * 1024 * 1024;
+				fetch(contextPath + "/profile/image", {
+					method: "POST",
+					body: formData,
+					credentials: "same-origin"
+				})
+				.then(function(response) {
+					return response.json().catch(function() {
+						return { success: false };
+					});
+				})
+				.then(function(result) {
 
-												if (file.size > maxFileSize) {
+					if (!result || !result.success) {
+						throw new Error(result && result.message
+								? result.message
+								: "프로필 사진을 저장하지 못했어요.");
+					}
 
-													alert("프로필 사진은 5MB 이하의 이미지만 업로드할 수 있습니다.");
+					showImage(result.url);
+					updateOtherAvatars(savedSrc, result.url);
+					savedSrc = result.url;
 
-													this.value = "";
-
-													restoreProfilePreview();
-
-													return;
-												}
-
-												/* =============================================
-												   FileReader를 이용한 즉시 미리보기
-
-												   아직 서버에 저장되는 것은 아님.
-												   변경사항 저장 버튼을 눌러야
-												   실제 DB/파일 저장이 이루어짐.
-												============================================== */
-
-												var reader = new FileReader();
-
-												reader.onload = function(event) {
-
-													profilePreview.src = event.target.result;
-
-													profilePreview.style.display = "block";
-
-													profileDefaultAvatar.style.display = "none";
-												};
-
-												reader.onerror = function() {
-
-													alert("이미지를 불러오지 못했습니다.");
-
-													profileImageInput.value = "";
-
-													restoreProfilePreview();
-												};
-
-												reader.readAsDataURL(file);
-
-											});
-
-							/* =====================================================
-							   기존 이미지로 복구
-							====================================================== */
-
-							function restoreProfilePreview() {
-
-								if (originalSrc && originalSrc.trim() !== "") {
-
-									profilePreview.src = originalSrc;
-
-									profilePreview.style.display = originalPreviewDisplay
-											|| "block";
-
-									profileDefaultAvatar.style.display = "none";
-
-								} else {
-
-									profilePreview.removeAttribute("src");
-
-									profilePreview.style.display = "none";
-
-									profileDefaultAvatar.style.display = originalDefaultDisplay
-											|| "block";
-								}
-							}
-
-						});
+					setStatus("프로필 사진이 저장됐어요.", "success");
+				})
+				.catch(function(error) {
+					showImage(savedSrc);
+					setStatus(error.message || "프로필 사진을 저장하지 못했어요.", "error");
+				})
+				.finally(function() {
+					if (photoLabel) {
+						photoLabel.classList.remove("is-busy");
+					}
+				});
+			});
+		});
 	</script>
 
 
