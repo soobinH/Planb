@@ -11,7 +11,7 @@ request.setAttribute("activePage", "travel");
 <head>
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width,initial-scale=1">
-	<link rel="stylesheet" href="${pageContext.request.contextPath}/view/assets/css/travel/scheduleList.css?v=20261015-colors">
+	<link rel="stylesheet" href="${pageContext.request.contextPath}/view/assets/css/travel/scheduleList.css?v=20261015-sidebar-match">
 	<title>여행일정 | Planb</title>
 	<jsp:include page="/common/headStyles.jsp" />
 <style>
@@ -215,9 +215,7 @@ request.setAttribute("activePage", "travel");
 				<!-- 아시아 버튼 -->
 				<button type="button" class="continent-toggle w-full flex items-center justify-between px-3 py-2.5 rounded-xl transition-all" data-continent-toggle>
 					<span class="flex items-center gap-2.5 text-sm font-semibold">
-						<svg viewBox="0 0 48 48" width="24" height="24" aria-hidden="true">
-							<path d="M10 8L18 5L27 6L36 9L40 15L37 21L40 27L34 32L29 38L22 40L17 35L11 34L7 27L6 19Z" fill="#6369D1" opacity=".88" />
-						</svg>
+						<img src="${pageContext.request.contextPath}/view/assets/images/continent/asia_silhouette.png" alt="" aria-hidden="true" class="w-5 h-5 shrink-0 object-contain">
 						아시아
 					</span>
 					<svg class="continent-chevron w-3.5 h-3.5 shrink-0 transition-transform" viewBox="0 0 24 24" fill="none" stroke="#9ca3af" stroke-width="2.5">
@@ -244,9 +242,7 @@ request.setAttribute("activePage", "travel");
 				<!-- 유럽 버튼 -->
 				<button type="button" class="continent-toggle w-full flex items-center justify-between px-3 py-2.5 rounded-xl transition-all" data-continent-toggle>
 					<span class="flex items-center gap-2.5 text-sm font-semibold">
-						<svg viewBox="0 0 48 48" width="24" height="24" aria-hidden="true">
-							<path d="M10 8L18 5L27 6L36 9L40 15L37 21L40 27L34 32L29 38L22 40L17 35L11 34L7 27L6 19Z" fill="#8B5CF6" opacity=".88" />
-						</svg>
+						<img src="${pageContext.request.contextPath}/view/assets/images/continent/europe_silhouette.png" alt="" aria-hidden="true" class="w-5 h-5 shrink-0 object-contain">
 						유럽
 					</span>
 					<svg class="continent-chevron w-3.5 h-3.5 shrink-0 transition-transform" viewBox="0 0 24 24" fill="none" stroke="#9ca3af" stroke-width="2.5">
@@ -269,9 +265,7 @@ request.setAttribute("activePage", "travel");
 				<!-- 북아메리카 버튼 -->
 				<button type="button" class="continent-toggle w-full flex items-center justify-between px-3 py-2.5 rounded-xl transition-all" data-continent-toggle>
 					<span class="flex items-center gap-2.5 text-sm font-semibold">
-						<svg viewBox="0 0 48 48" width="24" height="24" aria-hidden="true">
-							<path d="M10 8L18 5L27 6L36 9L40 15L37 21L40 27L34 32L29 38L22 40L17 35L11 34L7 27L6 19Z" fill="#10B981" opacity=".88" />
-						</svg>
+						<img src="${pageContext.request.contextPath}/view/assets/images/continent/north_america_silhouette.png" alt="" aria-hidden="true" class="w-5 h-5 shrink-0 object-contain">
 						북아메리카
 					</span>
 					<svg class="continent-chevron w-3.5 h-3.5 shrink-0 transition-transform" viewBox="0 0 24 24" fill="none" stroke="#9ca3af" stroke-width="2.5">
@@ -290,9 +284,7 @@ request.setAttribute("activePage", "travel");
 				<!-- 남아메리카 버튼 -->
 				<button type="button" class="continent-toggle w-full flex items-center justify-between px-3 py-2.5 rounded-xl transition-all" data-continent-toggle>
 					<span class="flex items-center gap-2.5 text-sm font-semibold">
-						<svg viewBox="0 0 48 48" width="24" height="24" aria-hidden="true">
-							<path d="M10 8L18 5L27 6L36 9L40 15L37 21L40 27L34 32L29 38L22 40L17 35L11 34L7 27L6 19Z" fill="#F59E0B" opacity=".88" />
-						</svg>
+						<img src="${pageContext.request.contextPath}/view/assets/images/continent/south_america_silhouette.png" alt="" aria-hidden="true" class="w-5 h-5 shrink-0 object-contain">
 						남아메리카
 					</span>
 					<svg class="continent-chevron w-3.5 h-3.5 shrink-0 transition-transform" viewBox="0 0 24 24" fill="none" stroke="#9ca3af" stroke-width="2.5">
@@ -312,9 +304,7 @@ request.setAttribute("activePage", "travel");
 				<!-- 아프리카 버튼 -->
 				<button type="button" class="continent-toggle w-full flex items-center justify-between px-3 py-2.5 rounded-xl transition-all" data-continent-toggle>
 					<span class="flex items-center gap-2.5 text-sm font-semibold">
-						<svg viewBox="0 0 48 48" width="24" height="24" aria-hidden="true">
-							<path d="M10 8L18 5L27 6L36 9L40 15L37 21L40 27L34 32L29 38L22 40L17 35L11 34L7 27L6 19Z" fill="#EF4444" opacity=".88" />
-						</svg>
+						<img src="${pageContext.request.contextPath}/view/assets/images/continent/africa_silhouette.png" alt="" aria-hidden="true" class="w-5 h-5 shrink-0 object-contain">
 						아프리카
 					</span>
 					<svg class="continent-chevron w-3.5 h-3.5 shrink-0 transition-transform" viewBox="0 0 24 24" fill="none" stroke="#9ca3af" stroke-width="2.5">
@@ -334,9 +324,7 @@ request.setAttribute("activePage", "travel");
 				<!-- 오세아니아 버튼 -->
 				<button type="button" class="continent-toggle w-full flex items-center justify-between px-3 py-2.5 rounded-xl transition-all" data-continent-toggle>
 					<span class="flex items-center gap-2.5 text-sm font-semibold">
-						<svg viewBox="0 0 48 48" width="24" height="24" aria-hidden="true">
-							<path d="M10 8L18 5L27 6L36 9L40 15L37 21L40 27L34 32L29 38L22 40L17 35L11 34L7 27L6 19Z" fill="#06B6D4" opacity=".88" />
-						</svg>
+						<img src="${pageContext.request.contextPath}/view/assets/images/continent/oceania_silhouette.png" alt="" aria-hidden="true" class="w-5 h-5 shrink-0 object-contain">
 						오세아니아
 					</span>
 					<svg class="continent-chevron w-3.5 h-3.5 shrink-0 transition-transform" viewBox="0 0 24 24" fill="none" stroke="#9ca3af" stroke-width="2.5">
@@ -355,9 +343,7 @@ request.setAttribute("activePage", "travel");
 				<!-- 중동 버튼 -->
 				<button type="button" class="continent-toggle w-full flex items-center justify-between px-3 py-2.5 rounded-xl transition-all" data-continent-toggle>
 					<span class="flex items-center gap-2.5 text-sm font-semibold">
-						<svg viewBox="0 0 48 48" width="24" height="24" aria-hidden="true">
-							<path d="M10 8L18 5L27 6L36 9L40 15L37 21L40 27L34 32L29 38L22 40L17 35L11 34L7 27L6 19Z" fill="#D97706" opacity=".88" />
-						</svg>
+						<img src="${pageContext.request.contextPath}/view/assets/images/continent/middle_east_silhouette.png" alt="" aria-hidden="true" class="w-5 h-5 shrink-0 object-contain">
 						중동
 					</span>
 					<svg class="continent-chevron w-3.5 h-3.5 shrink-0 transition-transform" viewBox="0 0 24 24" fill="none" stroke="#9ca3af" stroke-width="2.5">

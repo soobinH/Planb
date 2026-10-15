@@ -3,6 +3,8 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt"%>
 
+<jsp:useBean id="scheduleCardNow" class="java.util.Date" scope="request" />
+
 <!-- 실제 DB 데이터로 표시하는 여행 일정 카드 -->
 <c:forEach var="schedule" items="${scheduleList}">
 	<c:url var="scheduleDetailUrl" value="/schedules/detail">
@@ -163,10 +165,37 @@
 					</span>
 				</div>
 
-				<!-- 작성일 -->
+				<!-- 등록 후 경과 시간: 기존 작성일 위치와 글씨 크기 유지 -->
 				<span class="text-[10px] text-gray-400"
-					style="flex-shrink: 0; white-space: nowrap;"> <fmt:formatDate
-						value="${schedule.createdAt}" pattern="yyyy.MM.dd" />
+					style="flex-shrink: 0; white-space: nowrap;"> <c:choose>
+                        <c:when test="${empty schedule.createdAt}">-</c:when>
+                        <c:otherwise>
+                            <c:set var="scheduleAgeSeconds" value="${(scheduleCardNow.time - schedule.createdAt.time) div 1000}" />
+                            <c:choose>
+                                <c:when test="${scheduleAgeSeconds lt 60}">방금 전</c:when>
+                                <c:otherwise>
+                                    <c:choose>
+                                        <c:when test="${scheduleAgeSeconds lt 3600}">
+                                            <c:set var="scheduleAgeUnit" value="60" /><c:set var="scheduleAgeSuffix" value="분 전" />
+                                        </c:when>
+                                        <c:when test="${scheduleAgeSeconds lt 86400}">
+                                            <c:set var="scheduleAgeUnit" value="3600" /><c:set var="scheduleAgeSuffix" value="시간 전" />
+                                        </c:when>
+                                        <c:when test="${scheduleAgeSeconds lt 2592000}">
+                                            <c:set var="scheduleAgeUnit" value="86400" /><c:set var="scheduleAgeSuffix" value="일 전" />
+                                        </c:when>
+                                        <c:when test="${scheduleAgeSeconds lt 31536000}">
+                                            <c:set var="scheduleAgeUnit" value="2592000" /><c:set var="scheduleAgeSuffix" value="개월 전" />
+                                        </c:when>
+                                        <c:otherwise>
+                                            <c:set var="scheduleAgeUnit" value="31536000" /><c:set var="scheduleAgeSuffix" value="년 전" />
+                                        </c:otherwise>
+                                    </c:choose>
+                                    <fmt:formatNumber value="${(scheduleAgeSeconds - (scheduleAgeSeconds mod scheduleAgeUnit)) div scheduleAgeUnit}" pattern="0" groupingUsed="false" /><c:out value="${scheduleAgeSuffix}" />
+                                </c:otherwise>
+                            </c:choose>
+                        </c:otherwise>
+                    </c:choose>
 				</span>
 			</div>
 

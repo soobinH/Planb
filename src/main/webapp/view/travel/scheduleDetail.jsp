@@ -26,7 +26,7 @@ request.setAttribute("activePage", "travel");
 <title><c:out value="${itinerary.title}" /> | Planb</title>
 <jsp:include page="/common/headStyles.jsp" />
 <link rel="stylesheet"
-   href="${pageContext.request.contextPath}/view/assets/css/travel/scheduleDetail.css?v=20261015-colors">
+   href="${pageContext.request.contextPath}/view/assets/css/travel/scheduleDetail.css?v=20261015-sidebar-match">
 </head>
 <body class="site-shell"><jsp:include page="/common/header.jsp" />
    <main id="scheduleDetail" class="detail-layout"
@@ -127,10 +127,12 @@ request.setAttribute("activePage", "travel");
                      test="${not empty itinerary.city}">
                        · <c:out value="${itinerary.city}" />
                   </c:if>
-               </span> <span
+               </span> <%-- 썸네일 기간 배지 숨김
+<span
                   class="absolute bottom-4 left-4 text-white text-xs font-bold bg-black/50 rounded-full px-2.5 py-1">
                   <c:out value="${detailDurationText}" />
                </span>
+               --%>
 
                <!-- 썸네일 우측 하단: 좋아요 토글 -->
                <button type="button" id="scheduleLikeButton"
