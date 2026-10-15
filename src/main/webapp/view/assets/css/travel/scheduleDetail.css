@@ -1181,10 +1181,10 @@
 }
 #scheduleDetail #detailSchedulePanel > .rounded-2xl { border-color: #e2e3f4 !important; }
 #scheduleDetail #detailSchedulePanel .detail-day-header { background: #f3f3fe; }
-#scheduleDetail #detailSchedulePanel .detail-day-number { background: #B6B8EE; color: #3e427f; }
+#scheduleDetail #detailSchedulePanel .detail-day-number { background: #C5C7F3; color: #3e427f; }
 #scheduleDetail #detailSchedulePanel .detail-day-label { color: #5359bf; }
 #scheduleDetail #detailSchedulePanel > .rounded-2xl:nth-of-type(even) .detail-day-header { background: #f3f3fe; }
-#scheduleDetail #detailSchedulePanel > .rounded-2xl:nth-of-type(even) .detail-day-number { background: #B6B8EE; color: #3e427f; }
+#scheduleDetail #detailSchedulePanel > .rounded-2xl:nth-of-type(even) .detail-day-number { background: #C5C7F3; color: #3e427f; }
 #scheduleDetail #detailSchedulePanel .detail-block-memo { background: #f8f8fc; }
 #scheduleDetail #detailSchedulePanel .detail-cart-small[data-cart-state="NONE"] {
     background: #fafaff; border-color: #D1D2F9; color: #6369D1;
@@ -1214,6 +1214,30 @@
 #scheduleDetail .detail-summary {
     font-size: 13px; line-height: 1.7; color: #7c8092; margin-bottom: 8px;
 }
-#scheduleDetail .detail-country-badge { background: #D1D2F9; color: #494da4; }
+#scheduleDetail .detail-country-badge { background: rgba(209,210,249,.79); color: #494da4; backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); }
 
 /* 스크롤바는 mateList와 동일한 tripily.css 공통 스타일(5px, #D1D2F9)을 사용 */
+
+/* 일정표 글씨: 현재 크기 +1px, 장소명은 주소와 차이를 1px 더 확보 */
+#scheduleDetail #detailSchedulePanel .detail-day-number,
+#scheduleDetail #detailSchedulePanel .detail-day-label,
+#scheduleDetail #detailSchedulePanel .detail-day-title { font-size: 15px; }
+#scheduleDetail #detailSchedulePanel .detail-day-date { font-size: 13px; }
+#scheduleDetail #detailSchedulePanel .detail-block-title { font-size: 17px; }
+#scheduleDetail #detailSchedulePanel .detail-block-type,
+#scheduleDetail #detailSchedulePanel .detail-block-time,
+#scheduleDetail #detailSchedulePanel .detail-block-memo { font-size: 13px; }
+#scheduleDetail #detailSchedulePanel .detail-block-place { font-size: 16px; }
+#scheduleDetail #detailSchedulePanel .detail-block-address { font-size: 14px; }
+#scheduleDetail #detailSchedulePanel .detail-block-cost,
+#scheduleDetail #detailSchedulePanel .detail-cart-small { font-size: 12px; }
+#scheduleDetail #detailSchedulePanel .detail-block-photo-count { font-size: 11px; }
+#scheduleDetail #detailSchedulePanel > p,
+#scheduleDetail #detailSchedulePanel .detail-day-body > p { font-size: 13px; }
+/* 기존 시간 하단 간격 8px보다 1px 크게: 인접 블록 마진은 큰 값으로 합쳐짐 */
+#scheduleDetail #detailSchedulePanel .detail-block-time + .detail-block-place { margin-top: 9px; }
+/* 주소와 메모 사이 +1px. 메모와 사진의 시작선도 함께 유지 */
+#scheduleDetail #detailSchedulePanel .detail-block-note-body.has-memo { padding-top: 1px; }
+#scheduleDetail #detailSchedulePanel .detail-block-note-body.has-memo + .detail-block-photos { margin-top: 1px; }
+/* 메모와 비용 사이: 기존 8px에서 9px로 */
+#scheduleDetail #detailSchedulePanel .detail-block-memo + .detail-block-cost { margin-top: 9px; }

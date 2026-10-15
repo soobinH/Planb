@@ -204,10 +204,12 @@
     border-color: #D1D2F9 !important; box-shadow: 0 7px 20px rgba(99,105,209,.11) !important;
 }
 .schedule-list-page #scheduleCardGrid .schedule-card-country {
-    background: #D1D2F9 !important; color: #494da4; box-shadow: 0 2px 8px rgba(99,105,209,.09);
+    background: rgba(209,210,249,.79) !important; color: #494da4; box-shadow: 0 2px 8px rgba(99,105,209,.09);
+    backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
 }
 .schedule-list-page #scheduleCardGrid .schedule-card-duration {
-    background: #FFD447; color: #554718; box-shadow: 0 2px 7px rgba(70,59,12,.08);
+    background: rgba(255,212,71,.79); color: #554718; box-shadow: 0 2px 7px rgba(70,59,12,.08);
+    backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
 }
 .schedule-list-page #scheduleCardGrid .schedule-card-author {
     border-color: #D1D2F9 !important; background: transparent;
@@ -223,3 +225,9 @@
 }
 
 /* 스크롤바는 mateList와 동일한 tripily.css 공통 스타일(5px, #D1D2F9)을 사용 */
+
+/* 배경만 반투명하게 처리하고 아이콘 선명도는 유지 */
+.schedule-list-page #scheduleCardGrid [data-schedule-bookmark] {
+    background: rgba(255,255,255,.79); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
+}
+.schedule-list-page #scheduleCardGrid [data-schedule-bookmark]:hover { background: rgba(255,255,255,.94); }
