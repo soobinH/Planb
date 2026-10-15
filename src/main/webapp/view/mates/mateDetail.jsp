@@ -50,9 +50,8 @@
 										class="absolute inset-0 w-full h-full object-cover">
 								</c:when>
 								<c:otherwise>
-									<div class="absolute inset-0 flex items-center justify-center bg-gray-100 text-gray-400">
-										이미지 없음
-									</div>
+									<img src="${pageContext.request.contextPath}/view/assets/images/default/mate-default.svg" alt="여행 메이트 기본 이미지"
+										class="absolute inset-0 w-full h-full object-cover" style="object-position: center 40%">
 								</c:otherwise>
 							</c:choose>
 							<div class="absolute inset-0"

@@ -1,0 +1,65 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 800" preserveAspectRatio="xMidYMid slice">
+  <!-- 여행메이트 기본 이미지 : 어깨동무한 두 친구 -->
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#EEF0FF"/>
+      <stop offset="1" stop-color="#F8F5FF"/>
+    </linearGradient>
+  </defs>
+
+  <rect width="1200" height="800" fill="url(#bg)"/>
+
+  <!-- 배경 : 해 / 구름 / 언덕 -->
+  <circle cx="880" cy="200" r="70" fill="#FFE58A"/>
+  <g fill="#fff">
+    <ellipse cx="300" cy="190" rx="70" ry="26"/>
+    <ellipse cx="345" cy="172" rx="44" ry="30"/>
+    <ellipse cx="985" cy="300" rx="56" ry="20"/>
+    <ellipse cx="1015" cy="287" rx="34" ry="22"/>
+  </g>
+  <path d="M0 610 Q 250 500 520 590 T 1200 560 L1200 800 L0 800 Z" fill="#E2E4FB"/>
+
+  <!-- 왼쪽 친구 : 몸 -->
+  <path d="M430 680 L430 485 Q430 412 515 412 Q600 412 600 485 L600 680 Z" fill="#6369D1"/>
+  <!-- 왼쪽 친구 : 내린 팔 -->
+  <path d="M446 470 L420 600" stroke="#6369D1" stroke-width="40" stroke-linecap="round"/>
+  <circle cx="418" cy="612" r="20" fill="#F2C9A8"/>
+
+  <!-- 오른쪽 친구 : 몸 -->
+  <path d="M600 680 L600 485 Q600 412 685 412 Q770 412 770 485 L770 680 Z" fill="#FFD447"/>
+  <!-- 오른쪽 친구 : 손 흔드는 팔 -->
+  <path d="M752 470 L815 365" stroke="#FFD447" stroke-width="40" stroke-linecap="round"/>
+  <circle cx="822" cy="350" r="21" fill="#E9B98F"/>
+
+  <!-- 오른쪽 친구가 왼쪽 친구 허리를 감싼 팔 -->
+  <path d="M640 540 Q 560 560 478 538" fill="none" stroke="#F5C531" stroke-width="36" stroke-linecap="round"/>
+  <circle cx="470" cy="536" r="19" fill="#E9B98F"/>
+
+  <!-- 왼쪽 친구가 오른쪽 친구 어깨에 두른 팔 -->
+  <path d="M560 438 Q 650 395 735 440" fill="none" stroke="#5257C4" stroke-width="38" stroke-linecap="round"/>
+  <circle cx="742" cy="446" r="20" fill="#F2C9A8"/>
+
+  <!-- 왼쪽 친구 : 얼굴 -->
+  <rect x="500" y="378" width="30" height="34" rx="10" fill="#F2C9A8"/>
+  <circle cx="515" cy="330" r="58" fill="#F2C9A8"/>
+  <path d="M457 330 A58 58 0 0 1 573 322 Q 540 296 506 302 Q 475 308 457 330 Z" fill="#2E2A5A"/>
+  <circle cx="497" cy="338" r="6" fill="#2E2A5A"/>
+  <circle cx="535" cy="338" r="6" fill="#2E2A5A"/>
+  <path d="M498 360 Q 516 376 534 360" fill="none" stroke="#2E2A5A" stroke-width="5" stroke-linecap="round"/>
+  <circle cx="484" cy="356" r="8" fill="#F7A9A0" opacity=".6"/>
+  <circle cx="548" cy="356" r="8" fill="#F7A9A0" opacity=".6"/>
+
+  <!-- 오른쪽 친구 : 얼굴 -->
+  <rect x="670" y="378" width="30" height="34" rx="10" fill="#E9B98F"/>
+  <circle cx="742" cy="282" r="22" fill="#5A3E2B"/>
+  <circle cx="685" cy="330" r="58" fill="#E9B98F"/>
+  <path d="M627 336 A58 58 0 0 1 743 330 Q 712 300 676 304 Q 646 310 627 336 Z" fill="#5A3E2B"/>
+  <circle cx="667" cy="340" r="6" fill="#2E2A5A"/>
+  <circle cx="705" cy="340" r="6" fill="#2E2A5A"/>
+  <path d="M668 360 Q 686 378 704 360" fill="none" stroke="#2E2A5A" stroke-width="5" stroke-linecap="round"/>
+  <circle cx="654" cy="358" r="8" fill="#F7A9A0" opacity=".6"/>
+  <circle cx="718" cy="358" r="8" fill="#F7A9A0" opacity=".6"/>
+
+  <!-- 앞쪽 언덕 (몸 아래쪽을 가림) -->
+  <path d="M0 650 Q 330 590 640 640 T 1200 630 L1200 800 L0 800 Z" fill="#D7D9F8"/>
+</svg>

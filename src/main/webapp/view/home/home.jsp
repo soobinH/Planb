@@ -316,7 +316,7 @@ request.setAttribute("activePage", "home");
 																	<img src="${ctx}${tip.thumbnailImg}" alt="<c:out value='${tip.title}' />" loading="lazy">
 																</c:when>
 																<c:otherwise>
-																	<span class="ph-board-thumb-empty">TIP</span>
+																	<img src="${ctx}/view/assets/images/default/tip-default.svg" alt="여행꿀팁 기본 이미지" loading="lazy">
 																</c:otherwise>
 															</c:choose>
 														</div>
@@ -367,9 +367,15 @@ request.setAttribute("activePage", "home");
 											<div class="ph-rotate-page${page == 0 ? ' is-active' : ''}">
 												<c:forEach var="mate" items="${mateList}" begin="${page * 3}" end="${page * 3 + 2}">
 													<a href="${ctx}/mateDetail?mateId=${mate.mateId}" class="ph-board-item">
-														<div class="ph-board-thumb ph-board-thumb--mate">
-															<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" /><circle cx="12" cy="10" r="3" /></svg>
-															<span><c:out value="${mate.country}" /></span>
+														<div class="ph-board-thumb">
+															<c:choose>
+																<c:when test="${not empty mate.img}">
+																	<img src="${ctx}${mate.img}" alt="<c:out value='${mate.title}' />" loading="lazy">
+																</c:when>
+																<c:otherwise>
+																	<img src="${ctx}/view/assets/images/default/mate-default.svg" alt="여행 메이트 기본 이미지" loading="lazy">
+																</c:otherwise>
+															</c:choose>
 														</div>
 														<div class="ph-board-info">
 															<div class="ph-board-meta">
