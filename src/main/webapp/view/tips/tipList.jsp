@@ -400,9 +400,8 @@ request.setAttribute("activePage", "tips");
 											class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300">
 									</c:when>
 									<c:otherwise>
-										<div class="w-full h-full flex items-center justify-center bg-gray-100 text-gray-400 text-sm">
-											이미지 없음
-										</div>
+										<img src="${pageContext.request.contextPath}/view/assets/images/default/tip-default.svg" alt="여행꿀팁 기본 이미지"
+											class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300">
 									</c:otherwise>
 								</c:choose>
 							</div>
