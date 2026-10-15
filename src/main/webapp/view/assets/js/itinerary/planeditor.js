@@ -4246,7 +4246,7 @@
                     return;
                 }
                 region.disabled=false;
-                region.placeholder='선택 또는 검색';
+                region.placeholder='1차 행정구역 선택 또는 검색';
                 // 기존 일정 및 초안 불러오기도 검증할 수 있도록 미리 로딩한다.
                 getPlannerAdmin1Regions(matched.code).then(function(items){
                     syncPlannerSavedRegion(matched,items);
@@ -4266,7 +4266,7 @@
                 }
                 var query=normalizePlannerText(region.value).toLocaleLowerCase();
                 var seq=++plannerRegionSearchSeq;
-                renderPlannerRegionMessage('목록을 불러오는 중입니다.');
+                renderPlannerRegionMessage('1차 행정구역 목록을 불러오는 중입니다.');
                 getPlannerAdmin1Regions(matched.code).then(function(items){
                     if(seq!==plannerRegionSearchSeq) return;
                     var current=findPlannerCountry(country.value);
@@ -4282,8 +4282,8 @@
                         renderPlannerRegionButtons(matches,matched);
                     }else{
                         renderPlannerRegionMessage(items.length
-                            ? '일치하는 행정구역이 없습니다. 목록에서 선택해 주세요.'
-                            : '해당 국가의 등록된 행정구역이 없습니다. 지역은 비워둘 수 있습니다.');
+                            ? '일치하는 1차 행정구역이 없습니다. 목록에서 선택해 주세요.'
+                            : '해당 국가의 등록된 1차 행정구역이 없습니다. 지역은 비워둘 수 있습니다.');
                     }
                 }).catch(function(){
                     if(seq===plannerRegionSearchSeq){
@@ -4388,7 +4388,7 @@
                     if(!validCountry || regionInput.dataset.regionCountry!==validCountry.code
                             || !regionInput.dataset.regionCode){
                         regionInput.setAttribute('aria-invalid','true');
-                        missing.push('지역은 검색 결과의 행정구역을 직접 선택해 주세요. (임의 입력 불가)');
+                        missing.push('지역은 검색 결과의 1차 행정구역을 직접 선택해 주세요. (임의 입력 불가)');
                     }
                 }
 
@@ -5133,6 +5133,7 @@
             }
 
             var plannerPublishPlacePhotoLoadToken=0;
+            var plannerPublishActiveCandidates=[];
 
             function plannerPrivateFlagCandidate(){
                 var countryInput=$('#plannerCountry');
@@ -5159,18 +5160,21 @@
                 );
             }
 
-            function syncPublishPhotoRequirement(isPublic){
+            function syncPublishPhotoRequirement(isPublic, hasRegisteredPhotos){
                 var requirement=$('#plannerPublishPhotoRequirement');
                 var hint=$('#plannerPublishPhotoHint');
 
                 if(requirement){
-                    requirement.textContent=isPublic ? '(필수)' : '(자동)';
+                    requirement.textContent=(!isPublic && !hasRegisteredPhotos)
+                        ? '(자동 선택)' : '(필수)';
                 }
 
                 if(hint){
-                    hint.textContent=isPublic
-                        ? '업로드 사진 우선 · 없으면 일정 장소 사진'
-                        : '비공개 일정은 선택한 국가의 국기를 자동 사용';
+                    hint.textContent=hasRegisteredPhotos
+                        ? '등록한 사진 중에서 대표 이미지를 선택해 주세요.'
+                        : isPublic
+                            ? '등록 사진이 없어 Google Places 장소 사진에서 선택합니다. (국기 사용 불가)'
+                            : '등록 사진이 없어 선택한 국가의 국기가 자동 지정됩니다.';
                 }
             }
 
@@ -5309,67 +5313,44 @@
                 });
             }
 
+            // 저장된 기존 대표 이미지는 수정 모달의 첫 후보 조회에서만 복원한다.
+            // 사진 삭제/공개 전환 후에는 사용자가 새로운 후보를 선택해야 한다.
+            var plannerSavedThumbnailRestoreConsumed=false;
+
             function applyPlannerPublishCandidateSelection(candidates){
-                var existingToken=EDIT_ITINERARY && EDIT_ITINERARY.thumbnailImg
-                    ? String(EDIT_ITINERARY.thumbnailImg)
-                    : '';
-                var existingPlaceId=existingToken.indexOf('gplace:')===0
-                    ? existingToken.substring(7)
-                    : '';
-                var existingPlaceStillInPlan=existingPlaceId
-                    ? collectPublishPlacePhotoSources().some(function(source){
-                        return source.placeId===existingPlaceId;
-                    })
-                    : false;
+                var selected=candidates.find(function(candidate){
+                    return candidate.key===plannerPublishState.imageKey;
+                });
 
-                if(existingPlaceId
-                        && !existingPlaceStillInPlan
-                        && plannerPublishState.imageKey==='placeId:'+existingPlaceId){
-                    plannerPublishState.imageKey='';
-                    plannerPublishState.thumbnailUrl='';
-                    refreshPublishCard();
+                // 기존 Google Places 사진의 gplace: 토큰을 후보의 현재 key로 연결한다.
+                if(!selected && plannerPublishState.imageKey.indexOf('placeId:')===0){
+                    var currentPlaceId=plannerPublishState.imageKey.substring(8);
+                    selected=candidates.find(function(candidate){
+                        return candidate.source==='place' && candidate.placeId===currentPlaceId;
+                    });
                 }
 
-                /* 기존 로컬 업로드 대표 이미지 복원 */
-                if(!plannerPublishState.imageKey && existingToken
-                        && !existingPlaceId){
-                    var existing=candidates.find(function(candidate){
-                        return candidate.src===existingToken;
+                if(!selected && !plannerSavedThumbnailRestoreConsumed
+                        && !plannerPublishState.imageKey){
+                    var savedThumbnail=EDIT_ITINERARY && EDIT_ITINERARY.thumbnailImg
+                        ? String(EDIT_ITINERARY.thumbnailImg) : '';
+                    selected=candidates.find(function(candidate){
+                        return candidate.src===savedThumbnail
+                            || candidate.key===savedThumbnail
+                            || (candidate.source==='place'
+                                && savedThumbnail==='gplace:'+candidate.placeId);
                     });
-                    if(existing) selectPublishImage(existing);
                 }
+                plannerSavedThumbnailRestoreConsumed=true;
 
-                /* 기존 장소 대표 이미지는 placeId 기준으로 새 사진 URI를 다시 받아 복원 */
-                if(existingPlaceId){
-                    var existingPlaceCandidate=candidates.find(function(candidate){
-                        return candidate.source==='place'
-                            && candidate.placeId===existingPlaceId;
-                    });
-
-                    if(existingPlaceCandidate
-                            && (plannerPublishState.imageKey==='placeId:'+existingPlaceId
-                                || !plannerPublishState.imageKey)){
-                        selectPublishImage(existingPlaceCandidate);
-                        return;
-                    }
-                }
-
-                if(plannerPublishState.imageKey){
-                    var selected=candidates.find(function(candidate){
-                        return candidate.key===plannerPublishState.imageKey;
-                    });
-
-                    if(selected){
-                        selectPublishImage(selected);
-                    }else if(plannerPublishState.imageKey.indexOf('placeId:')!==0){
-                        plannerPublishState.imageKey='';
-                        plannerPublishState.thumbnailUrl='';
-                        refreshPublishCard();
-                    }
+                if(selected){
+                    selectPublishImage(selected);
+                }else{
+                    selectPublishImage(null);
                 }
             }
 
-            function renderPublishPhotoCandidates(){
+            function renderPublishPhotoCandidates(preloadedPlaceCandidates){
                 var list=$('#plannerPublishPhotoList');
                 var empty=$('#plannerPublishPhotoEmpty');
                 if(!list) return;
@@ -5377,84 +5358,77 @@
                 var loadToken=++plannerPublishPlacePhotoLoadToken;
                 var isPublic=visibility
                     && visibility.dataset.visibility==='PUBLIC';
+                var registered=collectPublishPhotoCandidates();
+                var hasRegisteredPhotos=registered.length>0;
+                syncPublishPhotoRequirement(isPublic,hasRegisteredPhotos);
 
-                syncPublishPhotoRequirement(isPublic);
+                function showCandidates(candidates){
+                    plannerPublishActiveCandidates=candidates.slice();
+                    renderPublishPhotoCandidateButtons(candidates);
+                    list.classList.toggle('hidden',candidates.length===0);
+                    if(empty) empty.classList.toggle('hidden',candidates.length>0);
+                }
 
-                /*
-                 * 비공개 일정은 업로드/장소 사진 선택과 무관하게
-                 * 선택한 국가의 국기를 대표 이미지로 자동 지정한다.
-                 */
+                if(hasRegisteredPhotos){
+                    // 공개/비공개 모두 직접 등록한 사진이 있으면 그 사진만 보여 준다.
+                    // 국기 및 Google Places 사진을 섞지 않는다.
+                    showCandidates(registered);
+                    applyPlannerPublishCandidateSelection(registered);
+                    return;
+                }
+
                 if(!isPublic){
+                    // 등록 사진이 없는 비공개 일정: 국기를 보여 주고 자동 선택한다.
                     var flagCandidate=plannerPrivateFlagCandidate();
-
+                    showCandidates(flagCandidate ? [flagCandidate] : []);
                     if(flagCandidate){
-                        renderPublishPhotoCandidateButtons([flagCandidate]);
-                        list.classList.remove('hidden');
-                        if(empty) empty.classList.add('hidden');
                         selectPublishImage(flagCandidate);
                     }else{
-                        plannerPublishState.imageKey='';
-                        plannerPublishState.thumbnailUrl='';
-                        list.innerHTML='';
-                        list.classList.add('hidden');
+                        selectPublishImage(null);
                         if(empty){
-                            empty.textContent='국가를 선택하면 해당 국가의 국기가 대표 이미지로 자동 지정됩니다.';
-                            empty.classList.remove('hidden');
+                            empty.textContent='국가를 선택하면 해당 국가의 국기가 자동 지정됩니다.';
                         }
-                        refreshPublishCard();
                     }
+                    plannerSavedThumbnailRestoreConsumed=true;
                     return;
                 }
 
-                /*
-                 * 비공개에서 공개로 바뀐 경우 국기는 공개 대표 이미지로
-                 * 인정하지 않는다. 공개 일정은 사용자가 사진을 직접 골라야 한다.
-                 */
-                if((plannerPublishState.imageKey
-                        && plannerPublishState.imageKey.indexOf('flag:')===0)
-                        || isPlannerFlagThumbnailUrl(plannerPublishState.thumbnailUrl)){
-                    plannerPublishState.imageKey='';
-                    plannerPublishState.thumbnailUrl='';
-                    refreshPublishCard();
+                // 공개 일정 + 등록 사진 없음: Google Places 사진만 허용한다.
+                // 이전 선택(국기 또는 삭제한 사진)은 즉시 해제하되,
+                // 수정 화면에서 유효한 기존 gplace 토큰은 로드 뒤 다시 검증한다.
+                showCandidates([]);
+                if(plannerPublishState.imageKey.indexOf('placeId:')!==0){
+                    selectPublishImage(null);
                 }
-
-                var candidates=collectPublishPhotoCandidates();
-
-                if(candidates.length){
-                    renderPublishPhotoCandidateButtons(candidates);
-                    if(empty) empty.classList.add('hidden');
-                    list.classList.remove('hidden');
-                    applyPlannerPublishCandidateSelection(candidates);
-                    return;
-                }
-
-                list.innerHTML='';
-                list.classList.add('hidden');
-
                 if(empty){
-                    empty.textContent='업로드한 사진이 없어 일정 장소의 사진을 불러오는 중입니다.';
+                    empty.textContent='등록된 사진이 없어 Google Places 장소 사진을 불러오는 중입니다.';
                     empty.classList.remove('hidden');
                 }
 
-                collectPublishPlacePhotoCandidates().then(function(placeCandidates){
+                // 저장 전 검사에서 확보한 후보를 재사용해 API를 중복 호출하지 않는다.
+                function applyPlaceCandidates(placeCandidates){
                     if(loadToken!==plannerPublishPlacePhotoLoadToken) return;
-
-                    if(placeCandidates.length){
-                        renderPublishPhotoCandidateButtons(placeCandidates);
-                        list.classList.remove('hidden');
-                        if(empty) empty.classList.add('hidden');
-                        applyPlannerPublishCandidateSelection(placeCandidates);
-                    }else{
-                        list.classList.add('hidden');
-                        if(empty){
-                            empty.textContent='대표 이미지로 사용할 수 있는 업로드 사진 또는 장소 사진이 없습니다.';
-                            empty.classList.remove('hidden');
-                        }
+                    showCandidates(placeCandidates);
+                    applyPlannerPublishCandidateSelection(placeCandidates);
+                    if(!placeCandidates.length && empty){
+                        empty.textContent='등록 사진이나 사진을 제공하는 Google Places 장소가 없어 대표 이미지를 선택할 수 없습니다.';
+                    }
+                }
+                if(Array.isArray(preloadedPlaceCandidates)){
+                    applyPlaceCandidates(preloadedPlaceCandidates);
+                    return;
+                }
+                collectPublishPlacePhotoCandidates().then(applyPlaceCandidates).catch(function(){
+                    if(loadToken!==plannerPublishPlacePhotoLoadToken) return;
+                    showCandidates([]);
+                    selectPublishImage(null);
+                    if(empty){
+                        empty.textContent='Google Places 사진을 불러오지 못했습니다. 장소를 확인하거나 사진을 직접 등록해 주세요.';
                     }
                 });
             }
 
-            function openPublishPreviewModal(){
+            function openPublishPreviewModal(preloadedPlaceCandidates){
                 var backdrop=$('#plannerPublishBackdrop');
                 var summaryInput=$('#plannerPublishSummary');
 
@@ -5466,7 +5440,7 @@
                     if(count) count.textContent=summaryInput.value.length+'/250';
                 }
 
-                renderPublishPhotoCandidates();
+                renderPublishPhotoCandidates(preloadedPlaceCandidates);
                 refreshPublishCard();
 
                 var controls=$('#plannerPublishControls');
@@ -5622,11 +5596,35 @@
                             && visibility.dataset.visibility==='PUBLIC';
                         var photoError=$('#plannerPublishPhotoError');
 
-                        /* 공개 일정은 대표 이미지를 반드시 직접 선택해야 한다. */
-                        if(isPublic && (!plannerPublishState.imageKey
-                                || plannerPublishState.imageKey.indexOf('flag:')===0)){
+                        // 저장 시점에도 현재 후보와 선택한 이미지 키가 일치해야 한다.
+                        // 등록 사진이 있으면 그 사진만, 없으면 비공개 국기/공개 장소 사진이다.
+                        var registered=collectPublishPhotoCandidates();
+                        var selectedKey=plannerPublishState.imageKey || '';
+                        var flagCandidate=plannerPrivateFlagCandidate();
+                        var validSelection=false;
+
+                        if(registered.length){
+                            validSelection=registered.some(function(candidate){
+                                return candidate.key===selectedKey;
+                            });
+                        }else if(!isPublic){
+                            validSelection=!!flagCandidate
+                                && selectedKey===flagCandidate.key;
+                        }else{
+                            var availablePlaces=collectPublishPlacePhotoSources();
+                            validSelection=plannerPublishActiveCandidates.some(function(candidate){
+                                return candidate.source==='place'
+                                    && candidate.key===selectedKey
+                                    && availablePlaces.some(function(place){
+                                        return place.key===candidate.key
+                                            && place.placeId===candidate.placeId;
+                                    });
+                            });
+                        }
+
+                        if(!validSelection){
                             if(photoError){
-                                photoError.textContent='공개 일정은 대표 이미지를 선택해야 저장할 수 있습니다.';
+                                photoError.textContent='대표 이미지를 선택해야 저장할 수 있습니다.';
                                 photoError.classList.add('is-visible');
                             }
 
@@ -5670,16 +5668,64 @@
             });
 
             var save=$('#plannerSaveBtn');
+            var plannerPhotoPreflightInProgress=false;
             if(save) save.addEventListener('click',function(){
+                if(plannerPhotoPreflightInProgress) return;
                 if(!validatePlannerRequiredFields()) return;
                 if(!validatePlannerMemoLengths()) return;
 
-                /*
-                 * DOMContentLoaded 시점 차이와 관계없이
-                 * 저장 버튼을 누르는 순간 한 번 더 이벤트 연결을 보장한다.
-                 */
-                setupPublishPreviewModal();
-                openPublishPreviewModal();
+                // 공개 일정에 사진 후보가 하나도 없을 때는 마지막 저장 모달을 열지 않는다.
+                // 등록 사진이 있거나 비공개인 경우에는 기존 대표이미지 선택 규칙을 유지한다.
+                var isPublic=visibility && visibility.dataset.visibility==='PUBLIC';
+                if(!isPublic || collectPublishPhotoCandidates().length){
+                    setupPublishPreviewModal();
+                    openPublishPreviewModal();
+                    return;
+                }
+
+                var sources=collectPublishPlacePhotoSources();
+                if(!sources.length){
+                    showRequiredFieldsModal([
+                        '대표 이미지로 사용할 사진이 없습니다. 일정 블록에 사진을 등록하거나 Google Places에서 사진을 제공하는 장소를 선택해 주세요.'
+                    ],'공개 일정은 대표 이미지가 필요합니다');
+                    return;
+                }
+
+                // 장소가 있더라도 Google Places에 사진이 실제로 존재하는지 확인한다.
+                // 검사 중 중복 클릭을 막고, 검사 결과는 미리보기 후보 목록에도 재사용한다.
+                var sourceFingerprint=JSON.stringify(sources.map(function(source){
+                    return [source.key,source.placeId];
+                }));
+                plannerPhotoPreflightInProgress=true;
+                save.disabled=true;
+                collectPublishPlacePhotoCandidates().then(function(placeCandidates){
+                    var stillPublic=visibility && visibility.dataset.visibility==='PUBLIC';
+                    var registered=collectPublishPhotoCandidates();
+                    var currentFingerprint=JSON.stringify(collectPublishPlacePhotoSources().map(function(source){
+                        return [source.key,source.placeId];
+                    }));
+                    if(stillPublic && !registered.length && sourceFingerprint!==currentFingerprint){
+                        showRequiredFieldsModal([
+                            '장소가 변경되었습니다. 대표 이미지 후보를 다시 확인할 수 있도록 저장하기를 한 번 더 눌러 주세요.'
+                        ],'대표 이미지 확인');
+                        return;
+                    }
+                    if(stillPublic && !registered.length && !placeCandidates.length){
+                        showRequiredFieldsModal([
+                            '등록 사진이 없으며, 선택한 Google Places 장소에서도 사용할 수 있는 사진을 찾지 못했습니다. 사진을 직접 등록하거나 사진이 제공되는 장소를 선택해 주세요.'
+                        ],'대표 이미지가 필요합니다');
+                        return;
+                    }
+                    setupPublishPreviewModal();
+                    openPublishPreviewModal(stillPublic && !registered.length ? placeCandidates : undefined);
+                }).catch(function(){
+                    showRequiredFieldsModal([
+                        'Google Places 사진을 확인하지 못했습니다. 장소를 확인하거나 사진을 직접 등록한 뒤 다시 시도해 주세요.'
+                    ],'대표 이미지 확인 실패');
+                }).finally(function(){
+                    plannerPhotoPreflightInProgress=false;
+                    save.disabled=false;
+                });
             });
             var plannerTitleInput=$('#tripTitle');
             if(plannerTitleInput){

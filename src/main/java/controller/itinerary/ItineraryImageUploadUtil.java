@@ -166,22 +166,44 @@ public final class ItineraryImageUploadUtil {
                         itineraryDto.getVisibility()
                 );
 
-        if (imageKey == null
-                || imageKey.trim().isEmpty()) {
-            if (publicItinerary) {
-                throw new IllegalArgumentException(
-                        "공개 일정은 대표 이미지를 선택해야 합니다."
-                );
-            }
-            return null;
+        // 신규 작성과 수정 모두 대표 이미지 선택은 필수입니다.
+        if (imageKey == null || imageKey.trim().isEmpty()) {
+            throw new IllegalArgumentException(
+                    "대표 이미지를 선택해야 저장할 수 있습니다."
+            );
         }
 
         imageKey = imageKey.trim();
+        boolean hasRegisteredPhotos = hasRegisteredPhotos(itineraryDto);
+
+        // 공개/비공개 모두 직접 등록한 사진이 있다면 등록 사진만 허용한다.
+        if (hasRegisteredPhotos) {
+            if (imageKey.startsWith("flag:")
+                    || imageKey.startsWith("place:")
+                    || imageKey.startsWith("placeId:")) {
+                throw new IllegalArgumentException(
+                        "등록된 사진에서 대표 이미지를 선택해야 합니다."
+                );
+            }
+        } else if (publicItinerary) {
+            // 공개 일정에 등록한 사진이 없으면 Google Places 장소 사진만 허용한다.
+            if (!imageKey.startsWith("place:")
+                    && !imageKey.startsWith("placeId:")) {
+                throw new IllegalArgumentException(
+                        "등록된 사진이 없는 공개 일정은 Google Places 장소 사진을 선택해야 합니다."
+                );
+            }
+        } else if (!imageKey.startsWith("flag:")) {
+            // 비공개 일정에 등록 사진이 없으면 국가 국기만 사용한다.
+            throw new IllegalArgumentException(
+                    "사진이 없는 비공개 일정은 국가 국기를 대표 이미지로 사용해야 합니다."
+            );
+        }
 
         /*
-         * 비공개 일정은 선택한 국가의 국기를 대표 이미지로 사용한다.
+         * 등록 사진이 없는 비공개 일정에서만 국기를 사용할 수 있다.
          * 클라이언트는 flag:{ISO 3166-1 alpha-2} 형식으로 전달한다.
-         * 공개 일정에서는 국기를 대표 이미지 선택으로 인정하지 않는다.
+         * 공개 일정 및 등록 사진이 있는 일정에는 국기를 허용하지 않는다.
          */
         if (imageKey.startsWith("flag:")) {
             if (publicItinerary) {
@@ -334,6 +356,24 @@ public final class ItineraryImageUploadUtil {
         );
     }
 
+
+    private static boolean hasRegisteredPhotos(ItineraryDto itineraryDto) {
+        if (itineraryDto == null || itineraryDto.getDays() == null) {
+            return false;
+        }
+        for (ItineraryDayDto day : itineraryDto.getDays()) {
+            if (day == null || day.getBlocks() == null) continue;
+            for (ItineraryBlockDto block : day.getBlocks()) {
+                if (block == null || block.getImages() == null) continue;
+                for (ItineraryBlockImageDto photo : block.getImages()) {
+                    if (photo != null && hasText(photo.getImageUrl())) {
+                        return true;
+                    }
+                }
+            }
+        }
+        return false;
+    }
 
     private static ItineraryBlockDto findBlock(
             ItineraryDto itineraryDto,

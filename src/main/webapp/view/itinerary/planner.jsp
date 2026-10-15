@@ -437,7 +437,7 @@ request.setAttribute("activePage", "planner");
                                                                 <span>• 클릭해서 이미지 등록 / 변경</span>
                                                                 <span>• 등록 후 왼쪽에서 크게 보기</span>
                                                                 <span>• 드래그로 순서 변경</span>
-                                                                <span>• 1번 사진이 대표 이미지</span>
+                                                                <span>• 여행 대표 이미지는 저장 단계에서 선택</span>
                                                             </div>
                                                             </div>
                                                         </div>
@@ -586,7 +586,7 @@ request.setAttribute("activePage", "planner");
                         <div class="mb-5">
                             <div class="flex items-center justify-between mb-2 gap-3">
                                 <label class="text-xs font-bold text-gray-700">대표 이미지 <span id="plannerPublishPhotoRequirement" class="font-normal text-gray-400">(필수)</span></label>
-                                <span id="plannerPublishPhotoHint" class="text-[10px] text-gray-400">업로드 사진 우선 · 없으면 일정 장소 사진</span>
+                                <span id="plannerPublishPhotoHint" class="text-[10px] text-gray-400">등록 사진 우선 · 공개는 Google Places 사진, 비공개는 국기 사용</span>
                             </div>
 
                             <div id="plannerPublishPhotoList"
@@ -598,7 +598,7 @@ request.setAttribute("activePage", "planner");
                             </p>
 
                             <p id="plannerPublishPhotoError" class="planner-publish-error">
-                                공개 일정은 대표 이미지를 선택해야 저장할 수 있습니다.
+                                대표 이미지를 선택해야 저장할 수 있습니다.
                             </p>
 
                         </div>
