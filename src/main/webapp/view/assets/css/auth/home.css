@@ -1434,3 +1434,38 @@ html.ph-snap::-webkit-scrollbar {
         height: 56px;
     }
 }
+
+/* =========================================================
+   여행꿀팁 / 여행메이트 미리보기 작성자
+   - 실제 프로필 사진 + 상세 페이지와 같은 글꼴
+========================================================= */
+.ph-board-author {
+    font-family: "Noto Sans KR", "Plus Jakarta Sans", Pretendard, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+}
+
+.ph-board-author .ph-avatar,
+.ph-board-avatar-img {
+    width: 20px;
+    height: 20px;
+    flex-shrink: 0;
+    border-radius: 50%;
+}
+
+.ph-board-author .ph-avatar {
+    background: linear-gradient(135deg, #6369D1, #8B5CF6);
+    font-size: 10px;
+}
+
+.ph-board-avatar-img {
+    object-fit: cover;
+    background: #F0F0FF;
+}
+
+.ph-board-name {
+    overflow: hidden;
+    color: #1f2937;
+    font-size: 12px;
+    font-weight: 600;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}

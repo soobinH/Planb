@@ -15,7 +15,7 @@ request.setAttribute("activePage", "home");
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Planb</title>
 <jsp:include page="/common/headStyles.jsp" />
-<link rel="stylesheet" href="${ctx}/view/assets/css/auth/home.css?v=3">
+<link rel="stylesheet" href="${ctx}/view/assets/css/auth/home.css?v=4">
 <script defer src="${ctx}/view/assets/js/auth/home.js?v=4"></script>
 </head>
 <body class="site-shell ph-page">
@@ -326,8 +326,10 @@ request.setAttribute("activePage", "home");
 															</c:if>
 															<h4><c:out value="${tip.title}" /></h4>
 															<div class="ph-board-author">
-																<span class="ph-avatar"><c:out value="${empty tip.nickname ? '?' : tip.nickname.substring(0, 1)}" /></span>
-																<c:out value="${tip.nickname}" />
+																<c:set var="boardProfileImg" value="${tip.profileImg}" />
+																<c:set var="boardNickname" value="${tip.nickname}" />
+																<%@ include file="/view/home/homeBoardAvatar.jspf" %>
+																<span class="ph-board-name"><c:out value="${tip.nickname}" default="알 수 없음" /></span>
 															</div>
 														</div>
 														<svg class="ph-board-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M9 6l6 6-6 6" /></svg>
@@ -389,8 +391,10 @@ request.setAttribute("activePage", "home");
 															</div>
 															<h4><c:out value="${mate.title}" /></h4>
 															<div class="ph-board-author">
-																<span class="ph-avatar ph-avatar--violet"><c:out value="${empty mate.nickname ? 'U' : mate.nickname.substring(0, 1)}" /></span>
-																<c:out value="${mate.nickname}" />
+																<c:set var="boardProfileImg" value="${mate.profileImg}" />
+																<c:set var="boardNickname" value="${mate.nickname}" />
+																<%@ include file="/view/home/homeBoardAvatar.jspf" %>
+																<span class="ph-board-name"><c:out value="${mate.nickname}" default="알 수 없음" /></span>
 															</div>
 														</div>
 														<svg class="ph-board-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M9 6l6 6-6 6" /></svg>
