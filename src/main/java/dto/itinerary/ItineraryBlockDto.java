@@ -17,7 +17,7 @@ public class ItineraryBlockDto {
 
     private Long sourceBlockId;            // 원본 블록 번호
 
-    // MEAL / ATTRACTION / LODGING / TRANSPORT / ACTIVITY
+    // MEAL / ATTRACTION / LODGING / TRANSPORT
     private String blockType;
 
     private Integer blockOrder;            // DAY 내부 블록 순서

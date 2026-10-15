@@ -24,136 +24,34 @@ request.setAttribute("activePage", "travel");
     background: #fbfbfe;
 }
 
-/* 여행 메이트/여행 꿀팁 상세 페이지와 같은 좌우 160x600 AD 배너 */
-.cart-page-layout {
-    display: flex;
-    align-items: flex-start;
-    justify-content: center;
-    /* 광고와 중앙 콘텐츠 간 간격을 확보하며 화면 폭에 따라 조정 */
-    gap: clamp(36px, 3.5vw, 56px);
-    width: 100%;
-    max-width: 1600px;
-    margin: 0 auto;
-    padding: 64px 24px 56px;
-}
-
 .cart-page-inner {
-    flex: 1 1 0;
-    min-width: 0;
     width: 100%;
     max-width: 1180px;
-    margin: 0;
-    padding: 0;
-}
-
-.cart-side-ad {
-    display: none;
-    /* 스크롤 위치와 관계없이 화면에서 같은 좌표를 유지 */
-    position: fixed;
-    top: 132px;
-    left: max(24px, calc((100vw - 1600px) / 2 + 24px));
-    z-index: 20;
-    align-self: flex-start;
-    flex: 0 0 160px;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    gap: 12px;
-    width: 160px;
-    height: min(600px, calc(100vh - 156px));
-    min-height: 0;
-    border-radius: 16px;
-    background-color: var(--brand-light, #eef0ff);
-    color: var(--brand, #6369d1);
-}
-
-.cart-side-ad-badge {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 48px;
-    height: 48px;
-    border-radius: 50%;
-    background-color: var(--brand, #6369d1);
-    color: #fff;
-    font-size: 14px;
-    font-weight: 800;
-}
-
-.cart-side-ad-label {
-    margin: 0;
-    padding: 0 12px;
-    color: var(--brand, #6369d1);
-    font-size: 12px;
-    font-weight: 600;
-    line-height: 1.5;
-    text-align: center;
-}
-
-.cart-side-ad-size {
-    font-size: 10px;
-    font-weight: 400;
-    opacity: .6;
-}
-
-@media (min-width: 1024px) {
-    /* fixed 광고는 flex 레이아웃에서 빠지므로 빈 자리만 보존한다. */
-    .cart-page-layout::before,
-    .cart-page-layout::after {
-        content: "";
-        flex: 0 0 160px;
-        width: 160px;
-    }
-
-    .cart-side-ad { display: flex; }
-    .cart-side-ad:last-of-type {
-        left: auto;
-        right: max(24px, calc((100vw - 1600px) / 2 + 24px));
-    }
+    margin: 0 auto;
+    padding: 32px 24px 56px;
 }
 
 .cart-heading {
-    margin-bottom: 28px;
-}
-
-.cart-heading-main {
-    width: 100%;
-}
-
-/* 타이틀과 카트 수/일정 만들기 버튼을 동일한 한 줄에 정렬 */
-.cart-title-bar {
     display: flex;
-    align-items: center;
+    align-items: flex-start;
     justify-content: space-between;
     gap: 18px;
-    margin-top: 0;
-}
-
-/* 알림 페이지의 NOTIFICATIONS와 동일한 글자 크기/굵기/자간 */
-.cart-eyebrow {
-    display: block;
-    margin: 0 0 12px;
-    color: #6369d1;
-    font-size: 11px;
-    font-weight: 700;
-    letter-spacing: 2px;
-    line-height: 1.5;
+    margin-bottom: 22px;
 }
 
 .cart-title {
-    margin: 0;
+    margin: 0 0 5px;
     color: #111827;
-    font-size: 32px;
-    font-weight: 750;
+    font-size: 25px;
+    font-weight: 900;
     line-height: 1.35;
-    letter-spacing: -1.2px;
 }
 
 .cart-description {
-    margin: 10px 0 0;
-    color: #737687;
+    margin: 0;
+    color: #6b7280;
     font-size: 14px;
-    line-height: 1.7;
+    line-height: 1.65;
 }
 
 .cart-heading-actions {
@@ -574,11 +472,11 @@ request.setAttribute("activePage", "travel");
     white-space: nowrap;
 }
 
-.cart-block-type.attraction { background: #eef2ff; color: #6369d1; }
+.cart-block-type.attraction { background: #fdf2f8; color: #ec4899; }
 .cart-block-type.meal { background: #fff7ed; color: #f97316; }
 .cart-block-type.lodging { background: #ecfdf5; color: #10b981; }
 .cart-block-type.transport { background: #eff6ff; color: #3b82f6; }
-.cart-block-type.activity { background: #fdf2f8; color: #ec4899; }
+
 .cart-block-type.unknown { background: #f3f4f6; color: #6b7280; }
 
 .cart-block-copy {
@@ -782,17 +680,17 @@ request.setAttribute("activePage", "travel");
         height: 44px;
     }
 
-    .cart-page-layout {
-        padding: 64px 14px 44px;
+    .cart-page-inner {
+        padding: 24px 14px 44px;
     }
 
-    .cart-title-bar {
-        flex-wrap: wrap;
+    .cart-heading {
+        flex-direction: column;
+        align-items: stretch;
     }
 
     .cart-heading-actions {
-        justify-content: flex-end;
-        margin-left: auto;
+        justify-content: space-between;
     }
 
     .cart-itinerary-toggle {
@@ -835,36 +733,26 @@ request.setAttribute("activePage", "travel");
 <jsp:include page="/common/header.jsp" />
 
 <main class="cart-page">
-    <div class="cart-page-layout">
-        <!-- 여행 상세페이지와 동일한 좌측 광고 영역 -->
-        <aside class="cart-side-ad" aria-label="좌측 광고 영역">
-            <div class="cart-side-ad-badge">AD</div>
-            <p class="cart-side-ad-label">좌측 광고 영역<br>
-                <span class="cart-side-ad-size">(예: 160x600)</span>
-            </p>
-        </aside>
-
-        <div class="cart-page-inner">
+    <div class="cart-page-inner">
 
         <div class="cart-heading">
-            <div class="cart-heading-main">
-                <p class="cart-eyebrow">CART</p>
-                <div class="cart-title-bar">
-                    <h1 class="cart-title">일정 카트</h1>
-                    <div class="cart-heading-actions">
-                        <span class="cart-count" id="cartCountLabel">
-                            총 <span id="cartTotalCount"><c:out value="${cartTotalCount}" /></span>개
-                        </span>
-                        <a class="cart-plan-link" href="${pageContext.request.contextPath}/writeplan">일정 만들기</a>
-                    </div>
-                </div>
+            <div>
+                <h1 class="cart-title">일정 카트</h1>
                 <p class="cart-description">
                     담아둔 일정·DAY·블록을 확인할 수 있습니다.<br>일정 만들기에서는 이 내용을 드래그해 가져올 수 있습니다.
                 </p>
             </div>
+
+            <div class="cart-heading-actions">
+                <span class="cart-count" id="cartCountLabel">
+                    총 <span id="cartTotalCount"><c:out value="${cartTotalCount}" /></span>개
+                </span>
+                <a class="cart-plan-link" href="${pageContext.request.contextPath}/writeplan">일정 만들기</a>
+            </div>
         </div>
 
-        <div class="cart-search-panel">
+        <c:if test="${not empty cartItineraries}">
+            <div class="cart-search-panel">
                 <div class="cart-search-box">
                     <svg class="cart-search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
                         <circle cx="10.5" cy="10.5" r="6.5" />
@@ -881,6 +769,7 @@ request.setAttribute("activePage", "travel");
                     </button>
                 </div>
             </div>
+        </c:if>
 
         <c:choose>
             <c:when test="${empty cartItineraries}">
@@ -939,15 +828,6 @@ request.setAttribute("activePage", "travel");
             </c:otherwise>
         </c:choose>
 
-        </div>
-
-        <!-- 여행 상세페이지와 동일한 우측 광고 영역 -->
-        <aside class="cart-side-ad" aria-label="우측 광고 영역">
-            <div class="cart-side-ad-badge">AD</div>
-            <p class="cart-side-ad-label">우측 광고 영역<br>
-                <span class="cart-side-ad-size">(예: 160x600)</span>
-            </p>
-        </aside>
     </div>
 </main>
 

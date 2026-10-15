@@ -322,6 +322,17 @@ public class ItineraryModify extends HttpServlet {
                     continue;
                 }
                 for (ItineraryBlockDto block : day.getBlocks()) {
+                    if (block != null) {
+                        String type = block.getBlockType();
+                        if (!("ATTRACTION".equals(type)
+                                || "MEAL".equals(type)
+                                || "LODGING".equals(type)
+                                || "TRANSPORT".equals(type))) {
+                            throw new IllegalArgumentException(
+                                    "지원하지 않는 일정 블록 타입입니다. 관광, 식사, 숙소, 교통만 사용할 수 있습니다."
+                            );
+                        }
+                    }
                     if (block != null && block.getMemo() != null
                             && block.getMemo().length() > 200) {
                         throw new IllegalArgumentException(

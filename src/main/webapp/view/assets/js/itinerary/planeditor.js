@@ -8,11 +8,10 @@
             var keepAliveInFlight=false;
             var sessionExpiredHandling=false;
             var TYPE_CONFIG = {
-                sightseeing:{label:'관광',color:'#6369D1',bg:'#EEF2FF'},
+                sightseeing:{label:'관광',color:'#EC4899',bg:'#FDF2F8'},
                 meal:{label:'식사',color:'#F97316',bg:'#FFF7ED'},
                 accommodation:{label:'숙소',color:'#10B981',bg:'#ECFDF5'},
-                transport:{label:'교통',color:'#3B82F6',bg:'#EFF6FF'},
-                activity:{label:'활동',color:'#EC4899',bg:'#FDF2F8'}
+                transport:{label:'교통',color:'#3B82F6',bg:'#EFF6FF'}
             };
             var map, mapMarkers=[], mapPolylines=[], mapSearchMarkers=[];
             var plannerPlaceDetailsCache={};
@@ -64,7 +63,8 @@
                     MEAL:'meal',
                     LODGING:'accommodation',
                     TRANSPORT:'transport',
-                    ACTIVITY:'activity'
+                    // Legacy activity blocks are shown as attractions.
+                    ACTIVITY:'sightseeing'
                 };
 
                 return map[type] || 'sightseeing';
@@ -505,7 +505,7 @@
                 return {
                     sourceBlockId:item.sourceBlockId||null,
                     title:item.name||item.title||'',
-                    type:item.type||'sightseeing',
+                    type:TYPE_CONFIG[item.type] ? item.type : 'sightseeing',
                     startTime:item.time||item.startTime||'',
                     endTime:item.endTime||'',
                     cost:item.cost||'',
@@ -763,7 +763,7 @@
 
                 var help=document.createElement('div');
                 help.className='planner-drag-help';
-                help.textContent=mode==='block' ? '원하는 DAY의 블록 사이에 놓으세요' : '원하는 DAY 사이에 놓으세요';
+                help.textContent=mode==='block' ? '기존 DAY 안 또는 DAY 사이에 놓으면 새 DAY가 생성됩니다' : '원하는 DAY 사이에 놓으세요';
                 root.insertBefore(help,root.firstChild);
 
                 if(mode==='day'){
@@ -777,6 +777,19 @@
                         root.insertBefore(makePlannerDropSlot({mode:'day',beforeDay:before||null,index:i}),before||null);
                     }
                     return;
+                }
+
+                // 블록을 DAY 내부뿐 아니라 DAY 사이 / 빈 일정에도 놓을 수 있다.
+                // 이 슬롯에 놓으면 DAY를 새로 만들어 블록을 첫 항목으로 배치한다.
+                var visibleDays=$$('.planner-day');
+                var newDayBefore=$('#plannerAddDay');
+                for(var gapIndex=0;gapIndex<=visibleDays.length;gapIndex++){
+                    var nextDay=gapIndex<visibleDays.length ? visibleDays[gapIndex] : newDayBefore;
+                    root.insertBefore(makePlannerDropSlot({
+                        mode:'new-day-for-block',
+                        beforeDay:nextDay||null,
+                        index:gapIndex
+                    }),nextDay||null);
                 }
 
                 $$('.planner-day').forEach(function(day){
@@ -1200,6 +1213,33 @@
                         toast('일정 '+schedules.length+'개 DAY를 가져왔습니다.');
                         changed=schedules.length>0;
                     }
+                }else if(meta.mode==='new-day-for-block'){
+                    var insertionBefore=meta.beforeDay;
+                    var starterDay=getPlannerEmptyStarterDay();
+                    if(starterDay){
+                        if(insertionBefore===starterDay) insertionBefore=$('#plannerAddDay');
+                        starterDay.remove();
+                    }
+                    var createdDay=insertImportedDayAt(insertionBefore,{
+                        title:'새 DAY',items:[]
+                    });
+                    if(createdDay){
+                        if(state.kind==='internal-block' && state.element){
+                            var sourceDay=state.element.closest('.planner-day');
+                            var targetBody=$('.planner-day-body',createdDay);
+                            targetBody.insertBefore(state.element,$('.planner-add-block-btn',targetBody));
+                            ensureDayControls(createdDay);
+                            if(sourceDay) ensureDayControls(sourceDay);
+                            changed=true;
+                        }else if(state.kind==='item'){
+                            applyImportHeaderDefaults(state.payload);
+                            insertBlockAt(createdDay,plannerBlockPrefill(state.payload.item||{}),null);
+                            toast('새 DAY를 만들고 일정 블록을 가져왔습니다.');
+                            changed=true;
+                        }else{
+                            createdDay.remove();
+                        }
+                    }
                 }else if(meta.mode==='block'){
                     var targetDay=meta.day;
                     var beforeBlock=meta.beforeBlock;
@@ -1482,7 +1522,8 @@
                 var q=(search&&search.value||'').trim().toLowerCase();
                 var countryInput=$('#plannerCountry');
                 var matchedCountry=countryInput ? findPlannerCountry(countryInput.value) : null;
-                var selectedCountry=matchedCountry ? matchedCountry.name : '';
+                var selectedCountry=matchedCountry ? matchedCountry.name
+                    : normalizePlannerText(countryInput && countryInput.value);
                 var visible=0;
 
                 $$('.planner-saved-plan').forEach(function(card){
@@ -2185,7 +2226,7 @@
                 var template=blockTemplate;
                 if(!template) return null;
                 var card=template.cloneNode(true);
-                card.dataset.itemType=prefill.type||'sightseeing';
+                card.dataset.itemType=TYPE_CONFIG[prefill.type] ? prefill.type : 'sightseeing';
                 card.dataset.sourceBlockId=prefill.sourceBlockId||'';
                 card.querySelectorAll('[id]').forEach(function(el){ el.removeAttribute('id'); });
                 card.querySelectorAll('label[for]').forEach(function(el){ el.removeAttribute('for'); });
@@ -4852,8 +4893,7 @@
                     sightseeing:'ATTRACTION',
                     meal:'MEAL',
                     accommodation:'LODGING',
-                    transport:'TRANSPORT',
-                    activity:'ACTIVITY'
+                    transport:'TRANSPORT'
                 };
                 return map[type] || 'ATTRACTION';
             }
@@ -5117,6 +5157,20 @@
             }
 
             function selectPublishImage(candidate){
+                // Google 장소 ID 없이 저장된 좌표 핀을 텍스트 검색으로 찾은 경우,
+                // 사용자가 사진을 선택할 때만 해당 블록에 확인된 Place ID를 반영한다.
+                // 그래야 서버의 gplace: 참조 검증과 실제 블록 데이터가 일치한다.
+                if(candidate && candidate.source==='place' && candidate.placeId
+                        && Number.isInteger(candidate.dayIndex)
+                        && Number.isInteger(candidate.blockIndex)){
+                    var photoDay=$$('.planner-day')[candidate.dayIndex];
+                    var photoBlock=photoDay && $$('.planner-block-card',photoDay)[candidate.blockIndex];
+                    var photoPlaceInput=photoBlock && $('.planner-place-search',photoBlock);
+                    if(photoPlaceInput && !String(photoPlaceInput.dataset.googlePlaceId||'').trim()){
+                        photoPlaceInput.dataset.googlePlaceId=String(candidate.placeId);
+                        markDirty();
+                    }
+                }
                 plannerPublishState.imageKey=candidate ? candidate.key : '';
                 plannerPublishState.thumbnailUrl=candidate ? candidate.src : '';
 
@@ -5186,13 +5240,12 @@
                     $$('.planner-block-card',day).forEach(function(card,blockIndex){
                         var input=$('.planner-place-search',card);
                         var point=plannerSelectedPlacePoint(input);
-                        var placeId=point && point.googlePlaceId
-                            ? String(point.googlePlaceId).trim()
-                            : '';
-
-                        if(!placeId || seen[placeId]) return;
-                        seen[placeId]=true;
-
+                        if(!point) return;
+                        var placeId=String(point.googlePlaceId||'').trim();
+                        // 지도에 찍힌 핀이 좌표/이름만 가지고 있어도 사진 검색 대상에 포함한다.
+                        var identity=placeId || ('geo:'+point.lat+','+point.lng+':'+point.name);
+                        if(seen[identity]) return;
+                        seen[identity]=true;
                         result.push({
                             key:'place:'+dayIndex+':'+blockIndex,
                             point:point,
@@ -5202,56 +5255,68 @@
                         });
                     });
                 });
-
                 return result;
+            }
+
+            function resolvePlannerPlacePhotoDetails(source){
+                if(source.placeId){
+                    return fetchPlannerPlaceDetails(source.point).catch(function(){ return null; });
+                }
+                var point=source.point;
+                var query=String(point.name||'').trim();
+                if(!query) return Promise.resolve(null);
+                return getPlannerPlacesLibrary().then(function(lib){
+                    if(!lib || !lib.Place || typeof lib.Place.searchByText!=='function') return null;
+                    var request={
+                        textQuery:query+(point.address ? ' '+point.address : ''),
+                        fields:['id','displayName','location','photos'],
+                        maxResultCount:5,
+                        language:'ko'
+                    };
+                    return lib.Place.searchByText(request).then(function(response){
+                        var places=response && response.places || [];
+                        // 이름 검색 결과가 다른 국가/도시일 수 있으므로 핀과 가까운 결과만 인정한다.
+                        for(var i=0;i<places.length;i++){
+                            var place=places[i];
+                            if(!place || !place.id || !place.photos || !place.photos.length || !place.location) continue;
+                            var lat=typeof place.location.lat==='function' ? place.location.lat() : place.location.lat;
+                            var lng=typeof place.location.lng==='function' ? place.location.lng() : place.location.lng;
+                            if(!isFinite(Number(lat)) || !isFinite(Number(lng))) continue;
+                            var latDelta=(Number(lat)-Number(point.lat))*111000;
+                            var lngDelta=(Number(lng)-Number(point.lng))*111000*Math.cos(Number(point.lat)*Math.PI/180);
+                            if(Math.sqrt(latDelta*latDelta+lngDelta*lngDelta)<=3000) return place;
+                        }
+                        return null;
+                    });
+                }).catch(function(){ return null; });
             }
 
             function collectPublishPlacePhotoCandidates(){
                 var sources=collectPublishPlacePhotoSources();
                 if(!sources.length) return Promise.resolve([]);
-
                 return Promise.all(sources.map(function(source){
-                    return fetchPlannerPlaceDetails(source.point)
-                        .then(function(details){
-                            if(!details || !details.photos || !details.photos.length){
-                                return null;
-                            }
-
-                            var photo=details.photos[0];
-                            var src='';
-                            try{
-                                src=photo.getURI({
-                                    maxWidth:960,
-                                    maxHeight:720
-                                }) || '';
-                            }catch(e){
-                                src='';
-                            }
-
-                            if(!src) return null;
-
-                            return {
-                                key:source.key,
-                                src:src,
-                                source:'place',
-                                placeId:source.placeId,
-                                placeName:details.displayName
-                                    || source.point.name
-                                    || '장소',
-                                attributionNames:(photo.authorAttributions || []).map(function(attr){
-                                    return attr && attr.displayName
-                                        ? String(attr.displayName)
-                                        : '사용자';
-                                }),
-                                dayIndex:source.dayIndex,
-                                blockIndex:source.blockIndex
-                            };
-                        })
-                        .catch(function(){
-                            return null;
-                        });
+                    return resolvePlannerPlacePhotoDetails(source).then(function(details){
+                        if(!details || !details.photos || !details.photos.length || !details.id) return null;
+                        var photo=details.photos[0];
+                        var src='';
+                        try{src=photo.getURI({maxWidth:960,maxHeight:720}) || '';}
+                        catch(e){src='';}
+                        if(!src) return null;
+                        return {
+                            key:source.key,
+                            src:src,
+                            source:'place',
+                            placeId:String(details.id),
+                            placeName:details.displayName || source.point.name || '장소',
+                            attributionNames:(photo.authorAttributions||[]).map(function(attr){
+                                return attr && attr.displayName ? String(attr.displayName) : '사용자';
+                            }),
+                            dayIndex:source.dayIndex,
+                            blockIndex:source.blockIndex
+                        };
+                    }).catch(function(){return null;});
                 })).then(function(items){
-                    return items.filter(function(item){ return !!item; });
+                    return items.filter(function(item){return !!item;});
                 });
             }
 
@@ -5687,7 +5752,7 @@
                 if(!sources.length){
                     showRequiredFieldsModal([
                         '대표 이미지로 사용할 사진이 없습니다. 일정 블록에 사진을 등록하거나 Google Places에서 사진을 제공하는 장소를 선택해 주세요.'
-                    ],'공개 일정은 대표 이미지가 필요합니다');
+                    ],'대표 이미지가 필요합니다');
                     return;
                 }
 
@@ -6475,6 +6540,7 @@
                  */
                 syncCountryLock();
                 syncCountryEditLock();
+                filterPlans(); // 수정 대상 국가가 채워진 후 같은 국가만 표시한다.
 
                 refreshMap('all');
                 dirty=false;
@@ -6482,6 +6548,7 @@
 
             initializePlanEditor();
             restoreDraft().then(function(restored){
+                filterPlans();
                 if(restored && typeof refreshMap==='function'){
                     refreshMap('all');
                 }

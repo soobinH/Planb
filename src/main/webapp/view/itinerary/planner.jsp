@@ -300,11 +300,10 @@ request.setAttribute("activePage", "planner");
 
                                                     <div class="planner-block-body" data-block-body>
                                                         <div class="planner-block-type-row">
-                                                            <button type="button" data-item-type="sightseeing" class="planner-type-btn px-3 py-1 rounded-lg text-xs font-semibold" style="background:#EEF2FF;color:#6369D1">관광</button>
+                                                            <button type="button" data-item-type="sightseeing" class="planner-type-btn px-3 py-1 rounded-lg text-xs font-semibold" style="background:#FDF2F8;color:#EC4899">관광</button>
                                                             <button type="button" data-item-type="meal" class="planner-type-btn px-3 py-1 rounded-lg text-xs font-semibold" style="background:#FFF7ED;color:#F97316">식사</button>
                                                             <button type="button" data-item-type="accommodation" class="planner-type-btn px-3 py-1 rounded-lg text-xs font-semibold" style="background:#ECFDF5;color:#10B981">숙소</button>
                                                             <button type="button" data-item-type="transport" class="planner-type-btn px-3 py-1 rounded-lg text-xs font-semibold" style="background:#EFF6FF;color:#3B82F6">교통</button>
-                                                            <button type="button" data-item-type="activity" class="planner-type-btn px-3 py-1 rounded-lg text-xs font-semibold" style="background:#FDF2F8;color:#EC4899">활동</button>
                                                         </div>
 
                                                         <div class="planner-block-grid">

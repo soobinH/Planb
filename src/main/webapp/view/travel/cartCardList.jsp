@@ -137,7 +137,7 @@
                                             <c:when test="${block.blockType eq 'MEAL'}"><span class="cart-block-type meal">식사</span></c:when>
                                             <c:when test="${block.blockType eq 'LODGING'}"><span class="cart-block-type lodging">숙박</span></c:when>
                                             <c:when test="${block.blockType eq 'TRANSPORT'}"><span class="cart-block-type transport">교통</span></c:when>
-                                            <c:when test="${block.blockType eq 'ACTIVITY'}"><span class="cart-block-type activity">활동</span></c:when>
+                                            <c:when test="${block.blockType eq 'ACTIVITY'}"><span class="cart-block-type attraction">관광</span></c:when>
                                             <c:otherwise><span class="cart-block-type unknown">일정</span></c:otherwise>
                                         </c:choose>
 

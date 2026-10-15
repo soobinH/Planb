@@ -2,6 +2,7 @@ package controller.itinerary;
 
 import java.io.IOException;
 import java.util.Collections;
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.servlet.ServletException;
@@ -98,6 +99,20 @@ public class ModifyPlanServlet extends HttpServlet {
             if (importList == null) {
                 importList = Collections.emptyList();
             }
+
+            // 수정 대상의 국가와 일치하는 카트 일정만 보낸다.
+            // 프런트 필터의 초기 실행 시점과 무관하게 다른 국가는 노출되지 않는다.
+            List<ItineraryDto> sameCountry = new ArrayList<ItineraryDto>();
+            String editCountry = editItinerary.getCountry() == null
+                    ? "" : editItinerary.getCountry().trim();
+            for (ItineraryDto item : importList) {
+                if (item != null && item.getCountry() != null
+                        && !editCountry.isEmpty()
+                        && editCountry.equals(item.getCountry().trim())) {
+                    sameCountry.add(item);
+                }
+            }
+            importList = sameCountry;
 
             request.setAttribute("importListJson", gson.toJson(importList));
             request.setAttribute(

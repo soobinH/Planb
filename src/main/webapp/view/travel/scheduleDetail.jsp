@@ -621,7 +621,7 @@ request.setAttribute("activePage", "travel");
                                              <c:when test="${block.blockType eq 'MEAL'}">식사</c:when>
                                              <c:when test="${block.blockType eq 'LODGING'}">숙소</c:when>
                                              <c:when test="${block.blockType eq 'TRANSPORT'}">교통</c:when>
-                                             <c:when test="${block.blockType eq 'ACTIVITY'}">활동</c:when>
+                                             <c:when test="${block.blockType eq 'ACTIVITY'}">관광</c:when>
                                              <c:otherwise>
                                                 <c:out value="${block.blockType}" />
                                              </c:otherwise>
