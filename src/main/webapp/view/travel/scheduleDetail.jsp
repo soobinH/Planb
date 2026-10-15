@@ -2,9 +2,22 @@
    pageEncoding="UTF-8"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt"%>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions"%>
 <%
 request.setAttribute("activePage", "travel");
 %>
+<c:set var="detailDayCount" value="${fn:length(itinerary.days)}" />
+<c:choose>
+   <c:when test="${detailDayCount eq 1}">
+      <c:set var="detailDurationText" value="당일치기" />
+   </c:when>
+   <c:when test="${detailDayCount gt 1}">
+      <c:set var="detailDurationText" value="${detailDayCount - 1}박${detailDayCount}일" />
+   </c:when>
+   <c:otherwise>
+      <c:set var="detailDurationText" value="기간 미정" />
+   </c:otherwise>
+</c:choose>
 <!DOCTYPE html>
 <html lang="ko">
 <head>
@@ -13,13 +26,15 @@ request.setAttribute("activePage", "travel");
 <title><c:out value="${itinerary.title}" /> | Planb</title>
 <jsp:include page="/common/headStyles.jsp" />
 <link rel="stylesheet"
-   href="${pageContext.request.contextPath}/view/assets/css/travel/scheduleDetail.css?v=9">
+   href="${pageContext.request.contextPath}/view/assets/css/travel/scheduleDetail.css?v=20261015-3">
 </head>
 <body class="site-shell"><jsp:include page="/common/header.jsp" />
    <main id="scheduleDetail" class="detail-layout"
       data-cart-url="${pageContext.request.contextPath}/itinerary/cart/toggle"
       data-cart-state-url="${pageContext.request.contextPath}/itinerary/cart/state"
       data-itinerary-id="${itinerary.itineraryId}"
+      data-map-country="<c:out value='${itinerary.country}'/>"
+      data-map-city="<c:out value='${itinerary.city}'/>"
       data-logged-in="${not empty sessionScope.user}"
       data-login-url="${pageContext.request.contextPath}/auth/login">
       <!-- 좌측: 일정 정보 -->
@@ -114,7 +129,7 @@ request.setAttribute("activePage", "travel");
                   </c:if>
                </span> <span
                   class="absolute bottom-4 left-4 text-white text-xs font-bold bg-black/50 rounded-full px-2.5 py-1">
-                  <c:out value="${itinerary.durationText}" />
+                  <c:out value="${detailDurationText}" />
                </span>
 
                <!-- 썸네일 우측 하단: 좋아요 토글 -->
@@ -199,21 +214,19 @@ request.setAttribute("activePage", "travel");
                      data-login-url="${pageContext.request.contextPath}/auth/login"
                      aria-haspopup="dialog" aria-controls="scheduleReportModal"
                      class="detail-report-button">
-                     <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor"
-                        viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round"
-                           stroke-width="2"
-                           d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" /></svg>
+                     
+                     
+                     <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 21V3M5 4h14l-3 5 3 5H5"/></svg>
                      신고
                   </button>
                </div>
-               <div class="flex flex-wrap gap-2 mb-3">
+               <div class="detail-travel-meta detail-travel-meta-inline">
 
                   <!-- 여행 기간 -->
                   <span
                      class="flex items-center gap-1 text-[12px] px-3 py-1.5 rounded-full border font-medium"
                      style="border-color: #D1D2F9; background: #f5f5ff; color: #4a4a6a">
-                     <span>🗓️</span> <c:out value="${itinerary.durationText}" />
+                     <span>🗓️</span> <c:out value="${detailDurationText}" />
                   </span>
 
                   <!-- 여행 인원 -->
@@ -674,7 +687,9 @@ request.setAttribute("activePage", "travel");
                                        <c:out value="${block.placeAddress}" />
                                     </p>
                                  </c:if>
-<!-- 메모: 태그 안쪽의 불필요한 공백 제거 -->
+                                 </div>
+                                 <div class="detail-block-note-body">
+                                 <!-- 메모: 태그 안쪽의 불필요한 공백 제거 -->
                                  <c:if test="${not empty block.memo}">
                                     <p class="detail-block-memo"
                                        style="white-space: pre-wrap; overflow-wrap: anywhere;"><c:out value="${block.memo}" /></p>
@@ -805,14 +820,6 @@ request.setAttribute("activePage", "travel");
             <div id="detailMapStatus" class="detail-map-status" role="status">
                지도를 불러오는 중입니다.</div>
          </div>
-
-         <div class="detail-map-type-legend">
-            <span><i style="background: #6369D1"></i>관광</span> <span><i
-               style="background: #F97316"></i>식사</span> <span><i
-               style="background: #10B981"></i>숙소</span> <span><i
-               style="background: #3B82F6"></i>교통</span> <span><i
-               style="background: #EC4899"></i>활동</span>
-         </div>
       </section>
    </main>
 
@@ -922,7 +929,7 @@ request.setAttribute("activePage", "travel");
       src="${pageContext.request.contextPath}/view/assets/js/travel/scheduleDetail.js?v=15"></script>
       
    <script
-       src="${pageContext.request.contextPath}/view/assets/js/travel/scheduleDetailMap.js?v=2"></script>
+       src="${pageContext.request.contextPath}/view/assets/js/travel/scheduleDetailMap.js?v=3"></script>
 
    <script async
        onerror="detailMapLoadFailed()"

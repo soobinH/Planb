@@ -1133,3 +1133,58 @@ html::-webkit-scrollbar-thumb:hover {
 @media (max-width: 1000px) {
     #detailSchedulePanel .detail-block-content.has-photos { grid-template-columns: minmax(0, 1fr) 145px; gap: 10px; }
 }
+
+
+/* 사진과 메모를 같은 Grid 행에 두어 시작 높이를 정확히 맞춤 */
+.detail-block-note-body { grid-column: 1 / -1; grid-row: 3; min-width: 0; }
+.has-photos > .detail-block-note-body { grid-column: 1; }
+#detailSchedulePanel .detail-block-note-body .detail-block-memo { margin-top: 0; }
+#detailSchedulePanel .detail-block-photos { grid-row: 3; align-self: start; }
+
+
+/* 원본 아이콘 배지를 한 줄에 두고 내용 너비를 유지하며 간격만 분산 */
+#scheduleDetail #detailInfoPanel .detail-travel-meta-inline {
+    display: flex; align-items: center; justify-content: space-between; flex-wrap: nowrap;
+    gap: 4px; width: 100%; margin-bottom: 14px; padding: 0;
+    border: 0; background: transparent; box-sizing: border-box;
+}
+#scheduleDetail #detailInfoPanel .detail-travel-meta-inline > span {
+    display: inline-flex; align-items: center; flex: 0 0 auto; gap: 4px;
+    padding: 6px 8px; border: 1px solid #D1D2F9; border-radius: 9999px;
+    background: #f5f5ff; color: #4a4a6a; white-space: nowrap;
+    font-size: 12px; font-weight: 500; line-height: 1.5; box-sizing: border-box;
+}
+.detail-trip-date { color: #4f566c; font-weight: 600; }
+#scheduleReportButton.detail-report-button {
+    min-height: 28px; padding: 5px 9px; gap: 5px;
+    border: 1px solid #f0dce0; border-radius: 9px;
+    background: #fff7f8; box-shadow: none; color: #b65c6a;
+    font-size: 11px; font-weight: 600; text-decoration: none; cursor: pointer;
+    transition: background .15s, border-color .15s, color .15s;
+}
+#scheduleReportButton.detail-report-button:hover {
+    background: #ffedf0; border-color: #e9bbc4; color: #a34153; text-decoration: none;
+}
+#scheduleReportButton.detail-report-button:focus-visible {
+    outline: 2px solid #6369D1; outline-offset: 3px;
+}
+#scheduleReportButton.detail-report-button svg { width: 13px; height: 13px; }
+#scheduleLikeButton.detail-thumbnail-like {
+    width: 36px; height: 36px; right: 12px; bottom: 12px; border-radius: 12px;
+    background: rgba(255,255,255,.79); border-color: rgba(255,255,255,.65);
+    backdrop-filter: blur(8px); box-shadow: 0 3px 10px rgba(24,32,52,.16);
+}
+#scheduleLikeButton.detail-thumbnail-like svg { width: 18px; height: 18px; }
+#scheduleLikeButton.detail-thumbnail-like:hover { background: rgba(255,255,255,.94); }
+#scheduleLikeButton.detail-thumbnail-like[aria-pressed="true"] { background: rgba(255,237,242,.9); border-color: rgba(255,190,207,.8); }
+/* planner의 지도 헤더, 메뉴와 범례 디자인 */
+.detail-map-toolbar { padding: 0 16px; border-bottom: 1px solid #f0f1f4; }
+.detail-map-toolbar .detail-map-heading { color: #1f2937; font-size: 14px; }
+#detailMapFilterButton { min-width: 86px; padding: 6px 12px; border-radius: 12px; font-size: 12px; }
+.detail-map-filter-menu { width: 176px; padding: 0; border-radius: 12px; }
+.detail-map-filter-menu button { padding: 8px 12px; border-radius: 0; font-size: 12px; }
+.detail-map-filter-menu button:hover { background: #faf5ff; }
+.detail-map-day-legend { padding: 8px 12px; border-radius: 16px; background: rgba(17,24,39,.68); backdrop-filter: blur(6px); min-width: 120px; font-size: 12px; }
+.detail-map-day-legend > div { padding: 4px 0; }
+.detail-map-day-legend > div + div { margin-top: 0; }
+.detail-map-day-legend-label { color: rgba(255,255,255,.9); }

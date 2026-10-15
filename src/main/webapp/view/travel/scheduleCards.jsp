@@ -75,7 +75,7 @@
 			<!-- 여행 기간: n박 m일 -->
 			<span
 				class="absolute bottom-2.5 left-2.5 text-white text-[11px] font-bold bg-black/50 rounded-full px-2.5 py-1">
-				<c:out value="${schedule.durationText}" />
+				<c:out value="${schedule.dayDurationText}" />
 			</span>
 
 		</div>

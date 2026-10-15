@@ -15,20 +15,9 @@
     }
 
     // 일정 만들기 지도와 동일한 DAY 동선 팔레트.
-    // 장소 유형 핀 색상과 겹치지 않도록 어두운 계열만 사용한다.
-    const dayLinePalette = [
-        "#111827", "#92400E", "#0E7490", "#A16207",
-        "#991B1B", "#475569", "#4D7C0F", "#713F12"
-    ];
+    // planner.js의 DAY별 핀/동선 팔레트를 그대로 사용한다.
+    const dayLinePalette = ['#7C3AED','#2563EB','#F97316','#10B981','#EC4899','#06B6D4','#EF4444','#6366F1','#14B8A6','#D97706','#8B5CF6','#0EA5E9'];
 
-    // 일정 만들기 지도와 동일한 BLOCK 종류별 핀 색상.
-    const typeColors = {
-        ATTRACTION: "#6369D1",
-        MEAL: "#F97316",
-        LODGING: "#10B981",
-        TRANSPORT: "#3B82F6",
-        ACTIVITY: "#EC4899"
-    };
 
     let days = [];
     let map = null;
@@ -57,9 +46,22 @@
         status.hidden = !message;
     }
 
-    window.detailMapLoadFailed = function () {
-        showStatus("지도를 불러오지 못했습니다.");
-    };
+    function showMapFallback() {
+        if (canvas.dataset.fallback === "1") return;
+        const root = document.getElementById("scheduleDetail");
+        const query = root ? [root.dataset.mapCity, root.dataset.mapCountry].filter(Boolean).join(", ") : "";
+        const iframe = document.createElement("iframe");
+        iframe.title = "경로 지도";
+        iframe.src = "https://maps.google.com/maps?q=" + encodeURIComponent(query || "Seoul, Korea") + "&z=11&output=embed";
+        iframe.style.cssText = "width:100%;height:100%;min-height:360px;border:0;display:block";
+        iframe.loading = "lazy";
+        iframe.referrerPolicy = "no-referrer-when-downgrade";
+        canvas.replaceChildren(iframe);
+        canvas.dataset.fallback = "1";
+        if (legend) legend.hidden = true;
+        showStatus("");
+    }
+    window.detailMapLoadFailed = showMapFallback;
 
     function dayLineColor(number) {
         let dayNumber = parseInt(number, 10);
@@ -153,7 +155,7 @@
         if (filterDot) {
             // 전체는 중립색, N일차는 해당 DAY 동선색.
             filterDot.style.background = activeDay === "all"
-                ? "#6B7280"
+                ? "#6369D1"
                 : dayLineColor(activeDay);
         }
 
@@ -401,7 +403,7 @@
         lines = [];
     }
 
-    function addMarker(point, bounds) {
+    function addMarker(point, bounds, color) {
         const marker = new google.maps.Marker({
             map: map,
             position: { lat: point.lat, lng: point.lng },
@@ -413,12 +415,14 @@
                 fontSize: "11px"
             },
             icon: {
-                path: google.maps.SymbolPath.CIRCLE,
-                scale: 14,
-                fillColor: typeColors[point.type] || "#6369D1",
+                path: "M0,-18 C-10,-18 -18,-10 -18,0 C-18,12 0,30 0,30 C0,30 18,12 18,0 C18,-10 10,-18 0,-18 Z",
+                scale: .78,
+                fillColor: color,
                 fillOpacity: 1,
                 strokeColor: "#fff",
-                strokeWeight: 2
+                strokeWeight: 2,
+                anchor: new google.maps.Point(0, 30),
+                labelOrigin: new google.maps.Point(0, -1)
             }
         });
 
@@ -519,7 +523,7 @@
             geodesic: true,
             strokeColor: color,
             strokeOpacity: 0.82,
-            strokeWeight: 4
+            strokeWeight: 5
         }));
     }
 
@@ -535,9 +539,7 @@
             return;
         }
 
-        const visibleDays = days.filter(function (day) {
-            return day.points.length > 0;
-        });
+        const visibleDays = days;
 
         if (!visibleDays.length) {
             legend.hidden = true;
@@ -579,7 +581,7 @@
             });
 
             orderedPoints.forEach(function (point) {
-                addMarker(point, bounds);
+                addMarker(point, bounds, dayLineColor(day.number));
                 visiblePointCount++;
             });
 
@@ -600,7 +602,7 @@
             map.setCenter(markers[0].getPosition());
             map.setZoom(15);
         } else {
-            map.fitBounds(bounds, 40);
+            map.fitBounds(bounds);
         }
     }
 
@@ -610,13 +612,15 @@
         }
 
         try {
+            if (canvas.dataset.fallback === "1") canvas.replaceChildren();
+            canvas.dataset.fallback = "0";
             map = new google.maps.Map(canvas, {
                 center: { lat: 37.5665, lng: 126.9780 },
-                zoom: 10,
+                zoom: 11,
                 gestureHandling: "greedy",
                 mapTypeControl: false,
                 streetViewControl: false,
-                fullscreenControl: true,
+                fullscreenControl: false,
                 styles: [
                     { featureType: "poi", elementType: "labels", stylers: [{ visibility: "off" }] },
                     { featureType: "transit", elementType: "labels", stylers: [{ visibility: "off" }] }
@@ -634,6 +638,7 @@
 
     decorateFilterMenu();
     updateFilter();
+    window.setTimeout(function () { if (!map) showMapFallback(); }, 1800);
 
     // 다른 공통 코드에서 이미 지도를 로딩한 경우
     if (window.google && window.google.maps && window.google.maps.Map) {

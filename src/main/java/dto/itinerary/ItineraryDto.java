@@ -39,6 +39,7 @@ public class ItineraryDto {
 
     // 일정 -> DAY 계층
     private List<ItineraryDayDto> days;
+    private Integer dayCount;             // 목록 조회에서 집계한 실제 DAY 개수
     
     private boolean liked;		// 화면에 띄울 좋아요. 화면 전달값이라 DB에 추가필요없음.
     
@@ -317,6 +318,27 @@ public class ItineraryDto {
 	    this.bookmarked = bookmarked;
 	}
 	
+
+    public Integer getDayCount() {
+        return dayCount;
+    }
+
+    public void setDayCount(Integer dayCount) {
+        this.dayCount = dayCount;
+    }
+
+    // 카드의 기간은 여행 날짜가 아닌 등록된 DAY 개수로 표시한다.
+    public String getDayDurationText() {
+        int count = dayCount != null ? dayCount : (days != null ? days.size() : 0);
+        if (count <= 0) {
+            return "기간 미정";
+        }
+        if (count == 1) {
+            return "당일치기";
+        }
+        return (count - 1) + "박" + count + "일";
+    }
+
 	public String getDurationText() {
 	    if (startDate == null || endDate == null) {
 	        return "기간 미정";
