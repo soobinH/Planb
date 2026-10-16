@@ -7299,7 +7299,7 @@
                 initPlannerGeoStats();
                 var add=$('#plannerSheetAdd'),prev=$('#plannerSheetPrev'),next=$('#plannerSheetNext');
                 var scroller=$('#plannerSheetScroller');
-                if(add)add.addEventListener('click',addPlannerSheet);
+                if(add)add.addEventListener('click',function(event){addPlannerSheet();if(event.detail>0)add.blur();});
                 if(prev)prev.addEventListener('click',function(){scrollPlannerSheets(-1);});
                 if(next)next.addEventListener('click',function(){scrollPlannerSheets(1);});
                 if(scroller)scroller.addEventListener('scroll',updatePlannerSheetArrows,{passive:true});
