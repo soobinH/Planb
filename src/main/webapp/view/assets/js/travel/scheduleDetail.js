@@ -396,11 +396,12 @@
 
 	function createProfile(comment) {
 		const profile = createElement(
-			"div",
+			"a",
 			"w-10 h-10 rounded-full overflow-hidden shrink-0 "
 			+ "flex items-center justify-center"
 		);
 
+		profile.href = panel.dataset.contextPath + "/profile/userProfile?userId=" + encodeURIComponent(comment.userId);
 		profile.style.background = "#F0F0FF";
 		profile.style.color = "#6369D1";
 
@@ -507,13 +508,9 @@
 				"flex items-center gap-2 flex-wrap"
 			);
 
-			header.appendChild(
-				createElement(
-					"span",
-					"font-bold text-[13px] text-gray-900",
-					comment.nickname || ""
-				)
-			);
+			const authorLink = createElement("a", "font-bold text-[13px] text-gray-900", comment.nickname || "");
+            authorLink.href = panel.dataset.contextPath + "/profile/userProfile?userId=" + encodeURIComponent(comment.userId);
+            header.appendChild(authorLink);
 
 			header.appendChild(
 				createElement(

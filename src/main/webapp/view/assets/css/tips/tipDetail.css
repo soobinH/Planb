@@ -869,7 +869,7 @@
 /* 스크롤바는 mateList와 동일한 tripily.css 공통 스타일(5px, #D1D2F9)을 사용 */
 
 /* 일정 상세와 동일한 신고 버튼 */
-#tipReportButton.tip-detail-report-button {
+#tipReportButton.tip-detail-report-button, #mateReportButton.tip-detail-report-button {
     display: inline-flex; align-items: center; justify-content: center; gap: 5px;
     flex-shrink: 0; min-height: 28px; padding: 5px 9px;
     border: 1px solid #f0dce0; border-radius: 9px; background: #fff7f8;
@@ -877,8 +877,8 @@
     box-shadow: none; text-decoration: none; white-space: nowrap; cursor: pointer;
     transition: background .15s, border-color .15s, color .15s;
 }
-#tipReportButton.tip-detail-report-button:hover {
+#tipReportButton.tip-detail-report-button:hover, #mateReportButton.tip-detail-report-button:hover {
     background: #ffedf0; border-color: #e9bbc4; color: #a34153; text-decoration: none;
 }
-#tipReportButton.tip-detail-report-button:focus-visible { outline: 2px solid #6369D1; outline-offset: 3px; }
-#tipReportButton.tip-detail-report-button svg { width: 13px; height: 13px; color: #EF6461; }
+#tipReportButton.tip-detail-report-button:focus-visible, #mateReportButton.tip-detail-report-button:focus-visible { outline: 2px solid #6369D1; outline-offset: 3px; }
+#tipReportButton.tip-detail-report-button svg, #mateReportButton.tip-detail-report-button svg { width: 13px; height: 13px; color: #EF6461; }

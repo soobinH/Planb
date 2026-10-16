@@ -12,7 +12,7 @@ request.setAttribute("activePage", "travel");
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width,initial-scale=1">
 	<link rel="stylesheet" href="${pageContext.request.contextPath}/view/assets/css/travel/scheduleList.css?v=20261015-glass">
-	<title>여행일정 | Planb</title>
+	<title>여행일정</title>
 	<jsp:include page="/common/headStyles.jsp" />
 <style>
 .schedule-infinite-scroll {

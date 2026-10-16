@@ -27,6 +27,7 @@ request.setAttribute("activePage", "travel");
 <jsp:include page="/common/headStyles.jsp" />
 <link rel="stylesheet"
    href="${pageContext.request.contextPath}/view/assets/css/travel/scheduleDetail.css?v=20261015-typography">
+<script defer data-context-path="${pageContext.request.contextPath}" src="${pageContext.request.contextPath}/view/assets/js/common/searchReturn.js?v=20261016"></script>
 </head>
 <body class="site-shell"><jsp:include page="/common/header.jsp" />
    <main id="scheduleDetail" class="detail-layout"
@@ -40,7 +41,7 @@ request.setAttribute("activePage", "travel");
       <!-- 좌측: 일정 정보 -->
       <aside id="detailInfoPanel" class="detail-info-panel">
          <div class="detail-panel-header detail-info-header">
-            <a href="${pageContext.request.contextPath}/schedules"
+            <a data-search-return href="${pageContext.request.contextPath}/schedules"
                class="flex items-center gap-1.5 shrink-0 whitespace-nowrap text-[12.5px] font-semibold text-gray-500 hover:text-gray-900 transition-colors">
                <svg class="w-4 h-4" fill="none" stroke="currentColor"
                   viewBox="0 0 24 24">
@@ -441,7 +442,7 @@ request.setAttribute("activePage", "travel");
                         data-comment-id="${comment.commentId}">
 
                         <!-- 작성자 사진 -->
-                        <div
+                        <a href="${pageContext.request.contextPath}/profile/userProfile?userId=${comment.userId}"
                            class="w-10 h-10 rounded-full overflow-hidden shrink-0 flex items-center justify-center"
                            style="background: #F0F0FF; color: #6369D1">
 
@@ -479,14 +480,14 @@ request.setAttribute("activePage", "travel");
                             </svg>
                               </c:otherwise>
                            </c:choose>
-                        </div>
+                        </a>
 
                         <div class="flex-1 min-w-0">
 
                            <div class="flex items-center gap-2 flex-wrap">
-                              <span class="font-bold text-[13px] text-gray-900"> <c:out
+                              <a href="${pageContext.request.contextPath}/profile/userProfile?userId=${comment.userId}" class="font-bold text-[13px] text-gray-900"> <c:out
                                     value="${comment.nickname}" />
-                              </span> <span class="text-[11px] text-gray-400"> <fmt:formatDate
+                              </a> <span class="text-[11px] text-gray-400"> <fmt:formatDate
                                     value="${comment.createdAt}" pattern="yyyy.MM.dd HH:mm" />
                               </span>
 
@@ -932,7 +933,7 @@ request.setAttribute("activePage", "travel");
       src="${pageContext.request.contextPath}/view/assets/js/auth/tripily.js"></script>
 
    <script
-      src="${pageContext.request.contextPath}/view/assets/js/travel/scheduleDetail.js?v=15"></script>
+      src="${pageContext.request.contextPath}/view/assets/js/travel/scheduleDetail.js?v=20261016-profile"></script>
       
    <script
        src="${pageContext.request.contextPath}/view/assets/js/travel/scheduleDetailMap.js?v=3"></script>

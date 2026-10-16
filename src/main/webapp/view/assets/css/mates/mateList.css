@@ -329,3 +329,7 @@
 
 /* 일정 목록과 동일한 바탕색: 사이드바와 카드는 흰색 유지 */
 .mate-list-page > .min-h-screen > .flex > main { background: #f8f8fd; }
+
+/* 여행 일정의 국가별 보기와 동일한 강조 색상 */
+.continent-toggle:hover { background:#f1f1fd; color:#6369D1; }
+.continent-panel a:hover { background:#fff5ce; color:#494da4; }

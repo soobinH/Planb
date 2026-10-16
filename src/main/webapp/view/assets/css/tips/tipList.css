@@ -202,3 +202,7 @@
 .tip-schedule-card .tip-card-stats { font-size: 11px; color: #9ca3af; }
 .tip-schedule-card .tip-card-stats svg { width: 12px; height: 12px; }
 .tip-schedule-card .tip-card-time { font-size: 10px; color: #9ca3af; }
+
+/* 여행 일정의 국가별 보기와 동일한 강조 색상 */
+.continent-toggle:hover { background:#f1f1fd; color:#6369D1; }
+.continent-panel a:hover { background:#fff5ce; color:#494da4; }

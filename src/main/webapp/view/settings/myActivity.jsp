@@ -26,12 +26,15 @@ String ctx = request.getContextPath();
 List<ProfileActivityDto> activities =
     (List<ProfileActivityDto>) request.getAttribute("activities");
 if (activities == null) activities = new ArrayList<ProfileActivityDto>();
-int postCount = 0;
-int commentCount = 0;
-for (ProfileActivityDto a : activities) {
-    if ("POST".equals(a.getActivityGroup())) postCount++;
-    else if ("COMMENT".equals(a.getActivityGroup())) commentCount++;
-}
+// 목록은 첫 10건이므로 통계는 Servlet이 전달한 전체 집계값을 사용한다.
+int postCount = request.getAttribute("postCount") instanceof Number
+        ? ((Number) request.getAttribute("postCount")).intValue() : 0;
+int commentCount = request.getAttribute("commentCount") instanceof Number
+        ? ((Number) request.getAttribute("commentCount")).intValue() : 0;
+int totalCount = request.getAttribute("totalCount") instanceof Number
+        ? ((Number) request.getAttribute("totalCount")).intValue() : postCount + commentCount;
+boolean hasMore = Boolean.TRUE.equals(request.getAttribute("hasMore"));
+String nextCursor = (String) request.getAttribute("nextCursor");
 %>
 <!DOCTYPE html>
 <html lang="ko">
@@ -42,6 +45,15 @@ for (ProfileActivityDto a : activities) {
     <jsp:include page="/common/headStyles.jsp" />
     <link rel="stylesheet" href="<%=ctx%>/view/assets/css/setting/settings.css">
     <link rel="stylesheet" href="<%=ctx%>/view/assets/css/setting/myActivity.css?v=2">
+    <style>
+        /* notifications.jsp와 동일한 더보기 디자인. 이전 CSS의 버튼 규칙도 덮어쓴다. */
+        .ma-section .ma-more { display:block; padding:20px; text-align:center; border-top:1px solid #eef0f5; }
+        .ma-section .ma-more[hidden] { display:none !important; }
+        .ma-section .ma-more-button { display:inline-block; min-width:0; padding:10px 28px; border:1px solid #e1e3ec; border-radius:10px; background:#fff; color:#6369d1; font:inherit; font-size:13px; cursor:pointer; transition:none; }
+        .ma-section .ma-more-button:hover { background:#fff; border-color:#e1e3ec; color:#6369d1; }
+        .ma-section .ma-more-button:disabled { opacity:.5; cursor:default; }
+        .ma-section .ma-more-button:focus-visible { outline:3px solid #9c9fe7; outline-offset:3px; }
+    </style>
 </head>
 <body class="site-shell">
     <jsp:include page="/common/header.jsp" />
@@ -57,14 +69,14 @@ for (ProfileActivityDto a : activities) {
                     </header>
 
                     <section class="ma-summary" aria-label="활동 통계">
-                        <div class="ma-summary-item"><span>전체 활동</span><strong><%=activities.size()%></strong></div>
-                        <div class="ma-summary-item"><span>작성한 글</span><strong><%=postCount%></strong></div>
-                        <div class="ma-summary-item"><span>작성한 댓글</span><strong><%=commentCount%></strong></div>
+                        <div class="ma-summary-item"><span>전체 활동</span><strong id="maTotalCount"><%=totalCount%></strong></div>
+                        <div class="ma-summary-item"><span>작성한 글</span><strong id="maPostCount"><%=postCount%></strong></div>
+                        <div class="ma-summary-item"><span>작성한 댓글</span><strong id="maCommentCount"><%=commentCount%></strong></div>
                     </section>
 
                     <section class="ma-section" aria-label="활동 내역 목록">
                         <div class="ma-section-head">
-                            <div class="ma-section-title">활동 목록 <span id="maVisibleCount"><%=activities.size()%>건</span></div>
+                            <div class="ma-section-title">활동 목록 <span id="maVisibleCount"><%=totalCount%>건</span></div>
                             <div class="ma-filters" role="group" aria-label="활동 유형 필터">
                                 <button type="button" class="active" data-ma-filter="ALL" aria-pressed="true">전체</button>
                                 <button type="button" data-ma-filter="POST" aria-pressed="false">게시글</button>
@@ -72,11 +84,9 @@ for (ProfileActivityDto a : activities) {
                             </div>
                         </div>
 
-                        <div class="ma-list" id="maList">
+                        <div class="ma-list" id="maList" data-context-path="<%=escapeHtml(ctx)%>">
                         <%
-                        int activityIndex = 0;
                         for (ProfileActivityDto activity : activities) {
-                            boolean initiallyHidden = activityIndex++ >= 10;
                             String kind = activity.getActivityType();
                             String group = activity.getActivityGroup();
                             String section = "";
@@ -99,9 +109,9 @@ for (ProfileActivityDto a : activities) {
                             String date = dateOnly(activity.getCreatedAt());
                         %>
                             <% if (!activityUrl.isEmpty()) { %>
-                            <a class="ma-item" href="<%=activityUrl%>" data-ma-item data-ma-group="<%=escapeHtml(group)%>" <%=initiallyHidden ? "hidden" : ""%>>
+                            <a class="ma-item" href="<%=activityUrl%>" data-ma-item data-ma-key="<%=escapeHtml(kind)%>:<%=activity.getActivityId()%>" data-ma-group="<%=escapeHtml(group)%>">
                             <% } else { %>
-                            <div class="ma-item ma-item--static" data-ma-item data-ma-group="<%=escapeHtml(group)%>" <%=initiallyHidden ? "hidden" : ""%>>
+                            <div class="ma-item ma-item--static" data-ma-item data-ma-key="<%=escapeHtml(kind)%>:<%=activity.getActivityId()%>" data-ma-group="<%=escapeHtml(group)%>">
                             <% } %>
                                 <div class="ma-item-icon" aria-hidden="true">
                                     <% if (post) { %>
@@ -125,12 +135,10 @@ for (ProfileActivityDto a : activities) {
                         <% } %>
                         </div>
 
-                        <div class="ma-more" id="maMore" <%=activities.size() > 10 ? "" : "hidden"%>>
-                            <span class="ma-more-progress" id="maMoreProgress" aria-live="polite"><%=Math.min(10, activities.size())%> / <%=activities.size()%>건</span>
-                            <button type="button" class="ma-more-button" id="maMoreButton" aria-controls="maList">
-                                더보기 <span id="maMoreCount"><%=Math.min(10, Math.max(0, activities.size() - 10))%></span>개
-                                <svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
-                            </button>
+                        <div class="ma-more" id="maMore" <%=hasMore ? "" : "hidden"%>>
+                            <button type="button" class="ma-more-button" id="maMoreButton" aria-controls="maList"
+                                data-more-url="<%=ctx%>/settings/myActivity/more"
+                                data-next-cursor="<%=escapeHtml(nextCursor)%>">더보기</button>
                         </div>
 
                         <div class="ma-empty" id="maEmpty" <%=activities.isEmpty() ? "" : "hidden"%>>
@@ -147,62 +155,125 @@ for (ProfileActivityDto a : activities) {
     </div>
     <jsp:include page="/common/footer.jsp" />
     <script>
-        document.addEventListener('DOMContentLoaded', function () {
-            const buttons = document.querySelectorAll('[data-ma-filter]');
-            const items = Array.from(document.querySelectorAll('[data-ma-item]'));
-            const empty = document.getElementById('maEmpty');
-            const count = document.getElementById('maVisibleCount');
-            const emptyTitle = empty.querySelector('strong');
-            const emptyText = empty.querySelector('p');
-            const pageSize = 10;
-            const more = document.getElementById('maMore');
-            const moreButton = document.getElementById('maMoreButton');
-            const moreCount = document.getElementById('maMoreCount');
-            const progress = document.getElementById('maMoreProgress');
-            let activeFilter = 'ALL';
-            let visibleLimit = pageSize;
+(function () {
+    "use strict";
+    const list = document.getElementById("maList");
+    const moreButton = document.getElementById("maMoreButton");
+    if (!list || !moreButton) return;
+    const moreWrap = document.getElementById("maMore");
+    const empty = document.getElementById("maEmpty");
+    const count = document.getElementById("maVisibleCount");
+    const filters = Array.from(document.querySelectorAll("[data-ma-filter]"));
+    let activeFilter = "ALL";
+    let requestedFilter = "ALL";
+    let requestVersion = 0;
 
-            function renderActivities() {
-                let matched = 0;
-                items.forEach(function (item) {
-                    const matches = activeFilter === 'ALL'
-                        || item.getAttribute('data-ma-group') === activeFilter;
-                    item.hidden = !matches || matched >= visibleLimit;
-                    if (matches) matched++;
-                });
-
-                const shown = Math.min(visibleLimit, matched);
-                count.textContent = matched + '건';
-                empty.hidden = matched !== 0;
-                emptyTitle.textContent = items.length === 0 ? '아직 활동 내역이 없어요.' : '해당 활동 내역이 없어요.';
-                emptyText.textContent = items.length === 0 ? '게시글이나 댓글을 작성하면 이곳에 표시돼요.' : '다른 유형을 선택해 보세요.';
-                more.hidden = shown >= matched;
-                moreCount.textContent = String(Math.min(pageSize, matched - shown));
-                progress.textContent = shown + ' / ' + matched + '건';
-            }
-
-            buttons.forEach(function (button) {
-                button.addEventListener('click', function () {
-                    const filter = button.getAttribute('data-ma-filter');
-                    if (activeFilter === filter) return;
-                    activeFilter = filter;
-                    visibleLimit = pageSize;
-                    buttons.forEach(function (item) {
-                        const selected = item === button;
-                        item.classList.toggle('active', selected);
-                        item.setAttribute('aria-pressed', String(selected));
-                    });
-                    renderActivities();
-                });
-            });
-
-            moreButton.addEventListener('click', function () {
-                visibleLimit += pageSize;
-                renderActivities();
-            });
-
-            renderActivities();
+    function escapeHtml(value) {
+        return String(value == null ? "" : value).replace(/[&<>"']/g, function (ch) {
+            return {"&":"&amp;", "<":"&lt;", ">":"&gt;", '"':"&quot;", "'":"&#39;"}[ch];
         });
+    }
+    function setFilter(filter) {
+        filters.forEach(function (button) {
+            const selected = button.dataset.maFilter === filter;
+            button.classList.toggle("active", selected);
+            button.setAttribute("aria-pressed", String(selected));
+        });
+    }
+    function makeRow(item) {
+        const post = item.activityGroup === "POST";
+        const type = item.activityType;
+        let section = "기타 활동";
+        let path = "";
+        const id = encodeURIComponent(String(item.targetId));
+        if (type === "TIP_POST" || type === "TIP_COMMENT") {
+            section = "여행 꿀팁"; path = "/tipDetail?tipId=" + id;
+        } else if (type === "MATE_POST" || type === "MATE_COMMENT") {
+            section = "여행 메이트"; path = "/mateDetail?mateId=" + id;
+        } else if (type === "ITINERARY_COMMENT") {
+            section = "여행 일정"; path = "/schedules/detail?id=" + id;
+        }
+        const row = document.createElement(path ? "a" : "div");
+        row.className = "ma-item" + (path ? "" : " ma-item--static");
+        if (path) row.href = list.dataset.contextPath + path;
+        row.dataset.maItem = "";
+        row.dataset.maGroup = item.activityGroup;
+        row.dataset.maKey = type + ":" + item.activityId;
+        const icon = post
+            ? '<rect x="4" y="3.5" width="16" height="17" rx="2"/><path d="M8 8h8M8 12h8M8 16h5"/>'
+            : '<path d="M7.9 20A9 9 0 1 0 4 16.1L2 22Z"/>';
+        const arrow = '<svg aria-hidden="true" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="m9 5 7 7-7 7"/></svg>';
+        const date = item.createdAt ? String(item.createdAt).slice(0, 10).replace(/-/g, ".") : "";
+        row.innerHTML = '<div class="ma-item-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">' + icon + '</svg></div>'
+            + '<div class="ma-item-content"><div class="ma-item-meta"><span class="ma-type">' + (post ? "게시글" : "댓글") + '</span><span class="ma-dot">·</span><span>' + section + '</span></div>'
+            + '<strong class="ma-item-title">' + escapeHtml(item.targetTitle || "제목 없음") + '</strong>'
+            + (!post && item.content ? '<p class="ma-item-description">' + escapeHtml(item.content) + '</p>' : "") + '</div>'
+            + '<div class="ma-item-end">' + (date ? '<time>' + escapeHtml(date) + '</time>' : "") + (path ? arrow : "") + '</div>';
+        return row;
+    }
+    function showError(message) {
+        if (window.showToast) window.showToast(message);
+        else window.alert(message);
+    }
+    async function loadPage(filter, replace) {
+        if (!replace && (moreButton.disabled || moreWrap.hidden)) return;
+        const cursor = replace ? "" : moreButton.dataset.nextCursor;
+        if (!replace && !cursor) return;
+        const version = ++requestVersion;
+        requestedFilter = filter;
+        setFilter(filter);
+        moreButton.disabled = true;
+        moreButton.textContent = "불러오는 중…";
+        list.setAttribute("aria-busy", "true");
+        try {
+            const params = new URLSearchParams({filter:filter, cursor:cursor});
+            const response = await fetch(moreButton.dataset.moreUrl + "?" + params, {
+                credentials:"same-origin", cache:"no-store", headers:{"Accept":"application/json"}
+            });
+            const data = await response.json();
+            if (version !== requestVersion) return;
+            if (!response.ok || data.success !== true) throw new Error(data.message || "활동 내역을 불러오지 못했습니다.");
+            if (replace) list.replaceChildren();
+            const existing = new Set(Array.from(list.querySelectorAll("[data-ma-item]"), function (row) { return row.dataset.maKey; }));
+            (data.activities || []).forEach(function (item) {
+                const key = item.activityType + ":" + item.activityId;
+                if (!existing.has(key)) {
+                    list.appendChild(makeRow(item));
+                    existing.add(key);
+                }
+            });
+            activeFilter = filter;
+            const total = filter === "POST" ? data.postCount : filter === "COMMENT" ? data.commentCount : data.totalCount;
+            count.textContent = total + "건";
+            document.getElementById("maTotalCount").textContent = data.totalCount;
+            document.getElementById("maPostCount").textContent = data.postCount;
+            document.getElementById("maCommentCount").textContent = data.commentCount;
+            empty.hidden = existing.size !== 0;
+            empty.querySelector("strong").textContent = data.totalCount === 0 ? "아직 활동 내역이 없어요." : "해당 활동 내역이 없어요.";
+            empty.querySelector("p").textContent = data.totalCount === 0 ? "게시글이나 댓글을 작성하면 이곳에 표시돼요." : "다른 유형을 선택해 보세요.";
+            moreButton.dataset.nextCursor = data.nextCursor || "";
+            moreWrap.hidden = data.hasMore !== true;
+        } catch (error) {
+            if (version !== requestVersion) return;
+            requestedFilter = activeFilter;
+            setFilter(activeFilter);
+            console.error("활동 내역 더보기 실패:", error);
+            showError(error.message || "활동 내역을 불러오지 못했습니다.");
+        } finally {
+            if (version === requestVersion) {
+                moreButton.disabled = false;
+                moreButton.textContent = "더보기";
+                list.setAttribute("aria-busy", "false");
+            }
+        }
+    }
+    filters.forEach(function (button) {
+        button.addEventListener("click", function () {
+            if (button.dataset.maFilter !== requestedFilter) loadPage(button.dataset.maFilter, true);
+        });
+    });
+    moreButton.addEventListener("click", function () { loadPage(activeFilter, false); });
+})();
     </script>
 </body>
 </html>

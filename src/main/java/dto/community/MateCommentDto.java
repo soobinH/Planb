@@ -13,6 +13,9 @@ public class MateCommentDto {
 	private LocalDateTime updatedAt;	// 수정 일시
 	// TB_USER JOIN용
 	private String nickname;
+    private String profileImg;
+    public String getProfileImg() { return profileImg; }
+    public void setProfileImg(String profileImg) { this.profileImg = profileImg; }
 	
 	public MateCommentDto() {
 		super();

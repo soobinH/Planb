@@ -10,7 +10,9 @@ request.setAttribute("activePage", "tips");
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<title>Planb</title>
-	<jsp:include page="/common/headStyles.jsp" /></head>
+	<jsp:include page="/common/headStyles.jsp" />
+<script defer data-context-path="${pageContext.request.contextPath}" src="${pageContext.request.contextPath}/view/assets/js/common/searchReturn.js?v=20261016"></script>
+</head>
 	<link rel="stylesheet" href="${pageContext.request.contextPath}/view/assets/css/tips/tipDetail.css?v=20261015-report">
 	<script defer src="${pageContext.request.contextPath}/view/assets/js/tips/tipDetail.js"></script>
 <body class="site-shell">
@@ -36,7 +38,7 @@ request.setAttribute("activePage", "tips");
 				<!-- [수정] 본문 영역 -->
 				<div class="tip-detail-main">
 
-					<a href="${pageContext.request.contextPath}/tips"
+					<a data-search-return href="${pageContext.request.contextPath}/tips"
 						class="tip-back-link"><svg
 							width="14" height="14" viewBox="0 0 24 24" fill="none"
 							stroke="currentColor" stroke-width="2">
@@ -351,16 +353,14 @@ request.setAttribute("activePage", "tips");
 					        <c:forEach var="comment" items="${tipCommentList}">
 					            <div class="flex gap-3" data-comment-id="${comment.commentId}">
 					                <!-- 프로필 -->
-					                <div class="w-9 h-9 rounded-full shrink-0 flex items-center justify-center text-white text-sm font-bold"
-					                     style="background-color: var(--brand)">
-					                    <c:out value="${comment.nickname.substring(0, 1)}" />
-					                </div>
+					                <a href="${pageContext.request.contextPath}/profile/userProfile?userId=${comment.userId}" class="w-9 h-9 rounded-full overflow-hidden shrink-0 flex items-center justify-center text-white text-sm font-bold"
+					                     style="background-color: var(--brand)"><jsp:include page="/common/profileImage.jsp"><jsp:param name="image" value="${comment.profileImg}"/><jsp:param name="nickname" value="${comment.nickname}"/></jsp:include></a>
 					                <div class="flex-1 min-w-0">
 					                    <!-- 작성자 / 작성일 -->
 					                    <div class="flex items-center gap-2 mb-1">
-					                        <span class="text-sm font-bold text-gray-900">
+					                        <a href="${pageContext.request.contextPath}/profile/userProfile?userId=${comment.userId}" class="text-sm font-bold text-gray-900">
 					                            <c:out value="${comment.nickname}" />
-					                        </span>
+					                        </a>
 					                        <span class="tip-comment-time text-xs text-gray-400">
 											    ${comment.timeAgo}
 											    <c:if test="${comment.edited}">

@@ -24,6 +24,7 @@ String displayQ = (keyword == null || keyword.trim().isEmpty()) ? "전체" : key
 		src="${pageContext.request.contextPath}/view/assets/js/search/searchResult.js">
 	</script>
 	
+<script defer data-context-path="${pageContext.request.contextPath}" src="${pageContext.request.contextPath}/view/assets/js/common/searchReturn.js?v=20261016"></script>
 </head>
 
 <body class="site-shell">
@@ -331,27 +332,7 @@ String displayQ = (keyword == null || keyword.trim().isEmpty()) ? "전체" : key
 		
 												<span
 													class="inline-flex items-center justify-center w-6 h-6 rounded-full shrink-0 overflow-hidden"
-													style="background: #F0F0FF; color: #6369D1;">
-		
-													<svg
-														width="14"
-														height="14"
-														viewBox="0 0 24 24"
-														fill="none"
-														stroke="currentColor"
-														stroke-width="1.8"
-														aria-hidden="true">
-		
-														<circle
-															cx="12"
-															cy="8"
-															r="4" />
-		
-														<path d="M4 21c0-4.3 3.6-7 8-7s8 2.7 8 7" />
-		
-													</svg>
-		
-												</span>
+													style="background: #F0F0FF; color: #6369D1;"><jsp:include page="/common/profileImage.jsp"><jsp:param name="image" value="${schedule.profileImg}"/><jsp:param name="nickname" value="${schedule.nickname}"/></jsp:include></span>
 		
 		
 												<span
@@ -519,22 +500,8 @@ String displayQ = (keyword == null || keyword.trim().isEmpty()) ? "전체" : key
 										<div class="flex items-center gap-1.5 mb-1.5">
 
 											<div
-												class="w-5 h-5 rounded-full flex items-center justify-center text-white text-[9px] font-bold shrink-0"
-												style="background: #8B5CF6;">
-
-												<c:choose>
-
-													<c:when test="${not empty tip.nickname}">
-														${tip.nickname.substring(0, 1)}
-													</c:when>
-
-													<c:otherwise>
-														?
-													</c:otherwise>
-
-												</c:choose>
-
-											</div>
+												class="w-5 h-5 rounded-full overflow-hidden flex items-center justify-center text-white text-[9px] font-bold shrink-0"
+												style="background: #8B5CF6;"><jsp:include page="/common/profileImage.jsp"><jsp:param name="image" value="${tip.profileImg}"/><jsp:param name="nickname" value="${tip.nickname}"/></jsp:include></div>
 
 
 											<span class="text-[10px] text-gray-500">
@@ -764,7 +731,7 @@ String displayQ = (keyword == null || keyword.trim().isEmpty()) ? "전체" : key
 									<!-- 작성자 -->
 									<div class="flex items-center gap-1.5 text-xs">
 
-										<span class="text-gray-600 font-medium">
+										<span class="w-5 h-5 rounded-full overflow-hidden shrink-0 flex items-center justify-center text-[9px]" style="background:#F0F0FF;color:#6369D1"><jsp:include page="/common/profileImage.jsp"><jsp:param name="image" value="${mate.profileImg}"/><jsp:param name="nickname" value="${mate.nickname}"/></jsp:include></span><span class="text-gray-600 font-medium">
 											<c:out value="${mate.nickname}" default="알 수 없음" />
 										</span>
 

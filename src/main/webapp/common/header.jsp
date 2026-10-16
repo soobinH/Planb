@@ -1,3 +1,4 @@
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ page language="java" contentType="text/html; charset=UTF-8"
 	pageEncoding="UTF-8" import="dto.member.UserDto"%>
 
@@ -169,7 +170,7 @@ if (user != null && user.getProfileImg() != null && !user.getProfileImg().trim()
 			<input 
 				type="text" 
 				name="q" 
-				value="${param.q}"
+				value="<c:out value='${param.q}'/>"
 				placeholder="여행지, 일정, 키워드로 검색해보세요." 
 				autocomplete="off">
 

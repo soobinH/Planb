@@ -10,10 +10,12 @@
 	<title>여행 메이트 상세 | Planb</title>
 	<jsp:include page="/common/headStyles.jsp" />
 	<!-- 여행꿀팁 상세와 같은 화면 구성 : tipDetail.css 를 그대로 사용 -->
-	<link rel="stylesheet" href="${pageContext.request.contextPath}/view/assets/css/tips/tipDetail.css">
+	<link rel="stylesheet" href="${pageContext.request.contextPath}/view/assets/css/tips/tipDetail.css?v=20261016-profile">
 	<!-- 메이트에만 있는 요소 (모집 상태 / 모집 정보) -->
 	<link rel="stylesheet" href="${pageContext.request.contextPath}/view/assets/css/mates/mateDetail.css?v=3">
 	<script defer src="${pageContext.request.contextPath}/view/assets/js/mates/mateDetail.js"></script>
+
+<script defer data-context-path="${pageContext.request.contextPath}" src="${pageContext.request.contextPath}/view/assets/js/common/searchReturn.js?v=20261016"></script>
 </head>
 <body class="site-shell">
 	<jsp:include page="/common/header.jsp" />
@@ -35,7 +37,7 @@
 
 				<!-- 본문 영역 -->
 				<div class="tip-detail-main">
-					<a href="${pageContext.request.contextPath}/mates" class="tip-back-link"><svg
+					<a data-search-return href="${pageContext.request.contextPath}/mates" class="tip-back-link"><svg
 							width="14" height="14" viewBox="0 0 24 24" fill="none"
 							stroke="currentColor" stroke-width="2">
 							<path d="M15 18l-6-6 6-6" /></svg>목록으로</a>
@@ -84,34 +86,12 @@
 							<!-- 작성자 / 신고 / 좋아요 수 / 댓글 수 -->
 							<div class="flex items-center justify-between mb-7 pb-6 border-b border-gray-100">
 								<div class="flex items-center gap-3">
-									<div class="w-10 h-10 rounded-full overflow-hidden flex items-center justify-center text-white font-bold shrink-0"
-										style="background: linear-gradient(135deg, #6369D1, #8B5CF6);">
-										<c:choose>
-											<c:when test="${not empty mate.profileImg}">
-												<c:choose>
-													<c:when test="${mate.profileImg.startsWith('http://') or mate.profileImg.startsWith('https://')}">
-														<c:set var="mateProfileSrc" value="${mate.profileImg}" />
-													</c:when>
-													<c:otherwise>
-														<c:set var="mateProfileSrc" value="${pageContext.request.contextPath}/uploads/profile/${mate.profileImg}" />
-													</c:otherwise>
-												</c:choose>
-												<img src="<c:out value='${mateProfileSrc}' />" alt="작성자 프로필"
-													class="w-full h-full object-cover rounded-full" loading="lazy"
-													onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';" />
-												<span class="w-full h-full items-center justify-center" style="display: none;">
-													<c:out value="${empty mate.nickname ? 'U' : mate.nickname.substring(0, 1)}" />
-												</span>
-											</c:when>
-											<c:otherwise>
-												<span><c:out value="${empty mate.nickname ? 'U' : mate.nickname.substring(0, 1)}" /></span>
-											</c:otherwise>
-										</c:choose>
-									</div>
+									<a href="${pageContext.request.contextPath}/profile/userProfile?userId=${mate.userId}" class="w-10 h-10 rounded-full overflow-hidden flex items-center justify-center text-white font-bold shrink-0"
+										style="background: linear-gradient(135deg, #6369D1, #8B5CF6);"><jsp:include page="/common/profileImage.jsp"><jsp:param name="image" value="${mate.profileImg}"/><jsp:param name="nickname" value="${mate.nickname}"/></jsp:include></a>
 									<div>
-										<p class="text-sm font-semibold text-gray-800">
+										<p class="text-sm font-semibold text-gray-800"><a href="${pageContext.request.contextPath}/profile/userProfile?userId=${mate.userId}">
 											<c:out value="${mate.nickname}" default="사용자" />
-										</p>
+										</a></p>
 										<p class="text-xs text-gray-400">
 											<c:out value="${mate.timeAgo}" />
 										</p>
@@ -127,12 +107,8 @@
 										data-login-url="${pageContext.request.contextPath}/auth/login"
 										aria-haspopup="dialog"
 										aria-controls="mateReportModal"
-										class="flex items-center gap-1 px-3 py-2 rounded-xl text-[12px] font-bold border transition-all hover:bg-[#FFE8DE] hover:border-[#FF8A5B] hover:text-[#D95B2B]"
-										style="background: #FFF5F0; border-color: #FFB08A; color: #E76F3C;">
-										<svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-											<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-												d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
-										</svg>
+										class="tip-detail-report-button">
+										<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 21V3M5 4h14l-3 5 3 5H5"/></svg>
 										신고
 									</button>
 									<span class="flex items-center gap-1.5">
@@ -325,15 +301,13 @@
 
 							<c:forEach var="comment" items="${mateCommentList}">
 								<div class="flex gap-3" data-comment-id="${comment.commentId}">
-									<div class="w-9 h-9 rounded-full shrink-0 flex items-center justify-center text-white text-sm font-bold"
-										style="background-color: var(--brand)">
-										<c:out value="${empty comment.nickname ? 'U' : comment.nickname.substring(0, 1)}" />
-									</div>
+									<a href="${pageContext.request.contextPath}/profile/userProfile?userId=${comment.userId}" class="w-9 h-9 rounded-full overflow-hidden shrink-0 flex items-center justify-center text-white text-sm font-bold"
+										style="background-color: var(--brand)"><jsp:include page="/common/profileImage.jsp"><jsp:param name="image" value="${comment.profileImg}"/><jsp:param name="nickname" value="${comment.nickname}"/></jsp:include></a>
 									<div class="flex-1 min-w-0">
 										<div class="flex items-center gap-2 mb-1">
-											<span class="text-sm font-bold text-gray-900">
+											<a href="${pageContext.request.contextPath}/profile/userProfile?userId=${comment.userId}" class="text-sm font-bold text-gray-900">
 												<c:out value="${comment.nickname}" />
-											</span>
+											</a>
 											<span class="mate-comment-time text-xs text-gray-400">
 												${comment.timeAgo}
 												<c:if test="${comment.edited}">

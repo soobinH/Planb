@@ -35,7 +35,8 @@
             c.status,
             c.created_at AS createdAt,
             c.updated_at AS updatedAt,
-            u.nickname AS nickname
+            u.nickname AS nickname,
+            u.profile_img AS profileImg
         FROM TB_TIP_COMMENT c
         JOIN TB_USER u
           ON c.user_id = u.user_id

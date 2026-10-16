@@ -13,6 +13,9 @@ public class TipCommentDto {
 	private LocalDateTime createdAt;// 작성 일시
 	private LocalDateTime updatedAt;// 수정 일시
 	private String nickname;
+    private String profileImg;
+    public String getProfileImg() { return profileImg; }
+    public void setProfileImg(String profileImg) { this.profileImg = profileImg; }
 	public TipCommentDto() {
 		super();
 		// TODO Auto-generated constructor stub

@@ -15,7 +15,7 @@ request.setAttribute("activePage", "tips");
 	<script>
 		window.selectedCountry = "${country}";
 	</script>
-	<link rel="stylesheet" href="${pageContext.request.contextPath}/view/assets/css/tips/tipList.css?v=20261015-card-match">
+	<link rel="stylesheet" href="${pageContext.request.contextPath}/view/assets/css/tips/tipList.css?v=20261016-highlight">
 	<script defer src="${pageContext.request.contextPath}/view/assets/js/tips/tipList.js"></script>
 </head>
 <body class="site-shell tip-list-page">

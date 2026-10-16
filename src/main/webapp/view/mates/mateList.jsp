@@ -11,7 +11,7 @@ request.setAttribute("activePage", "mates");
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<title>Planb</title>
 	<jsp:include page="/common/headStyles.jsp" />
-	<link rel="stylesheet" href="${pageContext.request.contextPath}/view/assets/css/mates/mateList.css?v=20261015-card-match">
+	<link rel="stylesheet" href="${pageContext.request.contextPath}/view/assets/css/mates/mateList.css?v=20261016-highlight">
 	<script defer src="${pageContext.request.contextPath}/view/assets/js/mates/mateList.js"></script>
 </head>
 <body class="site-shell mate-list-page">
