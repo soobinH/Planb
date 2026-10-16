@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="mapper.itinerary.itinerarySheet">
+  <insert id="insertSheet" parameterType="dto.itinerary.ItinerarySheetDto" useGeneratedKeys="true" keyProperty="sheetId" keyColumn="sheet_id">
+    INSERT INTO TB_ITINERARY_SHEET(itinerary_id, sheet_order, country, city, traveler_count, start_date, end_date, total_budget)
+    VALUES (#{itineraryId}, #{sheetOrder}, #{country}, #{city}, #{travelerCount}, #{startDate}, #{endDate}, #{totalBudget})
+  </insert>
+  <select id="selectSheets" parameterType="long" resultType="dto.itinerary.ItinerarySheetDto">
+    SELECT sheet_id AS sheetId, itinerary_id AS itineraryId, sheet_order AS sheetOrder,
+           country, city, traveler_count AS travelerCount, start_date AS startDate,
+           end_date AS endDate, total_budget AS totalBudget
+    FROM TB_ITINERARY_SHEET WHERE itinerary_id=#{itineraryId} ORDER BY sheet_order
+  </select>
+  <delete id="deleteSheets" parameterType="long">DELETE FROM TB_ITINERARY_SHEET WHERE itinerary_id=#{itineraryId}</delete>
+</mapper>

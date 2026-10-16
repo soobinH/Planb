@@ -13,6 +13,7 @@
 
         INSERT INTO TB_ITINERARY_DAY (
             itinerary_id,
+            sheet_id,
             day_order,
             day_date,
             title,
@@ -20,6 +21,7 @@
         )
         VALUES (
             #{itineraryId},
+            #{sheetId},
             #{dayOrder},
             #{dayDate},
             #{title},
@@ -37,6 +39,7 @@
         SELECT
             day_id,
             itinerary_id,
+            sheet_id,
             day_order,
             day_date,
             title,
@@ -55,6 +58,7 @@
 
         UPDATE TB_ITINERARY_DAY
         SET
+            sheet_id = #{sheetId},
             day_order = #{dayOrder},
             day_date = #{dayDate},
             title = #{title},

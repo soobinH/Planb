@@ -37,6 +37,11 @@ public class ItineraryDto {
 	private int likeCount;
 	private int commentCount;
 
+    // 하나의 게시물에서 여러 국가별 시트를 관리한다.
+    private List<ItinerarySheetDto> sheets;
+    public List<ItinerarySheetDto> getSheets() { return sheets; }
+    public void setSheets(List<ItinerarySheetDto> sheets) { this.sheets = sheets; }
+
     // 일정 -> DAY 계층
     private List<ItineraryDayDto> days;
     private Integer dayCount;             // 목록 조회에서 집계한 실제 DAY 개수

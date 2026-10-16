@@ -791,7 +791,7 @@ public class ItineraryServiceImpl implements ItineraryService {
 
 			itineraryDao.insertItinerary(sqlSession, itineraryDto);
 
-			insertChildren(sqlSession, itineraryDto);
+			insertSheetChildren(sqlSession, itineraryDto);
 
 			sqlSession.commit();
 
@@ -882,8 +882,9 @@ public class ItineraryServiceImpl implements ItineraryService {
 			 */
 
 			itineraryDayDao.deleteItineraryDaysByItineraryId(sqlSession, itineraryDto.getItineraryId());
+			sqlSession.delete("mapper.itinerary.itinerarySheet.deleteSheets", itineraryDto.getItineraryId());
 
-			insertChildren(sqlSession, itineraryDto);
+			insertSheetChildren(sqlSession, itineraryDto);
 
 			sqlSession.commit();
 
@@ -1031,9 +1032,35 @@ public class ItineraryServiceImpl implements ItineraryService {
 
 			}
 
-			itinerary.setDays(days);
-
-			return itinerary;
+            itinerary.setDays(days);
+            List<dto.itinerary.ItinerarySheetDto> sheets = sqlSession.selectList(
+                    "mapper.itinerary.itinerarySheet.selectSheets", itineraryId);
+            // 기존 단일 국가 데이터도 화면에서 시트 하나로 보여 준다.
+            if (sheets == null || sheets.isEmpty()) {
+                dto.itinerary.ItinerarySheetDto legacy = new dto.itinerary.ItinerarySheetDto();
+                legacy.setSheetOrder(1);
+                legacy.setCountry(itinerary.getCountry());
+                legacy.setCity(itinerary.getCity());
+                legacy.setTravelerCount(itinerary.getTravelerCount());
+                legacy.setStartDate(itinerary.getStartDate());
+                legacy.setEndDate(itinerary.getEndDate());
+                legacy.setTotalBudget(itinerary.getTotalBudget());
+                legacy.setDays(days);
+                sheets = new java.util.ArrayList<>();
+                sheets.add(legacy);
+            } else {
+                for (dto.itinerary.ItinerarySheetDto sheet : sheets) {
+                    List<ItineraryDayDto> matched = new java.util.ArrayList<>();
+                    for (ItineraryDayDto day : days) {
+                        if (sheet.getSheetId() != null && sheet.getSheetId().equals(day.getSheetId())) {
+                            matched.add(day);
+                        }
+                    }
+                    sheet.setDays(matched);
+                }
+            }
+            itinerary.setSheets(sheets);
+            return itinerary;
 
 		} finally {
 
@@ -1103,6 +1130,36 @@ public class ItineraryServiceImpl implements ItineraryService {
 	 * 들어온다.
 	 * 
 	 */
+
+    private void insertSheetChildren(SqlSession sqlSession, ItineraryDto itineraryDto) throws Exception {
+        List<dto.itinerary.ItinerarySheetDto> sheets = itineraryDto.getSheets();
+        if (sheets == null || sheets.isEmpty()) {
+            dto.itinerary.ItinerarySheetDto legacy = new dto.itinerary.ItinerarySheetDto();
+            legacy.setSheetOrder(1);
+            legacy.setCountry(itineraryDto.getCountry());
+            legacy.setCity(itineraryDto.getCity());
+            legacy.setTravelerCount(itineraryDto.getTravelerCount());
+            legacy.setStartDate(itineraryDto.getStartDate());
+            legacy.setEndDate(itineraryDto.getEndDate());
+            legacy.setTotalBudget(itineraryDto.getTotalBudget());
+            legacy.setDays(itineraryDto.getDays());
+            sheets = java.util.Collections.singletonList(legacy);
+        }
+        int globalDayOrder = 0;
+        for (int i = 0; i < sheets.size(); i++) {
+            dto.itinerary.ItinerarySheetDto sheet = sheets.get(i);
+            sheet.setSheetId(null); // client-provided IDs must not be trusted
+            sheet.setItineraryId(itineraryDto.getItineraryId());
+            sheet.setSheetOrder(i + 1);
+            sqlSession.insert("mapper.itinerary.itinerarySheet.insertSheet", sheet);
+            if (sheet.getDays() == null) continue;
+            for (ItineraryDayDto day : sheet.getDays()) {
+                day.setSheetId(sheet.getSheetId());
+                day.setDayOrder(++globalDayOrder); // 기존 상세 페이지의 날짜 표시 순서 보존
+            }
+        }
+        insertChildren(sqlSession, itineraryDto);
+    }
 
 	private void insertChildren(SqlSession sqlSession, ItineraryDto itineraryDto) throws Exception {
 
@@ -1183,6 +1240,37 @@ public class ItineraryServiceImpl implements ItineraryService {
 	 */
 
 	private void prepareCalculatedFields(ItineraryDto itineraryDto) {
+        // sheet별 여행 인원과 비용은 각 시트에 귀속된다.
+        if (itineraryDto.getSheets() != null && !itineraryDto.getSheets().isEmpty()) {
+            dto.itinerary.ItinerarySheetDto first = itineraryDto.getSheets().get(0);
+            itineraryDto.setCountry(first.getCountry());
+            itineraryDto.setCity(first.getCity());
+            itineraryDto.setTravelerCount(first.getTravelerCount());
+            java.sql.Date earliest = null, latest = null;
+            java.math.BigDecimal groupBudget = java.math.BigDecimal.ZERO;
+            for (dto.itinerary.ItinerarySheetDto sheet : itineraryDto.getSheets()) {
+                int count = sheet.getTravelerCount() == null || sheet.getTravelerCount() < 1 ? 1 : sheet.getTravelerCount();
+                sheet.setTravelerCount(count);
+                java.math.BigDecimal budget = java.math.BigDecimal.ZERO;
+                if (sheet.getStartDate() != null && (earliest == null || sheet.getStartDate().before(earliest))) earliest=sheet.getStartDate();
+                if (sheet.getEndDate() != null && (latest == null || sheet.getEndDate().after(latest))) latest=sheet.getEndDate();
+                if (sheet.getDays() != null) for (ItineraryDayDto day : sheet.getDays()) {
+                    if (day.getBlocks() == null) continue;
+                    for (ItineraryBlockDto block : day.getBlocks()) {
+                        if (block.getCost() != null) budget=budget.add("PER_PERSON".equals(block.getCostType())
+                                ? block.getCost().multiply(java.math.BigDecimal.valueOf(count)) : block.getCost());
+                    }
+                }
+                sheet.setTotalBudget(budget);
+                groupBudget=groupBudget.add(budget);
+            }
+            itineraryDto.setStartDate(earliest);
+            itineraryDto.setEndDate(latest);
+            itineraryDto.setTotalBudget(groupBudget);
+            if (itineraryDto.getVisibility() == null || itineraryDto.getVisibility().trim().isEmpty()) itineraryDto.setVisibility("PRIVATE");
+            return;
+        }
+
 
 		int travelerCount = itineraryDto.getTravelerCount() == null || itineraryDto.getTravelerCount() < 1 ? 1
 				: itineraryDto.getTravelerCount();

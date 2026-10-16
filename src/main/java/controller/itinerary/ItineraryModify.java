@@ -154,6 +154,7 @@ public class ItineraryModify extends HttpServlet {
                             ItineraryDto.class
                     );
 
+            ItinerarySheetsSupport.normalize(itineraryDto);
             validateRequiredFields(itineraryDto);
             ItineraryLocationValidator.validate(itineraryDto, getServletContext());
 

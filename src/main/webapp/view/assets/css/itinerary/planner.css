@@ -541,7 +541,7 @@
     .planner-date-row svg { flex:0 0 auto; }
     .planner-date-row input[type="date"]::-webkit-datetime-edit { text-align:center; width:100%; }
     #plannerCenterPanel { transition: opacity .18s ease, filter .18s ease; }
-    #plannerCenterPanel.is-country-locked { opacity:.46; filter:grayscale(1) blur(.25px); pointer-events:none; user-select:none; }
+    #plannerCenterPanel.is-country-locked #plannerDays { opacity:.46; filter:grayscale(1) blur(.25px); pointer-events:none; user-select:none; }
 
     .planner-confirm-backdrop { position:fixed; inset:0; z-index:10000; display:none; align-items:center; justify-content:center; background:rgba(0,0,0,.40); padding:20px; }
     .planner-confirm-backdrop.is-open { display:flex; }
@@ -1675,4 +1675,180 @@
 .planner-confirm-list::-webkit-scrollbar-thumb:hover,
 .planner-place-results::-webkit-scrollbar-thumb:hover {
     background: #a8abe0;
+}
+
+/* 2026-10-16: 일정 작성/수정 상단 단일 행 + 모달 내 제목 입력. */
+.planner-top-fields { display: flex !important; align-items: center; }
+.planner-top-primary { display: flex; align-items: center; gap: clamp(8px, 1vw, 16px); width: 100%; min-width: 0; }
+.planner-top-primary .planner-meta-grid {
+    flex: 1 1 auto; width: auto; min-width: 0;
+    grid-template-columns: minmax(138px, 1fr) minmax(138px, 1fr) minmax(98px, .55fr) minmax(270px, 1.75fr) !important;
+    gap: clamp(7px, .8vw, 12px) !important;
+}
+.planner-schedule-stats { flex: 0 0 auto; white-space: nowrap; font-weight: 500; }
+.planner-action-row { min-width: 0; }
+.planner-action-row #plannerSaveBtn,
+.planner-action-row #plannerVisibility {
+    flex: 1 1 0;
+    width: min(190px, calc((100% - 8px) / 2)) !important;
+    min-width: 0;
+    max-width: 190px;
+    white-space: nowrap;
+}
+.planner-action-row #plannerSaveBtn { border-radius: 11px; }
+.planner-top-actions { flex-direction: row !important; }
+.planner-publish-right { display: flex; flex-direction: column; gap: 10px; }
+.planner-publish-title-wrap { min-width: 0; }
+.planner-publish-title-field {
+    height: 44px; width: 100%; min-width: 0;
+    display: flex; align-items: center; gap: 10px; padding: 0 16px;
+    border: 1px solid #E2E5EF; border-radius: 12px; background: #fff;
+    box-shadow: 0 2px 6px rgba(26, 30, 70, .04);
+    transition: border-color .15s, box-shadow .15s;
+}
+.planner-publish-title-field:focus-within {
+    border-color: #6369D1;
+    box-shadow: 0 0 0 3px rgba(99,105,209,.10);
+}
+.planner-publish-title-field.has-error { border-color: #EF4444; }
+.planner-publish-title-error {
+    display: none; color: #DC2626; font-size: 11px; font-weight: 600;
+    margin: 5px 2px 0;
+}
+.planner-publish-title-error.is-visible { display: block; }
+@media(max-width: 1600px) {
+    .planner-top-primary .planner-meta-grid {
+        grid-template-columns: minmax(124px, 1fr) minmax(124px, 1fr) minmax(88px, .52fr) minmax(254px, 1.8fr) !important;
+    }
+}
+@media(max-width: 1440px) {
+    .planner-top-primary .planner-meta-grid {
+        grid-template-columns: minmax(118px, 1fr) minmax(118px, 1fr) minmax(84px, .5fr) minmax(226px, 1.8fr) !important;
+    }
+    .planner-schedule-stats { font-size: 10px; }
+}
+@media(max-width: 1260px) {
+    /* 좁은 뷰포트에서는 입력 4칸과 개수 표시를 유지하며 페이지 가로 스크롤을 허용한다. */
+    .planner-top-grid { min-width: 1080px; }
+    .planner-page-shell { overflow-x: auto; }
+    .planner-top-primary .planner-meta-grid {
+        grid-template-columns: minmax(110px, 1fr) minmax(110px, 1fr) minmax(80px, .5fr) minmax(206px, 1.8fr) !important;
+    }
+    .planner-top-primary { gap: 8px; }
+}
+@media(max-width: 760px) {
+    .planner-publish-right { gap: 10px; }
+}
+
+/* 2026-10-16: 지역 선택 UI 제거, 추후 방식 변경 예정. */
+/* 상단에는 국가, 여행 인원, 여행 기간 세 입력칸만 배치한다. */
+.planner-top-primary .planner-meta-grid {
+    grid-template-columns: minmax(150px, 1fr) minmax(104px, .58fr) minmax(270px, 1.8fr) !important;
+}
+.planner-publish-section-label {
+    font-family: inherit;
+    font-size: 12px;
+    font-weight: 700;
+    line-height: 1.5;
+    letter-spacing: normal;
+    color: #374151;
+}
+@media (max-width: 1600px) {
+    .planner-top-primary .planner-meta-grid {
+        grid-template-columns: minmax(142px, 1fr) minmax(95px, .54fr) minmax(252px, 1.75fr) !important;
+    }
+}
+@media (max-width: 1440px) {
+    .planner-top-primary .planner-meta-grid {
+        grid-template-columns: minmax(130px, 1fr) minmax(90px, .5fr) minmax(236px, 1.7fr) !important;
+    }
+}
+@media (max-width: 1260px) {
+    .planner-top-primary .planner-meta-grid {
+        grid-template-columns: minmax(115px, 1fr) minmax(85px, .5fr) minmax(210px, 1.75fr) !important;
+    }
+}
+
+/* 국가별 여행 시트 - Excel 스타일 */
+.planner-sheet-bar{display:flex;align-items:end;gap:3px;padding:7px 18px 0;border-bottom:0;box-shadow:inset 0 -1px #e2e5ef;background:#f8f9fd;flex-shrink:0;min-height:48px}
+.planner-sheet-scroller{display:flex;align-items:end;gap:3px;min-width:0;flex:1;overflow-x:auto;overflow-y:hidden;scrollbar-width:none;scroll-behavior:smooth}
+.planner-sheet-scroller::-webkit-scrollbar{display:none}
+.planner-sheet-tabs{display:flex;align-items:end;gap:3px;flex:0 0 auto;min-width:max-content}
+.planner-sheet-tab{height:36px;max-width:190px;min-width:100px;flex-shrink:0;border:1px solid #dcdff0;border-radius:9px 9px 0 0;padding:0 14px;background:#eef0f8;color:#555e72;font-weight:650;font-size:12px;cursor:grab;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;display:inline-flex;align-items:center;gap:6px;justify-content:center}
+.planner-sheet-tab:active{cursor:grabbing}
+.planner-sheet-tab[aria-selected="true"]{background:white;color:#555cd6;border-color:#a9adf5;border-bottom-color:white;box-shadow:inset 0 3px #6369d1;font-weight:800;position:relative;z-index:1}
+.planner-sheet-tab.is-drag-over{outline:2px dashed #6369d1;outline-offset:-3px}
+.planner-sheet-arrow,.planner-sheet-add{height:34px;min-width:30px;padding:0 5px;border:1px solid #dddff0;background:white;color:#6269b9;border-radius:8px;font-size:20px;cursor:pointer;margin-bottom:3px}
+.planner-sheet-add{height:36px;min-width:38px;padding:0 10px;margin-bottom:0;border:1px solid #dcdff0;border-radius:9px 9px 0 0;background:#eef0f8;color:#555e72;font-size:19px;font-weight:700;flex:0 0 auto}
+.planner-sheet-arrow:disabled{opacity:.3;cursor:default}
+.planner-sheet-arrow:hover:not(:disabled){background:#eeefff}
+.planner-sheet-add:hover{background:#e7eaf5}
+@media(max-width:900px){.planner-sheet-bar{padding-left:8px;padding-right:8px}.planner-sheet-tab{min-width:95px;max-width:136px}}
+
+/* 상단 통계: 아이콘과 글자를 같은 기준선에 맞춘 4행 */
+.planner-trip-stats {
+    display:flex; flex-direction:column; flex:0 0 auto; justify-content:center;
+    align-items:flex-start; gap:1px; min-width:110px; white-space:nowrap;
+}
+.planner-trip-stats .planner-stat-row {
+    display:flex; align-items:center; gap:6px; min-height:13px;
+    font-size:11px; font-weight:500; line-height:13px; color:#6b7280;
+    white-space:nowrap;
+}
+.planner-trip-stats .planner-stat-icon {
+    display:block; width:14px; height:14px; flex:0 0 14px; color:#9ca3af;
+}
+/* 이전 일정 개수에 정의된 Tailwind 색상과 폰트도 4행 전체에 맞춥니다. */
+.planner-trip-stats .planner-schedule-stats {font-size:11px;line-height:13px;color:#6b7280;font-weight:500}
+@media(max-width:1350px) {
+    .planner-trip-stats .planner-stat-row,
+    .planner-trip-stats .planner-schedule-stats {font-size:10px;}
+}
+
+/* 삭제 버튼: 평소 탭 안에서 완전히 사라지고 호버/키보드 초점에 따라 너비가 펼쳐집니다. */
+.planner-sheet-item {
+    position:relative; display:inline-flex; align-items:flex-end; flex:0 0 auto;
+    max-width:218px;
+}
+.planner-sheet-item .planner-sheet-tab {
+    padding:0 14px; min-width:100px; max-width:218px;
+    justify-content:center; transition:min-width .22s ease,padding-right .22s ease,background-color .18s ease;
+}
+.planner-sheet-item .planner-sheet-tab-label {
+    min-width:0; flex:0 1 auto; overflow:hidden; text-overflow:ellipsis;
+    white-space:nowrap; text-align:center;
+}
+.planner-sheet-item .planner-sheet-remove {
+    position:absolute; right:7px; top:9px; z-index:3;
+    display:inline-flex; align-items:center; justify-content:center;
+    width:18px; height:18px; padding:0; margin:0; border:0;
+    border-radius:5px; background:transparent; color:#8790a6;
+    font-size:16px; font-weight:500; line-height:1; cursor:pointer;
+    opacity:0; visibility:hidden; pointer-events:none;
+    transform:translateX(-5px);
+    transition:opacity .18s ease,transform .22s ease,visibility 0s linear .22s;
+}
+.planner-sheet-item:hover .planner-sheet-tab,
+.planner-sheet-item:focus-within .planner-sheet-tab {padding-right:34px;min-width:124px;}
+.planner-sheet-item:hover .planner-sheet-remove,
+.planner-sheet-item:focus-within .planner-sheet-remove {
+    opacity:1; visibility:visible; pointer-events:auto;
+    transform:translateX(0); transition-delay:0s;
+}
+.planner-sheet-item .planner-sheet-remove:hover,
+.planner-sheet-item .planner-sheet-remove:focus-visible {
+    color:#b91c1c; background:#fee2e2; outline:none;
+}
+@media(max-width:900px){
+    .planner-sheet-item{max-width:160px}
+    .planner-sheet-item .planner-sheet-tab{min-width:95px;max-width:160px}
+}
+@media(hover:none){
+    .planner-sheet-item .planner-sheet-tab{padding-right:34px}
+    .planner-sheet-item .planner-sheet-remove{
+        opacity:1;visibility:visible;pointer-events:auto;transform:none;
+    }
+}
+@media(prefers-reduced-motion:reduce){
+    .planner-sheet-item .planner-sheet-tab,.planner-sheet-item .planner-sheet-remove{transition:none}
 }

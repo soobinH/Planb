@@ -12,7 +12,7 @@ request.setAttribute("activePage", "planner");
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>일정 만들기</title>
 <jsp:include page="/common/headStyles.jsp" />
-<link rel="stylesheet" href="${pageContext.request.contextPath}/view/assets/css/itinerary/planner.css?v=1">
+<link rel="stylesheet" href="${pageContext.request.contextPath}/view/assets/css/itinerary/planner.css?v=20261016-stats4-hoverdelete-reset-v1">
 </head>
 <body class="site-shell">
     <jsp:include page="/common/header.jsp" />
@@ -26,30 +26,8 @@ request.setAttribute("activePage", "planner");
     <main class="planner-page-shell flex flex-col">
         <div class="shrink-0 border-b border-gray-100" style="background: #F8F8FF">
             <div class="planner-top-grid grid min-w-0">
-                <div class="planner-top-fields min-w-0 px-6 py-3 flex flex-col gap-3">
-                    <div class="flex items-center gap-3 min-w-0">
-                        <div class="h-[46px] flex-1 min-w-0 rounded-xl border bg-white flex items-center gap-3 px-4"
-                            style="border-color: #E2E5EF">
-                            <svg class="shrink-0" width="16" height="16" viewBox="0 0 24 24" fill="none"
-                                stroke="#6369D1" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                <path d="M12 20h9" />
-                                <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4Z" />
-                            </svg>
-                            <input
-                                class="flex-1 min-w-0 font-semibold text-sm text-gray-800 outline-none bg-transparent placeholder-gray-400 border-none"
-                                id="tripTitle" maxlength="30" placeholder="여행 제목을 입력하세요" style="font-size: 14px">
-                            <span id="plannerTitleCount" class="shrink-0 text-[10px] font-semibold text-gray-400" aria-live="polite">0/30</span>
-                        </div>
-                        <div class="flex items-center gap-1.5 shrink-0 text-gray-500 text-sm px-2">
-                            <svg class="text-gray-400" width="14" height="14" viewBox="0 0 24 24" fill="none"
-                                stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                <rect width="18" height="18" x="3" y="4" rx="2" />
-                                <path d="M16 2v4M8 2v4M3 10h18" />
-                            </svg>
-                            <span id="plannerScheduleStats" aria-live="polite">1일 · 0개 일정</span>
-                        </div>
-                    </div>
-
+                <div class="planner-top-fields min-w-0 px-6 py-3">
+                    <div class="planner-top-primary min-w-0">
                     <div class="planner-meta-grid grid gap-3 min-w-0">
                         <div id="plannerCountryField" class="relative overflow-visible min-w-0 h-[50px] rounded-xl border bg-white flex items-center gap-3 px-3.5"
                             style="border-color: #FCA5A5">
@@ -86,38 +64,9 @@ request.setAttribute("activePage", "planner");
                                 style="color: #EF4444">필수</span>
                         </div>
 
-                        <div class="relative overflow-visible min-w-0 h-[50px] rounded-xl border bg-white flex items-center gap-3 px-3.5"
-                            style="border-color: #E2E5EF">
-                            <div class="w-8 h-8 rounded-lg shrink-0 flex items-center justify-center"
-                                style="background: #F0EFFF; color: #6369D1">
-                                <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                                    stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                    <path d="M20 10c0 5-8 12-8 12S4 15 4 10a8 8 0 1 1 16 0Z" />
-                                    <circle cx="12" cy="10" r="2.5" />
-                                </svg>
-                            </div>
-                            <div class="min-w-0 flex-1 flex flex-col justify-center">
-                                <span class="text-[10px] font-semibold text-gray-400 leading-none mb-1">지역 (선택)</span>
-                                <div id="plannerRegionCombo" class="w-full min-w-0">
-                                    <div class="flex items-center gap-1.5 w-full min-w-0">
-                                        <input class="outline-none text-sm text-gray-800 bg-transparent placeholder-gray-400 w-full min-w-0"
-                                            id="plannerRegion" placeholder="국가 먼저 입력" value="" autocomplete="off" disabled>
-                                        <button type="button" id="plannerRegionClear"
-                                            class="hidden shrink-0 text-gray-300 hover:text-gray-500"
-                                            aria-label="지역 입력 지우기">
-                                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                                                stroke-width="2" stroke-linecap="round">
-                                                <path d="M18 6 6 18M6 6l12 12"/>
-                                            </svg>
-                                        </button>
-                                    </div>
-                                    <div id="plannerRegionDropdown"
-                                        class="hidden absolute top-full left-0 right-0 mt-1 bg-white border border-gray-200 rounded-xl shadow-xl z-50"
-                                        style="max-height: 280px; overflow-y: auto; overflow-x: hidden;">
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
+                        <%-- 지역 선택 UI는 추후 별도 구현. 기존 일정 지역 정보는 유지합니다. --%>
+                        <input type="hidden" id="plannerRegion" value="">
+                        <div id="plannerRegionDropdown" class="hidden" hidden></div>
 
                         <div class="relative min-w-0 h-[50px] rounded-xl border bg-white flex items-center gap-3 px-3.5"
                             style="border-color: #E2E5EF">
@@ -174,12 +123,31 @@ request.setAttribute("activePage", "planner");
                             </div>
                         </div>
                     </div>
+                    <div class="planner-trip-stats" aria-label="여행 규모와 일정 개수" aria-live="polite">
+                        <div class="planner-stat-row" aria-label="대륙 개수"><svg class="planner-stat-icon" viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c-3 3-3 15 0 18M12 3c3 3 3 15 0 18"/></svg><span id="plannerTripContinentCount">0개 대륙</span></div>
+                        <div class="planner-stat-row" aria-label="국가 개수"><svg class="planner-stat-icon" viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 21V4m0 1c5-4 9 4 14 0v11c-5 4-9-4-14 0"/></svg><span id="plannerTripCountryCount">0개 국가</span></div>
+                        <div class="planner-stat-row" aria-label="도시 개수"><svg class="planner-stat-icon" viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 10c0 5-8 11-8 11S4 15 4 10a8 8 0 1 1 16 0Z"/><circle cx="12" cy="10" r="2.5"/></svg><span id="plannerTripCityCount">0개 도시</span></div>
+                        <div class="planner-stat-row planner-schedule-stats" aria-label="일정 개수"><svg class="planner-stat-icon" viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg><span id="plannerScheduleStats">0일 · 0개 일정</span></div>
+                    </div>
+                    </div>
                 </div>
 
-                <div class="planner-top-actions border-l border-gray-100 px-6 py-3 flex flex-col items-end justify-center gap-3"
+                <div class="planner-top-actions border-l border-gray-100 px-6 py-3 flex items-center justify-end"
                     style="border-color: #E8E9F2">
-                    <div class="flex items-center justify-end gap-2">
-                        <button id="plannerSaveBtn" type="button" class="h-10 w-[200px] text-xs font-bold text-white rounded-xl hover:opacity-90 transition-all flex items-center justify-center gap-1.5 shadow-sm"
+                    <div class="planner-action-row flex items-center justify-end gap-2 w-full">
+                        <button id="plannerVisibility"
+                        type="button"
+                        data-visibility="PUBLIC"
+                        class="h-10 flex items-center justify-center gap-2 text-xs font-semibold rounded-full border bg-white transition-all"
+                        style="border-color: #8B91FF; color: #555CD6">
+                        <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 shrink-0"></span>
+                        공개 중
+                        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="m6 9 6 6 6-6" />
+                        </svg>
+                    </button>
+                        <button id="plannerSaveBtn" type="button" class="h-10 text-xs font-bold text-white rounded-xl hover:opacity-90 transition-all flex items-center justify-center gap-1.5 shadow-sm"
                             style="background: #6369D1">
                             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"
                                 stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -189,25 +157,11 @@ request.setAttribute("activePage", "planner");
                             </svg>
                             <span id="plannerSaveLabel">저장하기</span>
                         </button>
-
-                        <form id="plannerSubmitForm" method="post" enctype="multipart/form-data" class="hidden">
+                    </div>
+                    <form id="plannerSubmitForm" method="post" enctype="multipart/form-data" class="hidden">
                             <input type="hidden" id="plannerItineraryJson" name="itineraryJson">
                             <input type="hidden" id="plannerThumbnailImageKey" name="thumbnailImageKey">
                         </form>
-                    </div>
-
-                    <button id="plannerVisibility"
-                        type="button"
-                        data-visibility="PUBLIC"
-                        class="h-10 w-[200px] flex items-center justify-center gap-2 text-xs font-semibold rounded-full border bg-white transition-all"
-                        style="border-color: #8B91FF; color: #555CD6">
-                        <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 shrink-0"></span>
-                        공개 중
-                        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                            stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <path d="m6 9 6 6 6-6" />
-                        </svg>
-                    </button>
                 </div>
             </div>
         </div>
@@ -267,13 +221,27 @@ request.setAttribute("activePage", "planner");
                             <path d="M20 7V5a2 2 0 0 0-2-2H5a3 3 0 0 0 0 6h15v12H5a3 3 0 0 1-3-3V6" />
                             <path d="M16 13h4" />
                         </svg>
-                        <span class="text-xs font-semibold" style="color: #92720A">총 예상 예산</span>
+                        <span class="text-xs font-semibold" style="color: #92720A">전체 예상 예산</span>
+                        <span id="plannerGlobalBudget" class="text-sm font-black" style="color: #78590A">0원</span>
+                    </div>
+                    <div class="flex items-center gap-2 rounded-lg px-3 py-1.5 border" style="background:#F8F8FF;border-color:#DDE0FA;margin-left:8px;">
+                        <span id="plannerBudgetCountry" class="text-xs font-semibold" style="color:#6369D1">국가별 예상 예산</span>
                         <span id="plannerTotalBudget" class="text-sm font-black" style="color: #78590A">0원</span>
                         <span id="plannerTotalBudgetForeign" class="text-xs font-semibold text-gray-400">—</span>
                     </div>
                     <button id="plannerToggleAllDays" type="button" title="모두 닫기" class="ml-auto flex items-center justify-center text-gray-500 hover:text-gray-700 w-8 h-8 rounded-lg border border-gray-200 hover:border-gray-300 transition-all">⇅</button>
                 </div>
 
+
+                <!-- 국가별 일정 시트: 드래그 순서 변경 및 좌우 스크롤 -->
+                <nav id="plannerSheetBar" class="planner-sheet-bar" aria-label="국가별 여행 일정">
+                    <button type="button" id="plannerSheetPrev" class="planner-sheet-arrow" aria-label="시트를 왼쪽으로 스크롤">‹</button>
+                    <div id="plannerSheetScroller" class="planner-sheet-scroller">
+                        <div id="plannerSheetTabs" class="planner-sheet-tabs" role="tablist" aria-label="국가별 시트"></div>
+                        <button type="button" id="plannerSheetAdd" class="planner-sheet-add" title="국가별 일정 시트 추가" aria-label="시트 추가">+</button>
+                    </div>
+                    <button type="button" id="plannerSheetNext" class="planner-sheet-arrow" aria-label="시트를 오른쪽으로 스크롤">›</button>
+                </nav>
 
                 <!--
                     DAY 0개로 시작하더라도 새 블록을 생성할 수 있도록 DOM과 분리된 원본 템플릿을 유지한다.
@@ -497,25 +465,13 @@ request.setAttribute("activePage", "planner");
 
     <jsp:include page="/common/footer.jsp" />
 
-    <script>
-        window.PLANNER_BOOTSTRAP = {
-            contextPath: '${pageContext.request.contextPath}',
-            importItineraries: ${empty importListJson ? '[]' : importListJson},
-            exchangeRates: ${empty exchangeRatesJson ? '{}' : exchangeRatesJson}
-        };
-    </script>
-    <script src="${pageContext.request.contextPath}/view/assets/js/itinerary/planner.js?v=20261015-iso-admin1"></script>
-    <script async
-        onerror="showPlannerMapFallback()" src="https://maps.googleapis.com/maps/api/js?key=AIzaSyB7ioaQS08aAzCl7gZPk6SyE1w7EeIrYhI&language=ko&libraries=places&v=weekly&loading=async&callback=initPlannerMap"></script>
-
-
     <div id="plannerPublishBackdrop" class="planner-publish-backdrop" aria-hidden="true">
         <div class="planner-publish-modal" role="dialog" aria-modal="true" aria-labelledby="plannerPublishTitle">
 
             <div class="planner-publish-head flex items-center justify-between px-6 py-5 border-b" style="border-color:#ECEEF5">
                 <div>
                     <h3 id="plannerPublishTitle" class="text-lg font-black text-gray-900">여행 일정 미리보기</h3>
-                    <p class="mt-1 text-xs text-gray-500">여행일정 목록에 표시될 카드입니다. 대표 사진과 일정 소개는 선택사항입니다.</p>
+                    <p class="mt-1 text-xs text-gray-500">여행일정 목록에 표시될 카드입니다. 공개 일정은 대표 이미지가 필수이며, 일정 소개는 선택사항입니다.</p>
                 </div>
                 <button type="button" id="plannerPublishClose"
                     class="w-9 h-9 rounded-full hover:bg-gray-100 text-gray-500 text-xl">×</button>
@@ -525,7 +481,7 @@ request.setAttribute("activePage", "planner");
                 <div class="planner-publish-grid">
 
                     <div class="planner-publish-column">
-                        <p class="mb-2 text-xs font-bold text-gray-700">게시물 카드 미리보기</p>
+                        <p class="planner-publish-section-label mb-2 text-xs font-bold text-gray-700">게시물 카드 미리보기</p>
 
                         <article class="planner-publish-card">
                             <button type="button" id="plannerPublishCover"
@@ -580,7 +536,23 @@ request.setAttribute("activePage", "planner");
                         </article>
                     </div>
 
-                    <div id="plannerPublishControls" class="planner-publish-column planner-publish-controls">
+                    <div class="planner-publish-column planner-publish-right">
+                        <div class="planner-publish-title-wrap">
+                            <label class="planner-publish-section-label block mb-2 text-xs font-bold text-gray-700" for="tripTitle">여행 제목</label>
+                            <div class="planner-publish-title-field">
+                                <svg class="shrink-0" width="16" height="16" viewBox="0 0 24 24" fill="none"
+                                    stroke="#6369D1" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                                    <path d="M12 20h9" />
+                                    <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4Z" />
+                                </svg>
+                                <input id="tripTitle" maxlength="30" placeholder="여행 제목을 입력하세요" autocomplete="off" aria-required="true" aria-describedby="plannerPublishTitleError"
+                                    class="flex-1 min-w-0 font-semibold text-sm text-gray-800 outline-none bg-transparent placeholder-gray-400 border-none">
+                                <span id="plannerTitleCount" class="shrink-0 text-[10px] font-semibold text-gray-400" aria-live="polite">0/30</span>
+                            </div>
+                            <p id="plannerPublishTitleError" class="planner-publish-title-error" role="alert" aria-live="polite">여행 제목을 입력해 주세요.</p>
+                        </div>
+
+                        <div id="plannerPublishControls" class="planner-publish-controls">
 
                         <div class="mb-5">
                             <div class="flex items-center justify-between mb-2 gap-3">
@@ -619,6 +591,7 @@ request.setAttribute("activePage", "planner");
                             
                         </div>
 
+                        </div>
                     </div>
 
                 </div>
@@ -684,6 +657,18 @@ request.setAttribute("activePage", "planner");
             </div>
         </div>
     </div>
+
+    <%-- Script initialization must run after the title input inside the save modal exists. --%>
+    <script>
+        window.PLANNER_BOOTSTRAP = {
+            contextPath: '${pageContext.request.contextPath}',
+            importItineraries: ${empty importListJson ? '[]' : importListJson},
+            exchangeRates: ${empty exchangeRatesJson ? '{}' : exchangeRatesJson}
+        };
+    </script>
+    <script src="${pageContext.request.contextPath}/view/assets/js/itinerary/planner.js?v=20261016-stats4-hoverdelete-reset-v1"></script>
+    <script async
+        onerror="showPlannerMapFallback()" src="https://maps.googleapis.com/maps/api/js?key=AIzaSyB7ioaQS08aAzCl7gZPk6SyE1w7EeIrYhI&language=ko&libraries=places&v=weekly&loading=async&callback=initPlannerMap"></script>
 
 </body>
 </html>

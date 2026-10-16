@@ -7,6 +7,9 @@ import java.util.List;
 public class ItineraryDayDto {
 
     private Long dayId;                    // DAY 고유번호
+    private Long sheetId;                 // 국가별 시트 (신규 다국가 구성)
+    public Long getSheetId() { return sheetId; }
+    public void setSheetId(Long v) { sheetId=v; }
     private Long itineraryId;              // 일정 고유번호
     private Long sourceDayId;              // 원본 DAY 번호
 

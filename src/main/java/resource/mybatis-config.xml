@@ -121,6 +121,7 @@
 	    <mapper resource="mapper/itinerary/itineraryComment.xml"/>
 	    <mapper resource="mapper/itinerary/itineraryCart.xml"/>
 	    <mapper resource="mapper/itinerary/itineraryDay.xml"/>
+        <mapper resource="mapper/itinerary/itinerarySheet.xml"/>
 	    <mapper resource="mapper/itinerary/itineraryLike.xml"/>
 	
 	    <!-- 회원 -->

@@ -30,6 +30,22 @@ public final class ItineraryLocationValidator {
         }
 
         Map<String, Set<String>> catalog = getCatalog(context);
+        if (itinerary.getSheets() != null && !itinerary.getSheets().isEmpty()) {
+            int index=0;
+            for (dto.itinerary.ItinerarySheetDto sheet : itinerary.getSheets()) {
+                if (sheet == null) throw new IllegalArgumentException("비어 있는 시트가 있습니다.");
+                String sheetCountry = sheet.getCountry() == null ? "" : sheet.getCountry().trim();
+                Set<String> allowed = catalog.get(sheetCountry);
+                if (allowed == null) throw new IllegalArgumentException((++index)+"번째 시트의 국가를 정확하게 선택해 주세요.");
+                String city = sheet.getCity() == null ? "" : sheet.getCity().trim();
+                if (!city.isEmpty() && !allowed.contains(city)) throw new IllegalArgumentException("'" + sheetCountry + "'의 유효한 1차 행정구역만 저장할 수 있습니다.");
+                if (sheet.getTravelerCount() == null || sheet.getTravelerCount() < 1 || sheet.getTravelerCount() > 99)
+                    throw new IllegalArgumentException("시트별 여행 인원은 1~99명이어야 합니다.");
+                if (sheet.getStartDate() != null && sheet.getEndDate() != null && sheet.getStartDate().after(sheet.getEndDate()))
+                    throw new IllegalArgumentException("시트별 여행 종료일은 시작일보다 빠를 수 없습니다.");
+            }
+        }
+
         String country = itinerary.getCountry() == null ? "" : itinerary.getCountry().trim();
         Set<String> validRegions = catalog.get(country);
         if (validRegions == null) {

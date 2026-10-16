@@ -76,8 +76,11 @@
 	<sql id="scheduleListConditions">
 		WHERE i.status = 'ACTIVE'
 		AND i.visibility = 'PUBLIC'
-		<if test="country != null and country != ''">
-			AND i.country = #{country}
+        <if test="country != null and country != ''">
+            AND (i.country = #{country} OR EXISTS (
+                SELECT 1 FROM TB_ITINERARY_SHEET cn
+                WHERE cn.itinerary_id=i.itinerary_id AND cn.country=#{country}
+            ))
 		</if>
 		<if test="keyword != null and keyword != ''">
 			AND (
