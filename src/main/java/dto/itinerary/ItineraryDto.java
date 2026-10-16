@@ -13,6 +13,7 @@ public class ItineraryDto {
     private String continent;              // 대륙
     private String country;                // 나라
     private String city;                   // 도시 (선택)
+    private String locationLabel;          // 목록 카드에 표시할 다국가 여행 지역
 
     private Integer travelerCount;         // 여행 인원수, DB DEFAULT 1
     
@@ -110,6 +111,9 @@ public class ItineraryDto {
     public void setSummary(String summary) {
         this.summary = summary;
     }
+
+    public String getLocationLabel() { return locationLabel; }
+    public void setLocationLabel(String locationLabel) { this.locationLabel = locationLabel; }
 
     public String getContinent() {
         return continent;

@@ -12,6 +12,7 @@ public class ItineraryBlockDto {
     private String googlePlaceId;          // Google Place ID
     private String placeName;              // 장소명
     private String placeAddress;           // 주소
+    private String placeCity;              // 호환 컬럼: Google Places 핀의 1차 행정구역 한국어 표시명 (기존 데이터는 도시명일 수 있음)
     private Double placeLat;               // 위도
     private Double placeLng;               // 경도
 
@@ -74,6 +75,9 @@ public class ItineraryBlockDto {
     public void setPlaceAddress(String placeAddress) {
         this.placeAddress = placeAddress;
     }
+
+    public String getPlaceCity() { return placeCity; }
+    public void setPlaceCity(String placeCity) { this.placeCity = placeCity; }
 
     public Double getPlaceLat() {
         return placeLat;

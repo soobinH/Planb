@@ -1241,3 +1241,31 @@
 #scheduleDetail #detailSchedulePanel .detail-block-note-body.has-memo + .detail-block-photos { margin-top: 1px; }
 /* 메모와 비용 사이: 기존 8px에서 9px로 */
 #scheduleDetail #detailSchedulePanel .detail-block-memo + .detail-block-cost { margin-top: 9px; }
+
+/* 상세 일정 전체/국가 시트 선택 */
+#detailSheetTabs.detail-sheet-tabs {
+    display: flex; align-items: flex-end; flex: 0 0 auto; gap: 4px; padding: 10px 12px 0;
+    background: #f7f8fc; border-bottom: 1px solid #dcdff0;
+}
+#detailSheetTabs.detail-sheet-tabs[hidden],
+#detailSchedulePanel [data-detail-day-sheet][hidden] { display: none !important; }
+#detailSheetTabs .detail-sheet-list {
+    display: flex; align-items: flex-end; gap: 4px; flex: 1; min-width: 0;
+    overflow-x: auto; scrollbar-width: none; scroll-behavior: smooth;
+}
+#detailSheetTabs .detail-sheet-list::-webkit-scrollbar { display: none; }
+#detailSheetTabs .detail-sheet-tab {
+    flex: 0 0 auto; min-width: 76px; max-width: 170px; height: 34px;
+    padding: 0 16px; overflow: hidden; text-overflow: ellipsis;
+    white-space: nowrap; border: 1px solid #dcdff0; border-radius: 8px 8px 0 0;
+    background: #eef0f8; color: #606b87; font-size: 12px; font-weight: 600;
+    cursor: pointer; margin-bottom: -1px;
+}
+#detailSheetTabs .detail-sheet-tab.is-active {
+    color: #6369d1; background: #fff; border-color: #b5b8ed;
+    border-bottom: 1px solid #fff; position: relative; z-index: 1;
+}
+#detailSheetTabs .detail-sheet-scroll {
+    align-self: center; flex: 0 0 24px; height: 29px; border: 1px solid #e1e4f0;
+    border-radius: 7px; background: #fff; color: #6369d1; cursor: pointer;
+}

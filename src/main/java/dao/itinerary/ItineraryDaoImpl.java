@@ -8,6 +8,7 @@ import org.apache.ibatis.session.SqlSession;
 
 import config.MybatisSqlSessionFactory;
 import dto.itinerary.ItineraryDto;
+import dto.itinerary.ItineraryCardGeoRow;
 
 public class ItineraryDaoImpl implements ItineraryDao {
 	// 26.10.01 추가.
@@ -17,6 +18,14 @@ public class ItineraryDaoImpl implements ItineraryDao {
 			return sqlSession.selectList("mapper.itinerary.itinerary.selectScheduleList", params);
 		}
 	}
+
+    @Override
+    public List<ItineraryCardGeoRow> selectScheduleCardGeoRows(List<Long> ids) throws Exception {
+        if (ids == null || ids.isEmpty()) return java.util.Collections.emptyList();
+        try (SqlSession session = MybatisSqlSessionFactory.getSqlSessionFactory().openSession()) {
+            return session.selectList("mapper.itinerary.itinerary.selectScheduleCardGeoRows", ids);
+        }
+    }
 
 	@Override
 	public long countScheduleList(Map<String, Object> params) throws Exception {

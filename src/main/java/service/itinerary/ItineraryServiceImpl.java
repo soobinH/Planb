@@ -27,6 +27,7 @@ import dao.itinerary.ItineraryLikeDaoImpl;
 import dao.notification.NotificationDao;
 import dao.notification.NotificationDaoImpl;
 import dto.itinerary.ItineraryBlockDto;
+import dto.itinerary.ItineraryCardGeoRow;
 import dto.itinerary.ItineraryBlockImageDto;
 import dto.itinerary.ItineraryBookmarkDto;
 import dto.itinerary.ItineraryCommentDto;
@@ -160,9 +161,26 @@ public class ItineraryServiceImpl implements ItineraryService {
 
 		params.put("offset", offset);
 
-		return itineraryDao.selectScheduleList(params);
+        List<ItineraryDto> schedules = itineraryDao.selectScheduleList(params);
+        attachCardLocationLabels(schedules);
+        return schedules;
 
 	}
+
+    /** 목록 카드의 지역 설명: 1회 추가 쿼리로 국가 시트/지도 핀을 함께 집계한다. */
+    private void attachCardLocationLabels(List<ItineraryDto> schedules) throws Exception {
+        if (schedules == null || schedules.isEmpty()) return;
+        List<Long> ids = new java.util.ArrayList<>();
+        for (ItineraryDto itinerary : schedules) ids.add(itinerary.getItineraryId());
+        List<ItineraryCardGeoRow> locations = itineraryDao.selectScheduleCardGeoRows(ids);
+        Map<Long, List<ItineraryCardGeoRow>> byItinerary = new HashMap<>();
+        for (ItineraryCardGeoRow row : locations) {
+            byItinerary.computeIfAbsent(row.getItineraryId(), k -> new java.util.ArrayList<>()).add(row);
+        }
+        for (ItineraryDto itinerary : schedules) {
+            itinerary.setLocationLabel(ItineraryCardLocation.label(itinerary, byItinerary.get(itinerary.getItineraryId())));
+        }
+    }
 
 	// 체크박스 값은 1~6만 허용
 
@@ -233,7 +251,9 @@ public class ItineraryServiceImpl implements ItineraryService {
 		params.put("limit", limit);
 		params.put("offset", 0);
 
-		return itineraryDao.selectScheduleList(params);
+        List<ItineraryDto> schedules = itineraryDao.selectScheduleList(params);
+        attachCardLocationLabels(schedules);
+        return schedules;
 	}
 
 	@Override

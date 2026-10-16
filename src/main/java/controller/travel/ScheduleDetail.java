@@ -3,6 +3,10 @@ package controller.travel;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Set;
+import java.util.Comparator;
+import dto.itinerary.ItinerarySheetDto;
 import java.util.List;
 import java.util.Map;
 
@@ -78,62 +82,98 @@ public class ScheduleDetail extends HttpServlet {
 				return;
 			}
 
-			request.setAttribute("itinerary", itinerary);
+            // 상세페이지에서 각 시트 순서대로 DAY를 일련번호로 정렬한다.
+            // 기존 단일 국가 게시물도 서비스가 제공하는 레거시 시트 1개로 표시한다.
+            List<ItinerarySheetDto> sheets = itinerary.getSheets() == null
+                    ? new ArrayList<>() : new ArrayList<>(itinerary.getSheets());
+            sheets.sort(Comparator.comparing(ItinerarySheetDto::getSheetOrder,
+                    Comparator.nullsLast(Integer::compareTo)));
+            if (sheets.isEmpty()) {
+                ItinerarySheetDto legacy = new ItinerarySheetDto();
+                legacy.setCountry(itinerary.getCountry());
+                legacy.setDays(itinerary.getDays());
+                sheets.add(legacy);
+            }
 
-			// 지도에 필요한 DAY와 장소 좌표만 전달
-			List<Map<String, Object>> mapDays = new ArrayList<>();
-
-			if (itinerary.getDays() != null) {
-
-				int displayDay = 0;
-
-				for (ItineraryDayDto day : itinerary.getDays()) {
-
-					displayDay++;
-
-					Map<String, Object> mapDay = new HashMap<>();
-
-					mapDay.put("dayNumber", displayDay);
-					mapDay.put("dayId", day.getDayId());
-					mapDay.put("title", day.getTitle());
-
-					List<Map<String, Object>> points = new ArrayList<>();
-
-					if (day.getBlocks() != null) {
-
-						int blockNumber = 0;
-
-						for (ItineraryBlockDto block : day.getBlocks()) {
-
-							blockNumber++;
-
-							if (block.getPlaceLat() == null || block.getPlaceLng() == null) {
-								continue;
-							}
-
-							Map<String, Object> point = new HashMap<>();
-
-							point.put("blockId", block.getBlockId());
-							point.put("sequence", blockNumber);
-							point.put("type", block.getBlockType());
-							point.put("googlePlaceId", block.getGooglePlaceId());
-							point.put("title", block.getTitle());
-							point.put("placeName", block.getPlaceName());
-							point.put("address", block.getPlaceAddress());
-							point.put("lat", block.getPlaceLat());
-							point.put("lng", block.getPlaceLng());
-
-							points.add(point);
-						}
-					}
-
-					mapDay.put("points", points);
-
-					mapDays.add(mapDay);
-				}
-			}
-
-			request.setAttribute("detailMapJson", new Gson().toJson(mapDays));
+            // 이전 버전의 일부 DAY에 sheet_id가 없는 경우 첫 시트에 포함한다.
+            Set<Long> assignedDayIds = new HashSet<>();
+            for (ItinerarySheetDto sheet : sheets) {
+                if (sheet.getDays() != null) {
+                    for (ItineraryDayDto day : sheet.getDays()) {
+                        if (day.getDayId() != null) assignedDayIds.add(day.getDayId());
+                    }
+                }
+            }
+            if (itinerary.getDays() != null) {
+                List<ItineraryDayDto> firstDays = sheets.get(0).getDays() == null
+                        ? new ArrayList<>() : new ArrayList<>(sheets.get(0).getDays());
+                for (ItineraryDayDto day : itinerary.getDays()) {
+                    if (day.getDayId() != null && !assignedDayIds.contains(day.getDayId())) {
+                        firstDays.add(day);
+                    }
+                }
+                sheets.get(0).setDays(firstDays);
+            }
+            List<ItineraryDayDto> allDays = new ArrayList<>();
+            List<Map<String, Object>> mapDays = new ArrayList<>();
+            List<Map<String, Object>> sheetNavigation = new ArrayList<>();
+            Map<Long, String> daySheetKeys = new HashMap<>();
+            int globalDay = 0;
+            int sheetPosition = 0;
+            for (ItinerarySheetDto sheet : sheets) {
+                sheetPosition++;
+                String sheetKey = sheet.getSheetId() == null ? "legacy-" + sheetPosition
+                        : String.valueOf(sheet.getSheetId());
+                String sheetLabel = sheet.getCountry() == null || sheet.getCountry().trim().isEmpty()
+                        ? "plan" + (char)('A' + Math.min(25, sheetPosition)) : sheet.getCountry().trim();
+                Map<String, Object> sheetMeta = new HashMap<>();
+                sheetMeta.put("key", sheetKey);
+                sheetMeta.put("label", sheetLabel);
+                sheetMeta.put("index", sheetPosition);
+                sheetNavigation.add(sheetMeta);
+                List<ItineraryDayDto> sheetDays = sheet.getDays() == null
+                        ? new ArrayList<>() : new ArrayList<>(sheet.getDays());
+                sheetDays.sort(Comparator.comparing(ItineraryDayDto::getDayOrder,
+                        Comparator.nullsLast(Integer::compareTo)));
+                for (ItineraryDayDto day : sheetDays) {
+                    allDays.add(day);
+                    if (day.getDayId() != null) daySheetKeys.put(day.getDayId(), sheetKey);
+                    globalDay++;
+                    Map<String, Object> mapDay = new HashMap<>();
+                    mapDay.put("dayNumber", globalDay);
+                    mapDay.put("dayId", day.getDayId());
+                    mapDay.put("title", day.getTitle());
+                    mapDay.put("sheetKey", sheetKey);
+                    mapDay.put("sheetLabel", sheetLabel);
+                    mapDay.put("sheetIndex", sheetPosition);
+                    List<Map<String, Object>> points = new ArrayList<>();
+                    if (day.getBlocks() != null) {
+                        int blockNumber = 0;
+                        for (ItineraryBlockDto block : day.getBlocks()) {
+                            blockNumber++;
+                            if (block.getPlaceLat() == null || block.getPlaceLng() == null) continue;
+                            Map<String, Object> point = new HashMap<>();
+                            point.put("blockId", block.getBlockId());
+                            point.put("sequence", blockNumber);
+                            point.put("type", block.getBlockType());
+                            point.put("googlePlaceId", block.getGooglePlaceId());
+                            point.put("title", block.getTitle());
+                            point.put("placeName", block.getPlaceName());
+                            point.put("address", block.getPlaceAddress());
+                            point.put("lat", block.getPlaceLat());
+                            point.put("lng", block.getPlaceLng());
+                            points.add(point);
+                        }
+                    }
+                    mapDay.put("points", points);
+                    mapDays.add(mapDay);
+                }
+            }
+            itinerary.setDays(allDays);
+            request.setAttribute("itinerary", itinerary);
+            request.setAttribute("detailSheets", sheetNavigation);
+            request.setAttribute("detailDaySheetKeys", daySheetKeys);
+            request.setAttribute("detailMapJson", new Gson().toJson(mapDays));
 
 			request.setAttribute("comments", service.getItineraryComments(itineraryId, loginUserId));
 

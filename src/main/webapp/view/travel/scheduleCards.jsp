@@ -45,11 +45,11 @@
 				</c:choose>
 			</a>
 
-			<!-- 국가·도시 -->
+			<!-- 시트별 대륙·국가·핀 도시를 요약한 위치 배지 -->
 			<span
 				class="schedule-card-country absolute top-2.5 left-2.5 text-[10px] font-bold px-2 py-0.5 rounded-full"
 				style="background: rgba(209,210,249,.79); color: #494da4"> <c:out
-					value="${schedule.country}" /><c:if test="${not empty fn:trim(schedule.city)}"> · <c:out value="${schedule.city}" /></c:if>
+					value="${schedule.locationLabel}" />
 			</span>
 
 			<!-- 비로그인 또는 타인 일정에서만 북마크 버튼 표시 -->

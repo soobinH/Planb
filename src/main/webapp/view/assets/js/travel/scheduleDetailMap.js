@@ -22,6 +22,7 @@
     let markers = [];
     let lines = [];
     let activeDay = "all";
+    let activeSheet = "all";
     let placesLibraryPromise = null;
     let infoSequence = 0;
 
@@ -82,6 +83,9 @@
             return {
                 number: String(day.dayNumber),
                 title: day.title || "",
+                sheetKey: String(day.sheetKey || "legacy-1"),
+                sheetLabel: String(day.sheetLabel || "일정"),
+                sheetIndex: Number(day.sheetIndex) || 1,
                 points: points.filter(function (point) {
                     if (point.lat === null || point.lat === undefined
                             || point.lng === null || point.lng === undefined) {
@@ -124,48 +128,96 @@
         filterButton.setAttribute("aria-expanded", String(open));
     }
 
-    function decorateFilterMenu() {
-        if (!filterMenu) {
-            return;
+    function sheetLineColor(index) {
+        return dayLinePalette[((Math.max(1, Number(index) || 1) - 1) % dayLinePalette.length)];
+    }
+
+    function visibleDays() {
+        return days.filter(function (day) {
+            return activeSheet === "all" || day.sheetKey === activeSheet;
+        });
+    }
+
+    function sheetGroups() {
+        const groups = [];
+        const seen = new Set();
+        days.forEach(function (day) {
+            if (seen.has(day.sheetKey)) return;
+            seen.add(day.sheetKey);
+            groups.push({ key: day.sheetKey, label: day.sheetLabel, index: day.sheetIndex });
+        });
+        // DAY가 없는 시트도 지도 필터에 표시한다.
+        const tabList = document.getElementById("detailSheetList");
+        if (tabList) {
+            tabList.querySelectorAll("[data-detail-sheet]").forEach(function (tab) {
+                const key = tab.dataset.detailSheet;
+                if (key === "all" || seen.has(key)) return;
+                seen.add(key);
+                groups.push({ key: key, label: tab.textContent.trim(), index: groups.length + 1 });
+            });
         }
+        return groups;
+    }
 
-        filterMenu.querySelectorAll("[data-detail-map-day]").forEach(function (button) {
-            const day = button.dataset.detailMapDay || "all";
-
-            if (day === "all") {
-                button.innerHTML = '<span>전체</span>';
-                return;
+    function decorateFilterMenu() {
+        if (!filterMenu) return;
+        filterMenu.replaceChildren();
+        const options = [{ key: "all", label: "전체", color: null }];
+        if (activeSheet === "all") {
+            sheetGroups().forEach(function (sheet) {
+                options.push({ key: "sheet:" + sheet.key, label: sheet.label,
+                    color: sheetLineColor(sheet.index) });
+            });
+        } else {
+            visibleDays().forEach(function (day) {
+                options.push({ key: day.number, label: day.number + "일차",
+                    color: dayLineColor(day.number) });
+            });
+        }
+        options.forEach(function (option) {
+            const button = document.createElement("button");
+            button.type = "button";
+            button.dataset.detailMapDay = option.key;
+            const label = document.createElement("span");
+            label.textContent = option.label;
+            button.appendChild(label);
+            if (option.color) {
+                const swatch = document.createElement("span");
+                swatch.className = "detail-map-filter-line";
+                swatch.style.background = option.color;
+                button.appendChild(swatch);
             }
-
-            button.innerHTML = '<span>' + escapeHtml(day) + '일차</span>'
-                + '<span class="detail-map-filter-line" style="background:'
-                + dayLineColor(day) + '"></span>';
+            filterMenu.appendChild(button);
         });
     }
 
     function updateFilter() {
-        if (filterLabel) {
-            filterLabel.textContent = activeDay === "all"
-                ? "전체"
-                : activeDay + "일차";
+        let label = "전체";
+        let color = "#6369D1";
+        if (activeDay !== "all") {
+            if (activeSheet === "all") {
+                const group = sheetGroups().find(function (s) { return "sheet:" + s.key === activeDay; });
+                if (group) { label = group.label; color = sheetLineColor(group.index); }
+            } else {
+                label = activeDay + "일차";
+                color = dayLineColor(activeDay);
+            }
         }
-
-        if (filterDot) {
-            // 전체는 중립색, N일차는 해당 DAY 동선색.
-            filterDot.style.background = activeDay === "all"
-                ? "#6369D1"
-                : dayLineColor(activeDay);
-        }
-
-        if (filterMenu) {
-            filterMenu.querySelectorAll("[data-detail-map-day]").forEach(function (button) {
-                button.setAttribute(
-                    "aria-pressed",
-                    String(button.dataset.detailMapDay === activeDay)
-                );
-            });
-        }
+        if (filterLabel) filterLabel.textContent = label;
+        if (filterDot) filterDot.style.background = color;
+        if (filterMenu) filterMenu.querySelectorAll("[data-detail-map-day]").forEach(function (button) {
+            button.setAttribute("aria-pressed", String(button.dataset.detailMapDay === activeDay));
+        });
     }
+
+    window.addEventListener("detail:sheet-change", function (event) {
+        activeSheet = event.detail && event.detail.sheetKey ? String(event.detail.sheetKey) : "all";
+        activeDay = "all";
+        setMenuOpen(false);
+        decorateFilterMenu();
+        updateFilter();
+        if (map) drawMap();
+    });
 
     if (filterButton && filterMenu) {
         filterButton.addEventListener("click", function () {
@@ -519,76 +571,76 @@
     }
 
     function updateLegend() {
-        if (!legend) {
-            return;
-        }
-
+        if (!legend) return;
         legend.replaceChildren();
-
-        if (activeDay !== "all") {
-            legend.hidden = true;
-            return;
-        }
-
-        const visibleDays = days;
-
-        if (!visibleDays.length) {
-            legend.hidden = true;
-            return;
-        }
-
-        visibleDays.forEach(function (day) {
+        if (activeDay !== "all") { legend.hidden = true; return; }
+        const entries = activeSheet === "all"
+            ? sheetGroups().map(function (group) {
+                return { label: group.label, color: sheetLineColor(group.index) };
+            })
+            : visibleDays().map(function (day) {
+                return { label: day.number + "일차", color: dayLineColor(day.number) };
+            });
+        entries.forEach(function (entry) {
             const row = document.createElement("div");
             const label = document.createElement("span");
             const line = document.createElement("span");
-
-            label.textContent = day.number + "일차";
+            label.textContent = entry.label;
             label.className = "detail-map-day-legend-label";
-
             line.className = "detail-map-day-legend-line";
-            line.style.background = dayLineColor(day.number);
-
+            line.style.background = entry.color;
             row.appendChild(label);
             row.appendChild(line);
             legend.appendChild(row);
         });
-
-        legend.hidden = false;
+        legend.hidden = entries.length === 0;
     }
 
     function drawMap() {
         clearMap();
-
         const bounds = new google.maps.LatLngBounds();
         let visiblePointCount = 0;
-
-        days.forEach(function (day) {
-            if (activeDay !== "all" && activeDay !== day.number) {
-                return;
-            }
-
-            const orderedPoints = day.points.slice().sort(function (a, b) {
-                return Number(a.sequence) - Number(b.sequence);
+        const selectedDays = visibleDays();
+        if (activeSheet === "all") {
+            // 전체 보기: 시트별 동선을 독립적으로 그리고 시트마다 색상을 고정한다.
+            // 다른 국가 시트 사이에는 경로를 연결하지 않는다.
+            sheetGroups().forEach(function (group) {
+                if (activeDay !== "all" && activeDay !== "sheet:" + group.key) return;
+                const points = [];
+                selectedDays.filter(function (day) { return day.sheetKey === group.key; })
+                    .forEach(function (day) {
+                        day.points.slice().sort(function (a, b) {
+                            return Number(a.sequence) - Number(b.sequence);
+                        }).forEach(function (point) { points.push(point); });
+                    });
+                const color = sheetLineColor(group.index);
+                points.forEach(function (point) {
+                    addMarker(point, bounds, color);
+                    visiblePointCount++;
+                });
+                addLine(points, color);
             });
-
-            orderedPoints.forEach(function (point) {
-                addMarker(point, bounds, dayLineColor(day.number));
-                visiblePointCount++;
+        } else {
+            // 국가별 보기: 기존과 같이 DAY별 색상/경로를 표시한다.
+            selectedDays.forEach(function (day) {
+                if (activeDay !== "all" && activeDay !== day.number) return;
+                const points = day.points.slice().sort(function (a, b) {
+                    return Number(a.sequence) - Number(b.sequence);
+                });
+                const color = dayLineColor(day.number);
+                points.forEach(function (point) {
+                    addMarker(point, bounds, color);
+                    visiblePointCount++;
+                });
+                addLine(points, color);
             });
-
-            // DAY 간에는 절대 연결하지 않고 같은 DAY 내부 장소만 연결한다.
-            addLine(orderedPoints, dayLineColor(day.number));
-        });
-
+        }
         updateLegend();
-
         if (visiblePointCount === 0) {
             showStatus("표시할 장소 좌표가 없습니다.");
             return;
         }
-
         showStatus("");
-
         if (visiblePointCount === 1) {
             map.setCenter(markers[0].getPosition());
             map.setZoom(15);

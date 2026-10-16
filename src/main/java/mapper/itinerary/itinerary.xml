@@ -72,6 +72,23 @@
 		OFFSET #{offset}
 	</select>
 
+    <!-- 카드에 보이는 최대 12개 일정의 국가 시트와 실제 지도 핀 도시를 일괄 조회한다. -->
+    <select id="selectScheduleCardGeoRows" parameterType="list" resultType="dto.itinerary.ItineraryCardGeoRow">
+        SELECT s.itinerary_id AS itineraryId,
+               s.sheet_order AS sheetOrder,
+               s.country AS country,
+               b.place_city AS placeCity,
+               b.place_address AS placeAddress
+        FROM TB_ITINERARY_SHEET s
+        LEFT JOIN TB_ITINERARY_DAY d ON d.sheet_id = s.sheet_id AND d.itinerary_id = s.itinerary_id
+        LEFT JOIN TB_ITINERARY_BLOCK b ON b.day_id = d.day_id
+             AND (NULLIF(b.google_place_id, '') IS NOT NULL
+                 OR (b.place_lat IS NOT NULL AND b.place_lng IS NOT NULL))
+        WHERE s.itinerary_id IN
+        <foreach collection="list" item="id" open="(" separator="," close=")">#{id}</foreach>
+        ORDER BY s.itinerary_id, s.sheet_order, d.day_order, b.block_order
+    </select>
+
 	<!-- WHERE 조건 -->
 	<sql id="scheduleListConditions">
 		WHERE i.status = 'ACTIVE'

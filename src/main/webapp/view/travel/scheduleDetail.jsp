@@ -26,7 +26,7 @@ request.setAttribute("activePage", "travel");
 <title><c:out value="${itinerary.title}" /></title>
 <jsp:include page="/common/headStyles.jsp" />
 <link rel="stylesheet"
-   href="${pageContext.request.contextPath}/view/assets/css/travel/scheduleDetail.css?v=20261015-typography">
+   href="${pageContext.request.contextPath}/view/assets/css/travel/scheduleDetail.css?v=20261016-sheets">
 <script defer data-context-path="${pageContext.request.contextPath}" src="${pageContext.request.contextPath}/view/assets/js/common/searchReturn.js?v=20261016"></script>
 </head>
 <body class="site-shell"><jsp:include page="/common/header.jsp" />
@@ -396,6 +396,18 @@ request.setAttribute("activePage", "travel");
             </button>
          </div>
 
+            <!-- 전체와 국가별 시트 (댓글 탭과 독립) -->
+            <nav id="detailSheetTabs" class="detail-sheet-tabs" aria-label="일정 시트">
+               <button type="button" class="detail-sheet-tab is-active" data-detail-sheet="all" aria-pressed="true">전체</button>
+               <button type="button" class="detail-sheet-scroll" data-detail-sheet-scroll="left" aria-label="이전 시트">&#8249;</button>
+               <div class="detail-sheet-list" id="detailSheetList" role="group" aria-label="국가별 일정 시트 선택">
+                  <c:forEach var="sheet" items="${detailSheets}">
+                     <button type="button" class="detail-sheet-tab" data-detail-sheet="${sheet.key}" aria-pressed="false"><c:out value="${sheet.label}" /></button>
+                  </c:forEach>
+               </div>
+               <button type="button" class="detail-sheet-scroll" data-detail-sheet-scroll="right" aria-label="다음 시트">&#8250;</button>
+            </nav>
+
          <div class="detail-panel-body detail-content-body">
             <section id="detailCommentPanel" class="hidden p-4"
                data-itinerary-id="${itinerary.itineraryId}"
@@ -535,7 +547,7 @@ request.setAttribute("activePage", "travel");
                <c:forEach var="day" items="${itinerary.days}"
                   varStatus="dayStatus">
 
-                  <div class="rounded-2xl border overflow-hidden"
+                  <div class="rounded-2xl border overflow-hidden" data-detail-day-sheet="${detailDaySheetKeys[day.dayId]}"
                      style="border-color: #D1D2F9">
 
                      <!-- 일차별 접기·펼치기 / 담기는 독립 버튼 -->
@@ -808,12 +820,6 @@ request.setAttribute("activePage", "travel");
                <div id="detailMapFilterMenu" class="detail-map-filter-menu" hidden>
 
                   <button type="button" data-detail-map-day="all">전체</button>
-
-                  <c:forEach var="day" items="${itinerary.days}"
-                     varStatus="dayStatus">
-                     <button type="button" data-detail-map-day="${dayStatus.count}">
-                        ${dayStatus.count}일차</button>
-                  </c:forEach>
                </div>
             </div>
          </div>
@@ -933,10 +939,10 @@ request.setAttribute("activePage", "travel");
       src="${pageContext.request.contextPath}/view/assets/js/auth/tripily.js"></script>
 
    <script
-      src="${pageContext.request.contextPath}/view/assets/js/travel/scheduleDetail.js?v=20261016-profile"></script>
+      src="${pageContext.request.contextPath}/view/assets/js/travel/scheduleDetail.js?v=20261016-sheets"></script>
       
    <script
-       src="${pageContext.request.contextPath}/view/assets/js/travel/scheduleDetailMap.js?v=3"></script>
+       src="${pageContext.request.contextPath}/view/assets/js/travel/scheduleDetailMap.js?v=20261016-sheets"></script>
 
    <script async
        onerror="detailMapLoadFailed()"

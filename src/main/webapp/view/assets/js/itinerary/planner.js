@@ -1362,6 +1362,9 @@
                 updateCountryClear();
                 filterPlans();
                 syncCountryLock();
+                // 카트 가져오기는 국가 입력 이벤트를 발생시키지 않아 시트명이 갱신되지 않았음.
+                // 시트 객체의 country를 즉시 동기화한다 (작성/수정 공통).
+                syncPlannerActiveSheetCountry();
                 markDirty();
             }
 
@@ -3029,7 +3032,15 @@
 
                 hiddenInput.dataset.placeAddress=
                     place.formattedAddress || '';
-                hiddenInput.dataset.placeCity=plannerCityFromAddressParts(place.addressComponents);
+                hiddenInput.dataset.placeCity='';
+                var selectedPlaceId=String(place.id||'');
+                plannerFirstAdmin1Korean(place.addressComponents).then(function(region){
+                    if(String(hiddenInput.dataset.googlePlaceId||'')!==selectedPlaceId)return;
+                    hiddenInput.dataset.placeCity=region;
+                    if(selectedPlaceId)plannerCityByPoint['place:'+selectedPlaceId]=region;
+                    schedulePlannerTripGeoStats();
+                    markDirty();
+                });
 
                 hiddenInput.dataset.lat=
                     String(lat);
@@ -4939,7 +4950,7 @@
                                 ? selectedPlace.address
                                 : null,
                             placeCity:selectedPlace
-                                ? (selectedPlace.city||null)
+                                ? (plannerSavedAdmin1Korean(selectedPlace.city || plannerCityByPoint[plannerCityPointId(selectedPlace)] || '', (findPlannerCountry($('#plannerCountry') ? $('#plannerCountry').value : '') || {}).code) || null)
                                 : null,
                             placeLat:selectedPlace
                                 ? selectedPlace.lat
@@ -6388,19 +6399,172 @@
                 }
             }
 
-            function plannerCityFromAddressParts(parts){
-                if(!Array.isArray(parts))return '';
-                var cityTypes=['locality','postal_town','administrative_area_level_3',
-                    'administrative_area_level_2','sublocality_level_1'];
-                for(var t=0;t<cityTypes.length;t++){
-                    var match=parts.find(function(part){
-                        return part && Array.isArray(part.types) && part.types.indexOf(cityTypes[t])!==-1;
+            // Google Places locality는 나라에 따라 도시가 아닌 '구/자치구'일 수 있습니다.
+            // 도시 판정은 country + 1/2차 행정구역 + locality를 함께 보고 결정합니다.
+            // 알려진 한글 도시명만 치환하며 미확인 지명은 임의 번역하지 않습니다.
+            function plannerCityKey(value){
+                return String(value||'').normalize('NFKC').trim().toLowerCase()
+                    .replace(/[\s._'’.-]/g,'').replace(/(?:metropolis|prefecture|city|ward|district|gu|ku|区|구)$/u,'');
+            }
+            var PLANNER_CITY_KO_BY_COUNTRY={"JP":{"tokyo":"도쿄","osaka":"오사카","kyoto":"교토","sapporo":"삿포로","nagoya":"나고야","yokohama":"요코하마","kobe":"고베","nara":"나라","fukuoka":"후쿠오카","hiroshima":"히로시마","sendai":"센다이","nagasaki":"나가사키","naha":"나하","kanazawa":"가나자와","chiba":"지바","hachioji":"하치오지","kawasaki":"가와사키","saitama":"사이타마","kumamoto":"구마모토","hakodate":"하코다테","okinawa":"오키나와"},"US":{"newyork":"뉴욕","losangeles":"로스앤젤레스","sanfrancisco":"샌프란시스코","chicago":"시카고","washington":"워싱턴","washingtondc":"워싱턴","seattle":"시애틀","boston":"보스턴","lasvegas":"라스베이거스","honolulu":"호놀룰루","miami":"마이애미","orlando":"올랜도","sandiego":"샌디에이고","philadelphia":"필라델피아","atlanta":"애틀랜타","houston":"휴스턴","dallas":"댈러스","brooklyn":"뉴욕","queens":"뉴욕","manhattan":"뉴욕","thebronx":"뉴욕","bronx":"뉴욕","statenisland":"뉴욕"},"FR":{"paris":"파리","lyon":"리옹","marseille":"마르세유","nice":"니스","bordeaux":"보르도","toulouse":"툴루즈","strasbourg":"스트라스부르","lille":"릴"},"GB":{"london":"런던","greaterlondon":"런던","edinburgh":"에든버러","manchester":"맨체스터","birmingham":"버밍엄","liverpool":"리버풀","bristol":"브리스톨","oxford":"옥스퍼드","cambridge":"케임브리지","glasgow":"글래스고"},"IT":{"rome":"로마","roma":"로마","milan":"밀라노","milano":"밀라노","venice":"베네치아","venezia":"베네치아","florence":"피렌체","firenze":"피렌체","naples":"나폴리","napoli":"나폴리","turin":"토리노","torino":"토리노","bologna":"볼로냐","pisa":"피사"},"DE":{"berlin":"베를린","munich":"뮌헨","münchen":"뮌헨","frankfurt":"프랑크푸르트","hamburg":"함부르크","cologne":"쾰른","köln":"쾰른","düsseldorf":"뒤셀도르프","dresden":"드레스덴"},"ES":{"madrid":"마드리드","barcelona":"바르셀로나","seville":"세비야","sevilla":"세비야","valencia":"발렌시아","granada":"그라나다","malaga":"말라가","málaga":"말라가"},"PT":{"lisbon":"리스본","lisboa":"리스본","porto":"포르투"},"AT":{"vienna":"빈","wien":"빈","salzburg":"잘츠부르크"},"CH":{"zurich":"취리히","zürich":"취리히","geneva":"제네바","genève":"제네바","bern":"베른","lucerne":"루체른","luzern":"루체른"},"NL":{"amsterdam":"암스테르담","rotterdam":"로테르담","thehague":"헤이그","denhaag":"헤이그"},"BE":{"brussels":"브뤼셀","bruxelles":"브뤼셀","antwerp":"안트베르펜","antwerpen":"안트베르펜"},"CZ":{"prague":"프라하","praha":"프라하"},"HU":{"budapest":"부다페스트"},"GR":{"athens":"아테네","athina":"아테네","thessaloniki":"테살로니키"},"TR":{"istanbul":"이스탄불","i̇stanbul":"이스탄불","ankara":"앙카라","izmir":"이즈미르","i̇zmir":"이즈미르","antalya":"안탈리아","bursa":"부르사"},"KR":{"seoul":"서울","busan":"부산","incheon":"인천","dae":"대구","daejeon":"대전","gwangju":"광주","ulsan":"울산","jeju":"제주","seogwipo":"서귀포","suwon":"수원"},"CN":{"beijing":"베이징","peking":"베이징","shanghai":"상하이","chongqing":"충칭","tianjin":"톈진","guangzhou":"광저우","shenzhen":"선전","chengdu":"청두","hangzhou":"항저우","nanjing":"난징","xian":"시안","wuhan":"우한","suzhou":"쑤저우"},"TW":{"taipei":"타이베이","newtaipei":"신베이","taichung":"타이중","kaohsiung":"가오슝","tainan":"타이난","hsinchu":"신주"},"HK":{"hongkong":"홍콩","kowloon":"홍콩","hongkongisland":"홍콩"},"SG":{"singapore":"싱가포르"},"TH":{"bangkok":"방콕","krungthepmahanakhon":"방콕","chiangmai":"치앙마이","phuket":"푸껫","pattaya":"파타야","krabi":"끄라비"},"VN":{"hanoi":"하노이","hochiminh":"호찌민","danang":"다낭","nhatrang":"냐짱","hue":"후에","hộian":"호이안","hoian":"호이안"},"ID":{"jakarta":"자카르타","bali":"발리","denpasar":"덴파사르","surabaya":"수라바야","bandung":"반둥","yogyakarta":"욕야카르타"},"MY":{"kualalumpur":"쿠알라룸푸르","georgetown":"조지타운","penang":"페낭","johorbahru":"조호르바루","malacca":"믈라카","melaka":"믈라카"},"PH":{"manila":"마닐라","quezon":"케손시티","cebu":"세부","davao":"다바오","makati":"마카티"},"IN":{"delhi":"델리","newdelhi":"뉴델리","mumbai":"뭄바이","bengaluru":"벵갈루루","bangalore":"벵갈루루","chennai":"첸나이","kolkata":"콜카타","jaipur":"자이푸르","agra":"아그라","varanasi":"바라나시"},"AE":{"dubai":"두바이","abudhabi":"아부다비","sharjah":"샤르자"},"IL":{"jerusalem":"예루살렘","telaviv":"텔아비브"},"SA":{"riyadh":"리야드","jeddah":"제다","mecca":"메카","makkah":"메카"},"EG":{"cairo":"카이로","giza":"기자","luxor":"룩소르","alexandria":"알렉산드리아"},"AU":{"sydney":"시드니","melbourne":"멜버른","brisbane":"브리즈번","perth":"퍼스","adelaide":"애들레이드","canberra":"캔버라","goldcoast":"골드코스트"},"NZ":{"auckland":"오클랜드","wellington":"웰링턴","christchurch":"크라이스트처치","queenstown":"퀸스타운"},"CA":{"toronto":"토론토","vancouver":"밴쿠버","montreal":"몬트리올","montréal":"몬트리올","ottawa":"오타와","calgary":"캘거리","quebec":"퀘벡"},"MX":{"mexico":"멕시코시티","ciudaddeméxico":"멕시코시티","cancun":"칸쿤","cancún":"칸쿤","guadalajara":"과달라하라","monterrey":"몬테레이"},"BR":{"riodejaneiro":"리우데자네이루","sãopaulo":"상파울루","saopaulo":"상파울루","brasília":"브라질리아","brasilia":"브라질리아","salvador":"사우바도르"},"AR":{"buenosaires":"부에노스아이레스","córdoba":"코르도바","cordoba":"코르도바"},"PE":{"lima":"리마","cusco":"쿠스코","cuzco":"쿠스코"},"CL":{"santiago":"산티아고","valparaíso":"발파라이소"},"ZA":{"capetown":"케이프타운","johannesburg":"요하네스버그","durban":"더반","pretoria":"프리토리아"},"MA":{"marrakesh":"마라케시","marrakech":"마라케시","casablanca":"카사블랑카","rabat":"라바트","fez":"페스","fès":"페스"},"KE":{"nairobi":"나이로비","mombasa":"몸바사"}};
+            var PLANNER_METRO_CITY_RULES=[{"code":"JP","names":["Tokyo","Tokyo Metropolis","東京都","도쿄도","도쿄"],"city":"도쿄","mode":"tokyo"},{"code":"KR","names":["Seoul","서울특별시","서울"],"city":"서울","mode":"district"},{"code":"KR","names":["Busan","부산광역시","부산"],"city":"부산","mode":"district"},{"code":"KR","names":["Incheon","인천광역시","인천"],"city":"인천","mode":"district"},{"code":"KR","names":["Daegu","대구광역시","대구"],"city":"대구","mode":"district"},{"code":"KR","names":["Daejeon","대전광역시","대전"],"city":"대전","mode":"district"},{"code":"KR","names":["Gwangju","광주광역시","광주"],"city":"광주","mode":"district"},{"code":"KR","names":["Ulsan","울산광역시","울산"],"city":"울산","mode":"district"},{"code":"GB","names":["Greater London","London","런던"],"city":"런던","mode":"london"},{"code":"FR","names":["Paris","파리"],"city":"파리","mode":"paris"},{"code":"US","names":["New York City","NYC","뉴욕"],"city":"뉴욕","mode":"nyc"},{"code":"CN","names":["Beijing","北京市","베이징"],"city":"베이징","mode":"district"},{"code":"CN","names":["Shanghai","上海市","상하이"],"city":"상하이","mode":"district"},{"code":"CN","names":["Chongqing","重庆市","충칭"],"city":"충칭","mode":"district"},{"code":"CN","names":["Tianjin","天津市","톈진"],"city":"톈진","mode":"district"},{"code":"TW","names":["Taipei City","Taipei","臺北市","台北市","타이베이"],"city":"타이베이","mode":"district"},{"code":"TW","names":["New Taipei City","新北市","신베이"],"city":"신베이","mode":"district"},{"code":"TW","names":["Kaohsiung City","高雄市","가오슝"],"city":"가오슝","mode":"district"},{"code":"TH","names":["Bangkok","Krung Thep Maha Nakhon","กรุงเทพมหานคร","방콕"],"city":"방콕","mode":"bangkok"},{"code":"TR","names":["Istanbul","İstanbul","이스탄불"],"city":"이스탄불","mode":"district"},{"code":"MX","names":["Mexico City","Ciudad de México","CDMX","멕시코시티"],"city":"멕시코시티","mode":"district"},{"code":"IN","names":["Delhi","National Capital Territory of Delhi","델리"],"city":"델리","mode":"district"},{"code":"ID","names":["Jakarta","DKI Jakarta","자카르타"],"city":"자카르타","mode":"district"},{"code":"SG","names":["Singapore","싱가포르"],"city":"싱가포르","mode":"always"},{"code":"HK","names":["Hong Kong","홍콩"],"city":"홍콩","mode":"always"}];
+            var PLANNER_TOKYO_WARDS=new Set('adachi arakawa bunkyo chiyoda chuo edogawa itabashi katsushika kita koto meguro minato nakano nerima ota setagaya shibuya shinagawa shinjuku suginami sumida taito toshima 아다치 아라카와 분쿄 지요다 주오 에도가와 이타바시 가쓰시카 기타 고토 메구로 미나토 나카노 네리마 오타 세타가야 시부야 시나가와 신주쿠 스기나미 스미다 다이토 도시마 足立 荒川 文京 千代田 中央 江戸川 板橋 葛飾 北 江東 目黒 港 中野 練馬 大田 世田谷 渋谷 品川 新宿 杉並 墨田 台東 豊島'.split(' '));
+            var PLANNER_NYC_BOROUGHS=new Set(['brooklyn','queens','bronx','thebronx','manhattan','statenisland']);
+            function plannerMetroCity(code,region1,region2,locality){
+                code=String(code||'').toUpperCase();
+                var cityKey=plannerCityKey(locality);
+                for(var i=0;i<PLANNER_METRO_CITY_RULES.length;i++){
+                    var rule=PLANNER_METRO_CITY_RULES[i];
+                    if(rule.code!==code)continue;
+                    var inRegion=rule.names.some(function(name){
+                        var key=plannerCityKey(name);
+                        return key===plannerCityKey(region1) || key===plannerCityKey(region2);
                     });
-                    if(match){
-                        return String(match.longText||match.long_name||match.shortText||match.short_name||'').trim();
+                    if(rule.mode==='always')return rule.city;
+                    if(!inRegion)continue;
+                    if(rule.mode==='tokyo'){
+                        if(PLANNER_TOKYO_WARDS.has(cityKey))return rule.city;
+                    }else if(rule.mode==='nyc'){
+                        if(PLANNER_NYC_BOROUGHS.has(cityKey))return rule.city;
+                    }else if(rule.mode==='paris'){
+                        if(/(?:arrondissement|아롱디스망|구$)/i.test(locality||''))return rule.city;
+                    }else if(rule.mode==='london'){
+                        // Greater London 내의 구는 여행 도시명을 런던으로 통일합니다.
+                        return rule.city;
+                    }else if(rule.mode==='bangkok'){
+                        return rule.city;
+                    }else if(rule.mode==='district'){
+                        // 특별시/직할시 내부의 작은 행정 단위는 광역 도시로 합칩니다.
+                        return rule.city;
                     }
                 }
                 return '';
+            }
+            function plannerCanonicalCity(name,countryCode,region1,region2,address){
+                var raw=String(name||'').trim();
+                var code=String(countryCode||'').toUpperCase();
+                var metro=plannerMetroCity(code,region1,region2,raw);
+                if(metro)return metro;
+                if(!raw)return '';
+                // 예전 데이터에는 광역행정구역이 없으므로 저장된 장소 주소를 사용합니다.
+                var addr=String(address||'').toLowerCase();
+                var key=plannerCityKey(raw);
+                if(code==='JP' && PLANNER_TOKYO_WARDS.has(key)
+                    && (/tokyo|도쿄|東京都|東京/.test(addr)
+                        || key==='minato' && /minato\s+city/i.test(raw)))return '도쿄';
+                if(code==='US' && PLANNER_NYC_BOROUGHS.has(key))return '뉴욕';
+                if(code==='GB' && /london|런던/.test(addr))return '런던';
+                if(code==='FR' && /paris|파리/.test(addr)
+                    && /arrondissement|아롱디스망/.test(raw.toLowerCase()))return '파리';
+                // 광역시의 '구/자치구'가 도시로 오인되면 주소의 실제 상위 도시를 사용합니다.
+                if(/(?:district|ward|구|区|-gu|\s+gu)$/iu.test(raw)){
+                    for(var i=0;i<PLANNER_METRO_CITY_RULES.length;i++){
+                        var rule=PLANNER_METRO_CITY_RULES[i];
+                        if(code!==rule.code || rule.mode==='tokyo' || rule.mode==='nyc')continue;
+                        if(rule.names.some(function(name){
+                            return name.length>2 && addr.includes(name.toLowerCase());
+                        }))return rule.city;
+                    }
+                }
+                var aliases=PLANNER_CITY_KO_BY_COUNTRY[code]||{};
+                return aliases[key]||raw;
+            }
+            function plannerAddressPart(parts,type){
+                return parts.find(function(part){
+                    return part && Array.isArray(part.types) && part.types.indexOf(type)!==-1;
+                });
+            }
+            // 여행 카드의 지역 단위는 도시(locality)가 아니라 국가의 1차 행정구역이다.
+            // 기존 지역 선택 API(ISO 3166-2 + CLDR ko + 수동 보정)와 동일한 한국어 정규명을 사용한다.
+            function plannerAdmin1Key(value){
+                return String(value||'').normalize('NFKD').replace(/[\u0300-\u036f]/g,'')
+                    .toLocaleLowerCase('en').replace(/[^a-z0-9\uac00-\ud7a3\u3040-\u30ff\u4e00-\u9fff]/g,'');
+            }
+            function plannerAdmin1Display(name,code){
+                var text=String(name||'').trim();
+                // 카드에서는 Tokyo-to/도쿄도를 일반 여행지 명칭 '도쿄'로 표시한다.
+                // 다른 국가의 행정구역 명칭은 표준 CLDR 한글 표기를 유지한다.
+                if(code==='JP')return text==='홋카이도' ? text : text.replace(/(?:도|부|현)$/,'');
+                if(code==='KR')return text.replace(/(?:특별자치시|특별시|광역시|특별자치도)$/,'');
+                return text;
+            }
+            function plannerMatchAdmin1(rows,code,longName,shortName){
+                if(!rows || !rows.length)return '';
+                var longKey=plannerAdmin1Key(longName).replace(/(?:prefecture|province|state|region|metropolis)$/,'');
+                var shortKey=plannerAdmin1Key(shortName);
+                for(var i=0;i<rows.length;i++){
+                    var row=rows[i];
+                    var aliases=[row.code, row.nameEn, row.name, plannerAdmin1Display(row.name,code)];
+                    if(row.code)aliases.push(String(row.code).split('-').slice(1).join('-'));
+                    if(row.nameEn)aliases.push(String(row.nameEn).replace(/(?:\s+prefecture|\s+province|\s+state|\s+region|\s+metropolis)$/i,''));
+                    if(code==='KR' && row.nameEn)aliases.push(String(row.nameEn).replace(/-(?:teukbyeoljachido|teukbyeoljachisi|teukbyeolsi|gwangyeoksi|do)$/i,''));
+                    if(code==='JP' && row.nameEn){
+                        if(/도$/.test(row.name)&&row.name!=='홋카이도')aliases.push(row.nameEn+'-to');
+                        if(/부$/.test(row.name))aliases.push(row.nameEn+'-fu');
+                        if(/현$/.test(row.name))aliases.push(row.nameEn+'-ken');
+                    }
+                    if(row.nameEn)aliases.push(String(row.nameEn).replace(/(?:\s+metropolitan\s+city|\s+city)$/i,''));
+                    if(aliases.some(function(alias){var key=plannerAdmin1Key(alias);return key && (key===longKey||key===shortKey);})){
+                        return /[가-힣]/.test(row.name||'') ? plannerAdmin1Display(row.name,code) : '';
+                    }
+                }
+                return '';
+            }
+            function plannerSavedAdmin1Korean(name,code){
+                var rows=plannerAdmin1Cache[String(code||'').toUpperCase()]||[];
+                return plannerMatchAdmin1(rows,String(code||'').toUpperCase(),name,name);
+            }
+            function plannerFirstAdmin1Korean(parts){
+                if(!Array.isArray(parts))return Promise.resolve('');
+                var country=plannerAddressPart(parts,'country');
+                var area=plannerAddressPart(parts,'administrative_area_level_1');
+                var code=String(country&&(country.shortText||country.short_name)||'').toUpperCase();
+                if(!code || !area)return Promise.resolve('');
+                var longName=area.longText||area.long_name||'';
+                var shortName=area.shortText||area.short_name||'';
+                return getPlannerAdmin1Regions(code).then(function(rows){
+                    var value=plannerMatchAdmin1(rows,code,longName,shortName);
+                    if(!value && /[가-힣]/.test(longName)){
+                        // Google이 한글로 응답했더라도 검증된 ISO 목록에 없는 이름은
+                        // 임의의 행정구역으로 인정하지 않는다.
+                        console.warn('[Triply] 1차 행정구역 대조 실패',code,longName,shortName);
+                    }
+                    if(!value && !/[가-힣]/.test(longName)){
+                        console.warn('[Triply] 한글 1차 행정구역 미확인',code,longName,shortName);
+                    }
+                    return value;
+                }).catch(function(error){
+                    console.warn('[Triply] 한글 행정구역 목록 조회 실패',error);
+                    return '';
+                });
+            }
+
+            function plannerCityFromAddressParts(parts){
+                if(!Array.isArray(parts))return '';
+                function partName(part){return String(part && (part.longText||part.long_name||part.shortText||part.short_name)||'').trim();}
+                var country=plannerAddressPart(parts,'country');
+                var code=String(country&&(country.shortText||country.short_name)||'').toUpperCase();
+                var region1=partName(plannerAddressPart(parts,'administrative_area_level_1'));
+                var region2=partName(plannerAddressPart(parts,'administrative_area_level_2'));
+                var locality=partName(plannerAddressPart(parts,'locality'));
+                var town=partName(plannerAddressPart(parts,'postal_town'));
+                // postal_town은 우편 주소상의 도시가 될 수 있으며 London 등에서 locality보다 정확합니다.
+                var main=(code==='GB' && town) ? town : (locality || town);
+                // 일본의 보통 '시(市)' 아래 구가 locality로 반환되는 경우:
+                // Osaka/Naniwa Ward -> Osaka, Kyoto/Nakagyo Ward -> Kyoto.
+                if(code==='JP' && main && /(?:ward|区|구|[- ]ku)$/iu.test(main) && region2){
+                    var parentCity=region2.replace(/(?:city|市|[- ]shi)$/iu,'').trim();
+                    if(parentCity)return plannerCanonicalCity(parentCity,code,region1,region2);
+                }
+                var metro=plannerMetroCity(code,region1,region2,main);
+                if(metro)return metro;
+                if(main)return plannerCanonicalCity(main,code,region1,region2);
+                // locality 미제공 국가도 시/군 단위 행정명까지 순차 확인합니다.
+                var fallback=partName(plannerAddressPart(parts,'administrative_area_level_3'))
+                    || region2 || partName(plannerAddressPart(parts,'sublocality_level_1'));
+                if(fallback)return plannerCanonicalCity(fallback,code,region1,region2);
+                // 국가 자체가 도시(싱가포르/홍콩)인 경우에만 국가명으로 정규화합니다.
+                return plannerMetroCity(code,region1,region2,'');
             }
 
             function plannerCityPointId(point){
@@ -6428,7 +6592,7 @@
                         pending=getPlannerPlacesLibrary().then(function(placesLib){
                             var place=new placesLib.Place({id:placeId});
                             return place.fetchFields({fields:['addressComponents']}).then(function(){
-                                return plannerCityFromAddressParts(place.addressComponents);
+                                return plannerFirstAdmin1Korean(place.addressComponents);
                             });
                         });
                     }else if(window.google && google.maps && google.maps.Geocoder){
@@ -6438,11 +6602,13 @@
                             lng:Number(point.placeLng!=null?point.placeLng:point.lng)
                         }}).then(function(reply){
                             var results=reply&&reply.results||[];
-                            for(var i=0;i<results.length;i++){
-                                var city=plannerCityFromAddressParts(results[i].address_components);
-                                if(city)return city;
-                            }
-                            return '';
+                            // 역지오코딩 결과에는 건물/거리부터 국가까지 다양한 단계가 있다.
+                            // 동일한 위치의 1차 행정구역을 첫 번째 확인된 응답에서 사용한다.
+                            var first=results.find(function(item){
+                                return Array.isArray(item.address_components)
+                                    && !!plannerAddressPart(item.address_components,'administrative_area_level_1');
+                            });
+                            return first ? plannerFirstAdmin1Korean(first.address_components) : '';
                         });
                     }else pending=Promise.reject(new Error('Google Maps API not ready'));
                     return pending.then(function(city){
@@ -6466,11 +6632,21 @@
                 if(!continentEl || !countryEl || !cityEl || !plannerSheets || !plannerSheets.length)return;
                 var countries=new Set(),continents=new Set(),cities=new Set();
                 var waiting=false;
+                // 대한민국만 방문하는 국내 일정에서는 한국을 방문국으로 유지한다.
+                // 다른 나라가 있을 때만 첫/마지막 한국 시트를 출발·귀국 기록으로 제외.
+                var hasForeignDestination=plannerSheets.some(function(sheet,index){
+                    var payload=index===plannerSheetIndex?collectPlannerPayload():sheet.payload;
+                    var matched=findPlannerCountry(payload&&payload.country||'');
+                    return matched && matched.code && matched.code!=='KR';
+                });
                 plannerSheets.forEach(function(sheet,index){
                     var payload=index===plannerSheetIndex?collectPlannerPayload():sheet.payload;
                     if(!payload)return;
                     var country=findPlannerCountry(payload.country||'');
                     var code=country?String(country.code||'').toUpperCase():'';
+                    // 출국/귀국을 위한 맨 앞·맨 뒤 대한민국 시트는 여행 지역에서 제외.
+                    // 중간에 배치된 대한민국 시트는 실제 방문지로 집계한다.
+                    if(hasForeignDestination && code==='KR' && (index===0 || index===plannerSheets.length-1))return;
                     if(code){
                         countries.add(code);
                         if(PLANNER_CONTINENT_BY_ISO[code])continents.add(PLANNER_CONTINENT_BY_ISO[code]);
@@ -6479,7 +6655,7 @@
                         (day.blocks||[]).forEach(function(block){
                             var id=plannerCityPointId(block);
                             if(!id || !code)return;
-                            var city=String(block.placeCity||plannerCityByPoint[id]||'').trim();
+                            var city=plannerSavedAdmin1Korean(plannerCityByPoint[id]||block.placeCity||'',code);
                             if(city){
                                 plannerCityByPoint[id]=city;
                                 cities.add(code+':'+city.normalize('NFKC').toLocaleLowerCase());
@@ -6507,6 +6683,9 @@
             // 블록 추가/삭제, 국가 변경, 시트 이동 후에도 현재 통계가 갱신되도록 합니다.
             var plannerGeoStatsObserver=null;
             function initPlannerGeoStats(){
+                getPlannerRegionCatalog().then(function(){
+                    schedulePlannerTripGeoStats();
+                }).catch(function(){ /* 다음 장소 선택 및 재조회 시 다시 시도 */ });
                 var root=$('#plannerDays');
                 if(root && window.MutationObserver){
                     plannerGeoStatsObserver=new MutationObserver(schedulePlannerTripGeoStats);

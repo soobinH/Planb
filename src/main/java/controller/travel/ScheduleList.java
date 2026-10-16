@@ -14,6 +14,8 @@ import dto.itinerary.ItineraryDto;
 import dto.member.UserDto;
 import service.itinerary.ItineraryService;
 import service.itinerary.ItineraryServiceImpl;
+import service.itinerary.ItineraryCardLocation;
+import controller.itinerary.ItineraryRegionCatalog;
 
 /**
  * Servlet implementation class ScheduleList
@@ -96,6 +98,15 @@ public class ScheduleList extends HttpServlet {
 			if (!"views".equals(sort) && !"likes".equals(sort)) {
 				sort = "latest";
 			}
+
+            // Card labels and the editor share the same CLDR Korean first-level names.
+            try {
+                ItineraryCardLocation.installKoreanAdmin1Catalog(
+                        ItineraryRegionCatalog.get(getServletContext()));
+            } catch (RuntimeException ex) {
+                // Do not take the whole itinerary-list page offline if CLDR is unreachable.
+                getServletContext().log("한글 1차 행정구역 목록 초기화 실패", ex);
+            }
 
 			ItineraryService service = new ItineraryServiceImpl();
 

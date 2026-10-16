@@ -1571,3 +1571,44 @@
         update();
     });
 })();
+
+// 상세 일정의 전체/국가 시트 탭. DAY의 전역 번호(D1~D끝)는 변경하지 않는다.
+(function () {
+    "use strict";
+    const nav = document.getElementById("detailSheetTabs");
+    const panel = document.getElementById("detailSchedulePanel");
+    const comments = document.getElementById("detailCommentPanel");
+    const list = document.getElementById("detailSheetList");
+    if (!nav || !panel || !list) return;
+    let selected = "all";
+    function showSheet(key) {
+        selected = key;
+        nav.querySelectorAll("[data-detail-sheet]").forEach(function (tab) {
+            const active = tab.dataset.detailSheet === key;
+            tab.classList.toggle("is-active", active);
+            tab.setAttribute("aria-pressed", String(active));
+        });
+        panel.querySelectorAll("[data-detail-day-sheet]").forEach(function (day) {
+            day.hidden = key !== "all" && day.dataset.detailDaySheet !== key;
+        });
+        window.dispatchEvent(new CustomEvent("detail:sheet-change", { detail: { sheetKey: key } }));
+    }
+    nav.addEventListener("click", function (event) {
+        const tab = event.target.closest("[data-detail-sheet]");
+        if (!tab) return;
+        showSheet(tab.dataset.detailSheet);
+    });
+    nav.querySelectorAll("[data-detail-sheet-scroll]").forEach(function (button) {
+        button.addEventListener("click", function () {
+            const direction = button.dataset.detailSheetScroll === "right" ? 1 : -1;
+            list.scrollBy({ left: direction * Math.max(220, list.clientWidth * .7), behavior: "smooth" });
+        });
+    });
+    // 상단 일정표/댓글 전환 시 시트 선택줄을 일정표에만 표시한다.
+    document.querySelectorAll("[data-detail-tab]").forEach(function (tab) {
+        tab.addEventListener("click", function () {
+            nav.hidden = tab.dataset.detailTab !== "schedule";
+        });
+    });
+    showSheet(selected);
+})();
