@@ -335,9 +335,11 @@
 
 						<div class="flex items-center gap-3 pt-5 border-t border-gray-100">
 							<c:if test="${not empty sessionScope.user}">
-								<div class="w-9 h-9 rounded-full shrink-0 flex items-center justify-center text-white text-sm font-bold"
+								<div class="w-9 h-9 rounded-full overflow-hidden shrink-0 flex items-center justify-center text-white text-sm font-bold"
 									style="background-color: var(--brand)">
-									<c:out value="${sessionScope.user.nickName.substring(0, 1)}" />
+									<jsp:include page="/common/profileImage.jsp">
+                                        <jsp:param name="image" value="${sessionScope.user.profileImg}"/>
+                                    </jsp:include>
 								</div>
 								<form id="mateCommentForm" action="${pageContext.request.contextPath}/mateCommentWrite"
 									method="post" class="flex items-center gap-3 flex-1">

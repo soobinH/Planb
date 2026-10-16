@@ -157,31 +157,7 @@ request.setAttribute("activePage", "home");
 
 							<div class="ph-plan-card-foot">
 								<div class="ph-plan-card-author">
-									<c:choose>
-										<c:when test="${not empty itinerary.profileImg}">
-											<%-- 프로필 사진 경로
-											     - https:// 주소 : 그대로 사용 (소셜 로그인 프로필)
-											     - / 로 시작   : 컨텍스트만 붙임
-											     - 파일명       : 공유 폴더(profilePath, /uploads/profile)에서 불러옴 --%>
-											<c:choose>
-												<c:when test="${fn:startsWith(itinerary.profileImg, 'http://') or fn:startsWith(itinerary.profileImg, 'https://')}">
-													<c:set var="profileSrc" value="${itinerary.profileImg}" />
-												</c:when>
-												<c:when test="${fn:startsWith(itinerary.profileImg, '/')}">
-													<c:set var="profileSrc" value="${ctx}${itinerary.profileImg}" />
-												</c:when>
-												<c:otherwise>
-													<c:set var="profileSrc" value="${ctx}${empty applicationScope.profilePath ? '/uploads/profile' : applicationScope.profilePath}/${itinerary.profileImg}" />
-												</c:otherwise>
-											</c:choose>
-											<img src="${fn:escapeXml(profileSrc)}" alt="<c:out value='${itinerary.nickname}' />"
-												onerror="this.style.display='none'; this.nextElementSibling.style.display='inline-flex';">
-											<span class="ph-avatar" style="display: none;"><c:out value="${empty itinerary.nickname ? '?' : itinerary.nickname.substring(0, 1)}" /></span>
-										</c:when>
-										<c:otherwise>
-											<span class="ph-avatar"><c:out value="${empty itinerary.nickname ? '?' : itinerary.nickname.substring(0, 1)}" /></span>
-										</c:otherwise>
-									</c:choose>
+									<span class="ph-avatar"><jsp:include page="/common/profileImage.jsp"><jsp:param name="image" value="${itinerary.profileImg}"/></jsp:include></span>
 									<span><c:out value="${itinerary.nickname}" /></span>
 								</div>
 

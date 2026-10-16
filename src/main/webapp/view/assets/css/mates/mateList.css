@@ -333,3 +333,17 @@
 /* 여행 일정의 국가별 보기와 동일한 강조 색상 */
 .continent-toggle:hover { background:#f1f1fd; color:#6369D1; }
 .continent-panel a:hover { background:#fff5ce; color:#494da4; }
+
+#mateLoading .mate-loading-spinner {
+	width: 28px;
+	height: 28px;
+	border: 3px solid #e5e7eb;
+	border-top-color: #6369D1;
+	border-radius: 50%;
+	animation: mate-pagination-spin 0.7s linear infinite;
+}
+
+@keyframes mate-pagination-spin {
+	from { transform: rotate(0deg); }
+	to { transform: rotate(360deg); }
+}

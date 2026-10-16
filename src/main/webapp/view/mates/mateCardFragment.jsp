@@ -112,61 +112,7 @@
 		        <div class="mate-card-author">
 		
 		            <!-- 프로필 이미지 -->
-		            <div class="mate-author-avatar">
-		
-		                <c:choose>
-		
-		                    <c:when test="${not empty mate.profileImg}">
-		
-		                        <c:choose>
-		                            <c:when test="${mate.profileImg.startsWith('http://') or mate.profileImg.startsWith('https://')}">
-		                                <c:set var="mateProfileUrl"
-		                                       value="${mate.profileImg}" />
-		                            </c:when>
-		
-		                            <c:otherwise>
-		                                <c:set var="mateProfileUrl"
-		                                       value="${pageContext.request.contextPath}/uploads/profile/${mate.profileImg}" />
-		                            </c:otherwise>
-		                        </c:choose>
-		
-		                        <img
-		                            src="<c:out value='${mateProfileUrl}' />"
-		                            alt="작성자 프로필"
-		                            class="mate-author-avatar-img"
-		                            loading="lazy"
-		                            referrerpolicy="no-referrer"
-		                            onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';"
-		                        >
-		
-		                        <span class="mate-author-avatar-default"
-		                              style="display:none;">
-		                            <c:choose>
-		                                <c:when test="${not empty mate.nickname}">
-		                                    <c:out value="${mate.nickname.substring(0, 1)}" />
-		                                </c:when>
-		                                <c:otherwise>U</c:otherwise>
-		                            </c:choose>
-		                        </span>
-		
-		                    </c:when>
-		
-		                    <c:otherwise>
-		
-		                        <span class="mate-author-avatar-default">
-		                            <c:choose>
-		                                <c:when test="${not empty mate.nickname}">
-		                                    <c:out value="${mate.nickname.substring(0, 1)}" />
-		                                </c:when>
-		                                <c:otherwise>U</c:otherwise>
-		                            </c:choose>
-		                        </span>
-		
-		                    </c:otherwise>
-		
-		                </c:choose>
-		
-		            </div>
+		            <div class="mate-author-avatar"><jsp:include page="/common/profileImage.jsp"><jsp:param name="image" value="${mate.profileImg}"/></jsp:include></div>
 		
 		            <!-- 닉네임 / 작성 시간 -->
 		            <div class="mate-author-info">

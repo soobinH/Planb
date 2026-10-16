@@ -402,17 +402,17 @@
 		);
 
 		profile.href = panel.dataset.contextPath + "/profile/userProfile?userId=" + encodeURIComponent(comment.userId);
-		profile.style.background = "#F0F0FF";
-		profile.style.color = "#6369D1";
+		profile.style.background = "#D1D2F9";
+		profile.style.color = "#5056BB";
 
 		// 고정된 아이콘이며 댓글 내용은 넣지 않음
 		function showDefaultProfile() {
 			profile.innerHTML =
-				'<svg width="22" height="22" viewBox="0 0 24 24"'
-				+ ' fill="none" stroke="currentColor" stroke-width="2"'
+				'<svg width="50%" height="50%" viewBox="0 0 24 24"'
+				+ ' fill="none" stroke="currentColor" stroke-width="1.5"'
 				+ ' aria-hidden="true">'
 				+ '<circle cx="12" cy="8" r="4"/>'
-				+ '<path d="M4 21v-2a8 8 0 0 1 16 0v2"/>'
+				+ '<path d="M4 21c0-4.3 3.6-7 8-7s8 2.7 8 7"/>'
 				+ '</svg>';
 		}
 
@@ -461,22 +461,16 @@
 	}
 
 	function formatCommentDate(value) {
-		const date = parseCommentDate(value);
-
-		if (!date) {
-			return value || "";
-		}
-
-		function pad(number) {
-			return String(number).padStart(2, "0");
-		}
-
-		return date.getFullYear()
-			+ "." + pad(date.getMonth() + 1)
-			+ "." + pad(date.getDate())
-			+ " " + pad(date.getHours())
-			+ ":" + pad(date.getMinutes());
-	}
+        const date = parseCommentDate(value);
+        if (!date) return "";
+        const seconds = Math.max(0, Math.floor((Date.now() - date.getTime()) / 1000));
+        if (seconds < 60) return "방금 전";
+        if (seconds < 3600) return Math.floor(seconds / 60) + "분 전";
+        if (seconds < 86400) return Math.floor(seconds / 3600) + "시간 전";
+        if (seconds < 2592000) return Math.floor(seconds / 86400) + "일 전";
+        if (seconds < 31536000) return Math.floor(seconds / 2592000) + "개월 전";
+        return Math.floor(seconds / 31536000) + "년 전";
+    }
 
 	function renderComments(comments) {
 		const fragment = document.createDocumentFragment();

@@ -144,23 +144,7 @@
 				<div class="flex items-center gap-1.5 min-w-0">
 
 					<span
-						style="position: relative; display: inline-flex; align-items: center; justify-content: center; width: 24px; height: 24px; flex-shrink: 0; border-radius: 50%; overflow: hidden; background: #F0F0FF; color: #6369D1;">
-
-						<!-- 사진이 없거나 로딩 실패 시 표시 --> <svg width="14" height="14"
-							viewBox="0 0 24 24" fill="none" stroke="currentColor"
-							stroke-width="1.8" aria-hidden="true">
-                <circle cx="12" cy="8" r="4" />
-                <path d="M4 21c0-4.3 3.6-7 8-7s8 2.7 8 7" />
-            </svg> <c:if test="${not empty schedule.profileImg}">
-							<c:url var="authorImageUrl"
-								value="uploads/profile/${schedule.profileImg}" />
-
-							<img src="<c:out value='${authorImageUrl}'/>" alt=""
-								loading="lazy"
-								style="position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover;"
-								onerror="this.style.display='none';">
-						</c:if>
-					</span> <span class="text-[11px] text-gray-500 font-medium"
+						style="position: relative; display: inline-flex; align-items: center; justify-content: center; width: 24px; height: 24px; flex-shrink: 0; border-radius: 50%; overflow: hidden; background: #F0F0FF; color: #6369D1;"><jsp:include page="/common/profileImage.jsp"><jsp:param name="image" value="${schedule.profileImg}"/></jsp:include></span> <span class="text-[11px] text-gray-500 font-medium"
 						style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
 						<c:out value="${schedule.nickname}" />
 					</span>

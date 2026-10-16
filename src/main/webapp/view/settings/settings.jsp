@@ -172,7 +172,7 @@ if (profilePath == null || profilePath.trim().isEmpty()) {
                                     그래야 사진 선택 시
                                     바로 미리보기를 넣을 수 있음.
                                 -->
-									<img id="profilePreview" <%if (!profileImg.isEmpty()) {%>
+									<img id="profilePreview" onerror="this.style.display='none';document.getElementById('profileDefaultAvatar').style.display='block';" <%if (!profileImg.isEmpty()) {%>
 										src="<%=ctx%><%=profilePath%>/<%=profileImg%>" <%}%>
 										alt="<%=nickname%> 프로필 이미지"
 										style="
@@ -187,8 +187,8 @@ if (profilePath == null || profilePath.trim().isEmpty()) {
                                 -->
 									<svg id="profileDefaultAvatar" width="28" height="28"
 										viewBox="0 0 24 24" fill="none" stroke="currentColor"
-										stroke-width="1.6"
-										style="
+										stroke-width="1.5"
+										style="background:#D1D2F9;color:#5056BB;border-radius:50%;
                                         display:
                                         <%=profileImg.isEmpty() ? "block" : "none"%>;
                                     ">

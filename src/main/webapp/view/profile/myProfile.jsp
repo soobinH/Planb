@@ -1191,7 +1191,7 @@ html.profile-modal-open, body.profile-modal-open {
 
 						<div class="profile-edit-preview">
 
-							<img id="profileEditPreviewImage"
+							<img id="profileEditPreviewImage" onerror="this.style.display='none';document.getElementById('profileEditPreviewEmpty').style.display='flex';"
 								<%if (!profileImg.isEmpty()) {%>
 								src="<%=ctx%><%=profilePath%>/<%=profileImg%>" <%}%>
 								alt="<%=nickname%> 프로필 이미지"
@@ -1199,10 +1199,10 @@ html.profile-modal-open, body.profile-modal-open {
 
 							<div class="profile-edit-preview-empty"
 								id="profileEditPreviewEmpty"
-								style="display:<%=profileImg.isEmpty() ? "flex" : "none"%>;">
+								style="background:#D1D2F9;color:#5056BB;display:<%=profileImg.isEmpty() ? "flex" : "none"%>;">
 
 								<svg width="34" height="34" viewBox="0 0 24 24" fill="none"
-									stroke="currentColor" stroke-width="1.6">
+									stroke="currentColor" stroke-width="1.5">
 
 									<circle cx="12" cy="8" r="4" />
 

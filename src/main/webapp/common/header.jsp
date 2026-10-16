@@ -401,24 +401,7 @@ if (user != null && user.getProfileImg() != null && !user.getProfileImg().trim()
 				class="site-profile-btn site-profile-btn--user<%=isAdminHeader ? " site-profile-btn--admin" : ""%>"
 				href="<%=ctx%>/profile/myProfile" title="마이페이지"> <!-- 프로필 이미지 -->
 
-				<span class="site-profile-avatar site-profile-avatar--img"> <%
- if (!profileImg.isEmpty()) {
- %> <img src="<%=ctx%>/uploads/profile/<%=profileImg%>"
-					alt="<%=nickname%>"> <%
- } else {
- %> <!-- 프로필 이미지 없는 경우 --> <svg width="16" height="16"
-						viewBox="0 0 24 24" fill="none" stroke="currentColor"
-						stroke-width="2">
-
-                        <circle cx="12" cy="8" r="4" />
-
-                        <path d="M4 21c0-4.3 3.6-7 8-7s8 2.7 8 7" />
-
-                    </svg> <%
- }
- %>
-
-			</span> <!-- 닉네임 --> <span class="site-profile-label"> <%=nickname%>
+				<span class="site-profile-avatar site-profile-avatar--img"><jsp:include page="/common/profileImage.jsp"><jsp:param name="image" value="${sessionScope.user.profileImg}"/></jsp:include></span> <!-- 닉네임 --> <span class="site-profile-label"> <%=nickname%>
 			</span>
 
 			</a>

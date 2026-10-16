@@ -18,6 +18,7 @@ request.setAttribute("activePage", "travel");
       <c:set var="detailDurationText" value="기간 미정" />
    </c:otherwise>
 </c:choose>
+<jsp:useBean id="commentDisplayNow" class="java.util.Date" scope="request"/>
 <!DOCTYPE html>
 <html lang="ko">
 <head>
@@ -327,29 +328,7 @@ request.setAttribute("activePage", "travel");
 
                   <div
                      class="w-9 h-9 rounded-full overflow-hidden border-2 shrink-0 flex items-center justify-center"
-                     style="border-color: #D1D2F9; background: #F0F0FF; color: #6369D1">
-
-                     <c:choose>
-                        <c:when test="${not empty itinerary.profileImg}">
-
-                           <c:url var="authorImageUrl"
-                              value="/uploads/profile/${itinerary.profileImg}" />
-
-                           <img src="<c:out value='${authorImageUrl}'/>" alt="작성자 프로필"
-                              class="w-full h-full object-cover">
-
-                        </c:when>
-
-                        <c:otherwise>
-                           <svg width="20" height="20" viewBox="0 0 24 24" fill="none"
-                              stroke="currentColor" stroke-width="2" aria-hidden="true">
-                                    <circle cx="12" cy="8" r="4" />
-                                    <path d="M4 21v-2a8 8 0 0 1 16 0v2" />
-                                </svg>
-                        </c:otherwise>
-                     </c:choose>
-
-                  </div>
+                     style="border-color: #D1D2F9; background: #F0F0FF; color: #6369D1"><jsp:include page="/common/profileImage.jsp"><jsp:param name="image" value="${itinerary.profileImg}"/></jsp:include></div>
 
                   <div class="min-w-0">
                      <p
@@ -456,51 +435,42 @@ request.setAttribute("activePage", "travel");
                         <!-- 작성자 사진 -->
                         <a href="${pageContext.request.contextPath}/profile/userProfile?userId=${comment.userId}"
                            class="w-10 h-10 rounded-full overflow-hidden shrink-0 flex items-center justify-center"
-                           style="background: #F0F0FF; color: #6369D1">
-
-                           <c:choose>
-                              <c:when test="${not empty comment.profileImg}">
-
-                                 <c:choose>
-                                    <c:when
-                                       test="${comment.profileImg.startsWith('https://')
-                                    or comment.profileImg.startsWith('http://')}">
-                                       <c:set var="commentProfileUrl"
-                                          value="${comment.profileImg}" />
-                                    </c:when>
-
-                                    <c:when test="${comment.profileImg.startsWith('/')}">
-                                       <c:url var="commentProfileUrl"
-                                          value="${comment.profileImg}" />
-                                    </c:when>
-
-                                    <c:otherwise>
-                                       <c:url var="commentProfileUrl"
-                                          value="/uploads/profile/${comment.profileImg}" />
-                                    </c:otherwise>
-                                 </c:choose>
-
-                                 <img src="<c:out value='${commentProfileUrl}'/>"
-                                    alt="작성자 프로필" class="w-full h-full object-cover">
-                              </c:when>
-
-                              <c:otherwise>
-                                 <svg width="22" height="22" viewBox="0 0 24 24" fill="none"
-                                    stroke="currentColor" stroke-width="2" aria-hidden="true">
-                                <circle cx="12" cy="8" r="4" />
-                                <path d="M4 21v-2a8 8 0 0 1 16 0v2" />
-                            </svg>
-                              </c:otherwise>
-                           </c:choose>
-                        </a>
+                           style="background: #F0F0FF; color: #6369D1"><jsp:include page="/common/profileImage.jsp"><jsp:param name="image" value="${comment.profileImg}"/></jsp:include></a>
 
                         <div class="flex-1 min-w-0">
 
                            <div class="flex items-center gap-2 flex-wrap">
                               <a href="${pageContext.request.contextPath}/profile/userProfile?userId=${comment.userId}" class="font-bold text-[13px] text-gray-900"> <c:out
                                     value="${comment.nickname}" />
-                              </a> <span class="text-[11px] text-gray-400"> <fmt:formatDate
-                                    value="${comment.createdAt}" pattern="yyyy.MM.dd HH:mm" />
+                              </a> <span class="text-[11px] text-gray-400"> <c:choose>
+                        <c:when test="${empty comment.createdAt}">-</c:when>
+                        <c:otherwise>
+                            <c:set var="commentAgeSeconds" value="${(commentDisplayNow.time - comment.createdAt.time) div 1000}" />
+                            <c:choose>
+                                <c:when test="${commentAgeSeconds lt 60}">방금 전</c:when>
+                                <c:otherwise>
+                                    <c:choose>
+                                        <c:when test="${commentAgeSeconds lt 3600}">
+                                            <c:set var="commentAgeUnit" value="60" /><c:set var="commentAgeSuffix" value="분 전" />
+                                        </c:when>
+                                        <c:when test="${commentAgeSeconds lt 86400}">
+                                            <c:set var="commentAgeUnit" value="3600" /><c:set var="commentAgeSuffix" value="시간 전" />
+                                        </c:when>
+                                        <c:when test="${commentAgeSeconds lt 2592000}">
+                                            <c:set var="commentAgeUnit" value="86400" /><c:set var="commentAgeSuffix" value="일 전" />
+                                        </c:when>
+                                        <c:when test="${commentAgeSeconds lt 31536000}">
+                                            <c:set var="commentAgeUnit" value="2592000" /><c:set var="commentAgeSuffix" value="개월 전" />
+                                        </c:when>
+                                        <c:otherwise>
+                                            <c:set var="commentAgeUnit" value="31536000" /><c:set var="commentAgeSuffix" value="년 전" />
+                                        </c:otherwise>
+                                    </c:choose>
+                                    <fmt:formatNumber value="${(commentAgeSeconds - (commentAgeSeconds mod commentAgeUnit)) div commentAgeUnit}" pattern="0" groupingUsed="false" /><c:out value="${commentAgeSuffix}" />
+                                </c:otherwise>
+                            </c:choose>
+                        </c:otherwise>
+                    </c:choose>
                               </span>
 
                               <c:if
@@ -952,7 +922,7 @@ request.setAttribute("activePage", "travel");
       src="${pageContext.request.contextPath}/view/assets/js/auth/tripily.js"></script>
 
    <script
-      src="${pageContext.request.contextPath}/view/assets/js/travel/scheduleDetail.js?v=20261016-sheet-divider"></script>
+      src="${pageContext.request.contextPath}/view/assets/js/travel/scheduleDetail.js?v=20261016-default-profile"></script>
       
    <script
        src="${pageContext.request.contextPath}/view/assets/js/travel/scheduleDetailMap.js?v=20261016-sheets"></script>

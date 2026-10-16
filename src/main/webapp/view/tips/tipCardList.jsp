@@ -105,16 +105,7 @@
                     <div class="tip-card-author flex items-center justify-between gap-2 border-t pt-2.5" style="border-color: #D1D2F9;">
                         <div class="flex items-center gap-1.5 min-w-0">
 						<div class="w-5 h-5 rounded-full flex items-center justify-center text-white text-[9px] font-bold shrink-0"
-							 style="background: #8B5CF6">
-							<c:choose>
-								<c:when test="${not empty tip.nickname}">
-									${tip.nickname.substring(0, 1)}
-								</c:when>
-								<c:otherwise>
-									?
-								</c:otherwise>
-							</c:choose>
-						</div>
+							 style="background: #8B5CF6"><jsp:include page="/common/profileImage.jsp"><jsp:param name="image" value="${tip.profileImg}"/></jsp:include></div>
 							<span class="tip-card-author-name text-[11px] text-gray-500 font-medium" style="min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
 							<c:out value="${tip.nickname}" default="알 수 없음" />
 						</span>

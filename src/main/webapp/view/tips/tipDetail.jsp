@@ -110,49 +110,7 @@ request.setAttribute("activePage", "tips");
 								<div class="flex items-center gap-3">
 									<!-- 작성자 프로필 이미지 -->
 									<div class="w-10 h-10 rounded-full overflow-hidden flex items-center justify-center text-white font-bold shrink-0"
-									     style="background: linear-gradient(135deg, #6369D1, #8B5CF6);">
-									
-									    <c:choose>
-									
-									        <%-- 프로필 이미지가 있는 경우 --%>
-									        <c:when test="${not empty tip.profileImg}">
-									
-									            <img
-									                src="${pageContext.request.contextPath}/uploads/profile/${tip.profileImg}"
-									                alt="작성자 프로필"
-									                class="w-full h-full object-cover rounded-full"
-									                loading="lazy"
-									                onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';"
-									            />
-									
-									            <%-- 이미지 로딩 실패 시 닉네임 첫 글자 --%>
-									            <span class="w-full h-full items-center justify-center"
-									                  style="display: none;">
-									                <c:choose>
-									                    <c:when test="${not empty tip.nickname}">
-									                        <c:out value="${tip.nickname.substring(0, 1)}"/>
-									                    </c:when>
-									                    <c:otherwise>U</c:otherwise>
-									                </c:choose>
-									            </span>
-									
-									        </c:when>
-									
-									        <%-- 프로필 이미지가 없는 경우 --%>
-									        <c:otherwise>
-									            <span>
-									                <c:choose>
-									                    <c:when test="${not empty tip.nickname}">
-									                        <c:out value="${tip.nickname.substring(0, 1)}"/>
-									                    </c:when>
-									                    <c:otherwise>U</c:otherwise>
-									                </c:choose>
-									            </span>
-									        </c:otherwise>
-									
-									    </c:choose>
-									
-									</div>
+									     style="background: linear-gradient(135deg, #6369D1, #8B5CF6);"><jsp:include page="/common/profileImage.jsp"><jsp:param name="image" value="${tip.profileImg}"/></jsp:include></div>
 									<!-- 작성자 정보 -->
 								    <div>
 								        <p class="text-sm font-semibold text-gray-800">
@@ -391,9 +349,12 @@ request.setAttribute("activePage", "tips");
 					    <div class="flex items-center gap-3 pt-5 border-t border-gray-100">
 					        <!-- 로그인 상태 -->
 					        <c:if test="${not empty sessionScope.user}">
-					            <div class="w-9 h-9 rounded-full shrink-0 flex items-center justify-center text-white text-sm font-bold"
+					            <div class="w-9 h-9 rounded-full overflow-hidden shrink-0 flex items-center justify-center text-white text-sm font-bold"
 					                style="background-color: var(--brand)">
-					                <c:out value="${sessionScope.user.nickName.substring(0, 1)}" />
+					                <jsp:include page="/common/profileImage.jsp">
+                                        <jsp:param name="image" value="${sessionScope.user.profileImg}"/>
+                                        <jsp:param name="nickname" value="${sessionScope.user.nickName}"/>
+                                    </jsp:include>
 					            </div>
 					            <form id="tipCommentForm" action="${pageContext.request.contextPath}/tipCommentWrite"
 					                  method="post" class="flex items-center gap-3 flex-1">
