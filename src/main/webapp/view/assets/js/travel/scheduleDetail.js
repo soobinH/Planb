@@ -1591,6 +1591,10 @@
         panel.querySelectorAll("[data-detail-day-sheet]").forEach(function (day) {
             day.hidden = key !== "all" && day.dataset.detailDaySheet !== key;
         });
+        // 국가 시트 구분 헤더는 전체 보기 전용이며, DAY의 전역 번호는 유지한다.
+        panel.querySelectorAll("[data-detail-sheet-divider]").forEach(function (divider) {
+            divider.hidden = key !== "all";
+        });
         window.dispatchEvent(new CustomEvent("detail:sheet-change", { detail: { sheetKey: key } }));
     }
     nav.addEventListener("click", function (event) {

@@ -1269,3 +1269,29 @@
     align-self: center; flex: 0 0 24px; height: 29px; border: 1px solid #e1e4f0;
     border-radius: 7px; background: #fff; color: #6369d1; cursor: pointer;
 }
+
+
+/* 전체 일정: 나라별 일정 경계를 DAY 카드 위에 구분한다. */
+#detailSchedulePanel .detail-sheet-section-divider {
+    display: flex; align-items: center; gap: 9px;
+    min-width: 0; padding: 5px 2px 2px;
+    color: #59627a;
+}
+#detailSchedulePanel .detail-sheet-section-divider[hidden] { display: none !important; }
+#detailSchedulePanel .detail-sheet-section-index {
+    display: inline-flex; align-items: center; justify-content: center;
+    width: 21px; height: 21px; flex: 0 0 21px;
+    border-radius: 6px; color: #6369d1; background: #ededff;
+    font-size: 11px; font-weight: 750;
+}
+#detailSchedulePanel .detail-sheet-section-name {
+    font-size: 12px; font-weight: 750; color: #434c67;
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+#detailSchedulePanel .detail-sheet-section-rule {
+    flex: 1; min-width: 14px; border-top: 1px solid #cbd0e3;
+}
+#detailSchedulePanel .detail-sheet-section-range {
+    font-size: 11px; color: #8991a8; font-weight: 600;
+    font-variant-numeric: tabular-nums; white-space: nowrap;
+}

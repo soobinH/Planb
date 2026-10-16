@@ -26,7 +26,7 @@ request.setAttribute("activePage", "travel");
 <title><c:out value="${itinerary.title}" /></title>
 <jsp:include page="/common/headStyles.jsp" />
 <link rel="stylesheet"
-   href="${pageContext.request.contextPath}/view/assets/css/travel/scheduleDetail.css?v=20261016-sheets">
+   href="${pageContext.request.contextPath}/view/assets/css/travel/scheduleDetail.css?v=20261016-sheet-divider">
 <script defer data-context-path="${pageContext.request.contextPath}" src="${pageContext.request.contextPath}/view/assets/js/common/searchReturn.js?v=20261016"></script>
 </head>
 <body class="site-shell"><jsp:include page="/common/header.jsp" />
@@ -547,6 +547,19 @@ request.setAttribute("activePage", "travel");
                <c:forEach var="day" items="${itinerary.days}"
                   varStatus="dayStatus">
 
+                  <%-- 시트별 경계는 전체 탭에서만 표시하고 개별 탭에서는 감춘다. --%>
+                  <c:set var="sheetDivider" value="${detailDaySheetDividers[day.dayId]}" />
+                  <c:if test="${not empty sheetDivider and fn:length(detailSheets) gt 1}">
+                     <div class="detail-sheet-section-divider" data-detail-sheet-divider="${sheetDivider.sheetKey}" role="heading" aria-level="3">
+                        <span class="detail-sheet-section-index"><c:out value="${sheetDivider.index}" /></span>
+                        <span class="detail-sheet-section-name"><c:out value="${sheetDivider.label}" /></span>
+                        <span class="detail-sheet-section-rule" aria-hidden="true"></span>
+                        <span class="detail-sheet-section-range">
+                           D<c:out value="${sheetDivider.startDay}" /><c:if test="${sheetDivider.startDay ne sheetDivider.endDay}">–D<c:out value="${sheetDivider.endDay}" /></c:if>
+                        </span>
+                     </div>
+                  </c:if>
+
                   <div class="rounded-2xl border overflow-hidden" data-detail-day-sheet="${detailDaySheetKeys[day.dayId]}"
                      style="border-color: #D1D2F9">
 
@@ -939,7 +952,7 @@ request.setAttribute("activePage", "travel");
       src="${pageContext.request.contextPath}/view/assets/js/auth/tripily.js"></script>
 
    <script
-      src="${pageContext.request.contextPath}/view/assets/js/travel/scheduleDetail.js?v=20261016-sheets"></script>
+      src="${pageContext.request.contextPath}/view/assets/js/travel/scheduleDetail.js?v=20261016-sheet-divider"></script>
       
    <script
        src="${pageContext.request.contextPath}/view/assets/js/travel/scheduleDetailMap.js?v=20261016-sheets"></script>

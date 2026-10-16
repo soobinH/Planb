@@ -118,6 +118,8 @@ public class ScheduleDetail extends HttpServlet {
             List<Map<String, Object>> mapDays = new ArrayList<>();
             List<Map<String, Object>> sheetNavigation = new ArrayList<>();
             Map<Long, String> daySheetKeys = new HashMap<>();
+            // 전체 보기에서 국가 시트의 시작 DAY 위에 표시할 구분 헤더 데이터.
+            Map<Long, Map<String, Object>> daySheetDividers = new HashMap<>();
             int globalDay = 0;
             int sheetPosition = 0;
             for (ItinerarySheetDto sheet : sheets) {
@@ -135,6 +137,16 @@ public class ScheduleDetail extends HttpServlet {
                         ? new ArrayList<>() : new ArrayList<>(sheet.getDays());
                 sheetDays.sort(Comparator.comparing(ItineraryDayDto::getDayOrder,
                         Comparator.nullsLast(Integer::compareTo)));
+                if (!sheetDays.isEmpty() && sheetDays.get(0).getDayId() != null) {
+                    Map<String, Object> divider = new HashMap<>();
+                    divider.put("sheetKey", sheetKey);
+                    divider.put("label", sheetLabel);
+                    divider.put("index", sheetPosition);
+                    divider.put("startDay", globalDay + 1);
+                    divider.put("endDay", globalDay + sheetDays.size());
+                    divider.put("dayCount", sheetDays.size());
+                    daySheetDividers.put(sheetDays.get(0).getDayId(), divider);
+                }
                 for (ItineraryDayDto day : sheetDays) {
                     allDays.add(day);
                     if (day.getDayId() != null) daySheetKeys.put(day.getDayId(), sheetKey);
@@ -173,6 +185,7 @@ public class ScheduleDetail extends HttpServlet {
             request.setAttribute("itinerary", itinerary);
             request.setAttribute("detailSheets", sheetNavigation);
             request.setAttribute("detailDaySheetKeys", daySheetKeys);
+            request.setAttribute("detailDaySheetDividers", daySheetDividers);
             request.setAttribute("detailMapJson", new Gson().toJson(mapDays));
 
 			request.setAttribute("comments", service.getItineraryComments(itineraryId, loginUserId));
