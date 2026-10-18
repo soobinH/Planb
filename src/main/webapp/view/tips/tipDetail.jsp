@@ -11,7 +11,12 @@ request.setAttribute("activePage", "tips");
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<title>Planb</title>
 	<jsp:include page="/common/headStyles.jsp" />
-<script defer data-context-path="${pageContext.request.contextPath}" src="${pageContext.request.contextPath}/view/assets/js/common/searchReturn.js?v=20261016"></script>
+
+<script
+    defer
+    data-context-path="${pageContext.request.contextPath}"
+    src="${pageContext.request.contextPath}/view/assets/js/common/listReturn.js?v=1">
+</script>
 </head>
 	<link rel="stylesheet" href="${pageContext.request.contextPath}/view/assets/css/tips/tipDetail.css?v=20261015-report">
 	<script defer src="${pageContext.request.contextPath}/view/assets/js/tips/tipDetail.js"></script>
@@ -38,7 +43,7 @@ request.setAttribute("activePage", "tips");
 				<!-- [수정] 본문 영역 -->
 				<div class="tip-detail-main">
 
-					<a data-search-return href="${pageContext.request.contextPath}/tips"
+					<a data-list-back href="${pageContext.request.contextPath}/tips"
 						class="tip-back-link"><svg
 							width="14" height="14" viewBox="0 0 24 24" fill="none"
 							stroke="currentColor" stroke-width="2">

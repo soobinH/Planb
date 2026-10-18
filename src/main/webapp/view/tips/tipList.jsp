@@ -17,6 +17,11 @@ request.setAttribute("activePage", "tips");
 	</script>
 	<link rel="stylesheet" href="${pageContext.request.contextPath}/view/assets/css/tips/tipList.css?v=20261016-highlight">
 	<script defer src="${pageContext.request.contextPath}/view/assets/js/tips/tipList.js"></script>
+	<script
+    defer
+    data-context-path="${pageContext.request.contextPath}"
+    src="${pageContext.request.contextPath}/view/assets/js/common/listReturn.js?v=1">
+</script>
 </head>
 <body class="site-shell tip-list-page">
 	<jsp:include page="/common/header.jsp" />

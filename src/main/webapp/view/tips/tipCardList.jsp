@@ -9,7 +9,7 @@
 </head>
 <body>
 	<c:forEach var="tip" items="${tipList}">
-		<a href="${pageContext.request.contextPath}/view/tips/tipDetail.jsp?id=${tip.tipId}"
+		<a href="${pageContext.request.contextPath}/tipDetail?tipId=${tip.tipId}"
 			class="tip-schedule-card relative bg-white rounded-2xl border border-gray-100 transition-all duration-200 cursor-pointer group overflow-hidden flex flex-col">
 			<div class="relative shrink-0 overflow-hidden" style="aspect-ratio: 4 / 3">
 				<c:choose>

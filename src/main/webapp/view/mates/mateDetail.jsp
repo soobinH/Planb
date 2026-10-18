@@ -15,7 +15,11 @@
 	<link rel="stylesheet" href="${pageContext.request.contextPath}/view/assets/css/mates/mateDetail.css?v=3">
 	<script defer src="${pageContext.request.contextPath}/view/assets/js/mates/mateDetail.js"></script>
 
-<script defer data-context-path="${pageContext.request.contextPath}" src="${pageContext.request.contextPath}/view/assets/js/common/searchReturn.js?v=20261016"></script>
+<script
+    defer
+    data-context-path="${pageContext.request.contextPath}"
+    src="${pageContext.request.contextPath}/view/assets/js/common/listReturn.js?v=1">
+</script>
 </head>
 <body class="site-shell">
 	<jsp:include page="/common/header.jsp" />
@@ -37,7 +41,7 @@
 
 				<!-- 본문 영역 -->
 				<div class="tip-detail-main">
-					<a data-search-return href="${pageContext.request.contextPath}/mates" class="tip-back-link"><svg
+					<a data-list-back href="${pageContext.request.contextPath}/mates" class="tip-back-link"><svg
 							width="14" height="14" viewBox="0 0 24 24" fill="none"
 							stroke="currentColor" stroke-width="2">
 							<path d="M15 18l-6-6 6-6" /></svg>목록으로</a>

@@ -165,6 +165,12 @@ request.setAttribute("activePage", "travel");
 #scheduleCardGrid [data-schedule-bookmark] { z-index: 2; }
 
 </style>
+
+<script
+    defer
+    data-context-path="${pageContext.request.contextPath}"
+    src="${pageContext.request.contextPath}/view/assets/js/common/listReturn.js?v=1">
+</script>
 </head>
 <body class="site-shell schedule-list-page">
 	<jsp:include page="/common/header.jsp" />

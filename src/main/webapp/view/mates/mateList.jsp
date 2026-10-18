@@ -13,6 +13,12 @@ request.setAttribute("activePage", "mates");
 	<jsp:include page="/common/headStyles.jsp" />
 	<link rel="stylesheet" href="${pageContext.request.contextPath}/view/assets/css/mates/mateList.css?v=20261016-highlight">
 	<script defer src="${pageContext.request.contextPath}/view/assets/js/mates/mateList.js"></script>
+	<script
+    defer
+    data-context-path="${pageContext.request.contextPath}"
+    src="${pageContext.request.contextPath}/view/assets/js/common/listReturn.js?v=1">
+</script>
+	
 </head>
 <body class="site-shell mate-list-page">
 	<jsp:include page="/common/header.jsp" />

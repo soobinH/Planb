@@ -28,7 +28,12 @@ request.setAttribute("activePage", "travel");
 <jsp:include page="/common/headStyles.jsp" />
 <link rel="stylesheet"
    href="${pageContext.request.contextPath}/view/assets/css/travel/scheduleDetail.css?v=20261016-sheet-divider">
-<script defer data-context-path="${pageContext.request.contextPath}" src="${pageContext.request.contextPath}/view/assets/js/common/searchReturn.js?v=20261016"></script>
+
+<script
+    defer
+    data-context-path="${pageContext.request.contextPath}"
+    src="${pageContext.request.contextPath}/view/assets/js/common/listReturn.js?v=1">
+</script>
 </head>
 <body class="site-shell"><jsp:include page="/common/header.jsp" />
    <main id="scheduleDetail" class="detail-layout"
@@ -42,7 +47,7 @@ request.setAttribute("activePage", "travel");
       <!-- 좌측: 일정 정보 -->
       <aside id="detailInfoPanel" class="detail-info-panel">
          <div class="detail-panel-header detail-info-header">
-            <a data-search-return href="${pageContext.request.contextPath}/schedules"
+            <a data-list-back href="${pageContext.request.contextPath}/schedules"
                class="flex items-center gap-1.5 shrink-0 whitespace-nowrap text-[12.5px] font-semibold text-gray-500 hover:text-gray-900 transition-colors">
                <svg class="w-4 h-4" fill="none" stroke="currentColor"
                   viewBox="0 0 24 24">
