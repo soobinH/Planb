@@ -1633,6 +1633,51 @@
 
             // 새 일정 작성 화면은 DAY 없이 시작한다. 사용자가 Day 추가 버튼을 눌러 직접 시작한다.
 
+            // 공유폴더 서버(SharedImageStorage)가 허용하는 파일 형식과 정확히 일치시킨다.
+            var PLANNER_IMAGE_MAX_BYTES=10*1024*1024;
+            var PLANNER_REQUEST_MAX_BYTES=100*1024*1024;
+            function validatePlannerImageFile(file){
+                if(!file)return '이미지 파일을 선택해 주세요.';
+                var mime=String(file.type||'').toLowerCase();
+                var name=String(file.name||'').toLowerCase();
+                var types={
+                    'image/jpeg':/\.jpe?g$/,
+                    'image/png':/\.png$/,
+                    'image/gif':/\.gif$/,
+                    'image/webp':/\.webp$/
+                };
+                if(!types[mime] || !types[mime].test(name)){
+                    return 'JPG, PNG, GIF, WEBP 파일만 등록할 수 있습니다. 선택한 파일: '+(file.name||'이름 없음');
+                }
+                if(file.size>PLANNER_IMAGE_MAX_BYTES){
+                    return '이미지는 파일당 10MB 이하만 업로드할 수 있습니다. 파일: '+file.name;
+                }
+                if(file.size===0)return '빈 이미지 파일은 업로드할 수 없습니다. 파일: '+file.name;
+                return '';
+            }
+            function validatePlannerPendingUploads(){
+                var total=0;
+                for(var i=0;i<plannerSheets.length;i++){
+                    var files=plannerSheets[i].files||[];
+                    for(var j=0;j<files.length;j++){
+                        var file=files[j]&&files[j].file;
+                        if(!file)continue;
+                        var problem=validatePlannerImageFile(file);
+                        if(problem){
+                            showRequiredFieldsModal([problem], '이미지 업로드 확인');
+                            return false;
+                        }
+                        total+=file.size;
+                    }
+                }
+                // multipart 경계/JSON 오버헤드를 남긴다 (서버 전체 요청 제한 100MB).
+                if(total>PLANNER_REQUEST_MAX_BYTES-2*1024*1024){
+                    showRequiredFieldsModal(['첨부 이미지 총 크기가 너무 큽니다. 사진 크기를 줄여 주세요.'], '이미지 업로드 확인');
+                    return false;
+                }
+                return true;
+            }
+
             function setupPhotoGallery(galleryEl) {
                 if(!galleryEl || galleryEl.dataset.photoReady==='1') return;
                 galleryEl.dataset.photoReady='1';
@@ -1647,7 +1692,7 @@
                 if(!fileInput){
                     fileInput=document.createElement('input');
                     fileInput.type='file';
-                    fileInput.accept='image/*';
+                    fileInput.accept='.jpg,.jpeg,.png,.gif,.webp,image/jpeg,image/png,image/gif,image/webp';
                     fileInput.className='planner-photo-file-input hidden';
                     galleryEl.appendChild(fileInput);
                 }
@@ -1853,10 +1898,10 @@
 
                     if(!clickedTarget || !file) return;
 
-                    if(file.type && file.type.indexOf('image/')!==0){
-                        if(typeof toast==='function'){
-                            toast('이미지 파일만 등록할 수 있습니다.');
-                        }
+                    var uploadError=validatePlannerImageFile(file);
+                    if(uploadError){
+                        showRequiredFieldsModal([uploadError], '이미지 업로드 확인');
+                        fileInput.value='';
                         return;
                     }
 
@@ -4437,7 +4482,7 @@
 
                 var regionInput=$('#plannerRegion');
                 var validCountry=country ? findPlannerCountry(country.value) : null;
-                if(regionInput && regionInput.value.trim()){
+                if(regionInput && regionInput.type!=='hidden' && regionInput.value.trim()){
                     // 복원된 일정과 초안은 원본 목록과 일치하면 syncPlannerSavedRegion이 갱신한다.
                     var items=validCountry && plannerAdmin1Cache[validCountry.code];
                     if(items && items.length){syncPlannerSavedRegion(validCountry,items);}
@@ -5100,7 +5145,7 @@
                     summary:plannerPublishState.summary || null,
                     continent:null,
                     country:$('#plannerCountry') ? $('#plannerCountry').value.trim() : '',
-                    city:$('#plannerRegion') && $('#plannerRegion').value.trim()
+                    city:$('#plannerRegion') && $('#plannerRegion').type!=='hidden' && $('#plannerRegion').value.trim()
                         ? $('#plannerRegion').value.trim()
                         : null,
                     travelerCount:$('#plannerTravelerCount')
@@ -5644,34 +5689,60 @@
                 document.body.style.overflow='';
             }
 
+            // 실패한 요청도 편집 상태와 선택한 브라우저 File 객체를 유지하도록 비동기 저장한다.
+            var plannerSaveInProgress=false;
             function submitPlannerAfterPreview(){
+                if(plannerSaveInProgress)return;
                 var form=$('#plannerSubmitForm');
                 var jsonInput=$('#plannerItineraryJson');
                 var thumbInput=$('#plannerThumbnailImageKey');
-
                 if(!form || !jsonInput || !thumbInput){
                     toast('저장 폼을 찾을 수 없습니다.');
                     return;
                 }
-
-                // 미리보기에서 확정하는 순간에도 저장 직전 글자 수를 재검사한다.
-                if(!validatePlannerMemoLengths()) return;
+                if(!validatePlannerMemoLengths())return;
                 var payload=collectFullPlannerPayload();
+                if(!validatePlannerPendingUploads())return;
 
                 appendAllPlannerSheetImageParts(form,payload.sheets);
-
                 thumbInput.value=activeSheetThumbnailKey(plannerPublishState.imageKey);
                 jsonInput.value=JSON.stringify(payload);
+                form.action=PLANNER_CONTEXT_PATH+'/itinerary/modify';
 
-                form.action=PLANNER_CONTEXT_PATH + '/itinerary/modify';
-
+                plannerSaveInProgress=true;
+                var confirmButton=$('#plannerPublishConfirm');
+                if(confirmButton)confirmButton.disabled=true;
                 keepPlannerSessionAlive(true).then(function(sessionOk){
-                    if(!sessionOk || sessionExpiredHandling) return;
-                    // 정상 저장에서는 임시저장본을 남기지 않는다.
-                    return deletePlannerDraft().then(function(){
-                        dirty=false;
-                        form.submit();
+                    if(!sessionOk || sessionExpiredHandling){
+                        throw new Error('로그인 상태를 확인할 수 없습니다. 다시 로그인한 뒤 저장해 주세요. 작성 내용은 유지됩니다.');
+                    }
+                    return fetch(form.action,{
+                        method:'POST',
+                        credentials:'same-origin',
+                        headers:{'X-Requested-With':'XMLHttpRequest','Accept':'application/json'},
+                        body:new FormData(form)
                     });
+                }).then(function(response){
+                    return response.text().then(function(raw){
+                        var result={};
+                        try{result=JSON.parse(raw);}catch(e){}
+                        if(!response.ok || result.ok!==true || !result.redirect){
+                            throw new Error(result.message||'저장에 실패했습니다. 입력 내용을 유지했으니 다시 시도해 주세요.');
+                        }
+                        return result.redirect;
+                    });
+                }).then(function(redirect){
+                    // 저장이 실제 성공한 경우에만 초안을 삭제한다.
+                    return deletePlannerDraft().catch(function(){return null;}).then(function(){
+                        dirty=false;
+                        window.location.assign(redirect);
+                    });
+                }).catch(function(error){
+                    // 폼을 재로드하지 않는다: 모든 시트, 블록, 사진 File 객체가 그대로 남는다.
+                    showRequiredFieldsModal([error && error.message ? error.message : '저장 중 오류가 발생했습니다.'], '저장하지 못했습니다');
+                }).finally(function(){
+                    plannerSaveInProgress=false;
+                    if(confirmButton)confirmButton.disabled=false;
                 });
             }
 
@@ -7188,6 +7259,8 @@
                     var p=Object.assign({},sheet.payload||{});
                     p.title=title;p.summary=summary;p.visibility=visibilityValue;
                     p.sheetOrder=i+1;
+                    // '지역' 입력 UI가 제거된 동안 과거 시트의 숨은 city 값을 보내지 않는다.
+                    if($('#plannerRegion') && $('#plannerRegion').type==='hidden')p.city=null;
                     return p;
                 });
             }

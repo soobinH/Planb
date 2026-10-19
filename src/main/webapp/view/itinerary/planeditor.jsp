@@ -669,7 +669,7 @@ request.setAttribute("activePage", "planner");
             exchangeRates: ${empty exchangeRatesJson ? '{}' : exchangeRatesJson}
         };
     </script>
-    <script src="${pageContext.request.contextPath}/view/assets/js/itinerary/planeditor.js?v=20261016-stats4-hoverdelete-reset-v1"></script>
+    <script src="${pageContext.request.contextPath}/view/assets/js/itinerary/planeditor.js?v=20261016-region-upload-safe-v2"></script>
     <script async
         onerror="showPlannerMapFallback()" src="https://maps.googleapis.com/maps/api/js?key=AIzaSyB7ioaQS08aAzCl7gZPk6SyE1w7EeIrYhI&language=ko&libraries=places&v=weekly&loading=async&callback=initPlannerMap"></script>
 

@@ -52,6 +52,7 @@ public final class ItineraryImageUploadUtil {
         List<ItineraryDayDto> days =
                 itineraryDto.getDays();
 
+        try {
         for (int dayIndex = 0;
                 dayIndex < days.size();
                 dayIndex++) {
@@ -149,6 +150,11 @@ public final class ItineraryImageUploadUtil {
             }
         }
 
+        } catch (Exception failure) {
+            // 파일 저장 도중 다른 파일이 거절돼도 이미 올라간 파일을 정리한다.
+            deleteCreatedFiles(createdFiles);
+            throw failure;
+        }
         return createdFiles;
     }
 

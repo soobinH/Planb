@@ -125,9 +125,12 @@ public class ItineraryModify extends HttpServlet {
         HttpSession session = request.getSession(false);
 
         if (session == null || session.getAttribute("user") == null) {
-            response.sendRedirect(
-                    request.getContextPath() + "/auth/login"
-            );
+            if (ItinerarySaveResponse.isAjax(request)) {
+                ItinerarySaveResponse.failure(response, HttpServletResponse.SC_UNAUTHORIZED,
+                        "로그인 세션이 만료되었습니다. 작성 내용은 유지됩니다. 다시 로그인해 주세요.");
+            } else {
+                response.sendRedirect(request.getContextPath() + "/auth/login");
+            }
             return;
         }
 
@@ -242,11 +245,13 @@ public class ItineraryModify extends HttpServlet {
              * 기능명세서:
              * 수정 성공 -> 일정 상세페이지 이동
              */
-            response.sendRedirect(
-                    request.getContextPath()
-                    + "/schedules/detail?id="
-                    + itineraryDto.getItineraryId()
-            );
+            String detailUrl = request.getContextPath()
+                    + "/schedules/detail?id=" + itineraryDto.getItineraryId();
+            if (ItinerarySaveResponse.isAjax(request)) {
+                ItinerarySaveResponse.success(response, detailUrl);
+            } else {
+                response.sendRedirect(detailUrl);
+            }
 
         } catch (IllegalArgumentException e) {
 
@@ -254,6 +259,11 @@ public class ItineraryModify extends HttpServlet {
                     .deleteCreatedFiles(
                             uploadedFiles
                     );
+
+            if (ItinerarySaveResponse.isAjax(request)) {
+                ItinerarySaveResponse.failure(response, 422, e.getMessage());
+                return;
+            }
 
             request.setAttribute(
                     "err",
@@ -277,6 +287,11 @@ public class ItineraryModify extends HttpServlet {
                     );
 
             e.printStackTrace();
+            if (ItinerarySaveResponse.isAjax(request)) {
+                ItinerarySaveResponse.failure(response, HttpServletResponse.SC_INTERNAL_SERVER_ERROR,
+                        "일정 저장 중 서버 오류가 발생했습니다. 입력한 내용은 유지됩니다. 잠시 후 다시 시도해 주세요.");
+                return;
+            }
 
             throw new ServletException(
                     "일정 수정 중 오류가 발생했습니다.",
