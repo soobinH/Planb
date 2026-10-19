@@ -4,6 +4,16 @@ import java.sql.Date;
 import java.sql.Timestamp;
 
 public class AdvertisementDto {
+    private String siteName;
+    public String getSiteName() { return siteName; }
+    public void setSiteName(String value) { this.siteName = value; }
+    private String headline;
+    public String getHeadline() { return headline; }
+    public void setHeadline(String value) { this.headline = value; }
+    private String description;
+    public String getDescription() { return description; }
+    public void setDescription(String value) { this.description = value; }
+
 	private long adId;				// 광고 신청 번호
 	private long applicantUserId;	// 신청 회원 번호
 	private String businessName;	// 업체명
@@ -11,7 +21,10 @@ public class AdvertisementDto {
 	private String contactPhone;	// 담당자 연락처
 	private String contactEmail;	// 담당자 이메일
 	private String adContent;		// 광고 내용
-	private String imageUrl;		// 광고 이미지 경로
+	private String imageUrl;
+    private String imageUrlRight;
+    public String getImageUrlRight() { return imageUrlRight; }
+    public void setImageUrlRight(String imageUrlRight) { this.imageUrlRight = imageUrlRight; }		// 광고 이미지 경로
 	private String linkUrl;			// 광고 연결 URL	
 	private String adPosition;		// 광고 위치
 	private Date startDate;			// 노출 시작일

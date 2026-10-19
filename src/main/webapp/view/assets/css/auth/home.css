@@ -1469,3 +1469,7 @@ html.ph-snap::-webkit-scrollbar {
     text-overflow: ellipsis;
     white-space: nowrap;
 }
+
+/* 신청한 홈 광고 카드: 이미지 / 홈페이지명 / 제목 / 소개 / 링크 */
+.ph-plan-card--ad .ph-plan-card-body h3 { color:#6369D1; }
+.ph-plan-card--ad .ph-plan-card-brand { text-transform:none; }

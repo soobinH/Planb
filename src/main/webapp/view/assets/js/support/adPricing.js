@@ -25,7 +25,7 @@
     /*
      * 광고 위치별 정보
      * - width / height : 실제 화면에 표시되는 크기 (CSS px)
-     * - image          : 권장 업로드 이미지 크기 (고해상도 화면 대비 2배)
+     * - image          : 이미지 한 장 기준 크기
      * - daily          : 기준 기간별 하루 단가 (원)
      */
     const POSITIONS = {
@@ -34,34 +34,34 @@
             area: "HOME",
             width: 290,
             height: 230,
-            image: "580 × 460",
+            image: "290 × 230",
             ratio: "약 5 : 4",
-            daily: { SHORT: 4000, M1: 3000, M3: 2500, M6: 2000 }
+            daily: { SHORT: 3000, M1: 2000, M3: 1500, M6: 1000 }
         },
         TIP_SIDE: {
             name: "여행 꿀팁 사이드",
             area: "TRAVEL TIP",
             width: 160,
             height: 600,
-            image: "320 × 1200",
+            image: "160 × 600",
             ratio: "4 : 15",
-            daily: { SHORT: 2600, M1: 2000, M3: 1700, M6: 1400 }
+            daily: { SHORT: 3200, M1: 2600, M3: 2300, M6: 2000 }
         },
         MATE_SIDE: {
             name: "여행 메이트 사이드",
             area: "TRAVEL MATE",
             width: 160,
             height: 600,
-            image: "320 × 1200",
+            image: "160 × 600",
             ratio: "4 : 15",
-            daily: { SHORT: 2000, M1: 1500, M3: 1300, M6: 1000 }
+            daily: { SHORT: 2400, M1: 1900, M3: 1700, M6: 1400 }
         },
         CART_SIDE: {
             name: "일정 카트 사이드",
             area: "SCHEDULE CART",
             width: 160,
             height: 600,
-            image: "320 × 1200",
+            image: "160 × 600",
             ratio: "4 : 15",
             daily: { SHORT: 2400, M1: 1800, M3: 1500, M6: 1200 }
         }

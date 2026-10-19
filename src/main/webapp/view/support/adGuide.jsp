@@ -30,7 +30,7 @@ String ctx = request.getContextPath();
 <link rel="stylesheet"
     href="<%=ctx%>/view/assets/css/support/adGuide.css?v=6">
 
-<script defer src="<%=ctx%>/view/assets/js/support/adPricing.js?v=1"></script>
+<script defer src="<%=ctx%>/view/assets/js/support/adPricing.js?v=20261019-image-size"></script>
 <script defer src="<%=ctx%>/view/assets/js/support/adGuide.js?v=4"></script>
 
 </head>

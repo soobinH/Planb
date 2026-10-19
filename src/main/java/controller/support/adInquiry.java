@@ -28,7 +28,7 @@ import util.image.SharedImageStorage.Category;
 @MultipartConfig(
         fileSizeThreshold = 1024 * 1024,
         maxFileSize = 5 * 1024 * 1024,
-        maxRequestSize = 7 * 1024 * 1024)
+        maxRequestSize = 12 * 1024 * 1024)
 public class adInquiry extends HttpServlet {
 
     private static final long serialVersionUID = 1L;
@@ -50,7 +50,11 @@ public class adInquiry extends HttpServlet {
             throws ServletException, IOException {
 
         request.setCharacterEncoding("UTF-8");
+        for (String field : new String[]{"siteName", "headline", "description"}) {
+            request.setAttribute(field, request.getParameter(field));
+        }
         Path savedImagePath = null;
+        Path savedImageRightPath = null;
 
         String businessName = null;
         String managerName = null;
@@ -98,6 +102,16 @@ public class adInquiry extends HttpServlet {
                 throw new IllegalArgumentException("광고 이미지는 최대 5MB까지 등록할 수 있습니다.");
             }
 
+            boolean dualImages = "TIP_SIDE".equals(adPosition) || "MATE_SIDE".equals(adPosition) || "CART_SIDE".equals(adPosition);
+            Part rightImagePart = dualImages ? request.getPart("imageRight") : null;
+            String rightExtension = null;
+            if (rightImagePart != null && rightImagePart.getSize() > 0) {
+                if (rightImagePart.getSize() > MAX_IMAGE_SIZE) {
+                    throw new IllegalArgumentException("오른쪽 광고 이미지는 최대 5MB까지 등록할 수 있습니다.");
+                }
+                rightExtension = getImageExtension(rightImagePart.getContentType());
+            }
+
             String extension = getImageExtension(imagePart.getContentType());
             String storedFileName = "ad_" + UUID.randomUUID().toString().replace("-", "") + extension;
 
@@ -123,14 +137,31 @@ public class adInquiry extends HttpServlet {
             /* DB에는 다른 이미지와 동일하게 공유 저장소의 웹 URL만 저장한다. */
             String imageUrl = SharedImageStorage.toWebUrl(adCategory, storedFileName);
 
+            String imageUrlRight = dualImages ? imageUrl : null;
+            if (rightExtension != null) {
+                String rightFileName = "ad_" + UUID.randomUUID().toString().replace("-", "") + rightExtension;
+                savedImageRightPath = SharedImageStorage.resolveFile(adCategory, rightFileName);
+                if (!adDirectory.equals(savedImageRightPath.getParent())) {
+                    throw new IllegalStateException("오른쪽 광고 이미지 저장 경로가 올바르지 않습니다.");
+                }
+                try (InputStream inputStream = rightImagePart.getInputStream()) {
+                    Files.copy(inputStream, savedImageRightPath, StandardCopyOption.REPLACE_EXISTING);
+                }
+                imageUrlRight = SharedImageStorage.toWebUrl(adCategory, rightFileName);
+            }
+
             AdvertisementDto advertisement = new AdvertisementDto();
             advertisement.setApplicantUserId(applicantUserId);
+            advertisement.setSiteName(request.getParameter("siteName"));
+            advertisement.setHeadline(request.getParameter("headline"));
+            advertisement.setDescription(request.getParameter("description"));
             advertisement.setBusinessName(businessName);
             advertisement.setManagerName(managerName);
             advertisement.setContactPhone(phone);
             advertisement.setContactEmail(email);
             advertisement.setAdContent(content);
             advertisement.setImageUrl(imageUrl);
+            advertisement.setImageUrlRight(imageUrlRight);
             advertisement.setLinkUrl(linkUrl);
             advertisement.setAdPosition(adPosition);
             advertisement.setStartDate(startDate);
@@ -144,6 +175,7 @@ public class adInquiry extends HttpServlet {
 
         } catch (IllegalArgumentException e) {
             deleteSavedFile(savedImagePath);
+            deleteSavedFile(savedImageRightPath);
             preserveFormValues(request, businessName, managerName, phone, email,
                     content, linkUrl, adPosition, startDateValue, endDateValue);
             request.setAttribute("errorMessage", e.getMessage());
@@ -151,6 +183,7 @@ public class adInquiry extends HttpServlet {
 
         } catch (IllegalStateException e) {
             deleteSavedFile(savedImagePath);
+            deleteSavedFile(savedImageRightPath);
             preserveFormValues(request, businessName, managerName, phone, email,
                     content, linkUrl, adPosition, startDateValue, endDateValue);
             getServletContext().log("광고 문의 처리 오류", e);
@@ -159,6 +192,7 @@ public class adInquiry extends HttpServlet {
 
         } catch (Exception e) {
             deleteSavedFile(savedImagePath);
+            deleteSavedFile(savedImageRightPath);
             preserveFormValues(request, businessName, managerName, phone, email,
                     content, linkUrl, adPosition, startDateValue, endDateValue);
             getServletContext().log("광고 문의 처리 중 오류 발생", e);

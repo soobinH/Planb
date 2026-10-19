@@ -662,3 +662,10 @@
         width: 100%;
     }
 }
+
+/* 꿀팁·메이트: 가운데 파일 선택 영역의 양쪽에 독립 미리보기 */
+.ad-inquiry-image-box.two-images { grid-template-columns:140px minmax(0,1fr) 140px; }
+.ad-inquiry-image-box [hidden] { display:none !important; }
+.ad-inquiry-image-info label { display:block; margin:12px 0 6px; font-size:12px; font-weight:600; color:#4e5968; }
+.ad-inquiry-image-caption { margin:8px 0 0; text-align:center; font-size:12px; color:#8b95a1; }
+@media(max-width:680px) { .ad-inquiry-image-box.two-images { grid-template-columns:1fr; } }

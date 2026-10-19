@@ -178,6 +178,7 @@ public class AdvertisementServiceImpl implements AdvertisementService {
 
 		String linkUrl = normalize(advertisement.getLinkUrl());
 
+		if (linkUrl.isEmpty()) throw new IllegalArgumentException("광고 연결 주소를 입력해주세요.");
 		if (!linkUrl.isEmpty()) {
 			if (linkUrl.length() > 500) {
 				throw new IllegalArgumentException("광고 연결 주소는 500자 이하로 입력해주세요.");
@@ -186,7 +187,7 @@ public class AdvertisementServiceImpl implements AdvertisementService {
 			try {
 				URI uri = new URI(linkUrl);
 				String scheme = uri.getScheme();
-				if (scheme == null || (!"http".equalsIgnoreCase(scheme) && !"https".equalsIgnoreCase(scheme))) {
+				if (uri.getHost() == null || scheme == null || (!"http".equalsIgnoreCase(scheme) && !"https".equalsIgnoreCase(scheme))) {
 					throw new IllegalArgumentException("광고 연결 주소는 http 또는 https 주소만 사용할 수 있습니다.");
 				}
 
@@ -203,6 +204,19 @@ public class AdvertisementServiceImpl implements AdvertisementService {
 		 * ======================================================
 		 */
 
+        String siteName = normalize(advertisement.getSiteName());
+        String headline = normalize(advertisement.getHeadline());
+        String description = normalize(advertisement.getDescription());
+        if ("TRIP_CARD".equals(adPosition)) {
+            if (siteName.isEmpty() || headline.isEmpty() || description.isEmpty())
+                throw new IllegalArgumentException("홈 광고의 홈페이지명, 제목, 소개 문구를 입력해주세요.");
+            if (siteName.length() > 80 || headline.length() > 100 || description.length() > 300)
+                throw new IllegalArgumentException("홈 광고 문구의 최대 길이를 확인해주세요.");
+        } else { siteName = ""; headline = ""; description = ""; }
+        advertisement.setSiteName(siteName.isEmpty() ? null : siteName);
+        advertisement.setHeadline(headline.isEmpty() ? null : headline);
+        advertisement.setDescription(description.isEmpty() ? null : description);
+
 		advertisement.setBusinessName(businessName);
 		advertisement.setManagerName(managerName);
 		advertisement.setContactPhone(phone);
@@ -210,6 +224,11 @@ public class AdvertisementServiceImpl implements AdvertisementService {
 		advertisement.setAdContent(adContent);
 		advertisement.setAdPosition(adPosition);
 		advertisement.setImageUrl(imageUrl);
+        String imageUrlRight = normalize(advertisement.getImageUrlRight());
+        if (!"TIP_SIDE".equals(adPosition) && !"MATE_SIDE".equals(adPosition) && !"CART_SIDE".equals(adPosition)) imageUrlRight = "";
+        if (imageUrlRight.length() > 500) throw new IllegalArgumentException("오른쪽 광고 이미지 경로가 너무 깁니다.");
+        advertisement.setImageUrlRight(imageUrlRight.isEmpty() ? null : imageUrlRight);
+
 		advertisement.setLinkUrl(linkUrl.isEmpty() ? null : linkUrl);
 
 		/*

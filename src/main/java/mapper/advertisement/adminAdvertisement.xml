@@ -28,9 +28,11 @@
 		contact_email AS contactEmail,
 
 		ad_content AS adContent,
+        site_name AS siteName, headline, description,
 
 		image_url AS
 		imageUrl,
+        image_url_right AS imageUrlRight,
 
 		link_url AS linkUrl,
 

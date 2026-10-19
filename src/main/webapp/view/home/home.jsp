@@ -15,7 +15,7 @@ request.setAttribute("activePage", "home");
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Planb</title>
 <jsp:include page="/common/headStyles.jsp" />
-<link rel="stylesheet" href="${ctx}/view/assets/css/auth/home.css?v=4">
+<link rel="stylesheet" href="${ctx}/view/assets/css/auth/home.css?v=20261019-ads">
 <script defer src="${ctx}/view/assets/js/auth/home.js?v=4"></script>
 </head>
 <body class="site-shell ph-page">
@@ -176,22 +176,21 @@ request.setAttribute("activePage", "home");
 					</a>
 
 					<!-- 홈 인기 여행일정 사이 광고 -->
-					<c:if test="${status.index == 2}">
-						<a href="https://example.com/tripstay" target="_blank" rel="noreferrer" class="ph-plan-card ph-plan-card--ad">
-							<div class="ph-plan-card-image">
-								<img src="https://images.unsplash.com/photo-1566073771259-6a8506099945?w=900&q=80" alt="도쿄 숙소 최대 15% 할인" loading="lazy">
-								<span class="ph-plan-card-ad-badge">AD</span>
-							</div>
-							<div class="ph-plan-card-body">
-								<span class="ph-plan-card-brand">TripStay</span>
-								<h3>도쿄 숙소 최대 15% 할인</h3>
-								<p>Planb 회원 전용 특가로 숙소를 예약해보세요.</p>
-								<div class="ph-plan-card-foot">
-									<span class="ph-plan-card-ad-link">광고 보기 →</span>
-								</div>
-							</div>
-						</a>
-					</c:if>
+					                    <c:if test="${not empty displayHomeAds and status.count mod homeAdInterval == 0}">
+                        <c:set var="displayHomeAd" value="${displayHomeAds[((status.count / homeAdInterval) - 1) mod fn:length(displayHomeAds)]}" />
+                        <a href="<c:out value='${displayHomeAd.linkUrl}'/>" target="_blank" rel="noopener noreferrer sponsored" class="ph-plan-card ph-plan-card--ad">
+                            <div class="ph-plan-card-image">
+                                <img src="<c:out value='${displayHomeAd.imageUrl}'/>" alt="<c:out value='${displayHomeAd.headline}'/>" loading="lazy">
+                                <span class="ph-plan-card-ad-badge">AD</span>
+                            </div>
+                            <div class="ph-plan-card-body">
+                                <span class="ph-plan-card-brand"><c:out value="${displayHomeAd.siteName}"/></span>
+                                <h3><c:out value="${displayHomeAd.headline}"/></h3>
+                                <p><c:out value="${displayHomeAd.description}"/></p>
+                                <div class="ph-plan-card-foot"><span class="ph-plan-card-ad-link">광고 보기 →</span></div>
+                            </div>
+                        </a>
+                    </c:if>
 				</c:forEach>
 
 				<c:if test="${empty itineraryList}">

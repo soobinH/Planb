@@ -202,7 +202,7 @@ String formEndDate =
 
 <!-- 반드시 support.css보다 뒤에 -->
 <link rel="stylesheet"
-    href="<%=ctx%>/view/assets/css/support/adInquiry.css?v=3">
+    href="<%=ctx%>/view/assets/css/support/adInquiry.css?v=20261019-two-images">
 
 </head>
 
@@ -813,11 +813,7 @@ String formEndDate =
 
                             <label for="linkUrl">
 
-                                광고 연결 URL
-
-                                <span>
-                                    선택
-                                </span>
+                                광고 연결 URL <span>필수</span>
 
                             </label>
 
@@ -825,6 +821,7 @@ String formEndDate =
                                 type="url"
                                 id="linkUrl"
                                 name="linkUrl"
+                                required
                                 maxlength="500"
                                 value="<%=escapeHtml(formLinkUrl)%>"
                                 placeholder="https://example.com">
@@ -836,6 +833,18 @@ String formEndDate =
                         </div>
 
 
+
+                        <div id="homeAdCopyFields" hidden>
+                            <p class="ad-inquiry-help">홈 카드에 공개되는 문구입니다. 문의 내용과 별도로 입력해주세요.</p>
+                            <div class="ad-inquiry-field"><label for="siteName">홈페이지명</label>
+                                <input id="siteName" name="siteName" maxlength="80" placeholder="예: TRIPSTAY"
+                                    value="<%=escapeHtml((String)request.getAttribute("siteName"))%>" disabled></div>
+                            <div class="ad-inquiry-field"><label for="headline">광고 제목</label>
+                                <input id="headline" name="headline" maxlength="100" placeholder="예: 도쿄 숙소 최대 15% 할인"
+                                    value="<%=escapeHtml((String)request.getAttribute("headline"))%>" disabled></div>
+                            <div class="ad-inquiry-field"><label for="description">소개 문구</label>
+                                <textarea id="description" name="description" maxlength="300" rows="3" disabled><%=escapeHtml((String)request.getAttribute("description"))%></textarea></div>
+                        </div>
 
                         <div class="ad-inquiry-image-box">
 
@@ -850,7 +859,7 @@ String formEndDate =
                                     </span>
 
                                 </div>
-
+                                <p id="adImageLeftCaption" class="ad-inquiry-image-caption" hidden>왼쪽 이미지</p>
                             </div>
 
 
@@ -873,6 +882,7 @@ String formEndDate =
                                 </div>
 
 
+                                <label id="adImageLabel" for="adImage">광고 이미지</label>
                                 <input
                                     type="file"
                                     id="adImage"
@@ -880,6 +890,13 @@ String formEndDate =
                                     accept="image/jpeg,image/png,image/webp"
                                     required>
 
+
+                                <div id="adImageRightField" hidden>
+                                    <label for="adImageRight">오른쪽 이미지 (선택)</label>
+                                    <input type="file" id="adImageRight" name="imageRight"
+                                        accept="image/jpeg,image/png,image/webp" disabled>
+                                    <p>오른쪽에 다른 이미지를 넣을 때 선택해주세요. 미선택 시 왼쪽 이미지를 사용합니다.</p>
+                                </div>
 
                                 <p>
                                     JPG, PNG, WEBP / 최대 5MB
@@ -900,6 +917,10 @@ String formEndDate =
 
                             </div>
 
+                            <div id="adImageRightColumn" hidden>
+                                <div class="ad-inquiry-image-preview side" id="adImagePreviewRight"><span>IMAGE</span></div>
+                                <p class="ad-inquiry-image-caption">오른쪽 이미지</p>
+                            </div>
                         </div>
 
                     </section>
@@ -998,7 +1019,7 @@ String formEndDate =
 
 
 
-<script src="<%=ctx%>/view/assets/js/support/adPricing.js?v=1"></script>
+<script src="<%=ctx%>/view/assets/js/support/adPricing.js?v=20261019-image-size"></script>
 
 <script>
 
@@ -1040,6 +1061,13 @@ document.addEventListener(
             document.getElementById(
                 "adImagePreview"
             );
+
+        const rightImageInput = document.getElementById("adImageRight");
+        const rightImagePreview = document.getElementById("adImagePreviewRight");
+        const rightImageField = document.getElementById("adImageRightField");
+        const rightImageColumn = document.getElementById("adImageRightColumn");
+        const imageBox = document.querySelector(".ad-inquiry-image-box");
+        const imageLabel = document.getElementById("adImageLabel");
 
         const positionInputs =
             document.querySelectorAll(
@@ -1309,6 +1337,24 @@ document.addEventListener(
 
                 const info =
                     POSITION_INFO[position];
+
+                const homeCopy = document.getElementById("homeAdCopyFields");
+                homeCopy.hidden = position !== "TRIP_CARD";
+                homeCopy.querySelectorAll("input, textarea").forEach(function (input) {
+                    input.disabled = position !== "TRIP_CARD";
+                    input.required = position === "TRIP_CARD";
+                });
+                const dualImages = position === "TIP_SIDE" || position === "MATE_SIDE" || position === "CART_SIDE";
+                imageBox.classList.toggle("two-images", dualImages);
+                document.getElementById("adImageLeftCaption").hidden = !dualImages;
+                rightImageField.hidden = !dualImages;
+                rightImageColumn.hidden = !dualImages;
+                rightImageInput.disabled = !dualImages;
+                imageLabel.textContent = dualImages ? "왼쪽 이미지" : "광고 이미지";
+                if (!dualImages) {
+                    rightImageInput.value = "";
+                    rightImageInput.dispatchEvent(new Event("change"));
+                }
 
                 imageGuideSize.textContent =
                     info.size;
@@ -1593,103 +1639,42 @@ document.addEventListener(
            이미지
         ====================================================== */
 
-        imageInput.addEventListener(
-            "change",
-            function () {
-
-                const file =
-                    imageInput.files[0];
-
-
-                if (!file) {
-
-                    imagePreview.innerHTML =
-                        "<span>IMAGE</span>";
-
+        function bindImagePreview(input, preview) {
+            let version = 0;
+            input.addEventListener("change", function () {
+                const current = ++version;
+                preview.innerHTML = "<span>IMAGE</span>";
+                const file = input.files && input.files[0];
+                if (!file) return;
+                if (file.size > 5 * 1024 * 1024) {
+                    alert("광고 이미지는 파일당 최대 5MB까지 등록할 수 있습니다.");
+                    input.value = "";
                     return;
                 }
-
-
-                if (
-                    file.size
-                    >
-                    5 * 1024 * 1024
-                ) {
-
-                    alert(
-                        "광고 이미지는 최대 5MB까지 등록할 수 있습니다."
-                    );
-
-                    imageInput.value =
-                        "";
-
-                    imagePreview.innerHTML =
-                        "<span>IMAGE</span>";
-
+                if (!["image/jpeg", "image/png", "image/webp"].includes(file.type)) {
+                    alert("JPG, PNG, WEBP 이미지만 등록할 수 있습니다.");
+                    input.value = "";
                     return;
                 }
-
-
-                const allowedTypes = [
-                    "image/jpeg",
-                    "image/png",
-                    "image/webp"
-                ];
-
-
-                if (
-                    !allowedTypes.includes(
-                        file.type
-                    )
-                ) {
-
-                    alert(
-                        "JPG, PNG, WEBP 이미지만 등록할 수 있습니다."
-                    );
-
-                    imageInput.value =
-                        "";
-
-                    imagePreview.innerHTML =
-                        "<span>IMAGE</span>";
-
-                    return;
-                }
-
-
-                const reader =
-                    new FileReader();
-
-
-                reader.onload =
-                    function (event) {
-
-                        const image =
-                            document.createElement(
-                                "img"
-                            );
-
-                        image.src =
-                            event.target.result;
-
-                        image.alt =
-                            "광고 이미지 미리보기";
-
-                        imagePreview.innerHTML =
-                            "";
-
-                        imagePreview.appendChild(
-                            image
-                        );
-                    };
-
-
-                reader.readAsDataURL(
-                    file
-                );
-            }
-        );
-
+                const reader = new FileReader();
+                reader.onload = function (event) {
+                    if (version !== current) return;
+                    const image = document.createElement("img");
+                    image.src = event.target.result;
+                    image.alt = input === rightImageInput ? "오른쪽 광고 미리보기" : "광고 미리보기";
+                    preview.replaceChildren(image);
+                };
+                reader.onerror = function () {
+                    if (version !== current) return;
+                    input.value = "";
+                    preview.innerHTML = "<span>IMAGE</span>";
+                    alert("이미지를 읽지 못했습니다. 다시 선택해주세요.");
+                };
+                reader.readAsDataURL(file);
+            });
+        }
+        bindImagePreview(imageInput, imagePreview);
+        bindImagePreview(rightImageInput, rightImagePreview);
 
         /* =====================================================
            제출

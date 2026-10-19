@@ -948,6 +948,7 @@ for (Map<String, Object> ad : allAds) {
         %>
 
 
+        <% String previewImageRight = imageSrc(ctx, value(ad, "imageUrlRight")); %>
         <article
             class="admin-ad-card"
             data-ad-id="<%=adId%>"
@@ -956,6 +957,9 @@ for (Map<String, Object> ad : allAds) {
             data-phone="<%=h(phone)%>"
             data-email="<%=h(email)%>"
             data-content="<%=h(adContent)%>"
+            data-site-name="<%=h(value(ad, "siteName"))%>"
+            data-headline="<%=h(value(ad, "headline"))%>"
+            data-description="<%=h(value(ad, "description"))%>"
             data-position="<%=h(adPosition)%>"
             data-position-label="<%=h(positionLabel(adPosition))%>"
             data-start-date="<%=h(startDate)%>"
@@ -963,6 +967,7 @@ for (Map<String, Object> ad : allAds) {
             data-status="<%=h(status)%>"
             data-status-label="<%=h(statusLabel(status))%>"
             data-image-url="<%=h(previewImage)%>"
+            data-image-url-right="<%=h(previewImageRight)%>"
             data-link-url="<%=h(linkUrl)%>"
             data-rejection-reason="<%=h(rejectionReason)%>"
             data-created-at="<%=h(createdAt)%>">
@@ -1582,7 +1587,9 @@ document.addEventListener(
 
             setText(
                 "modalAdContent",
-                data.content
+                [data.content, data.siteName ? "홈페이지명: " + data.siteName : "",
+                    data.headline ? "광고 제목: " + data.headline : "",
+                    data.description ? "소개 문구: " + data.description : ""].filter(Boolean).join("\n")
             );
 
 
@@ -1667,7 +1674,8 @@ document.addEventListener(
 
 
             if (modalImage) {
-
+                modalImage.style.display = "";
+                modalImage.style.gap = "";
                 modalImage.innerHTML =
                     "";
 
@@ -1691,6 +1699,19 @@ document.addEventListener(
                     modalImage.appendChild(
                         image
                     );
+                    if (data.imageUrlRight) {
+                        modalImage.style.display = "flex";
+                        modalImage.style.gap = "12px";
+                        image.style.width = "calc(50% - 6px)";
+                        image.alt = "왼쪽 광고 이미지";
+                        const rightImage = document.createElement("img");
+                        rightImage.src = data.imageUrlRight;
+                        rightImage.alt = "오른쪽 광고 이미지";
+                        rightImage.style.width = "calc(50% - 6px)";
+                        rightImage.style.objectFit = "contain";
+                        modalImage.appendChild(rightImage);
+                    }
+
 
                 } else {
 

@@ -828,6 +828,7 @@ request.setAttribute("activePage", "travel");
     }
 }
 </style>
+<link rel="stylesheet" href="${pageContext.request.contextPath}/view/assets/css/support/displayAds.css?v=1">
 </head>
 
 <body class="site-shell">
@@ -837,12 +838,7 @@ request.setAttribute("activePage", "travel");
 <main class="cart-page">
     <div class="cart-page-layout">
         <!-- 여행 상세페이지와 동일한 좌측 광고 영역 -->
-        <aside class="cart-side-ad" aria-label="좌측 광고 영역">
-            <div class="cart-side-ad-badge">AD</div>
-            <p class="cart-side-ad-label">좌측 광고 영역<br>
-                <span class="cart-side-ad-size">(예: 160x600)</span>
-            </p>
-        </aside>
+        <aside class="cart-side-ad" aria-label="좌측 광고 영역"><jsp:include page="/common/displaySideAd.jsp"><jsp:param name="side" value="left"/></jsp:include></aside>
 
         <div class="cart-page-inner">
 
@@ -942,12 +938,7 @@ request.setAttribute("activePage", "travel");
         </div>
 
         <!-- 여행 상세페이지와 동일한 우측 광고 영역 -->
-        <aside class="cart-side-ad" aria-label="우측 광고 영역">
-            <div class="cart-side-ad-badge">AD</div>
-            <p class="cart-side-ad-label">우측 광고 영역<br>
-                <span class="cart-side-ad-size">(예: 160x600)</span>
-            </p>
-        </aside>
+        <aside class="cart-side-ad" aria-label="우측 광고 영역"><jsp:include page="/common/displaySideAd.jsp"><jsp:param name="side" value="right"/></jsp:include></aside>
     </div>
 </main>
 

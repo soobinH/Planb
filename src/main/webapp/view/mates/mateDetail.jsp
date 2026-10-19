@@ -20,6 +20,7 @@
     data-context-path="${pageContext.request.contextPath}"
     src="${pageContext.request.contextPath}/view/assets/js/common/listReturn.js?v=1">
 </script>
+<link rel="stylesheet" href="${pageContext.request.contextPath}/view/assets/css/support/displayAds.css?v=1">
 </head>
 <body class="site-shell">
 	<jsp:include page="/common/header.jsp" />
@@ -30,14 +31,7 @@
 
 				<!-- 좌측 광고 (스크롤 따라다님 / sticky) -->
 				<aside class="tip-ad-side tip-ad-left" aria-label="좌측 광고 영역">
-					<div class="tip-ad-box">
-						<div class="tip-ad-badge">AD</div>
-						<p class="tip-ad-text">
-							좌측 광고 영역<br>
-							<span>(예: 160x600)</span>
-						</p>
-					</div>
-				</aside>
+<div class="tip-ad-box"><jsp:include page="/common/displaySideAd.jsp"><jsp:param name="side" value="left"/></jsp:include></div></aside>
 
 				<!-- 본문 영역 -->
 				<div class="tip-detail-main">
@@ -373,14 +367,7 @@
 
 				<!-- 우측 광고 (스크롤 따라다님 / sticky) -->
 				<aside class="tip-ad-side tip-ad-right" aria-label="우측 광고 영역">
-					<div class="tip-ad-box">
-						<div class="tip-ad-badge">AD</div>
-						<p class="tip-ad-text">
-							우측 광고 영역<br>
-							<span>(예: 160x600)</span>
-						</p>
-					</div>
-				</aside>
+<div class="tip-ad-box"><jsp:include page="/common/displaySideAd.jsp"><jsp:param name="side" value="right"/></jsp:include></div></aside>
 			</div>
 		</div>
 	</div>
